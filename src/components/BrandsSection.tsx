@@ -20,14 +20,14 @@ const brands = [
 export function BrandsSection() {
   return (
     <section className="bg-white py-10 px-4 sm:px-6 lg:px-[80px] xl:px-[120px] 2xl:px-[151px]">
-      {/* ── Section header: բREND NER ── */}
+      {/* Figma 119:2090 — title 119:2092 */}
       <div className="flex justify-between items-end mb-8">
         <div>
           <h2
             className="font-montserrat font-bold uppercase text-[#181111] leading-none"
             style={{ fontSize: 'clamp(22px, 2.813vw, 54px)', letterSpacing: '-0.6px' }}
           >
-            <span className="text-[#ffca03]">բREND</span>NER
+            բՐԵՆԴՆԵՐ
           </h2>
           <div className="h-[4px] w-[104px] bg-[#ffca03] mt-2" />
         </div>

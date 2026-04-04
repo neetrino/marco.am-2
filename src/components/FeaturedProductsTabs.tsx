@@ -37,17 +37,15 @@ interface ProductsResponse {
 
 const PRODUCTS_PER_PAGE = 10;
 
-// ── Reusable section header ────────────────────────────────────────────────────
+// ── Section header — Figma 119:2052 / 119:2079 (title + primary rule + arrows) ──
 function SectionHeader({
-  yellowWord,
-  restText,
+  title,
   onPrev,
   onNext,
   arrowLeft,
   arrowRight,
 }: {
-  yellowWord: string;
-  restText: string;
+  title: string;
   onPrev: () => void;
   onNext: () => void;
   arrowLeft: string;
@@ -60,8 +58,7 @@ function SectionHeader({
           className="font-montserrat font-bold uppercase text-[#181111] leading-none"
           style={{ fontSize: 'clamp(22px, 2.813vw, 54px)', letterSpacing: '-0.6px' }}
         >
-          <span className="text-[#ffca03]">{yellowWord}</span>
-          {restText && <span>{restText}</span>}
+          {title}
         </h2>
         <div className="h-[4px] w-[104px] bg-[#ffca03] mt-2" />
       </div>
@@ -135,11 +132,10 @@ export function FeaturedProductsTabs() {
 
   return (
     <>
-      {/* ── SECTION: Հatuk Arajarkner (Special Offers) ── */}
+      {/* Figma 119:2052 — Հատուկ առաջարկներ */}
       <section className="bg-white py-10 px-4 sm:px-6 lg:px-[80px] xl:px-[120px] 2xl:px-[151px]">
         <SectionHeader
-          yellowWord="Հatuk"
-          restText=" arajarkner"
+          title="Հատուկ առաջարկներ"
           onPrev={() => scrollSection(specialScrollRef, 'left')}
           onNext={() => scrollSection(specialScrollRef, 'right')}
           arrowLeft={ARROW_LEFT_PREV}
@@ -156,24 +152,12 @@ export function FeaturedProductsTabs() {
                 </div>
               ))}
         </div>
-
-        {/* ── "See more" pagination dots ── */}
-        <div className="flex justify-center mt-8 gap-2">
-          {[0, 1, 2].map((i) => (
-            <button
-              key={i}
-              className={`rounded-full transition-all ${i === 1 ? 'w-3 h-3 bg-black' : 'w-2.5 h-2.5 bg-gray-300'}`}
-              aria-label={`Page ${i + 1}`}
-            />
-          ))}
-        </div>
       </section>
 
-      {/* ── SECTION: NORUYTNNER (New Arrivals) ── */}
+      {/* Figma 119:2079 — ՆՈՐՈՒՅԹՆԵՐ */}
       <section className="bg-white py-10 px-4 sm:px-6 lg:px-[80px] xl:px-[120px] 2xl:px-[151px]">
         <SectionHeader
-          yellowWord="NORUYTN"
-          restText="ER"
+          title="ՆՈՐՈՒՅԹՆԵՐ"
           onPrev={() => scrollSection(newScrollRef, 'left')}
           onNext={() => scrollSection(newScrollRef, 'right')}
           arrowLeft={ARROW_LEFT_NEW}
@@ -189,16 +173,6 @@ export function FeaturedProductsTabs() {
                   <ProductCard product={product} />
                 </div>
               ))}
-        </div>
-
-        {/* ── "See more" button ── */}
-        <div className="flex justify-center mt-10">
-          <button
-            className="bg-black text-white font-montserrat font-bold rounded-[68px] px-10 py-4 hover:bg-gray-800 transition-colors"
-            style={{ fontSize: 16 }}
-          >
-            Tesnnel avelyin
-          </button>
         </div>
       </section>
     </>

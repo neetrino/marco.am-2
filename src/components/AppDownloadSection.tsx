@@ -1,70 +1,59 @@
 'use client';
 
-// ─── Figma assets ──────────────────────────────────────────────────────────────
-// App-download section (Group 9251): yellow bg, phone mockup, QR code, store icons
-const PHONE_MOCKUP = 'https://www.figma.com/api/mcp/asset/dfcd39e2-b969-4f9b-b729-1ed1d01f0406';
-const QR_CODE = 'https://www.figma.com/api/mcp/asset/5452a800-219e-4031-9489-cbbee1e7659c';
-const APP_STORES = 'https://www.figma.com/api/mcp/asset/eb266858-b305-4053-8641-da0dd14096b9';
+/**
+ * App download banner — Figma node 119:2121 (Group 9251).
+ */
+
+const IMG_PHONE = 'https://www.figma.com/api/mcp/asset/93836d40-5cc3-42f0-badf-d7f90198e7dc';
+const IMG_QR = 'https://www.figma.com/api/mcp/asset/a95dd996-be86-4ee0-bc2b-bbdc87c33bdf';
+const IMG_STORES = 'https://www.figma.com/api/mcp/asset/55335ed0-9635-4c34-b203-d64ca6032f48';
+
+const BAR_W = 1535.8;
 
 export function AppDownloadSection() {
   return (
-    /*
-      Figma: Group 9251 – x=191, y=4452, w=1536, h=574.
-      Background: #d3f500 (lime yellow) with mix-blend-color overlay #ffe11f → net yellow.
-      Left half: phone/wallet mockup image with top-right rounded corner cutout.
-      Right half: "NERBERNNEL BJJAYIN HAVELVADE" text + QR code + app store buttons.
-    */
     <section className="bg-white px-4 sm:px-6 lg:px-[80px] xl:px-[120px] 2xl:px-[151px] py-6">
       <div
-        className="relative w-full rounded-[20px] overflow-hidden flex items-stretch"
-        style={{ minHeight: 320, background: '#ffe11f' }}
+        className="relative mx-auto w-full overflow-hidden rounded-[20px] bg-[#d3f500]"
+        style={{ maxWidth: BAR_W, minHeight: 280 }}
       >
-        {/* ── Left: phone mockup image ── */}
-        {/*
-          Figma: image positioned from x=253, with rounded-tl=21, rounded-tr=253 (a pill-top shape).
-          Width=827px → ~54% of 1536. The image has a very tall top-right corner radius.
-        */}
         <div
-          className="relative flex-shrink-0 overflow-hidden"
-          style={{
-            width: '54%',
-            borderTopLeftRadius: 21,
-            borderBottomLeftRadius: 21,
-            borderTopRightRadius: 200,
-            borderBottomRightRadius: 21,
-          }}
-        >
-          <img
-            src={PHONE_MOCKUP}
-            alt="Download our mobile app"
-            className="w-full h-full object-cover object-left-top"
-            style={{ minHeight: 320 }}
-          />
-        </div>
+          className="pointer-events-none absolute inset-0 rounded-[20px] bg-[#ffe11f] mix-blend-color"
+          aria-hidden
+        />
 
-        {/* ── Right: text + QR + store buttons ── */}
-        <div className="flex-1 flex flex-col items-end justify-center pr-8 pl-4 py-8 gap-6">
-          {/* Headline */}
-          <h2
-            className="font-montserrat font-bold uppercase text-black text-right leading-tight"
-            style={{ fontSize: 'clamp(18px, 2.083vw, 40px)', letterSpacing: '0.7px' }}
+        <div className="relative flex min-h-[280px] flex-col lg:min-h-[574px] lg:flex-row">
+          <div
+            className="relative w-full shrink-0 overflow-hidden rounded-bl-[21px] rounded-br-[21px] rounded-tl-[21px] rounded-tr-[253px] lg:absolute lg:left-0 lg:top-0 lg:h-full lg:w-[53.86%]"
           >
-            NERBERNNEL<br />BJJAYIN<br />HAVELVADE
-          </h2>
+            <img
+              src={IMG_PHONE}
+              alt=""
+              className="h-56 w-full object-cover object-left-top lg:h-full lg:min-h-[574px]"
+            />
+          </div>
 
-          {/* QR code */}
-          <img
-            src={QR_CODE}
-            alt="QR code to download app"
-            style={{ width: 'clamp(100px, 11vw, 211px)', height: 'clamp(100px, 11vw, 211px)' }}
-          />
-
-          {/* App store icons */}
-          <img
-            src={APP_STORES}
-            alt="App Store and Google Play"
-            style={{ height: 'clamp(24px, 1.719vw, 33px)' }}
-          />
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-6 px-6 py-8 lg:ml-[53.86%] lg:min-h-[574px] lg:w-[46.14%] lg:items-end lg:pr-10">
+            <h2 className="font-montserrat text-center text-[40px] font-bold uppercase leading-[47px] tracking-[0.7px] text-black lg:text-right">
+              ՆԵՐԲԵՌՆԵԼ ԲՋՋԱՅԻՆ
+              <br />
+              ՀԱՎԵԼՎԱԾԸ
+            </h2>
+            <img
+              src={IMG_QR}
+              alt="QR code to download the Marco app"
+              width={211}
+              height={211}
+              className="size-[211px] max-w-[min(211px,85vw)] shrink-0"
+            />
+            <img
+              src={IMG_STORES}
+              alt="App Store and Google Play"
+              width={126}
+              height={33}
+              className="h-[33px] w-auto max-w-full object-contain"
+            />
+          </div>
         </div>
       </div>
     </section>

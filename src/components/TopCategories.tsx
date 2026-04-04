@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage } from '../lib/language';
+import { logger } from '../lib/utils/logger';
 
 // ─── Figma section-header arrow assets ────────────────────────────────────────
 const ARROW_LEFT = 'https://www.figma.com/api/mcp/asset/f6619936-dbc1-441e-8c11-81b0dcc6d826';
@@ -42,7 +43,7 @@ export function TopCategories() {
       });
       setTopCategories(response.data || []);
     } catch (err) {
-      console.error('[TopCategories] Error:', err);
+      logger.warn('[TopCategories] fetch failed', { err });
       setTopCategories([]);
     } finally {
       setLoading(false);
