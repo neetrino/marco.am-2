@@ -1,11 +1,16 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, type RefObject } from 'react';
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage, type LanguageCode } from '../lib/language';
 import { ProductCard } from './ProductCard';
-import { t } from '../lib/i18n';
 import type { ProductLabel } from './ProductLabels';
+
+// ─── Figma nav-arrow images ────────────────────────────────────────────────────
+const ARROW_LEFT_PREV = 'https://www.figma.com/api/mcp/asset/9689c1cd-8859-41bf-aaec-23b7d6156653';
+const ARROW_RIGHT_NEXT = 'https://www.figma.com/api/mcp/asset/dce468f9-403c-402e-8b3c-2bf55e318ee5';
+const ARROW_LEFT_NEW = 'https://www.figma.com/api/mcp/asset/0b8c6403-7a34-4445-9426-0d6b4c6b15c3';
+const ARROW_RIGHT_NEW = 'https://www.figma.com/api/mcp/asset/2a87d54e-fc1e-471d-8c20-69d3342079f4';
 
 interface Product {
   id: string;
@@ -15,13 +20,10 @@ interface Product {
   compareAtPrice?: number | null;
   image: string | null;
   inStock: boolean;
-  brand: {
-    id: string;
-    name: string;
-  } | null;
-  colors?: Array<{ value: string; imageUrl?: string | null; colors?: string[] | null }>; // Available colors from variants with imageUrl and colors hex
-  sizes?: Array<{ value: string; imageUrl?: string | null }>; // Available sizes from variants
-  attributes?: Record<string, Array<{ valueId?: string; value: string; label: string; imageUrl?: string | null; colors?: string[] | null }>>; // Other attributes (not color or size)
+  brand: { id: string; name: string } | null;
+  colors?: Array<{ value: string; imageUrl?: string | null; colors?: string[] | null }>;
+  sizes?: Array<{ value: string; imageUrl?: string | null }>;
+  attributes?: Record<string, Array<{ valueId?: string; value: string; label: string; imageUrl?: string | null; colors?: string[] | null }>>;
   originalPrice?: number | null;
   discountPercent?: number | null;
   labels?: ProductLabel[];
@@ -29,200 +31,176 @@ interface Product {
 
 interface ProductsResponse {
   data: Product[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
-type FilterType = 'new' | 'featured' | 'bestseller';
-
-interface Tab {
-  id: FilterType;
-  label: string;
-  filter: string | null;
-}
-
-// Tabs will be generated dynamically with translations
 
 const PRODUCTS_PER_PAGE = 10;
-const MOBILE_GRID_LAYOUT =
-  'grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
 
-/**
- * FeaturedProductsTabs Component
- * Displays products with tabs for filtering (NEW OFFERS, NEW, FEATURED, TOP SELLERS)
- * Similar to the reference design with underlined active tab
- */
-export function FeaturedProductsTabs() {
-  // Use state for language to prevent hydration mismatch
-  // Start with 'en' on server, update on client mount
-  const [language, setLanguage] = useState<LanguageCode>('en');
-  const [activeTab, setActiveTab] = useState<FilterType>('new');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Update language on mount and when language changes
-  useEffect(() => {
-    const updateLanguage = () => {
-      const storedLang = getStoredLanguage();
-      setLanguage(storedLang);
-    };
-
-    // Update immediately on mount
-    updateLanguage();
-
-    // Listen to language-updated events
-    const handleLanguageUpdate = () => {
-      updateLanguage();
-    };
-
-    window.addEventListener('language-updated', handleLanguageUpdate);
-    return () => {
-      window.removeEventListener('language-updated', handleLanguageUpdate);
-    };
-  }, []);
-
-  // Generate tabs with translations (memoized based on language)
-  const tabs: Tab[] = [
-    { id: 'new', label: t(language, 'home.featured_products.tab_new'), filter: 'new' },
-    { id: 'bestseller', label: t(language, 'home.featured_products.tab_bestseller'), filter: 'bestseller' },
-    { id: 'featured', label: t(language, 'home.featured_products.tab_featured'), filter: 'featured' },
-  ];
-
-  /**
-   * Fetch products based on active filter
-   */
-  const fetchProducts = useCallback(async (filter: string | null) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const currentLang = language;
-      const params: Record<string, string> = {
-        page: '1',
-        limit: PRODUCTS_PER_PAGE.toString(),
-        lang: currentLang,
-      };
-
-      // Add filter if provided
-      if (filter) {
-        params.filter = filter;
-      }
-
-      const response = await apiClient.get<ProductsResponse>('/api/v1/products', {
-        params,
-      });
-
-      setProducts((response.data || []).slice(0, PRODUCTS_PER_PAGE));
-    } catch (err) {
-      console.error('[FeaturedProductsTabs] Error:', err);
-      setError(t(language, 'home.featured_products.errorLoading'));
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [language]);
-
-  /**
-   * Handle tab change
-   */
-  const handleTabChange = (tabId: FilterType) => {
-    setActiveTab(tabId);
-    const tab = tabs.find((t) => t.id === tabId);
-    fetchProducts(tab?.filter || null);
-  };
-
-  // Load products on mount (default "NEW")
-  useEffect(() => {
-    fetchProducts('new');
-  }, [fetchProducts]);
-
+// ── Reusable section header ────────────────────────────────────────────────────
+function SectionHeader({
+  yellowWord,
+  restText,
+  onPrev,
+  onNext,
+  arrowLeft,
+  arrowRight,
+}: {
+  yellowWord: string;
+  restText: string;
+  onPrev: () => void;
+  onNext: () => void;
+  arrowLeft: string;
+  arrowRight: string;
+}) {
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Title */}
-        <h2 className="text-3xl font-bold text-gray-900 text-center">
-          {t(language, 'home.featured_products.title')}
+    <div className="flex justify-between items-end mb-8">
+      <div>
+        <h2
+          className="font-montserrat font-bold uppercase text-[#181111] leading-none"
+          style={{ fontSize: 'clamp(22px, 2.813vw, 54px)', letterSpacing: '-0.6px' }}
+        >
+          <span className="text-[#ffca03]">{yellowWord}</span>
+          {restText && <span>{restText}</span>}
         </h2>
-        <p className="mt-3 mb-8 text-base text-gray-600 text-center">
-          {t(language, 'home.featured_products.subtitle')}
-        </p>
-
-        {/* Tabs Navigation */}
-        <div className="flex justify-center items-center gap-6 md:gap-8 mb-8 flex-wrap">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`
-                  relative px-4 py-2 text-sm font-medium transition-colors duration-200
-                  ${isActive 
-                    ? 'text-blue-600' 
-                    : 'text-gray-600 hover:text-gray-900'
-                  }
-                `}
-                aria-label={t(language, 'home.featured_products.ariaShowProducts').replace('{label}', tab.label)}
-                aria-pressed={isActive}
-              >
-                {tab.label}
-                {/* Active indicator - underline */}
-                {isActive && (
-                  <span 
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
-                    aria-hidden="true"
-                  />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Products Grid */}
-        {loading ? (
-          <div className={MOBILE_GRID_LAYOUT}>
-            {[...Array(PRODUCTS_PER_PAGE)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
-                <div className="aspect-square bg-gray-200"></div>
-                <div className="p-4 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-5 bg-gray-200 rounded w-1/3"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => {
-                const tab = tabs.find((t) => t.id === activeTab);
-                fetchProducts(tab?.filter || null);
-              }}
-              className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors"
-            >
-              {t(language, 'home.featured_products.tryAgain')}
-            </button>
-          </div>
-        ) : products.length > 0 ? (
-          <div className={MOBILE_GRID_LAYOUT}>
-            {products.slice(0, PRODUCTS_PER_PAGE).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">{t(language, 'home.featured_products.noProducts')}</p>
-          </div>
-        )}
+        <div className="h-[4px] w-[104px] bg-[#ffca03] mt-2" />
       </div>
-    </section>
+      <div className="flex gap-2">
+        <button
+          onClick={onPrev}
+          className="flex items-center justify-center rounded-full border border-[#e5e7eb] hover:bg-[#ffca03] hover:border-[#ffca03] transition-colors"
+          style={{ width: 51, height: 40 }}
+          aria-label="Previous"
+        >
+          <img src={arrowLeft} alt="" aria-hidden className="w-[7px] h-[12px]" />
+        </button>
+        <button
+          onClick={onNext}
+          className="flex items-center justify-center rounded-full border border-[#e5e7eb] hover:bg-[#ffca03] hover:border-[#ffca03] transition-colors"
+          style={{ width: 51, height: 40 }}
+          aria-label="Next"
+        >
+          <img src={arrowRight} alt="" aria-hidden className="w-[7px] h-[12px]" />
+        </button>
+      </div>
+    </div>
   );
 }
 
+
+export function FeaturedProductsTabs() {
+  const [language, setLanguage] = useState<LanguageCode>('en');
+  const [specialProducts, setSpecialProducts] = useState<Product[]>([]);
+  const [newProducts, setNewProducts] = useState<Product[]>([]);
+  const [loadingSpecial, setLoadingSpecial] = useState(true);
+  const [loadingNew, setLoadingNew] = useState(true);
+
+  const specialScrollRef = useRef<HTMLDivElement>(null);
+  const newScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateLanguage = () => setLanguage(getStoredLanguage());
+    updateLanguage();
+    window.addEventListener('language-updated', updateLanguage);
+    return () => window.removeEventListener('language-updated', updateLanguage);
+  }, []);
+
+  const fetchProducts = useCallback(
+    async (filter: string, setter: (p: Product[]) => void, setLoading: (v: boolean) => void) => {
+      try {
+        setLoading(true);
+        const res = await apiClient.get<ProductsResponse>('/api/v1/products', {
+          params: { page: '1', limit: String(PRODUCTS_PER_PAGE), lang: language, filter },
+        });
+        setter((res.data || []).slice(0, PRODUCTS_PER_PAGE));
+      } catch {
+        setter([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [language]
+  );
+
+  useEffect(() => {
+    fetchProducts('featured', setSpecialProducts, setLoadingSpecial);
+    fetchProducts('new', setNewProducts, setLoadingNew);
+  }, [fetchProducts]);
+
+  const scrollSection = (ref: RefObject<HTMLDivElement | null>, dir: 'left' | 'right') => {
+    if (ref.current) {
+      ref.current.scrollBy({ left: dir === 'left' ? -350 : 350, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <>
+      {/* ── SECTION: Հatuk Arajarkner (Special Offers) ── */}
+      <section className="bg-white py-10 px-4 sm:px-6 lg:px-[80px] xl:px-[120px] 2xl:px-[151px]">
+        <SectionHeader
+          yellowWord="Հatuk"
+          restText=" arajarkner"
+          onPrev={() => scrollSection(specialScrollRef, 'left')}
+          onNext={() => scrollSection(specialScrollRef, 'right')}
+          arrowLeft={ARROW_LEFT_PREV}
+          arrowRight={ARROW_RIGHT_NEXT}
+        />
+        <div ref={specialScrollRef} className="flex gap-5 overflow-x-auto scrollbar-hide pb-2">
+          {loadingSpecial
+            ? [...Array(4)].map((_, i) => (
+                <div key={i} className="flex-shrink-0 w-[306px] h-[486px] bg-[#f6f6f6] rounded-[32px] animate-pulse" />
+              ))
+            : specialProducts.map((product) => (
+                <div key={product.id} className="flex-shrink-0 w-[306px]">
+                  <ProductCard product={product} />
+                </div>
+              ))}
+        </div>
+
+        {/* ── "See more" pagination dots ── */}
+        <div className="flex justify-center mt-8 gap-2">
+          {[0, 1, 2].map((i) => (
+            <button
+              key={i}
+              className={`rounded-full transition-all ${i === 1 ? 'w-3 h-3 bg-black' : 'w-2.5 h-2.5 bg-gray-300'}`}
+              aria-label={`Page ${i + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ── SECTION: NORUYTNNER (New Arrivals) ── */}
+      <section className="bg-white py-10 px-4 sm:px-6 lg:px-[80px] xl:px-[120px] 2xl:px-[151px]">
+        <SectionHeader
+          yellowWord="NORUYTN"
+          restText="ER"
+          onPrev={() => scrollSection(newScrollRef, 'left')}
+          onNext={() => scrollSection(newScrollRef, 'right')}
+          arrowLeft={ARROW_LEFT_NEW}
+          arrowRight={ARROW_RIGHT_NEW}
+        />
+        <div ref={newScrollRef} className="flex gap-5 overflow-x-auto scrollbar-hide pb-2">
+          {loadingNew
+            ? [...Array(4)].map((_, i) => (
+                <div key={i} className="flex-shrink-0 w-[306px] h-[486px] bg-[#f6f6f6] rounded-[32px] animate-pulse" />
+              ))
+            : newProducts.map((product) => (
+                <div key={product.id} className="flex-shrink-0 w-[306px]">
+                  <ProductCard product={product} />
+                </div>
+              ))}
+        </div>
+
+        {/* ── "See more" button ── */}
+        <div className="flex justify-center mt-10">
+          <button
+            className="bg-black text-white font-montserrat font-bold rounded-[68px] px-10 py-4 hover:bg-gray-800 transition-colors"
+            style={{ fontSize: 16 }}
+          >
+            Tesnnel avelyin
+          </button>
+        </div>
+      </section>
+    </>
+  );
+}

@@ -16,10 +16,17 @@ const config: Config = {
         warning: '#F59E0B',
         error: '#EF4444',
         info: '#3B82F6',
+        brand: {
+          yellow: '#ffca03',
+          dark: '#181111',
+          'dark-blue': '#2f4b5d',
+          gray: '#f6f6f6',
+        },
       },
       fontFamily: {
         sans: ['system-ui', '-apple-system', 'sans-serif'],
         heading: ['system-ui', '-apple-system', 'sans-serif'],
+        montserrat: ['var(--font-montserrat)', 'Montserrat', 'system-ui', 'sans-serif'],
       },
     },
   },
@@ -27,4 +34,3 @@ const config: Config = {
 };
 
 export default config;
-
