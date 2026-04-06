@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from '@/lib/i18n-client';
 import { HOME_APP_BANNER_PUBLIC_PATH } from '@/constants/homeAppBanner';
 
-const BANNER_WIDTH = 1920;
-const BANNER_HEIGHT = 640;
+/** Figma 305:2155 “App banner” frame (1527×570). */
+const BANNER_WIDTH = 1527;
+const BANNER_HEIGHT = 570;
 
 type BannerMode = 'checking' | 'raster' | 'fallback';
 
