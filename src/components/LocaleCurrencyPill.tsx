@@ -10,7 +10,7 @@ import {
 } from '../lib/language';
 import type { CurrencyCode } from '../lib/currency';
 import { CURRENCIES } from '../lib/currency';
-import { getLanguageColor, getLanguageIcon } from './LanguageSwitcherHeader';
+import { getLanguageColor } from './LanguageSwitcherHeader';
 
 /** Uppercase labels on the pill trigger (matches Figma-style locale display). */
 const LANGUAGE_PILL_LABEL: Record<Exclude<LanguageCode, 'ka'>, string> = {
@@ -139,7 +139,6 @@ export function LocaleCurrencyPill({
               .map((lang) => {
                 const isActive = toHeaderLanguage(currentLang) === lang.code;
                 const colorClass = getLanguageColor(lang.code, isActive);
-                const icon = getLanguageIcon(lang.code);
                 return (
                   <button
                     key={lang.code}
@@ -152,16 +151,13 @@ export function LocaleCurrencyPill({
                         : 'border-transparent text-gray-700 hover:border-gray-200 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center text-xl">{icon}</span>
-                      <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-                        <span className={isActive ? 'font-semibold' : 'font-medium'}>{lang.nativeName}</span>
-                        <span
-                          className={`text-xs ${isActive ? 'font-semibold text-gray-700' : 'text-gray-500'}`}
-                        >
-                          {LANGUAGE_PILL_LABEL[lang.code as Exclude<LanguageCode, 'ka'>]}
-                        </span>
-                      </div>
+                    <div className="flex min-w-0 items-center justify-between gap-2">
+                      <span className={isActive ? 'font-semibold' : 'font-medium'}>{lang.nativeName}</span>
+                      <span
+                        className={`shrink-0 text-xs ${isActive ? 'font-semibold text-gray-700' : 'text-gray-500'}`}
+                      >
+                        {LANGUAGE_PILL_LABEL[lang.code as Exclude<LanguageCode, 'ka'>]}
+                      </span>
                     </div>
                   </button>
                 );

@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, type ReactNode } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
 import { LANGUAGES, type LanguageCode, getStoredLanguage, setStoredLanguage } from '../lib/language';
 
 const ChevronDownIcon = () => (
@@ -9,44 +8,6 @@ const ChevronDownIcon = () => (
     <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-
-/** Icons/flags for language rows (header switcher + locale pill dropdown). */
-export const getLanguageIcon = (code: LanguageCode): ReactNode => {
-  const icons: Record<LanguageCode, ReactNode> = {
-    en: (
-      <Image
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/1024px-Flag_of_the_United_Kingdom_%283-5%29.svg.png"
-        alt="English"
-        width={25}
-        height={25}
-        className="rounded"
-        unoptimized
-      />
-    ),
-    hy: (
-      <Image
-        src="https://janarmenia.com/uploads/0000/83/2022/04/28/anthem-armenia.jpg"
-        alt="Armenian"
-        width={25}
-        height={25}
-        className="rounded"
-        unoptimized
-      />
-    ),
-    ru: (
-      <Image
-        src="https://flagfactoryshop.com/image/cache/catalog/products/flags/national/mockups/russia_coa-600x400.jpg"
-        alt="Russian"
-        width={25}
-        height={25}
-        className="rounded"
-        unoptimized
-      />
-    ),
-    ka: '🌐', // Georgian - fallback icon since it's not displayed in header
-  };
-  return icons[code] || '🌐';
-};
 
 /** Border/background classes for active language row. */
 export const getLanguageColor = (code: LanguageCode, isActive: boolean): string => {
@@ -146,9 +107,6 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
         aria-expanded={showMenu}
         className={`flex items-center gap-1 sm:gap-2 bg-transparent md:bg-white px-2 sm:px-3 py-1.5 sm:py-2 text-gray-800 transition-colors ${triggerClassName ?? ''}`}
       >
-        <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-base sm:text-lg leading-none">
-          {getLanguageIcon(currentLang)}
-        </span>
         <span className="text-xs sm:text-sm font-medium">{LANGUAGES[currentLang].name}</span>
         <ChevronDownIcon />
       </button>
@@ -158,9 +116,8 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
             .filter((lang) => lang.code !== 'ka') // Exclude Georgian (ka) from header
             .map((lang) => {
             const isActive = currentLang === lang.code;
-            const icon = getLanguageIcon(lang.code);
             const colorClass = getLanguageColor(lang.code, isActive);
-            
+
             return (
               <button
                 key={lang.code}
@@ -172,16 +129,13 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
                     : 'text-gray-700 hover:bg-gray-50 cursor-pointer border-transparent hover:border-gray-200'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-xl flex-shrink-0">{icon}</span>
-                  <div className="flex-1 flex items-center justify-between">
-                    <span className={isActive ? 'font-semibold' : 'font-medium'}>
-                      {lang.nativeName}
-                    </span>
-                    <span className={`text-xs ml-2 ${isActive ? 'text-gray-700 font-semibold' : 'text-gray-500'}`}>
-                      {lang.code.toUpperCase()}
-                    </span>
-                  </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className={isActive ? 'font-semibold' : 'font-medium'}>{lang.nativeName}</span>
+                  <span
+                    className={`shrink-0 text-xs ${isActive ? 'text-gray-700 font-semibold' : 'text-gray-500'}`}
+                  >
+                    {lang.code.toUpperCase()}
+                  </span>
                 </div>
               </button>
             );
