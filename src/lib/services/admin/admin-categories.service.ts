@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { db } from "@white-shop/db";
 import { toSlug } from "@/lib/utils/slug";
 
@@ -353,7 +354,7 @@ class AdminCategoriesService {
    * Delete category (soft delete)
    */
   async deleteCategory(categoryId: string) {
-    console.log('🗑️ [ADMIN SERVICE] deleteCategory called:', categoryId);
+    logger.debug('🗑️ [ADMIN SERVICE] deleteCategory called:', categoryId);
     
     const category = await db.category.findUnique({
       where: { id: categoryId },
@@ -416,7 +417,7 @@ class AdminCategoriesService {
       },
     });
 
-    console.log('✅ [ADMIN SERVICE] Category deleted:', categoryId);
+    logger.debug('✅ [ADMIN SERVICE] Category deleted:', categoryId);
     return { success: true };
   }
 }

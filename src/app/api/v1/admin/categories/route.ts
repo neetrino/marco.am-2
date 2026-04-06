@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
@@ -52,10 +53,10 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    console.log("📤 [ADMIN CATEGORIES] POST request:", body);
+    logger.debug("📤 [ADMIN CATEGORIES] POST request:", body);
 
     const result = await adminService.createCategory(body);
-    console.log("✅ [ADMIN CATEGORIES] Category created:", result.data.id);
+    logger.debug("✅ [ADMIN CATEGORIES] Category created:", result.data.id);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {

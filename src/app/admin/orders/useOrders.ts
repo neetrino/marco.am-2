@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
@@ -142,7 +143,7 @@ export function useOrders() {
   const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('📦 [ADMIN] Fetching orders...', { page, statusFilter, paymentStatusFilter, searchQuery, sortBy, sortOrder });
+      logger.debug('📦 [ADMIN] Fetching orders...', { page, statusFilter, paymentStatusFilter, searchQuery, sortBy, sortOrder });
       
       const response = await apiClient.get<OrdersResponse>('/api/v1/admin/orders', {
         params: {
@@ -156,7 +157,7 @@ export function useOrders() {
         },
       });
 
-      console.log('✅ [ADMIN] Orders fetched:', response);
+      logger.debug('✅ [ADMIN] Orders fetched:', response);
       setOrders(response.data || []);
       setMeta(response.meta || null);
     } catch (err) {
@@ -170,7 +171,7 @@ export function useOrders() {
   useEffect(() => {
     const updateCurrency = () => {
       const newCurrency = getStoredCurrency();
-      console.log('💱 [ADMIN ORDERS] Currency updated to:', newCurrency);
+      logger.debug('💱 [ADMIN ORDERS] Currency updated to:', newCurrency);
       setCurrency(newCurrency);
     };
     
@@ -185,7 +186,7 @@ export function useOrders() {
       window.addEventListener('currency-updated', updateCurrency);
       // Also listen for currency rates updates
       const handleCurrencyRatesUpdate = () => {
-        console.log('💱 [ADMIN ORDERS] Currency rates updated, refreshing currency...');
+        logger.debug('💱 [ADMIN ORDERS] Currency rates updated, refreshing currency...');
         updateCurrency();
       };
       window.addEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
@@ -199,7 +200,6 @@ export function useOrders() {
 
   useEffect(() => {
     fetchOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, statusFilter, paymentStatusFilter, searchQuery, sortBy, sortOrder]);
 
   const formatCurrency: (amount: number, orderCurrency?: string, fromCurrency?: CurrencyCode) => string = (amount: number, orderCurrency: string = 'AMD', fromCurrency: CurrencyCode = 'USD') => {
@@ -293,13 +293,13 @@ export function useOrders() {
     setBulkDeleting(true);
     try {
       const ids = Array.from(selectedIds);
-      console.log('🗑️ [ADMIN] Starting bulk delete for orders:', ids);
+      logger.debug('🗑️ [ADMIN] Starting bulk delete for orders:', ids);
       
       const results = await Promise.allSettled(
         ids.map(async (id) => {
           try {
             const response = await apiClient.delete(`/api/v1/admin/orders/${id}`);
-            console.log('✅ [ADMIN] Order deleted successfully:', id, response);
+            logger.debug('✅ [ADMIN] Order deleted successfully:', id, response);
             return { id, success: true };
           } catch (error: unknown) {
             console.error('❌ [ADMIN] Failed to delete order:', id, error);
@@ -311,7 +311,7 @@ export function useOrders() {
       const successful = results.filter(r => r.status === 'fulfilled' && r.value.success);
       const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success));
       
-      console.log('📊 [ADMIN] Bulk delete results:', {
+      logger.debug('📊 [ADMIN] Bulk delete results:', {
         total: ids.length,
         successful: successful.length,
         failed: failed.length,
@@ -338,7 +338,7 @@ export function useOrders() {
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
-      console.log('📝 [ADMIN] Changing order status:', { orderId, newStatus });
+      logger.debug('📝 [ADMIN] Changing order status:', { orderId, newStatus });
       
       // Add to updating set
       setUpdatingStatuses((prev) => new Set(prev).add(orderId));
@@ -349,7 +349,7 @@ export function useOrders() {
         status: newStatus,
       });
 
-      console.log('✅ [ADMIN] Order status updated successfully');
+      logger.debug('✅ [ADMIN] Order status updated successfully');
 
       // Update local state
       setOrders((prevOrders) =>
@@ -380,7 +380,7 @@ export function useOrders() {
 
   const handlePaymentStatusChange = async (orderId: string, newPaymentStatus: string) => {
     try {
-      console.log('📝 [ADMIN] Changing order payment status:', { orderId, newPaymentStatus });
+      logger.debug('📝 [ADMIN] Changing order payment status:', { orderId, newPaymentStatus });
       
       // Add to updating set
       setUpdatingPaymentStatuses((prev) => new Set(prev).add(orderId));
@@ -391,7 +391,7 @@ export function useOrders() {
         paymentStatus: newPaymentStatus,
       });
 
-      console.log('✅ [ADMIN] Order payment status updated successfully');
+      logger.debug('✅ [ADMIN] Order payment status updated successfully');
 
       // Update local state
       setOrders((prevOrders) =>

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -23,11 +24,11 @@ export function useDashboard({
 
   const loadDashboard = useCallback(async () => {
     try {
-      console.log('📊 [PROFILE] Loading dashboard data...');
+      logger.debug('📊 [PROFILE] Loading dashboard data...');
       setDashboardLoading(true);
       onError('');
       const data = await apiClient.get<DashboardData>('/api/v1/users/dashboard');
-      console.log('✅ [PROFILE] Dashboard data loaded:', data);
+      logger.debug('✅ [PROFILE] Dashboard data loaded:', data);
       setDashboardData(data);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);

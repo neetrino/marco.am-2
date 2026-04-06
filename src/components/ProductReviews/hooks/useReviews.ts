@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import type { Review } from '../utils';
@@ -22,10 +23,10 @@ export function useReviews(productId?: string, productSlug?: string) {
         return;
       }
 
-      console.log('📝 [PRODUCT REVIEWS] Loading reviews for product:', identifier);
+      logger.debug('📝 [PRODUCT REVIEWS] Loading reviews for product:', identifier);
       setLoading(true);
       const data = await apiClient.get<Review[]>(`/api/v1/products/${identifier}/reviews`);
-      console.log('✅ [PRODUCT REVIEWS] Reviews loaded:', data?.length || 0);
+      logger.debug('✅ [PRODUCT REVIEWS] Reviews loaded:', data?.length || 0);
       setReviews(data || []);
     } catch (error: unknown) {
       console.error('❌ [PRODUCT REVIEWS] Error loading reviews:', error);

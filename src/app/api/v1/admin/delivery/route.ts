@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { getErrorLogFields } from "@/lib/types/errors";
@@ -24,9 +25,9 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    console.log("🚚 [ADMIN DELIVERY] GET request");
+    logger.debug("🚚 [ADMIN DELIVERY] GET request");
     const settings = await adminService.getDeliverySettings();
-    console.log("✅ [ADMIN DELIVERY] Delivery settings fetched");
+    logger.debug("✅ [ADMIN DELIVERY] Delivery settings fetched");
 
     return NextResponse.json(settings);
   } catch (error: unknown) {
@@ -59,10 +60,10 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json();
-    console.log("🚚 [ADMIN DELIVERY] PUT request:", body);
+    logger.debug("🚚 [ADMIN DELIVERY] PUT request:", body);
 
     const settings = await adminService.updateDeliverySettings(body);
-    console.log("✅ [ADMIN DELIVERY] Delivery settings updated");
+    logger.debug("✅ [ADMIN DELIVERY] Delivery settings updated");
 
     return NextResponse.json(settings);
   } catch (error: unknown) {

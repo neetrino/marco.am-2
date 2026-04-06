@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
@@ -39,7 +40,7 @@ export async function GET(req: NextRequest) {
       ...(sortOrder && { sortOrder: sortOrder as 'asc' | 'desc' }),
     };
 
-    console.log('📦 [ADMIN ORDERS] GET request with filters:', filters);
+    logger.debug('📦 [ADMIN ORDERS] GET request with filters:', filters);
     const result = await adminService.getOrders(filters);
     return NextResponse.json(result);
   } catch (error: unknown) {

@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { MouseEvent } from 'react';
@@ -77,7 +78,7 @@ export function RelatedProductCard({
               e.stopPropagation();
               return;
             }
-            console.log('[RelatedProducts] Navigating to product:', product.slug);
+            logger.debug('[RelatedProducts] Navigating to product:', product.slug);
           }}
         >
           <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">

@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useState, useCallback, useRef, ChangeEvent } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -56,15 +57,15 @@ export function useAttributes() {
   const fetchAttributes = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('📋 [ADMIN] Fetching attributes...');
+      logger.debug('📋 [ADMIN] Fetching attributes...');
       const response = await apiClient.get<{ data: Attribute[] }>('/api/v1/admin/attributes');
-      console.log('📋 [ADMIN] Attributes response:', response.data);
+      logger.debug('📋 [ADMIN] Attributes response:', response.data);
       // Log colors for each value to debug
       if (response.data && Array.isArray(response.data)) {
         response.data.forEach((attr) => {
           if (attr.values && Array.isArray(attr.values)) {
             attr.values.forEach((val) => {
-              console.log('🎨 [ADMIN] Attribute value colors:', {
+              logger.debug('🎨 [ADMIN] Attribute value colors:', {
                 attributeId: attr.id,
                 attributeName: attr.name,
                 valueId: val.id,
@@ -79,7 +80,7 @@ export function useAttributes() {
         });
       }
       setAttributes(response.data || []);
-      console.log('✅ [ADMIN] Attributes loaded:', response.data?.length || 0);
+      logger.debug('✅ [ADMIN] Attributes loaded:', response.data?.length || 0);
     } catch (err) {
       console.error('❌ [ADMIN] Error fetching attributes:', err);
       setAttributes([]);
@@ -104,7 +105,7 @@ export function useAttributes() {
     const autoKey = formData.name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
     try {
-      console.log('🆕 [ADMIN] Creating attribute:', autoKey);
+      logger.debug('🆕 [ADMIN] Creating attribute:', autoKey);
       await apiClient.post('/api/v1/admin/attributes', {
         name: formData.name.trim(),
         key: autoKey,
@@ -113,7 +114,7 @@ export function useAttributes() {
         locale: 'en',
       });
       
-      console.log('✅ [ADMIN] Attribute created successfully');
+      logger.debug('✅ [ADMIN] Attribute created successfully');
       setShowAddForm(false);
       setFormData({ name: '' });
       fetchAttributes();
@@ -131,9 +132,9 @@ export function useAttributes() {
     }
 
     try {
-      console.log(`🗑️ [ADMIN] Deleting attribute: ${attributeName} (${attributeId})`);
+      logger.debug(`🗑️ [ADMIN] Deleting attribute: ${attributeName} (${attributeId})`);
       await apiClient.delete(`/api/v1/admin/attributes/${attributeId}`);
-      console.log('✅ [ADMIN] Attribute deleted successfully');
+      logger.debug('✅ [ADMIN] Attribute deleted successfully');
       fetchAttributes();
       showToast(t('admin.attributes.deletedSuccess'), 'success');
     } catch (err: unknown) {
@@ -153,12 +154,12 @@ export function useAttributes() {
 
     try {
       setSavingAttribute(true);
-      console.log(`✏️ [ADMIN] Updating attribute name: ${attributeId} -> ${trimmedName}`);
+      logger.debug(`✏️ [ADMIN] Updating attribute name: ${attributeId} -> ${trimmedName}`);
       await apiClient.patch(`/api/v1/admin/attributes/${attributeId}/translations`, {
         name: trimmedName,
         locale: 'en',
       });
-      console.log('✅ [ADMIN] Attribute name updated successfully');
+      logger.debug('✅ [ADMIN] Attribute name updated successfully');
       setEditingAttribute(null);
       setEditingAttributeName('');
       fetchAttributes();
@@ -219,13 +220,13 @@ export function useAttributes() {
 
     try {
       setAddingValueTo(attributeId);
-      console.log('➕ [ADMIN] Adding value to attribute:', attributeId, trimmedValue);
+      logger.debug('➕ [ADMIN] Adding value to attribute:', attributeId, trimmedValue);
       await apiClient.post(`/api/v1/admin/attributes/${attributeId}/values`, {
         label: trimmedValue,
         locale: 'en',
       });
       
-      console.log('✅ [ADMIN] Value added successfully');
+      logger.debug('✅ [ADMIN] Value added successfully');
       setNewValue('');
       setValueError(null);
       setAddingValueTo(null);
@@ -255,9 +256,9 @@ export function useAttributes() {
 
     try {
       setDeletingValue(valueId);
-      console.log(`🗑️ [ADMIN] Deleting value: ${valueLabel} (${valueId})`);
+      logger.debug(`🗑️ [ADMIN] Deleting value: ${valueLabel} (${valueId})`);
       await apiClient.delete(`/api/v1/admin/attributes/${attributeId}/values/${valueId}`);
-      console.log('✅ [ADMIN] Value deleted successfully');
+      logger.debug('✅ [ADMIN] Value deleted successfully');
       fetchAttributes();
       setDeletingValue(null);
       showToast(t('admin.attributes.valueDeletedSuccess'), 'success');
@@ -277,7 +278,7 @@ export function useAttributes() {
     if (!editingValue) return;
 
     try {
-      console.log('✏️ [ADMIN] Updating value:', { 
+      logger.debug('✏️ [ADMIN] Updating value:', { 
         valueId: editingValue.value.id, 
         attributeId: editingValue.attributeId,
         data,
@@ -289,7 +290,7 @@ export function useAttributes() {
         ...data,
         locale: 'en',
       });
-      console.log('✅ [ADMIN] Value updated successfully');
+      logger.debug('✅ [ADMIN] Value updated successfully');
       fetchAttributes();
       showToast(t('admin.attributes.valueUpdatedSuccess'), 'success');
     } catch (err: unknown) {

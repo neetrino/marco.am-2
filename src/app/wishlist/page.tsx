@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -60,7 +61,7 @@ export default function WishlistPage() {
    */
   const fetchWishlistProducts = useCallback(async (idsToLoad: string[]) => {
     if (idsToLoad.length === 0) {
-      console.info('[Wishlist] Skip fetch because ids array is empty');
+      logger.info('[Wishlist] Skip fetch because ids array is empty');
       setProducts([]);
       setLoading(false);
       return;
@@ -68,7 +69,7 @@ export default function WishlistPage() {
 
     try {
       setLoading(true);
-      console.info(`[Wishlist] Fetching ${idsToLoad.length} products for render`);
+      logger.info(`[Wishlist] Fetching ${idsToLoad.length} products for render`);
       const languagePreference = getStoredLanguage();
       const response = await apiClient.get<{
         data: Product[];
@@ -130,7 +131,7 @@ export default function WishlistPage() {
   }, [fetchWishlistProducts]);
 
   const handleRemove = (productId: string) => {
-    console.info(`[Wishlist] Removing product ${productId} from wishlist UI`);
+    logger.info(`[Wishlist] Removing product ${productId} from wishlist UI`);
     
     // Mark as local update to prevent re-fetch in event handler
     isLocalUpdateRef.current = true;

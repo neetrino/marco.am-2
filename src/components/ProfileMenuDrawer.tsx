@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 
@@ -23,7 +24,7 @@ export function ProfileMenuDrawer({ tabs, activeTab, onSelect }: ProfileMenuDraw
 
   useEffect(() => {
     if (open) {
-      console.info('[ProfileMenuDrawer] Locking body scroll');
+      logger.info('[ProfileMenuDrawer] Locking body scroll');
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -35,7 +36,7 @@ export function ProfileMenuDrawer({ tabs, activeTab, onSelect }: ProfileMenuDraw
   }, [open]);
 
   const handleSelect = (tabId: string) => {
-    console.info('[ProfileMenuDrawer] Selecting tab', { tabId });
+    logger.info('[ProfileMenuDrawer] Selecting tab', { tabId });
     onSelect(tabId);
     setOpen(false);
   };
@@ -45,7 +46,7 @@ export function ProfileMenuDrawer({ tabs, activeTab, onSelect }: ProfileMenuDraw
       <button
         type="button"
         onClick={() => {
-          console.info('[ProfileMenuDrawer] Opening drawer');
+          logger.info('[ProfileMenuDrawer] Opening drawer');
           setOpen(true);
         }}
         className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold uppercase tracking-wide text-gray-800 shadow-sm"
@@ -60,7 +61,7 @@ export function ProfileMenuDrawer({ tabs, activeTab, onSelect }: ProfileMenuDraw
         <div
           className="fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm"
           onClick={() => {
-            console.info('[ProfileMenuDrawer] Closing drawer from backdrop');
+            logger.info('[ProfileMenuDrawer] Closing drawer from backdrop');
             setOpen(false);
           }}
         >
@@ -75,7 +76,7 @@ export function ProfileMenuDrawer({ tabs, activeTab, onSelect }: ProfileMenuDraw
               <button
                 type="button"
                 onClick={() => {
-                  console.info('[ProfileMenuDrawer] Closing drawer from button');
+                  logger.info('[ProfileMenuDrawer] Closing drawer from button');
                   setOpen(false);
                 }}
                 className="h-10 w-10 rounded-full border border-gray-200 text-gray-600 hover:border-gray-300 hover:text-gray-900"

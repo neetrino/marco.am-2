@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Montserrat } from 'next/font/google';
@@ -675,7 +676,7 @@ export function Header() {
    * Updates currency selection and notifies the app with a visible log entry.
    */
   const handleCurrencyChange = (currency: CurrencyCode) => {
-    console.info('[Header][LangCurrency] Currency changed', {
+    logger.info('[Header][LangCurrency] Currency changed', {
       from: selectedCurrency,
       to: currency,
     });
@@ -864,6 +865,8 @@ export function Header() {
                   <input
                     ref={searchInputDesktopRef}
                     type="text"
+                    role="combobox"
+                    aria-haspopup="listbox"
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
@@ -1330,6 +1333,8 @@ export function Header() {
               <input
                 ref={searchInputRef}
                 type="text"
+                role="combobox"
+                aria-haspopup="listbox"
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);

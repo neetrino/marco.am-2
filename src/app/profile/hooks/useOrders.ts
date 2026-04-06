@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, useCallback, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
@@ -113,7 +114,7 @@ export function useOrders({
 
     setIsReordering(true);
     try {
-      console.log('[Profile][ReOrder] Starting re-order for order:', selectedOrder.number);
+      logger.debug('[Profile][ReOrder] Starting re-order for order:', selectedOrder.number);
       
       let addedCount = 0;
       let skippedCount = 0;
@@ -141,7 +142,7 @@ export function useOrders({
             quantity: item.quantity,
           });
           addedCount++;
-          console.log('[Profile][ReOrder] Added item to cart:', item.productTitle);
+          logger.debug('[Profile][ReOrder] Added item to cart:', item.productTitle);
         } catch (error: unknown) {
           console.error('[Profile][ReOrder] Error adding item to cart:', error);
           skippedCount++;

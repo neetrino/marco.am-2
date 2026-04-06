@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
@@ -28,10 +29,10 @@ export async function PUT(
 
     const { id } = await params;
     const body = await req.json();
-    console.log("📤 [ADMIN BRANDS] PUT request:", { id, body });
+    logger.debug("📤 [ADMIN BRANDS] PUT request:", { id, body });
 
     const result = await adminService.updateBrand(id, body);
-    console.log("✅ [ADMIN BRANDS] Brand updated:", id);
+    logger.debug("✅ [ADMIN BRANDS] Brand updated:", id);
 
     return NextResponse.json(result);
   } catch (error: unknown) {
@@ -64,10 +65,10 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    console.log("🗑️ [ADMIN BRANDS] DELETE request:", id);
+    logger.debug("🗑️ [ADMIN BRANDS] DELETE request:", id);
 
     await adminService.deleteBrand(id);
-    console.log("✅ [ADMIN BRANDS] Brand deleted:", id);
+    logger.debug("✅ [ADMIN BRANDS] Brand deleted:", id);
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

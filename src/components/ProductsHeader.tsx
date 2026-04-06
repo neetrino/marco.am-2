@@ -1,11 +1,20 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
 import { useTranslation } from '../lib/i18n-client';
+import { useProductsViewMode, type ProductsViewMode } from './hooks/useProductsViewMode';
 
-type ViewMode = 'list' | 'grid-2' | 'grid-3';
+type ViewMode = ProductsViewMode;
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+
+const SORT_OPTIONS_VALUES: SortOption[] = [
+  'default',
+  'price-asc',
+  'price-desc',
+  'name-asc',
+  'name-desc',
+];
 
 interface ProductsHeaderProps {
   /**
@@ -18,23 +27,31 @@ interface ProductsHeaderProps {
   perPage: number;
 }
 
-function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
+function ProductsHeaderContent({ total, perPage: _perPage }: ProductsHeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid-2');
-  const [sortBy, setSortBy] = useState<SortOption>('default');
+  const [viewMode, setViewMode] = useProductsViewMode();
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
   const mobileSortDropdownRef = useRef<HTMLDivElement>(null);
 
-  const sortOptions: { value: SortOption; label: string }[] = [
-    { value: 'default', label: t('products.header.sort.default') },
-    { value: 'price-asc', label: t('products.header.sort.priceAsc') },
-    { value: 'price-desc', label: t('products.header.sort.priceDesc') },
-    { value: 'name-asc', label: t('products.header.sort.nameAsc') },
-    { value: 'name-desc', label: t('products.header.sort.nameDesc') },
-  ];
+  const sortOptions: { value: SortOption; label: string }[] = useMemo(
+    () => [
+      { value: 'default', label: t('products.header.sort.default') },
+      { value: 'price-asc', label: t('products.header.sort.priceAsc') },
+      { value: 'price-desc', label: t('products.header.sort.priceDesc') },
+      { value: 'name-asc', label: t('products.header.sort.nameAsc') },
+      { value: 'name-desc', label: t('products.header.sort.nameDesc') },
+    ],
+    [t],
+  );
+
+  const sortParam = searchParams.get('sort');
+  const sortBy: SortOption =
+    sortParam && SORT_OPTIONS_VALUES.includes(sortParam as SortOption)
+      ? (sortParam as SortOption)
+      : 'default';
 
   // Per page: default 12 when not in URL (proper pagination)
   const limitFromUrl = searchParams.get('limit');
@@ -47,26 +64,6 @@ function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
     const filterKeys = ['search', 'category', 'minPrice', 'maxPrice', 'colors', 'sizes', 'brand'];
     return filterKeys.some((key) => !!searchParams.get(key));
   })();
-
-  // Load view mode from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('products-view-mode');
-    if (stored && ['list', 'grid-2', 'grid-3'].includes(stored)) {
-      setViewMode(stored as ViewMode);
-    } else {
-      // Default to grid-2 if nothing stored
-      setViewMode('grid-2');
-      localStorage.setItem('products-view-mode', 'grid-2');
-    }
-  }, []);
-
-  // Load sort from URL params
-  useEffect(() => {
-    const sortParam = searchParams.get('sort') as SortOption;
-    if (sortParam && sortOptions.some(opt => opt.value === sortParam)) {
-      setSortBy(sortParam);
-    }
-  }, [searchParams]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -88,13 +85,9 @@ function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
 
   const handleViewModeChange = (mode: ViewMode) => {
     setViewMode(mode);
-    localStorage.setItem('products-view-mode', mode);
-    // Dispatch event to update grid layout
-    window.dispatchEvent(new CustomEvent('view-mode-changed', { detail: mode }));
   };
 
   const handleSortChange = (option: SortOption) => {
-    setSortBy(option);
     setShowSortDropdown(false);
     
     // Update URL with sort parameter

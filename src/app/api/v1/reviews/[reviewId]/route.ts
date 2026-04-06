@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { reviewsService } from "@/lib/services/reviews.service";
@@ -32,7 +33,7 @@ export async function PUT(
     const { reviewId } = await params;
     const body = await req.json();
 
-    console.log('📝 [REVIEWS API] PUT request:', { reviewId, userId: user.id, rating: body.rating });
+    logger.debug('📝 [REVIEWS API] PUT request:', { reviewId, userId: user.id, rating: body.rating });
 
     // Validate request body
     if (body.rating !== undefined && (typeof body.rating !== 'number' || body.rating < 1 || body.rating > 5)) {
@@ -54,7 +55,7 @@ export async function PUT(
       comment: body.comment,
     });
 
-    console.log('✅ [REVIEWS API] Review updated:', review.id);
+    logger.debug('✅ [REVIEWS API] Review updated:', review.id);
 
     return NextResponse.json(review);
   } catch (error: unknown) {
@@ -89,11 +90,11 @@ export async function DELETE(
 
     const { reviewId } = await params;
 
-    console.log('📝 [REVIEWS API] DELETE request:', { reviewId, userId: user.id });
+    logger.debug('📝 [REVIEWS API] DELETE request:', { reviewId, userId: user.id });
 
     await reviewsService.deleteReview(reviewId, user.id);
 
-    console.log('✅ [REVIEWS API] Review deleted:', reviewId);
+    logger.debug('✅ [REVIEWS API] Review deleted:', reviewId);
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
@@ -49,10 +50,10 @@ export default function DeliveryPage() {
   const fetchDeliverySettings = async () => {
     try {
       setLoading(true);
-      console.log('🚚 [ADMIN] Fetching delivery settings...');
+      logger.debug('🚚 [ADMIN] Fetching delivery settings...');
       const data = await apiClient.get<DeliverySettings>('/api/v1/admin/delivery');
       setLocations(data.locations || []);
-      console.log('✅ [ADMIN] Delivery settings loaded:', data);
+      logger.debug('✅ [ADMIN] Delivery settings loaded:', data);
     } catch (err: unknown) {
       console.error('❌ [ADMIN] Error fetching delivery settings:', err);
       // Use defaults if error
@@ -65,10 +66,10 @@ export default function DeliveryPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      console.log('🚚 [ADMIN] Saving delivery settings...', { locations });
+      logger.debug('🚚 [ADMIN] Saving delivery settings...', { locations });
       await apiClient.put('/api/v1/admin/delivery', { locations });
       alert(t('admin.delivery.savedSuccess'));
-      console.log('✅ [ADMIN] Delivery settings saved');
+      logger.debug('✅ [ADMIN] Delivery settings saved');
       setEditingId(null);
       await fetchDeliverySettings();
     } catch (err: unknown) {

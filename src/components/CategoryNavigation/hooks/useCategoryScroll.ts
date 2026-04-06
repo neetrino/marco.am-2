@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
@@ -24,7 +25,7 @@ export function useCategoryScroll() {
     const canLeft = scrollLeft > 8;
     const canRight = scrollLeft + clientWidth < scrollWidth - 8;
 
-    console.info('[CategoryNavigation] Update scroll buttons:', {
+    logger.info('[CategoryNavigation] Update scroll buttons:', {
       scrollLeft,
       scrollWidth,
       clientWidth,
@@ -71,7 +72,7 @@ export function useCategoryScroll() {
     }
     
     const scrollLeftBefore = container.scrollLeft;
-    console.info('[CategoryNavigation] Scrolling:', { 
+    logger.info('[CategoryNavigation] Scrolling:', { 
       direction: amount > 0 ? 'right' : 'left', 
       amount, 
       scrollLeftBefore,

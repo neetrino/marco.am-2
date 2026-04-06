@@ -114,48 +114,25 @@ export function TeamCarousel() {
     return () => window.removeEventListener('resize', updateVisibleCards);
   }, []);
 
-  // Корректировка currentIndex при изменении visibleCards
-  useEffect(() => {
-    const maxIndex = Math.max(0, teamMembers.length - visibleCards);
-    setCurrentIndex((prevIndex) => {
-      if (prevIndex > maxIndex) {
-        console.info('[TeamCarousel] Adjusting index due to visibleCards change:', { 
-          oldIndex: prevIndex, 
-          newIndex: maxIndex 
-        });
-        return maxIndex;
-      }
-      return prevIndex;
-    });
-  }, [visibleCards]);
-
-  // Визуальное логирование для отладки
-  useEffect(() => {
-    console.info('[TeamCarousel] Current index changed:', currentIndex);
-    console.info('[TeamCarousel] Visible cards:', visibleCards);
-  }, [currentIndex, visibleCards]);
-
   const maxIndex = Math.max(0, teamMembers.length - visibleCards);
+  const displayIndex = Math.min(currentIndex, maxIndex);
 
   const goToPrevious = () => {
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? maxIndex : prevIndex - 1;
-      console.info('[TeamCarousel] Navigate previous:', { from: prevIndex, to: newIndex });
-      return newIndex;
+      const clamped = Math.min(prevIndex, maxIndex);
+      return clamped === 0 ? maxIndex : clamped - 1;
     });
   };
 
   const goToNext = () => {
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex >= maxIndex ? 0 : prevIndex + 1;
-      console.info('[TeamCarousel] Navigate next:', { from: prevIndex, to: newIndex });
-      return newIndex;
+      const clamped = Math.min(prevIndex, maxIndex);
+      return clamped >= maxIndex ? 0 : clamped + 1;
     });
   };
 
   const goToSlide = (index: number) => {
-    console.info('[TeamCarousel] Go to slide:', index);
-    setCurrentIndex(index);
+    setCurrentIndex(Math.min(Math.max(0, index), maxIndex));
   };
 
   return (
@@ -165,7 +142,7 @@ export function TeamCarousel() {
         <div
           className="flex transition-transform duration-500 ease-in-out"
           style={{
-            transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
+            transform: `translateX(-${displayIndex * (100 / visibleCards)}%)`,
           }}
         >
           {teamMembers.map((member) => (
@@ -299,7 +276,7 @@ export function TeamCarousel() {
               key={index}
               onClick={() => goToSlide(index)}
               className={`h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex
+                index === displayIndex
                   ? 'bg-gray-900 w-8'
                   : 'bg-gray-300 hover:bg-gray-400 w-2'
               }`}

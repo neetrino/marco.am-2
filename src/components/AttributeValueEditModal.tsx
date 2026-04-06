@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { useTranslation } from '../lib/i18n-client';
 import { ColorPaletteSelector } from './ColorPaletteSelector';
@@ -95,7 +96,7 @@ export function AttributeValueEditModal({
         colors: colors.length > 0 ? colors : undefined,
         imageUrl: imageUrl,
       };
-      console.log('💾 [ATTRIBUTE VALUE MODAL] Saving value:', {
+      logger.debug('💾 [ATTRIBUTE VALUE MODAL] Saving value:', {
         valueId: value.id,
         saveData,
         colorsLength: colors.length,
@@ -104,7 +105,7 @@ export function AttributeValueEditModal({
         colorsIsArray: Array.isArray(colors)
       });
       await onSave(saveData);
-      console.log('✅ [ATTRIBUTE VALUE MODAL] Value saved successfully');
+      logger.debug('✅ [ATTRIBUTE VALUE MODAL] Value saved successfully');
       onClose();
     } catch (error: unknown) {
       console.error('❌ [ADMIN] Error saving value:', error);

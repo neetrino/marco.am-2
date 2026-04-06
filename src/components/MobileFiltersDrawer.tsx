@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from '../lib/i18n-client';
@@ -40,7 +41,7 @@ export function MobileFiltersDrawer({
     if (!openEventName) return;
 
     const handleExternalToggle = () => {
-      console.debug('[MobileFiltersDrawer] external toggle received');
+      logger.debug('[MobileFiltersDrawer] external toggle received');
       setOpen((prev) => !prev);
     };
 

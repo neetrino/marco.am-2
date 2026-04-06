@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button, Input, Card } from '@shop/ui';
@@ -29,7 +30,7 @@ function LoginPageContent() {
     setError(null);
     setIsSubmitting(true);
 
-    console.log('🔐 [LOGIN PAGE] Form submitted');
+    logger.debug('🔐 [LOGIN PAGE] Form submitted');
 
     // Validation
     if (!emailOrPhone.trim()) {
@@ -45,9 +46,9 @@ function LoginPageContent() {
     }
 
     try {
-      console.log('📤 [LOGIN PAGE] Calling login function...');
+      logger.debug('📤 [LOGIN PAGE] Calling login function...');
       await login(emailOrPhone.trim(), password);
-      console.log('✅ [LOGIN PAGE] Login successful, redirecting to:', redirectTo);
+      logger.debug('✅ [LOGIN PAGE] Login successful, redirecting to:', redirectTo);
       // Redirect to the specified page or home
       router.push(redirectTo);
     } catch (err: unknown) {

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { getErrorLogFields } from "@/lib/types/errors";
@@ -16,11 +17,11 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(req: NextRequest) {
   try {
-    console.log("📊 [ADMIN STATS] Request received:", { url: req.url });
+    logger.debug("📊 [ADMIN STATS] Request received:", { url: req.url });
     const user = await authenticateToken(req);
     
     if (!user || !requireAdmin(user)) {
-      console.log("❌ [ADMIN STATS] Unauthorized or not admin");
+      logger.debug("❌ [ADMIN STATS] Unauthorized or not admin");
       return NextResponse.json(
         {
           type: "https://api.shop.am/problems/forbidden",
@@ -33,9 +34,9 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    console.log(`✅ [ADMIN STATS] User authenticated: ${user.id}`);
+    logger.debug(`✅ [ADMIN STATS] User authenticated: ${user.id}`);
     const result = await adminService.getStats();
-    console.log("✅ [ADMIN STATS] Stats data retrieved successfully");
+    logger.debug("✅ [ADMIN STATS] Stats data retrieved successfully");
     
     return NextResponse.json(result);
   } catch (error: unknown) {

@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import type { ChangeEvent, RefObject } from 'react';
 import { Button, Input } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
@@ -412,7 +413,7 @@ export function VariantBuilder({
               <Button
                 type="button"
                 onClick={() => {
-                  console.log('✅ [VARIANT BUILDER] Variants ready for submission:', generatedVariants);
+                  logger.debug('✅ [VARIANT BUILDER] Variants ready for submission:', generatedVariants);
                 }}
               >
                 {t('admin.products.add.variantsReady') || 'Variants Ready'}

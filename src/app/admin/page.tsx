@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../lib/auth/AuthContext';
@@ -36,12 +37,12 @@ export default function AdminPanel() {
   useEffect(() => {
     if (!isLoading) {
       if (!isLoggedIn) {
-        console.log('❌ [ADMIN] User not logged in, redirecting to login...');
+        logger.debug('❌ [ADMIN] User not logged in, redirecting to login...');
         router.push('/login');
         return;
       }
       if (!isAdmin) {
-        console.log('❌ [ADMIN] User is not admin, redirecting to home...');
+        logger.debug('❌ [ADMIN] User is not admin, redirecting to home...');
         router.push('/');
         return;
       }

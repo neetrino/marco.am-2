@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
@@ -74,10 +75,10 @@ export async function PUT(
 
     const { id } = await params;
     const body = await req.json();
-    console.log("📝 [ADMIN CATEGORIES] PUT request:", { id, body });
+    logger.debug("📝 [ADMIN CATEGORIES] PUT request:", { id, body });
 
     const result = await adminService.updateCategory(id, body);
-    console.log("✅ [ADMIN CATEGORIES] Category updated:", id);
+    logger.debug("✅ [ADMIN CATEGORIES] Category updated:", id);
 
     return NextResponse.json(result);
   } catch (error: unknown) {
@@ -110,10 +111,10 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    console.log("🗑️ [ADMIN CATEGORIES] DELETE request:", id);
+    logger.debug("🗑️ [ADMIN CATEGORIES] DELETE request:", id);
 
     await adminService.deleteCategory(id);
-    console.log("✅ [ADMIN CATEGORIES] Category deleted:", id);
+    logger.debug("✅ [ADMIN CATEGORIES] Category deleted:", id);
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

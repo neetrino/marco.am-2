@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { convertPrice, type CurrencyCode } from '@/lib/currency';
@@ -108,7 +109,7 @@ export function useProductFormHandlers({
     setLoading(true);
 
     try {
-      console.log('📝 [ADMIN] Submitting product form:', formData);
+      logger.debug('📝 [ADMIN] Submitting product form:', formData);
 
       // Create brand and category if needed
       const brandCategoryResult = await createBrandAndCategory();
@@ -137,7 +138,7 @@ export function useProductFormHandlers({
       const variantSkuSet = new Set<string>();
 
       if (productType === 'simple') {
-        console.log('📦 [ADMIN] Processing Simple Product');
+        logger.debug('📦 [ADMIN] Processing Simple Product');
         const priceUSD = convertPrice(parseFloat(simpleProductData.price), defaultCurrency, 'USD');
         const compareAtPriceUSD = simpleProductData.compareAtPrice && simpleProductData.compareAtPrice.trim() !== ''
           ? convertPrice(parseFloat(simpleProductData.compareAtPrice), defaultCurrency, 'USD')
@@ -153,13 +154,13 @@ export function useProductFormHandlers({
         }
         variants.push(simpleVariant);
         variantSkuSet.add(simpleProductData.sku.trim());
-        console.log('✅ [ADMIN] Simple product variant created:', simpleVariant);
+        logger.debug('✅ [ADMIN] Simple product variant created:', simpleVariant);
       } else {
         // Variable products variant processing (simplified - full logic remains in original)
         const useGeneratedVariants = generatedVariants.length > 0 && selectedAttributesForVariants.size > 0;
         
         if (useGeneratedVariants) {
-          console.log('📦 [ADMIN] Using generatedVariants format:', generatedVariants.length, 'variants');
+          logger.debug('📦 [ADMIN] Using generatedVariants format:', generatedVariants.length, 'variants');
           const sizeAttribute = getSizeAttribute();
           
           generatedVariants.forEach((genVariant, variantIndex) => {
@@ -263,7 +264,7 @@ export function useProductFormHandlers({
           });
         } else {
           // Legacy formData.variants processing (simplified)
-          console.log('📦 [ADMIN] Using formData.variants format (legacy)');
+          logger.debug('📦 [ADMIN] Using formData.variants format (legacy)');
           currentFormData.variants.forEach((variant, variantIndex) => {
             const variantPriceUSD = convertPrice(parseFloat(variant.price || '0'), defaultCurrency, 'USD');
             const baseVariantData: { price: number; published: boolean; compareAtPrice?: number } = {

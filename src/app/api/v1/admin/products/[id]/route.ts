@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { getErrorLogFields } from "@/lib/types/errors";
@@ -62,7 +63,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await req.json();
-    console.log("📤 [ADMIN PRODUCTS] PUT request:", { 
+    logger.debug("📤 [ADMIN PRODUCTS] PUT request:", { 
       id, 
       bodyKeys: Object.keys(body),
       hasVariants: !!body.variants,
@@ -71,7 +72,7 @@ export async function PUT(
     });
 
     const product = await adminService.updateProduct(id, body);
-    console.log("✅ [ADMIN PRODUCTS] Product updated:", { id, productId: product?.id });
+    logger.debug("✅ [ADMIN PRODUCTS] Product updated:", { id, productId: product?.id });
 
     return NextResponse.json(product);
   } catch (error: unknown) {
@@ -107,10 +108,10 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    console.log("🗑️ [ADMIN PRODUCTS] DELETE request:", id);
+    logger.debug("🗑️ [ADMIN PRODUCTS] DELETE request:", id);
 
     await adminService.deleteProduct(id);
-    console.log("✅ [ADMIN PRODUCTS] Product deleted:", id);
+    logger.debug("✅ [ADMIN PRODUCTS] Product deleted:", id);
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

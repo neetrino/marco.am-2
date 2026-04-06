@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useEffect } from 'react';
 import { convertPrice, type CurrencyCode } from '@/lib/currency';
 import type { GeneratedVariant, Attribute } from '../types';
@@ -27,7 +28,7 @@ export function useProductVariantConversion({
   useEffect(() => {
     if (productId && attributes.length > 0 && window.__productVariantsToConvert) {
       const productVariants: ProductVariantForConversion[] = window.__productVariantsToConvert;
-      console.log('🔄 [ADMIN] Converting product variants to generatedVariants format:', {
+      logger.debug('🔄 [ADMIN] Converting product variants to generatedVariants format:', {
         variantsCount: productVariants.length,
         attributesCount: attributes.length,
         firstVariant: productVariants[0],
@@ -67,14 +68,14 @@ export function useProductVariantConversion({
       
       const productAttributeIds = window.__productAttributeIds ?? [];
       if (productAttributeIds.length > 0) {
-        console.log('📋 [ADMIN] Adding product attributeIds to selected attributes:', productAttributeIds);
+        logger.debug('📋 [ADMIN] Adding product attributeIds to selected attributes:', productAttributeIds);
         productAttributeIds.forEach((attrId: string) => {
           attributeIdsSet.add(attrId);
         });
       }
       
       if (attributeIdsSet.size > 0) {
-        console.log('📋 [ADMIN] Setting selectedAttributesForVariants with all attributes:', Array.from(attributeIdsSet));
+        logger.debug('📋 [ADMIN] Setting selectedAttributesForVariants with all attributes:', Array.from(attributeIdsSet));
         setSelectedAttributesForVariants(attributeIdsSet);
       }
       
@@ -99,7 +100,7 @@ export function useProductVariantConversion({
         const selectedValueIds: string[] = [];
         
         if (variant.attributes && typeof variant.attributes === 'object') {
-          console.log(`🔍 [ADMIN] Variant ${variantIndex} has attributes JSONB:`, variant.attributes);
+          logger.debug(`🔍 [ADMIN] Variant ${variantIndex} has attributes JSONB:`, variant.attributes);
           
           Object.keys(variant.attributes).forEach((attributeKey) => {
             const attribute = attributes.find(a => a.key === attributeKey);
@@ -133,7 +134,7 @@ export function useProductVariantConversion({
         }
         
         if (selectedValueIds.length === 0 && variant.options && Array.isArray(variant.options)) {
-          console.log(`🔍 [ADMIN] Variant ${variantIndex} using options fallback:`, variant.options);
+          logger.debug(`🔍 [ADMIN] Variant ${variantIndex} using options fallback:`, variant.options);
           
           const attributeValueMap: Record<string, Set<string>> = {};
           
@@ -193,16 +194,16 @@ export function useProductVariantConversion({
         if (variant.imageUrl) {
           if (typeof variant.imageUrl === 'string' && variant.imageUrl.startsWith('data:')) {
             variantImage = variant.imageUrl;
-            console.log(`🖼️ [ADMIN] Variant ${variantIndex} base64 image length:`, variantImage?.length || 0);
+            logger.debug(`🖼️ [ADMIN] Variant ${variantIndex} base64 image length:`, variantImage?.length || 0);
           } else {
             const imageUrls = typeof variant.imageUrl === 'string' 
               ? variant.imageUrl.split(',').map((url: string) => url.trim()).filter(Boolean)
               : [];
             variantImage = imageUrls.length > 0 ? imageUrls[0] : null;
-            console.log(`🖼️ [ADMIN] Variant ${variantIndex} imageUrl length:`, variant.imageUrl?.length || 0, '→ extracted image length:', variantImage?.length || 0);
+            logger.debug(`🖼️ [ADMIN] Variant ${variantIndex} imageUrl length:`, variant.imageUrl?.length || 0, '→ extracted image length:', variantImage?.length || 0);
           }
         } else {
-          console.log(`🖼️ [ADMIN] Variant ${variantIndex} has no imageUrl`);
+          logger.debug(`🖼️ [ADMIN] Variant ${variantIndex} has no imageUrl`);
         }
         
         const rawPrice = variant.price;
@@ -286,7 +287,7 @@ export function useProductVariantConversion({
           image: combinedImage,
         });
         
-        console.log(`✅ [ADMIN] Grouped ${group.length} variants into 1 row:`, {
+        logger.debug(`✅ [ADMIN] Grouped ${group.length} variants into 1 row:`, {
           groupKey,
           valueIds: Array.from(allValueIds),
           price: firstVariant.price,
@@ -297,7 +298,7 @@ export function useProductVariantConversion({
       
       if (convertedVariants.length > 0) {
         setGeneratedVariants(convertedVariants);
-        console.log('✅ [ADMIN] Converted product variants to generatedVariants:', {
+        logger.debug('✅ [ADMIN] Converted product variants to generatedVariants:', {
           totalVariants: convertedVariants.length,
           totalOriginalVariants: productVariants.length,
           attributeValueIdsMap,
@@ -319,7 +320,7 @@ export function useProductVariantConversion({
         setHasVariantsToLoad(false);
       }
     } else if (productId && attributes.length > 0) {
-      console.log('ℹ️ [ADMIN] Waiting for variants to convert. Attributes loaded:', attributes.length);
+      logger.debug('ℹ️ [ADMIN] Waiting for variants to convert. Attributes loaded:', attributes.length);
     }
   }, [productId, attributes, defaultCurrency, setSelectedAttributesForVariants, setSelectedAttributeValueIds, setGeneratedVariants, setHasVariantsToLoad]);
 }

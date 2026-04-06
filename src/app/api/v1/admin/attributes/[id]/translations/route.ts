@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
@@ -29,7 +30,7 @@ export async function PATCH(
     const { id: attributeId } = await params;
     const body = await req.json();
 
-    console.log('✏️ [ADMIN ATTRIBUTE TRANSLATIONS] PATCH request:', { attributeId, body });
+    logger.debug('✏️ [ADMIN ATTRIBUTE TRANSLATIONS] PATCH request:', { attributeId, body });
 
     const result = await adminService.updateAttributeTranslation(attributeId, {
       name: body.name,

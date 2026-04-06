@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
@@ -31,7 +32,7 @@ export function MobileBottomNav() {
     const updateCounts = () => {
       const wishlist = getWishlistCount();
       const compare = getCompareCount();
-      console.debug('[MobileBottomNav] wishlist/compare counts refreshed', { wishlist, compare });
+      logger.debug('[MobileBottomNav] wishlist/compare counts refreshed', { wishlist, compare });
       setWishlistCount(wishlist);
       setCompareCount(compare);
     };
@@ -60,7 +61,7 @@ export function MobileBottomNav() {
         href: '/products', 
         icon: Store, 
         visible: true,
-        onClick: () => console.info('🛒 [MobileBottomNav] Shop tapped, navigating to /products'),
+        onClick: () => logger.info('🛒 [MobileBottomNav] Shop tapped, navigating to /products'),
       },
       // On mobile we show Cart instead of Wishlist
       { 

@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { Button } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
 import { getColorHex } from '../../../../../lib/colorMap';
@@ -86,7 +87,7 @@ export function ValueSelectionModal({
     // Update variant first (to preserve dropdown state)
     onVariantUpdate((prev) => {
       const updated = prev.map((v) => (v.id === variant.id ? { ...v, selectedValueIds: newIds } : v));
-      console.log('✅ [VARIANT BUILDER] Value selection updated:', {
+      logger.debug('✅ [VARIANT BUILDER] Value selection updated:', {
         variantId: variant.id,
         isAutoVariant,
         valueId,

@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
@@ -28,10 +29,10 @@ function BrandsSection() {
   const fetchBrands = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('🏷️ [ADMIN] Fetching brands...');
+      logger.debug('🏷️ [ADMIN] Fetching brands...');
       const response = await apiClient.get<{ data: Brand[] }>('/api/v1/admin/brands');
       setBrands(response.data || []);
-      console.log('✅ [ADMIN] Brands loaded:', response.data?.length || 0);
+      logger.debug('✅ [ADMIN] Brands loaded:', response.data?.length || 0);
     } catch (err) {
       console.error('❌ [ADMIN] Error fetching brands:', err);
       setBrands([]);
@@ -50,9 +51,9 @@ function BrandsSection() {
     }
 
     try {
-      console.log(`🗑️ [ADMIN] Deleting brand: ${brandName} (${brandId})`);
+      logger.debug(`🗑️ [ADMIN] Deleting brand: ${brandName} (${brandId})`);
       await apiClient.delete(`/api/v1/admin/brands/${brandId}`);
-      console.log('✅ [ADMIN] Brand deleted successfully');
+      logger.debug('✅ [ADMIN] Brand deleted successfully');
       fetchBrands();
       alert(t('admin.brands.deletedSuccess'));
     } catch (err: unknown) {
@@ -92,19 +93,19 @@ function BrandsSection() {
     try {
       if (editingBrand) {
         // Update existing brand
-        console.log('🔄 [ADMIN] Updating brand:', editingBrand.id);
+        logger.debug('🔄 [ADMIN] Updating brand:', editingBrand.id);
         await apiClient.put(`/api/v1/admin/brands/${editingBrand.id}`, {
           name: formData.name.trim(),
         });
-        console.log('✅ [ADMIN] Brand updated successfully');
+        logger.debug('✅ [ADMIN] Brand updated successfully');
         alert(t('admin.brands.updatedSuccess'));
       } else {
         // Create new brand
-        console.log('➕ [ADMIN] Creating brand:', formData.name);
+        logger.debug('➕ [ADMIN] Creating brand:', formData.name);
         await apiClient.post('/api/v1/admin/brands', {
           name: formData.name.trim(),
         });
-        console.log('✅ [ADMIN] Brand created successfully');
+        logger.debug('✅ [ADMIN] Brand created successfully');
         alert(t('admin.brands.createdSuccess'));
       }
       

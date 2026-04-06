@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, useRef } from 'react';
 import { LANGUAGES, type LanguageCode, getStoredLanguage, setStoredLanguage } from '../lib/language';
 
@@ -81,7 +82,7 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
    */
   const changeLanguage = (langCode: LanguageCode) => {
     if (typeof window !== 'undefined' && currentLang !== langCode) {
-      console.info('[LanguageSwitcher] Changing language', {
+      logger.info('[LanguageSwitcher] Changing language', {
         from: currentLang,
         to: langCode,
       });

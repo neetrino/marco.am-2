@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from "next/server";
 import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
@@ -30,7 +31,7 @@ export async function PATCH(
     const body = await req.json();
     const discountPercent = body.discountPercent;
 
-    console.log("💰 [ADMIN PRODUCTS] PATCH discount request:", { 
+    logger.debug("💰 [ADMIN PRODUCTS] PATCH discount request:", { 
       id, 
       body, 
       discountPercent, 
@@ -51,10 +52,10 @@ export async function PATCH(
       );
     }
 
-    console.log("💰 [ADMIN PRODUCTS] Calling updateProductDiscount:", { id, discountPercent });
+    logger.debug("💰 [ADMIN PRODUCTS] Calling updateProductDiscount:", { id, discountPercent });
 
     const result = await adminService.updateProductDiscount(id, discountPercent);
-    console.log("✅ [ADMIN PRODUCTS] Product discount updated:", { id, result });
+    logger.debug("✅ [ADMIN PRODUCTS] Product discount updated:", { id, result });
 
     return NextResponse.json({ success: true, discountPercent: result.discountPercent });
   } catch (error: unknown) {

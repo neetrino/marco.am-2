@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 /**
  * Cache Service
  *
@@ -103,7 +104,7 @@ async function initRedis() {
     });
 
     redisClient.on('connect', () => {
-      console.log('✅ Redis connected');
+      logger.debug('✅ Redis connected');
       errorLogged = false;
       redisAvailable = true;
     });
