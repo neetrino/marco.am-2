@@ -1,20 +1,32 @@
 import { HomeBanner } from '../components/HomeBanner';
-import { FeaturesSection } from '../components/FeaturesSection';
-import { TopCategories } from '../components/TopCategories';
-import { FeaturedProductsTabs } from '../components/FeaturedProductsTabs';
+import { HomeAppPromoBanner } from '../components/home/HomeAppPromoBanner';
+import { HomeBrandsSection } from '../components/home/HomeBrandsSection';
+import { HomeChatFab } from '../components/home/HomeChatFab';
+import { HomeProductSection } from '../components/home/HomeProductSection';
+import { HomeReelsSection } from '../components/home/HomeReelsSection';
+import { HomeSecondaryBanners } from '../components/home/HomeSecondaryBanners';
 
 export default async function HomePage() {
   return (
-    <div className="min-h-screen">
-      <section>
-        <HomeBanner />
-      </section>
+    <>
+      <div className="min-h-screen">
+        <section>
+          <HomeBanner />
+        </section>
 
-      <TopCategories />
+        <HomeReelsSection />
 
-      <FeaturedProductsTabs />
+        <HomeProductSection titleKey="home.special_offers_title" filter="featured" />
 
-      <FeaturesSection />
-    </div>
+        <HomeProductSection titleKey="home.new_arrivals_title" filter="new" />
+
+        <HomeBrandsSection />
+
+        <HomeAppPromoBanner />
+
+        <HomeSecondaryBanners />
+      </div>
+      <HomeChatFab />
+    </>
   );
 }

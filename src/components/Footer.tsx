@@ -2,50 +2,48 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { Facebook, Instagram, Send } from 'lucide-react';
 import { useTranslation } from '../lib/i18n-client';
+
+const SOCIAL_BTN =
+  'flex h-10 w-10 items-center justify-center rounded-full bg-[#ebebeb] text-[#333] transition-colors hover:bg-[#101010] hover:text-white';
 
 export function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="bg-black border-t border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="border-t border-[#e5e5e5] bg-[#ebebeb]">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Company */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">{t('common.footer.shop')}</h3>
-            <p className="text-sm text-gray-300">
-              {t('common.footer.description')}
-            </p>
+            <Link href="/" className="mb-4 inline-flex flex-col items-start">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#ffca03] bg-white">
+                <span className="text-lg font-bold text-[#2f4b5d]">M</span>
+              </div>
+              <span className="mt-1 text-[10px] font-semibold uppercase tracking-tight text-[#333]">
+                MARCO GROUP
+              </span>
+            </Link>
+            <p className="text-sm text-[#444]">{t('common.footer.description')}</p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">
-              {t('common.footer.quickLinks')}
-            </h4>
+            <h4 className="mb-4 text-sm font-semibold text-[#101010]">{t('common.footer.quickLinks')}</h4>
             <ul className="space-y-2">
               <li>
-                <Link
-                  href="/products"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/products" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.navigation.products')}
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/about"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/about" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.navigation.about')}
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/contact"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/contact" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.navigation.contact')}
                 </Link>
               </li>
@@ -54,45 +52,30 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">{t('common.footer.legal')}</h4>
+            <h4 className="mb-4 text-sm font-semibold text-[#101010]">{t('common.footer.legal')}</h4>
             <ul className="space-y-2">
               <li>
-                <Link
-                  href="/privacy"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/privacy" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.footer.privacyPolicy')}
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/terms"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/terms" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.footer.termsOfService')}
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/cookies"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/cookies" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.footer.cookiePolicy')}
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/refund-policy"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/refund-policy" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.footer.refundPolicy')}
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/delivery-terms"
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
-                >
+                <Link href="/delivery-terms" className="text-sm text-[#444] transition-colors hover:text-[#101010]">
                   {t('common.footer.deliveryTerms')}
                 </Link>
               </li>
@@ -101,11 +84,11 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">{t('common.footer.contactInfo')}</h4>
+            <h4 className="mb-4 text-sm font-semibold text-[#101010]">{t('common.footer.contactInfo')}</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
                 <svg
-                  className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0"
+                  className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#666]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -123,11 +106,11 @@ export function Footer() {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <span className="text-sm text-gray-300">{t('contact.address')}</span>
+                <span className="text-sm text-[#444]">{t('contact.address')}</span>
               </li>
               <li className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-gray-400 flex-shrink-0"
+                  className="h-5 w-5 flex-shrink-0 text-[#666]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -141,14 +124,14 @@ export function Footer() {
                 </svg>
                 <a
                   href={`tel:${t('contact.phone')}`}
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
+                  className="text-sm text-[#444] transition-colors hover:text-[#101010]"
                 >
                   {t('contact.phone')}
                 </a>
               </li>
               <li className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-gray-400 flex-shrink-0"
+                  className="h-5 w-5 flex-shrink-0 text-[#666]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -162,7 +145,7 @@ export function Footer() {
                 </svg>
                 <a
                   href={`mailto:${t('contact.email')}`}
-                  className="text-sm text-gray-300 hover:text-white transition-colors"
+                  className="text-sm text-[#444] transition-colors hover:text-[#101010]"
                 >
                   {t('contact.email')}
                 </a>
@@ -172,22 +155,51 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-gray-300">
+        <div className="mt-8 border-t border-[#d4d4d4] pt-8">
+          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
+            <div className="flex justify-center gap-2 md:justify-start">
+              <a
+                href={t('contact.social.instagram') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={SOCIAL_BTN}
+                aria-label={t('common.ariaLabels.instagram')}
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href={t('contact.social.facebook') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={SOCIAL_BTN}
+                aria-label={t('common.ariaLabels.facebook')}
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href={t('contact.social.telegram') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={SOCIAL_BTN}
+                aria-label="Telegram"
+              >
+                <Send className="h-4 w-4" />
+              </a>
+            </div>
+
+            <p className="text-center text-sm text-[#444]">
               {t('common.footer.copyright').replace('{year}', new Date().getFullYear().toString())}
             </p>
-            
-            {/* Payment Methods */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-400 mr-2">{t('common.footer.paymentMethods')}</span>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
+              <span className="text-sm text-[#666]">{t('common.footer.paymentMethods')}</span>
               <div className="flex items-center gap-3">
                 <Image
                   src="https://static.tert.am/storage/files/tert/2020/04/27/idram_main_visual-770x_.png"
                   alt="Idram"
                   width={80}
                   height={30}
-                  className="h-6 w-auto opacity-80 hover:opacity-100 transition-opacity"
+                  className="h-6 w-auto opacity-90 transition-opacity hover:opacity-100"
                   unoptimized
                 />
                 <Image
@@ -195,7 +207,7 @@ export function Footer() {
                   alt="ArCa"
                   width={80}
                   height={30}
-                  className="h-6 w-auto opacity-80 hover:opacity-100 transition-opacity"
+                  className="h-6 w-auto opacity-90 transition-opacity hover:opacity-100"
                   unoptimized
                 />
               </div>
