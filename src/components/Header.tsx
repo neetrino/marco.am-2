@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Montserrat } from 'next/font/google';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import type { FormEvent, ReactNode, CSSProperties } from 'react';
 import { getStoredCurrency, setStoredCurrency, type CurrencyCode, CURRENCIES, formatPrice, initializeCurrencyRates, clearCurrencyRatesCache } from '../lib/currency';
@@ -13,16 +14,22 @@ import { useAuth } from '../lib/auth/AuthContext';
 import { apiClient } from '../lib/api-client';
 import { CART_KEY, getCompareCount, getWishlistCount } from '../lib/storageCounts';
 import { LanguageSwitcherHeader } from './LanguageSwitcherHeader';
-import { Instagram, Facebook, Linkedin } from 'lucide-react';
+import { Instagram, Facebook, Sun, Send, Phone } from 'lucide-react';
 import { CompareIcon } from './icons/CompareIcon';
 import { CartIcon } from './icons/CartIcon';
 
-// Navigation links will be translated dynamically using useTranslation hook
-const primaryNavLinks = [
+const headerFont = Montserrat({
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  weight: ['400', '500', '600', '700'],
+});
+
+const headerNavLinks = [
   { href: '/', translationKey: 'common.navigation.home' },
-  { href: '/products', translationKey: 'common.navigation.products' },
   { href: '/about', translationKey: 'common.navigation.about' },
+  { href: '/products', translationKey: 'common.navigation.products' },
+  { href: '/products', translationKey: 'common.navigation.brands' },
   { href: '/contact', translationKey: 'common.navigation.contact' },
+  { href: '/', translationKey: 'common.navigation.reels' },
 ];
 
 interface Category {
@@ -340,6 +347,7 @@ function CategoryMenuItem({
 }
 
 export function Header() {
+  const pathname = usePathname();
   const router = useRouter();
   const { isLoggedIn, logout, isAdmin } = useAuth();
   const { t } = useTranslation();
@@ -350,7 +358,7 @@ export function Header() {
   const [showCurrency, setShowCurrency] = useState(false);
   const [showMobileCurrency, setShowMobileCurrency] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showProductsMenu, setShowProductsMenu] = useState(false);
+  const [showCategoriesMenu, setShowCategoriesMenu] = useState(false);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyCode>('AMD');
@@ -362,10 +370,11 @@ export function Header() {
   const currencyRef = useRef<HTMLDivElement>(null);
   const mobileCurrencyRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const productsMenuRef = useRef<HTMLDivElement>(null);
-  const productsMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const categoriesMenuRef = useRef<HTMLDivElement>(null);
+  const categoriesMenuTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchModalRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchInputDesktopRef = useRef<HTMLInputElement>(null);
 
   const {
     query: searchQuery,
@@ -558,7 +567,7 @@ export function Header() {
         params: { lang: 'en' },
       });
       setCategories(response.data || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching categories:', err);
       setCategories([]);
     } finally {
@@ -586,8 +595,8 @@ export function Header() {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setShowUserMenu(false);
       }
-      if (productsMenuRef.current && !productsMenuRef.current.contains(event.target as Node)) {
-        setShowProductsMenu(false);
+      if (categoriesMenuRef.current && !categoriesMenuRef.current.contains(event.target as Node)) {
+        setShowCategoriesMenu(false);
       }
       if (searchModalRef.current && !searchModalRef.current.contains(event.target as Node)) {
         setShowSearchModal(false);
@@ -617,21 +626,21 @@ export function Header() {
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
-      if (productsMenuTimeoutRef.current) {
-        clearTimeout(productsMenuTimeoutRef.current);
+      if (categoriesMenuTimeoutRef.current) {
+        clearTimeout(categoriesMenuTimeoutRef.current);
       }
     };
   }, []);
 
-  // Focus search input when modal opens; show dropdown if query present
+  // Focus search modal input when it opens; desktop inline search controls its own dropdown via handlers
   useEffect(() => {
     if (showSearchModal && searchInputRef.current) {
       searchInputRef.current.focus();
-      setSearchDropdownOpen(searchQuery.trim().length >= 1);
-    } else {
-      setSearchDropdownOpen(false);
+      if (searchQuery.trim().length >= 1) {
+        setSearchDropdownOpen(true);
+      }
     }
-  }, [showSearchModal, searchQuery]);
+  }, [showSearchModal, searchQuery, setSearchDropdownOpen]);
 
   // Close search modal on ESC key
   useEffect(() => {
@@ -689,8 +698,21 @@ export function Header() {
     window.dispatchEvent(new Event('currency-updated'));
   };
 
+  const isNavItemActive = (link: (typeof headerNavLinks)[number]) => {
+    if (link.translationKey === 'common.navigation.reels') {
+      return false;
+    }
+    if (link.href === '/') {
+      return pathname === '/';
+    }
+    return pathname === link.href || pathname.startsWith(`${link.href}/`);
+  };
+
+  const socialBtnClass =
+    'flex h-10 w-10 items-center justify-center rounded-full bg-[#f4f4f4] text-[#333] transition-colors hover:bg-black hover:text-white';
+
   return (
-    <header className="bg-gradient-to-b from-gray-50 to-white sticky top-0 z-50 border-b border-gray-200/80 shadow-sm backdrop-blur-sm bg-white/95">
+    <header className={`${headerFont.className} sticky top-0 z-50 border-b border-[#ebebeb] bg-white`}>
       <Suspense fallback={null}>
         <HeaderSearchSync
           setSearchQuery={setSearchQuery}
@@ -698,90 +720,342 @@ export function Header() {
           categories={categories}
         />
       </Suspense>
-      {/* Top Bar */}
-      <div className="bg-white border-b border-gray-200 hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-3 py-3 text-sm text-gray-700 sm:flex-row sm:items-center sm:justify-between">
-            {/* Phone + Social */}
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-              <div className="flex items-center gap-2 text-gray-700">
-                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M2 3C2 2.44772 2.44772 2 3 2H5.15287C5.64171 2 6.0589 2.35341 6.13927 2.8356L6.87858 7.27147C6.95075 7.70451 6.73206 8.13397 6.3394 8.3303L4.79126 9.10437C5.90715 11.8783 8.12168 14.0929 10.8956 15.2088L11.6697 13.6606C11.866 13.2679 12.2955 13.0493 12.7285 13.1214L17.1644 13.8607C17.6466 13.9411 18 14.3583 18 14.8471V17C18 17.5523 17.5523 18 17 18H15C7.8203 18 2 12.1797 2 5V3Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+
+      {/* Main Header — Figma desktop (node 242:1773) */}
+      <div className="hidden lg:block">
+        {/* Row 1: logo, nav, social, phone, addresses */}
+        <div className="border-b border-[#ebebeb] bg-white">
+          <div className="mx-auto flex max-w-[1920px] flex-wrap items-center gap-x-[54px] gap-y-2 px-[151px] py-1.5">
+            <Link href="/" className="flex h-[73px] w-[83px] shrink-0 flex-col items-center justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-[#ffca03] bg-white">
+                <span className="text-xl font-bold text-[#2f4b5d]">M</span>
+              </div>
+              <span className="mt-1 max-w-[83px] text-center text-[9px] font-semibold leading-tight text-[#333]">
+                MARCO GROUP
+              </span>
+            </Link>
+            <nav className="flex flex-wrap items-center gap-x-[45px] gap-y-1 text-[16px] font-bold capitalize leading-[18px] text-[#333]">
+              {headerNavLinks.map((link) => (
+                <Link
+                  key={link.translationKey}
+                  href={link.href}
+                  className={`transition-colors hover:text-black ${isNavItemActive(link) ? 'text-[#101010]' : ''}`}
+                >
+                  {t(link.translationKey)}
+                </Link>
+              ))}
+            </nav>
+            <div className="flex items-center gap-4">
+              <a
+                href={t('contact.social.instagram') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtnClass}
+                aria-label={t('common.ariaLabels.instagram')}
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href={t('contact.social.facebook') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtnClass}
+                aria-label={t('common.ariaLabels.facebook')}
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                href={t('contact.social.telegram') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtnClass}
+                aria-label="Telegram"
+              >
+                <Send className="h-4 w-4" />
+              </a>
+              <a
+                href={t('contact.social.whatsapp') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtnClass}
+                aria-label="WhatsApp"
+              >
+                <Phone className="h-4 w-4" />
+              </a>
+              <a
+                href={t('contact.social.viber') || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtnClass}
+                aria-label="Viber"
+              >
+                <Phone className="h-4 w-4" />
+              </a>
+            </div>
+            <div className="ml-auto flex flex-wrap items-center gap-7">
+              <div className="flex items-center gap-2">
+                <svg width="19" height="19" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                  <path
+                    d="M2 3C2 2.44772 2.44772 2 3 2H5.15287C5.64171 2 6.0589 2.35341 6.13927 2.8356L6.87858 7.27147C6.95075 7.70451 6.73206 8.13397 6.3394 8.3303L4.79126 9.10437C5.90715 11.8783 8.12168 14.0929 10.8956 15.2088L11.6697 13.6606C11.866 13.2679 12.2955 13.0493 12.7285 13.1214L17.1644 13.8607C17.6466 13.9411 18 14.3583 18 14.8471V17C18 17.5523 17.5523 18 17 18H15C7.8203 18 2 12.1797 2 5V3Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
-                <span className="font-medium">{t('contact.phone')}</span>
+                <span className="text-[18px] font-medium text-[#333]">{t('contact.phone')}</span>
+                <ChevronDownIcon />
               </div>
-              <div className="flex items-center gap-3 text-gray-600">
-                <a
-                  href={t('contact.social.instagram') || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-pink-600 transition-colors"
-                  aria-label={t('common.ariaLabels.instagram')}
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  href={t('contact.social.facebook') || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-600 transition-colors"
-                  aria-label={t('common.ariaLabels.facebook')}
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  href={t('contact.social.linkedin') || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-blue-700 transition-colors"
-                  aria-label={t('common.ariaLabels.linkedin')}
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
+              <Link href="/stores" className="flex items-center gap-2 text-[#333]">
+                <svg width="16" height="19" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                  <path
+                    d="M8 0C5.2 0 3 2.2 3 5C3 8.5 8 12 8 12C8 12 13 8.5 13 5C13 2.2 10.8 0 8 0Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    fill="none"
+                  />
+                </svg>
+                <span className="text-[16px] font-medium">{t('common.header.addresses')}</span>
+                <ChevronDownIcon />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: categories, search, lang/currency, theme, account, compare, wishlist, cart */}
+        <div className="bg-white px-[150px] py-3.5">
+          <div className="mx-auto flex max-w-[1920px] flex-wrap items-center gap-x-[66px] gap-y-3">
+            <div
+              className="relative"
+              ref={categoriesMenuRef}
+              onMouseEnter={() => {
+                if (categoriesMenuTimeoutRef.current) {
+                  clearTimeout(categoriesMenuTimeoutRef.current);
+                  categoriesMenuTimeoutRef.current = null;
+                }
+                setShowCategoriesMenu(true);
+              }}
+              onMouseLeave={() => {
+                categoriesMenuTimeoutRef.current = setTimeout(() => {
+                  setShowCategoriesMenu(false);
+                }, 150);
+              }}
+            >
+              <button
+                type="button"
+                className="flex h-[54px] w-[251px] items-center justify-center gap-2 rounded-bl-[30px] rounded-br-[89px] rounded-tl-[30px] rounded-tr-[89px] bg-[#101010] text-[16px] font-normal text-white"
+              >
+                {t('common.navigation.categories')}
+                <ChevronDownIcon />
+              </button>
+              {showCategoriesMenu && (
+                <>
+                  <div className="absolute left-0 top-full h-2 w-full" />
+                  <div className="absolute left-0 top-full z-50 w-64 pt-2">
+                    <div className="overflow-visible rounded-xl border border-gray-200/80 bg-white shadow-2xl">
+                      {loadingCategories ? (
+                        <div className="px-4 py-2 text-sm text-gray-500">{t('common.messages.loading')}</div>
+                      ) : (
+                        getRootCategories(categories).map((category) => (
+                          <CategoryMenuItem
+                            key={category.id}
+                            category={category}
+                            onClose={() => setShowCategoriesMenu(false)}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Currency and Language Switcher */}
-            <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-              <LanguageSwitcherHeader />
-              <div className="relative" ref={currencyRef}>
+            <form onSubmit={handleSearch} className="relative min-w-0 max-w-[700px] flex-1">
+              <div className="relative flex h-14 items-center overflow-hidden rounded-[200px] bg-[#f4f4f4] pr-[155px]">
+                <div className="flex flex-1 items-center gap-2 pl-6">
+                  <SearchIcon />
+                  <input
+                    ref={searchInputDesktopRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (e.target.value.trim().length >= 1) {
+                        setSearchDropdownOpen(true);
+                      }
+                    }}
+                    onFocus={() => {
+                      if (searchQuery.trim().length >= 1) {
+                        setSearchDropdownOpen(true);
+                      }
+                    }}
+                    onKeyDown={searchHandleKeyDown}
+                    placeholder={t('common.placeholders.search')}
+                    className="min-w-0 flex-1 border-0 bg-transparent text-[14px] text-[#333] placeholder:text-[rgba(33,43,54,0.46)] outline-none"
+                    aria-controls="search-results"
+                    aria-expanded={searchDropdownOpen && searchResults.length > 0}
+                    aria-autocomplete="list"
+                  />
+                </div>
                 <button
-                  type="button"
-                  onClick={() => {
-                    setShowCurrency(!showCurrency);
-                  }}
-                  className="flex items-center gap-2 bg-white px-3 py-2 text-gray-800 transition-colors"
+                  type="submit"
+                  className="absolute right-0 top-0 flex h-[54px] w-[155px] items-center justify-center rounded-bl-[30px] rounded-br-[89px] rounded-tl-[30px] rounded-tr-[89px] bg-[#ffca03] text-[14px] font-semibold text-[#101010]"
                 >
-                  <span className="text-base font-semibold leading-none">{selectedCurrencyInfo.symbol}</span>
-                  <span className="text-sm font-medium leading-none">{selectedCurrency}</span>
-                  <ChevronDownIcon />
+                  {t('common.buttons.search')}
                 </button>
-                {showCurrency && (
-                  <div className="absolute top-full right-0 mt-2 w-40 bg-white z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    {Object.values(CURRENCIES).map((currency) => (
-                      <button
-                        key={currency.code}
-                        onClick={() => handleCurrencyChange(currency.code)}
-                        className={`w-full text-left px-4 py-2.5 text-sm transition-all duration-150 ${selectedCurrency === currency.code
-                            ? 'bg-gradient-to-r from-gray-100 to-gray-50 text-gray-900 font-semibold'
-                            : 'text-gray-700 hover:bg-gray-50'
+              </div>
+              <SearchDropdown
+                results={searchResults}
+                loading={searchLoading}
+                error={searchError}
+                isOpen={searchDropdownOpen}
+                selectedIndex={searchSelectedIndex}
+                query={searchQuery}
+                onResultClick={(result) => {
+                  router.push(`/products/${result.slug}`);
+                  clearSearch();
+                }}
+                onClose={() => setSearchDropdownOpen(false)}
+                onSeeAllClick={() => setSearchDropdownOpen(false)}
+              />
+            </form>
+
+            <div className="flex h-12 items-center gap-[23px]">
+              <div className="flex h-12 items-center gap-2 rounded-[80px] bg-[#f4f4f4] px-4">
+                <LanguageSwitcherHeader triggerClassName="!bg-transparent md:!bg-transparent px-1 py-1" />
+                <span className="text-[16px] font-bold text-[#333]">/</span>
+                <div className="relative" ref={currencyRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrency(!showCurrency)}
+                    className="flex items-center gap-1 text-[16px] font-bold text-[#333]"
+                  >
+                    <span>{selectedCurrency}</span>
+                    <ChevronDownIcon />
+                  </button>
+                  {showCurrency && (
+                    <div className="absolute right-0 top-full z-50 mt-2 w-40 animate-in overflow-hidden bg-white fade-in slide-in-from-top-2 duration-200">
+                      {Object.values(CURRENCIES).map((currency) => (
+                        <button
+                          key={currency.code}
+                          type="button"
+                          onClick={() => handleCurrencyChange(currency.code)}
+                          className={`w-full px-4 py-2.5 text-left text-sm transition-all duration-150 ${
+                            selectedCurrency === currency.code
+                              ? 'bg-gradient-to-r from-gray-100 to-gray-50 font-semibold text-gray-900'
+                              : 'text-gray-700 hover:bg-gray-50'
                           }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span>{currency.code}</span>
-                          <span className="text-gray-500">{currency.symbol}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{currency.code}</span>
+                            <span className="text-gray-500">{currency.symbol}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-white"
+                aria-label="Theme"
+              >
+                <Sun className="h-5 w-5" strokeWidth={2} />
+              </button>
+
+              <div className="relative" ref={userMenuRef}>
+                {isLoggedIn ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className="flex h-12 w-12 items-center justify-center transition-all duration-200 group"
+                    >
+                      <ProfileIconFilled />
+                    </button>
+                    {showUserMenu && (
+                      <div className="absolute right-0 top-full z-50 mt-2 w-52 animate-in overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-2xl fade-in slide-in-from-top-2 duration-200">
+                        <Link
+                          href="/profile"
+                          className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gradient-to-r hover:from-gray-50 hover:to-white"
+                          onClick={() => setShowUserMenu(false)}
+                        >
+                          {t('common.navigation.profile')}
+                        </Link>
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-blue-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-blue-50 hover:to-white"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <div className="flex items-center">
+                              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                                />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              {t('common.navigation.adminPanel')}
+                            </div>
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            logout();
+                          }}
+                          className="block w-full px-5 py-3 text-left text-sm font-medium text-red-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-red-50 hover:to-white"
+                        >
+                          {t('common.navigation.logout')}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Link href="/login" className="group flex h-12 w-12 items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900">
+                    <ProfileIconOutline />
+                  </Link>
                 )}
               </div>
+
+              <Link
+                href="/compare"
+                className="relative flex h-12 w-12 items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 group"
+              >
+                <BadgeIcon icon={<CompareIcon size={18} />} badge={compareCount} />
+              </Link>
+
+              <Link
+                href="/wishlist"
+                className="relative flex h-12 w-12 items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 group"
+              >
+                <BadgeIcon icon={<WishlistIcon />} badge={wishlistCount} />
+              </Link>
+
+              <Link
+                href="/cart"
+                className="group flex h-12 min-w-[122px] items-center justify-center gap-2 rounded-[68px] bg-black px-5 text-white transition-opacity hover:opacity-90"
+              >
+                <BadgeIcon
+                  icon={<CartIcon size={22} className="brightness-0 invert" />}
+                  badge={cartCount}
+                  iconClassName="flex items-center justify-center"
+                />
+                <span className="text-[16px] font-bold leading-6">{formatPrice(cartTotal, selectedCurrency)}</span>
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Header */}
+      {/* Main Header — compact (tablet / mobile) */}
+      <div className="lg:hidden">
       <div className="max-w-7xl mx-auto pl-2 sm:pl-4 md:pl-6 lg:pl-8 pr-2 sm:pr-4 md:pr-6 lg:pr-8">
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 py-4 md:py-3">
           {/* Logo + Mobile Menu */}
@@ -850,61 +1124,17 @@ export function Header() {
             </div>
           </div>
 
-          {/* Navigation Links - Centered */}
+          {/* Navigation — tablet; categories mega menu is on large desktop only */}
           <nav className="order-3 hidden w-full items-center justify-center gap-1 md:order-none md:flex md:flex-1">
-            <Link href="/" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium whitespace-nowrap">
-              {t('common.navigation.home')}
-            </Link>
-            <div 
-              className="relative" 
-              ref={productsMenuRef}
-              onMouseEnter={() => {
-                if (productsMenuTimeoutRef.current) {
-                  clearTimeout(productsMenuTimeoutRef.current);
-                  productsMenuTimeoutRef.current = null;
-                }
-                setShowProductsMenu(true);
-              }}
-              onMouseLeave={() => {
-                productsMenuTimeoutRef.current = setTimeout(() => {
-                  setShowProductsMenu(false);
-                }, 150);
-              }}
-            >
+            {headerNavLinks.map((link) => (
               <Link
-                href="/products"
-                className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium whitespace-nowrap flex items-center gap-1"
+                key={link.translationKey}
+                href={link.href}
+                className="whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900"
               >
-                {t('common.navigation.products')}
-                <ChevronDownIcon />
+                {t(link.translationKey)}
               </Link>
-              {showProductsMenu && (
-                <>
-                  <div className="absolute top-full left-0 w-full h-2" />
-                  <div className="absolute top-full left-0 pt-2 w-64 z-50">
-                    <div className="bg-white rounded-xl shadow-2xl border border-gray-200/80 overflow-visible">
-                      {loadingCategories ? (
-                        <div className="px-4 py-2 text-sm text-gray-500">{t('common.messages.loading')}</div>
-                      ) : (
-                        getRootCategories(categories).map((category) => (
-                          <CategoryMenuItem
-                            key={category.id}
-                            category={category}
-                            onClose={() => setShowProductsMenu(false)}
-                          />
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-            <Link href="/about" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium whitespace-nowrap">
-              {t('common.navigation.about')}
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-gray-900 hover:bg-gray-50 px-4 py-2 rounded-lg transition-all duration-200 text-sm font-medium whitespace-nowrap">
-              {t('common.navigation.contact')}
-            </Link>
+            ))}
           </nav>
 
 
@@ -999,11 +1229,12 @@ export function Header() {
           </div>
 
       </div>
+      </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-50 flex md:hidden bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex lg:hidden bg-black/40 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           onClick={() => setMobileMenuOpen(false)}
@@ -1029,9 +1260,9 @@ export function Header() {
             <div className="flex-1 overflow-hidden min-h-0">
               <nav className="flex h-full flex-col border-y border-gray-200 text-sm font-semibold uppercase tracking-wide text-gray-800 bg-white">
                 <div className="flex-1 overflow-y-auto divide-y divide-gray-200">
-                  {primaryNavLinks.map((link) => (
+                  {headerNavLinks.map((link) => (
                     <Link
-                      key={link.href}
+                      key={link.translationKey}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"

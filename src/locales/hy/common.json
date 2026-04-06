@@ -41,7 +41,12 @@
     "terms": "Պայմաններ",
     "cookies": "Cookie-ներ",
     "delivery": "Առաքում",
-    "stores": "Խանութներ"
+    "stores": "Խանութներ",
+    "brands": "Բրենդներ",
+    "reels": "reels"
+  },
+  "header": {
+    "addresses": "Հասցեներ"
   },
   "stock": {
     "inStock": "Պահեստում",

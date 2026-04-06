@@ -41,7 +41,12 @@
     "terms": "Terms",
     "cookies": "Cookies",
     "delivery": "Delivery",
-    "stores": "Stores"
+    "stores": "Stores",
+    "brands": "Brands",
+    "reels": "Reels"
+  },
+  "header": {
+    "addresses": "Addresses"
   },
   "stock": {
     "inStock": "In Stock",

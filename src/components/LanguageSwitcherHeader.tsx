@@ -62,11 +62,16 @@ const getLanguageColor = (code: LanguageCode, isActive: boolean): string => {
   return 'bg-white border-transparent';
 };
 
+interface LanguageSwitcherHeaderProps {
+  /** Merged into the menu trigger (e.g. Figma pill row) */
+  triggerClassName?: string;
+}
+
 /**
  * Language Switcher Component for Header
  * Uses only locales-based translations, no Google Translate
  */
-export function LanguageSwitcherHeader() {
+export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   // Start with 'en' to avoid hydration mismatch, then update in useEffect
   const [currentLang, setCurrentLang] = useState<LanguageCode>('en');
@@ -139,7 +144,7 @@ export function LanguageSwitcherHeader() {
         type="button"
         onClick={() => setShowMenu(!showMenu)}
         aria-expanded={showMenu}
-        className="flex items-center gap-1 sm:gap-2 bg-transparent md:bg-white px-2 sm:px-3 py-1.5 sm:py-2 text-gray-800 transition-colors"
+        className={`flex items-center gap-1 sm:gap-2 bg-transparent md:bg-white px-2 sm:px-3 py-1.5 sm:py-2 text-gray-800 transition-colors ${triggerClassName ?? ''}`}
       >
         <span className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center text-base sm:text-lg leading-none">
           {getLanguageIcon(currentLang)}
