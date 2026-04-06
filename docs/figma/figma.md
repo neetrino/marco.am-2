@@ -4,6 +4,16 @@
 
 Այս workflow-ը հիմնված է Figma MCP server-ի և Cursor-ի MCP/plugin support-ի վրա։ Figma-ի official MCP server-ը Cursor-ին տալիս է դիզայնի context, frame/layer access, variables/styles և այլ անհրաժեշտ տվյալներ, իսկ Cursor-ը կարող է այդ context-ը օգտագործել իրական կոդ գեներացնելու համար։ Figma-ն նաև պաշտոնապես խորհուրդ է տալիս Cursor-ի համար Figma plugin/MCP integration օգտագործել, իսկ selection-based prompting-ը լիարժեք աշխատում է desktop MCP server-ով, մինչդեռ remote server-ը պահանջում է frame կամ layer link։
 
+1.1 MARCO — canonical Figma file (MCP)
+
+Այս repository-ի primary design file-ը Figma-ում՝ **MARCO**։
+
+- **File key:** `7PlNcJ5BjWztGqYNYfsH2D`
+- **Node (Dev Mode link):** `214-1056` — API-ում հաճախ գրվում է `214:1056`
+- **Dev Mode URL:** https://www.figma.com/design/7PlNcJ5BjWztGqYNYfsH2D/MARCO?node-id=214-1056&m=dev
+
+Մեքենայական հղում (file key, node, URL)՝ [`marco-figma-mcp.json`](./marco-figma-mcp.json) — օգտագործիր սա agent prompt-ներում կամ սկրիպտներում, որ միշտ նույն ֆայլն ու node-ը լինեն։
+
 2. Նախապայմաններ
 
 Cursor agent-ը Figma-ի հետ ճիշտ աշխատելու համար պետք է ապահովված լինեն հետևյալ պայմանները.
