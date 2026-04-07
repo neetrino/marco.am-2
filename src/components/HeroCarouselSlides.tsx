@@ -1,30 +1,18 @@
 import Image from 'next/image';
-import { HERO_CAROUSEL_IMAGES } from './hero.constants';
+import { HERO_PRIMARY_IMAGE_SRC } from './hero.constants';
 
-type HeroCarouselSlidesProps = {
-  currentIndex: number;
-};
-
-export function HeroCarouselSlides({ currentIndex }: HeroCarouselSlidesProps) {
+export function HeroCarouselSlides() {
   return (
     <div className="relative h-full w-full min-h-[inherit]">
-      {HERO_CAROUSEL_IMAGES.map((image, index) => (
-        <div
-          key={image}
-          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <Image
-            src={image}
-            alt={`Hero image ${index + 1}`}
-            fill
-            className="object-cover"
-            priority={index === 0}
-            unoptimized={image.startsWith('http')}
-          />
-        </div>
-      ))}
+      <div className="absolute inset-0">
+        <Image
+          src={HERO_PRIMARY_IMAGE_SRC}
+          alt=""
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
     </div>
   );
 }
