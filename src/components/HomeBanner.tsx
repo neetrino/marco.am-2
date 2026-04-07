@@ -2,7 +2,14 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Montserrat } from 'next/font/google';
 import { useTranslation } from '../lib/i18n-client';
+
+/** Figma "Montserrat arm" — Montserrat 700 (same stack as header; Next font types omit `armenian` subset). */
+const homeBannerHelpCtaFont = Montserrat({
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  weight: ['700'],
+});
 
 /**
  * Figma MCP asset URLs — refresh from MCP when expired (~7 days).
@@ -60,6 +67,9 @@ const SOFA_CARD_SHIFT_X = -22;
 
 /** Layout-ref X for `hero_banner_promo` block; increase to move copy toward the right. */
 const PROMO_COPY_LEFT_REF = 880;
+
+/** Right inset (layout-ref) for the lower promo strip so the help CTA can align right. */
+const PROMO_STRIP_RIGHT_REF = 48;
 
 /**
  * Left product card — sofa promo with stacked-card depth effect.
@@ -236,13 +246,25 @@ export function HomeBanner() {
           <DeliveryCard />
           <ElectronicsCard />
 
-          {/* Promo sub-copy — lower band; line breaks from i18n (hero_banner_promo) */}
-          <p
-            className="absolute z-20 max-w-[min(560px,calc(100%-2rem))] whitespace-pre-line text-left text-[24px] font-bold leading-[1.15] text-white antialiased [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]"
-            style={{ left: bx(PROMO_COPY_LEFT_REF), top: by(668) }}
+          {/* Promo sub-copy (original X) + help CTA below, aligned right in the strip */}
+          <div
+            className="absolute z-20 flex flex-col gap-4"
+            style={{
+              left: bx(PROMO_COPY_LEFT_REF),
+              right: bx(PROMO_STRIP_RIGHT_REF),
+              top: by(668),
+            }}
           >
-            {t('home.hero_banner_promo')}
-          </p>
+            <p className="max-w-[min(560px,calc(100%-2rem))] whitespace-pre-line text-left text-[24px] font-bold leading-[1.15] text-white antialiased [text-shadow:0_1px_2px_rgba(0,0,0,0.25)]">
+              {t('home.hero_banner_promo')}
+            </p>
+            <Link
+              href="/contact"
+              className={`${homeBannerHelpCtaFont.className} flex h-[56px] w-[311px] shrink-0 flex-row items-center justify-center self-end rounded-[68px] bg-[#2F4B5D] px-8 py-4 text-center text-base font-bold leading-6 text-[#FFF] shadow-[0_4px_24px_0_rgba(150,150,150,0.28)] antialiased`}
+            >
+              {t('home.hero_help_cta')}
+            </Link>
+          </div>
         </div>
       </div>
     </section>
