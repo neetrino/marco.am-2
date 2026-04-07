@@ -98,7 +98,7 @@ export const HEADER_FIGMA_ROW2_PADDING_Y_CLASS = 'py-3.5';
 /**
  * Category trigger — width matches Figma 98:1403; height matches `HEADER_ROW2_BAR_HEIGHT_CLASS`.
  */
-export const HEADER_CATEGORY_BUTTON_CLASS = `gap-2.5 px-5 py-2.5 text-sm font-normal transition-[opacity,filter] hover:opacity-95 active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${HEADER_FIGMA_PILL_RADIUS_CLASS} md:h-11 md:w-[251px] md:max-w-[251px] md:shrink-0 md:justify-between md:px-[42px] md:py-0 md:text-sm md:font-normal`;
+export const HEADER_CATEGORY_BUTTON_CLASS = `gap-2.5 px-5 py-2.5 text-sm font-normal transition-[opacity,filter] hover:opacity-95 active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${HEADER_FIGMA_PILL_RADIUS_CLASS} md:h-11 md:w-[251px] md:max-w-[251px] md:shrink-0 md:px-[42px] md:py-0 md:text-sm md:font-normal`;
 
 /** Toolbar icon hit targets — same outer size as `HEADER_ROW2_BAR_HEIGHT_CLASS` */
 export const HEADER_TOOLBAR_ICON_BUTTON_CLASS = 'h-11 w-11 shrink-0';

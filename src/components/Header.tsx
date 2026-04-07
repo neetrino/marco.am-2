@@ -70,7 +70,15 @@ interface CategoriesResponse {
 
 // Icon Components
 const ChevronDownIcon = () => (
-  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    className="shrink-0"
+    width="10"
+    height="10"
+    viewBox="0 0 12 12"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden
+  >
     <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
@@ -792,11 +800,13 @@ export function Header() {
             <button
               type="button"
               onClick={() => setShowProductsMenu((open) => !open)}
-              className={`flex w-full items-center justify-center bg-marco-black text-white md:justify-between ${HEADER_CATEGORY_BUTTON_CLASS} [&_svg]:text-white`}
+              className={`flex w-full items-center bg-marco-black text-white ${HEADER_CATEGORY_BUTTON_CLASS} [&_svg]:text-white`}
               aria-expanded={showProductsMenu}
               aria-haspopup="true"
             >
-              <span className="whitespace-nowrap">{t('common.navigation.categories')}</span>
+              <span className="min-w-0 flex-1 text-center whitespace-nowrap">
+                {t('common.navigation.categories')}
+              </span>
               <ChevronDownIcon />
             </button>
             {showProductsMenu && (
