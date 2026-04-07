@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { useTranslation } from '../lib/i18n-client';
 
 /**
- * Figma MCP asset URLs — valid 7 days from 2026-04-06.
- * Node: 214:1056 · Frame: 1440 × 900 px (right card overflows to ~1714 px).
+ * Figma MCP asset URLs — refresh from MCP when expired (~7 days).
+ * Mask group 1 (305:2146): yellow brick texture · 1651 × 925 px, rounded rect.
+ * Overlay is scaled to fit this plate (was laid out in Figma at ~1714×924).
  */
 const ASSETS = {
-  bgTexture:     'https://www.figma.com/api/mcp/asset/b54ee867-ba6c-49b4-a7c4-e5ab1f666b4e',
+  bgTexture:
+    'https://www.figma.com/api/mcp/asset/4b693349-18bc-49ea-9677-6bfbd71d931d',
   sofa:          'https://www.figma.com/api/mcp/asset/1a5ccb5d-3c4f-45e8-8489-29d2d9124fd1',
   sofaCircle:    'https://www.figma.com/api/mcp/asset/2f91b1da-a2d5-43d1-b75f-f8c532cd6471',
   truckIcon:     'https://www.figma.com/api/mcp/asset/5249941e-732f-48e2-a3b4-bcadfc9d8ced',
@@ -37,48 +39,69 @@ const ARM = {
   sofaName:    '\u0531\u0576\u056f\u0575\u0578\u0582\u0576\u0561\u0575\u056b\u0576 \u0562\u0561\u0566\u0584\u0578\u0581',
 } as const;
 
-const CANVAS_W = 1440;
-const CANVAS_H = 900;
+/** Figma Mask group 1 (305:2146) — background plate. */
+const MASK_BG_W = 1651;
+const MASK_BG_H = 925;
+/** Figma Group 9275 reference — overlay scaled to MASK_BG_*. */
+const LAYOUT_REF_W = 1714;
+const LAYOUT_REF_H = 924;
+
+function bx(n: number): number {
+  return Math.round((n * MASK_BG_W) / LAYOUT_REF_W);
+}
+
+function by(n: number): number {
+  return Math.round((n * MASK_BG_H) / LAYOUT_REF_H);
+}
+
+/** Nudges all foreground layers slightly left (px); tune if layout feels off-center. */
+const OVERLAY_SHIFT_X = -60;
+
+/** Extra nudge for the left (sofa) card only — product block vs. dark panel (px). */
+const SOFA_CARD_SHIFT_X = -22;
 
 /**
  * Left product card — sofa promo with stacked-card depth effect.
  */
 function SofaCard() {
+  const x = (n: number) => bx(n) + SOFA_CARD_SHIFT_X;
+
   return (
     <>
-      {/* Stacked card backgrounds (scaleY-flip creates depth illusion) */}
-      <div className="absolute left-[162px] top-[204px] w-[629px] h-[475px] bg-white rounded-[36px] -scale-y-100" />
-      <div className="absolute left-[162px] top-[260px] w-[629px] h-[477px] bg-[#c7c7c7] rounded-[36px] -scale-y-100" />
-      <div className="absolute left-[162px] top-[323px] w-[631px] h-[481px] bg-[#2f4b5d] rounded-[36px] -scale-y-100" />
+      {/* Stacked card backgrounds (scaleY-flip creates depth illusion) — scaled to MASK_BG_* */}
+      <div className="absolute bg-white rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(204), width: bx(629), height: by(475) }} />
+      <div className="absolute bg-[#c7c7c7] rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(260), width: bx(629), height: by(477) }} />
+      <div className="absolute bg-[#2f4b5d] rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(323), width: bx(631), height: by(481) }} />
 
       {/* Sofa product image */}
-      <div className="absolute left-[194px] top-[100px] w-[563px] h-[563px]">
+      <div className="absolute" style={{ left: x(194), top: by(100), width: bx(563), height: by(563) }}>
         <Image src={ASSETS.sofa} alt={ARM.sofaName} fill className="object-contain" unoptimized />
       </div>
 
       {/* Decorative orbit ring below sofa */}
-      <div className="absolute left-[274px] top-[502px] w-[404px] h-[165px]">
+      <div className="absolute" style={{ left: x(274), top: by(502), width: bx(404), height: by(165) }}>
         <Image src={ASSETS.sofaCircle} alt="" fill className="object-contain" unoptimized />
       </div>
 
       {/* Product label */}
-      <div className="absolute left-[195px] top-[712px] text-white text-base leading-[1.49]">
+      <div className="absolute text-white text-base leading-[1.49] antialiased" style={{ left: x(195), top: by(712) }}>
         <p>{ARM.sofaName}</p>
         <p>Bellini</p>
       </div>
 
       <Link
         href="/products"
-        className="absolute left-[393px] top-[688px] h-[56px] w-[182px] bg-[#facc15] rounded-[68px] overflow-visible"
+        className="absolute overflow-visible rounded-[68px] bg-[#facc15] antialiased"
+        style={{ left: x(524), top: by(700), width: bx(243), height: by(56) }}
       >
         <span className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 font-bold text-[16px] text-black whitespace-nowrap leading-[24px]">
           {ARM.gnel} {ARM.hima}
         </span>
-        <div className="absolute left-[189px] top-[4px] size-[48px]">
+        <div className="absolute top-[4px] size-[48px]" style={{ left: bx(189) }}>
           <Image src={ASSETS.ellipseCircle} alt="" fill className="object-contain" unoptimized />
         </div>
-        <div className="absolute left-[207px] top-[22px] size-[12px] flex items-center justify-center -rotate-45">
-          <Image src={ASSETS.arrow} alt="" width={17} height={8} className="object-contain" unoptimized />
+        <div className="absolute top-[22px] size-[12px] flex items-center justify-center -rotate-45" style={{ left: bx(207) }}>
+          <Image src={ASSETS.arrow} alt="" width={16} height={8} className="object-contain" unoptimized />
         </div>
       </Link>
     </>
@@ -94,10 +117,10 @@ function DeliveryCard() {
   return (
     <>
       {/* Full card — photo fills all 4 corners (rounded-[36px]) */}
-      <div className="absolute left-[878px] top-[52px] w-[403px] h-[556px] rounded-[36px] overflow-hidden">
+      <div className="absolute overflow-hidden rounded-[36px]" style={{ left: bx(878), top: by(52), width: bx(403), height: by(556) }}>
         <Image
           src={ASSETS.banner2}
-          alt="Անvchair Arakoum"
+          alt=""
           fill
           className="object-cover object-center"
           unoptimized
@@ -105,7 +128,7 @@ function DeliveryCard() {
       </div>
 
       {/* Arrow/link icon — top-right of card */}
-      <div className="absolute left-[1194px] top-[52px] w-[87px] h-[87px]">
+      <div className="absolute" style={{ left: bx(1194), top: by(52), width: bx(87), height: by(87) }}>
         <Image src={ASSETS.linkIcon1} alt="" fill className="object-contain" unoptimized />
       </div>
     </>
@@ -113,28 +136,37 @@ function DeliveryCard() {
 }
 
 /**
- * Right card — new-arrivals promo (extends ~274 px beyond the 1440 px Figma frame).
+ * Right card — new-arrivals promo (flush with texture right edge).
  */
 function ElectronicsCard() {
   return (
     <>
       {/* Pre-masked dark card background */}
-      <div className="absolute left-[1312px] top-[52px] w-[402px] h-[556px]">
+      <div className="absolute" style={{ left: bx(1312), top: by(52), width: bx(402), height: by(556) }}>
         <Image src={ASSETS.rightCardBg} alt="" fill className="object-cover rounded-[36px]" unoptimized />
       </div>
 
       {/* Discount badge — inside the card, top-left */}
-      <p className="absolute left-[1350px] top-[137px] text-[#facc15] text-[78px] leading-[63px] font-black whitespace-nowrap">
+      <p
+        className="absolute font-black whitespace-nowrap text-[#facc15] antialiased"
+        style={{ left: bx(1350), top: by(137), fontSize: bx(78), lineHeight: `${by(63)}px` }}
+      >
         80%
       </p>
 
       {/* Product image with warm-glow shadow */}
-      <div className="absolute left-[1412px] top-[96px] w-[389px] h-[366px] shadow-[0px_0px_25px_0px_rgba(66,50,0,0.8)]">
+      <div
+        className="absolute shadow-[0px_0px_25px_0px_rgba(66,50,0,0.8)]"
+        style={{ left: bx(1412), top: by(96), width: bx(389), height: by(366) }}
+      >
         <Image src={ASSETS.sofa} alt="Product" fill className="object-cover" unoptimized />
       </div>
 
       {/* Sub-headline */}
-      <div className="absolute left-[1350px] top-[378px] font-black text-[28px] leading-[33px] whitespace-nowrap">
+      <div
+        className="absolute font-black whitespace-nowrap antialiased"
+        style={{ left: bx(1350), top: by(378), fontSize: bx(28), lineHeight: `${by(33)}px` }}
+      >
         <p className="text-[#facc15]">{ARM.nor}</p>
         <p className="text-white">{ARM.serndi}</p>
         <p className="text-white">{ARM.smartphones}</p>
@@ -143,13 +175,14 @@ function ElectronicsCard() {
       {/* White "More" CTA */}
       <Link
         href="/products"
-        className="absolute left-[1394px] top-[502px] flex items-center justify-center h-[56px] w-[250px] bg-white text-black rounded-[60px] font-bold text-[16px] overflow-hidden"
+        className="absolute flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased"
+        style={{ left: bx(1394), top: by(502), height: by(56), width: bx(250) }}
       >
         {ARM.avelin}
       </Link>
 
-      {/* Arrow/link icon */}
-      <div className="absolute left-[1628px] top-[53px] w-[86px] h-[86px]">
+      {/* Arrow/link icon — right edge aligned to card (1312+402) */}
+      <div className="absolute" style={{ left: bx(1628), top: by(53), width: bx(86), height: by(86) }}>
         <Image src={ASSETS.linkIcon2} alt="" fill className="object-contain" unoptimized />
       </div>
     </>
@@ -157,36 +190,59 @@ function ElectronicsCard() {
 }
 
 /**
- * Home page hero banner — Figma node 214:1056.
- *
- * The Figma artboard is 1440 × 900 px; the right card overflows to ~1714 px.
- * On viewports narrower than 1714 px the right card is partially clipped (by design).
+ * Home page hero banner — background plate from Figma node 305:2146 (Mask group 1).
+ * Texture 1651 × 925 px; overlay scaled from Figma ref 1714 × 924 to match.
  */
 export function HomeBanner() {
   const { t } = useTranslation();
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#facc15]">
-      <div className="relative mx-auto h-[900px] w-full max-w-[1714px]">
-        {/* Full-bleed background texture */}
-        <div className="absolute inset-0">
-          <Image src={ASSETS.bgTexture} alt="" fill className="object-cover" priority unoptimized />
+    <section className="relative w-full overflow-hidden">
+      <div
+        className="relative mx-auto w-full"
+        style={{ maxWidth: MASK_BG_W, height: MASK_BG_H }}
+      >
+        {/* Mask group 1 — Figma 305:2146: 1651 × 925 px, rounded texture plate */}
+        <div
+          className="pointer-events-none absolute left-0 top-0 z-0 max-w-full overflow-hidden rounded-[36px]"
+          style={{ width: MASK_BG_W, height: MASK_BG_H, maxWidth: '100%' }}
+        >
+          <Image
+            src={ASSETS.bgTexture}
+            alt=""
+            fill
+            className="object-cover object-center"
+            priority
+            sizes="(max-width: 1651px) 100vw, 1651px"
+            unoptimized
+          />
         </div>
 
-        {/* Large headline — top-left corner */}
-        <p className="absolute left-[121px] top-[88px] whitespace-nowrap font-black text-[60px] leading-[72px]">
-          <span className="text-black">{ARM.free} </span>
-          <span className="text-white">{ARM.delivery}</span>
-        </p>
+        <div
+          className="relative z-10 h-full"
+          style={{ transform: `translateX(${OVERLAY_SHIFT_X}px)` }}
+        >
+          {/* Large headline — above sofa row, optical balance with mask corner */}
+          <p
+            className="absolute z-20 whitespace-nowrap font-black antialiased"
+            style={{ left: bx(162), top: by(88), fontSize: bx(60), lineHeight: `${by(72)}px` }}
+          >
+            <span className="text-black">{ARM.free} </span>
+            <span className="text-white">{ARM.delivery}</span>
+          </p>
 
-        <SofaCard />
-        <DeliveryCard />
-        <ElectronicsCard />
+          <SofaCard />
+          <DeliveryCard />
+          <ElectronicsCard />
 
-        {/* Promo sub-copy */}
-        <p className="absolute left-[622px] right-[325px] top-[656px] text-white text-[24px] leading-[28px] font-semibold">
-          {t('home.hero_subtitle')}
-        </p>
+          {/* Promo sub-copy — centered in lower band */}
+          <p
+            className="absolute left-1/2 max-w-[min(632px,calc(100%-2rem))] -translate-x-1/2 text-center text-[24px] font-semibold leading-[30px] text-white antialiased"
+            style={{ top: by(668) }}
+          >
+            {t('home.hero_subtitle')}
+          </p>
+        </div>
       </div>
     </section>
   );
