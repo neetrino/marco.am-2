@@ -159,7 +159,7 @@
   margin-top: 0.25rem;
 }
 
-/* Home — promotional banner (yellow textured panel below hero) */
+/* Home — promotional banner (Figma 305:2146: yellow mask 1651×925 @ x=135 y=65) */
 .home-promo-panel {
   background-color: #ffca03;
   background-image:
@@ -172,5 +172,19 @@
       rgba(0, 0, 0, 0.018) 4px,
       rgba(0, 0, 0, 0.018) 7px
     );
+  /* Min height = Figma aspect (925/1651) × row width; matches .hero-section-inset gutters */
+  min-height: max(20rem, calc((100vw - 2rem) * 925 / 1651));
+}
+
+@media (min-width: 640px) {
+  .home-promo-panel {
+    min-height: max(22rem, calc((100vw - 3rem) * 925 / 1651));
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-promo-panel {
+    min-height: max(24rem, calc((100vw - 270px) * 925 / 1651));
+  }
 }
 

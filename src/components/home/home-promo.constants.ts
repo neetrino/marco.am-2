@@ -2,6 +2,10 @@
  * Home promotional banner — image sources and layout tokens (reference: MARCO promo block).
  */
 
+/** Figma 305:2146 — yellow panel mask ("Mask group 1"), design size in px */
+export const PROMO_PANEL_FIGMA_WIDTH_PX = 1651;
+export const PROMO_PANEL_FIGMA_HEIGHT_PX = 925;
+
 /** Featured armchair — Pexels (allowed in next.config.js) */
 export const PROMO_FEATURED_IMAGE_SRC =
   'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=800' as const;

@@ -5,6 +5,7 @@ import { MessageCircle } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n-client';
 import { HomePromoFeaturedCard } from './HomePromoFeaturedCard';
 import { HomePromoSideCards } from './HomePromoSideCards';
+import { HomePromoYellowHeadline } from './HomePromoYellowHeadline';
 import { PROMO_SECTION_PADDING_CLASS } from './home-promo.constants';
 
 export function HomePromoSection() {
@@ -15,6 +16,10 @@ export function HomePromoSection() {
       <div
         className={`home-promo-panel relative overflow-visible rounded-[1.75rem] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ${PROMO_SECTION_PADDING_CLASS} pb-16 sm:pb-14 md:pb-12`}
       >
+        <HomePromoYellowHeadline
+          emphasisText={t('home.promo_banner_headline_emphasis')}
+          accentText={t('home.promo_banner_headline_accent')}
+        />
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8 lg:items-start">
           <div className="lg:col-span-7">
             <HomePromoFeaturedCard
