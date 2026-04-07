@@ -788,7 +788,7 @@ export function Header() {
         <div className="w-10 shrink-0" aria-hidden />
       </div>
 
-      {/* Row 2 — Figma 111:4273 / 214:1055: left cluster gap 25, main gap 66, right cluster gap 23 */}
+      {/* Row 2 — Figma 111:4273; right strip 214:1054 (gaps tightened in header.constants) */}
       <div className="w-full border-b bg-white">
         <div
           className={`${HEADER_CONTAINER_CLASS} flex w-full min-w-0 flex-col flex-wrap gap-y-2 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}

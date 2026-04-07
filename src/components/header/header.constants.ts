@@ -22,26 +22,25 @@ export const HEADER_FIGMA_NAV_LINK_GAP_CLASS =
 export const HEADER_FIGMA_CONTACT_CLUSTER_GAP_CLASS =
   'gap-x-2 md:gap-x-2.5 lg:gap-x-4 xl:gap-x-5 2xl:gap-x-[29px]';
 
-/** Categories + search — Figma 214:1053 `gap-[25px]` */
+/** Categories + search — tighter than Figma 214:1053 `gap-[25px]` */
 export const HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS =
-  'gap-x-2 sm:gap-x-3 md:gap-x-4 lg:gap-x-5 min-[1800px]:gap-x-[25px]';
+  'gap-x-1.5 sm:gap-x-2 md:gap-x-3 lg:gap-x-3.5 min-[1800px]:gap-x-4';
 
-/** Between (categories+search) and (locale+actions) — Figma 214:1055 `gap-[66px]` */
+/** Between (categories+search) and right toolbar — tighter than Figma 214:1055 `gap-[66px]` */
 export const HEADER_FIGMA_ROW2_MAIN_GAP_CLASS =
-  'gap-x-2.5 sm:gap-x-4 md:gap-x-6 lg:gap-x-8 xl:gap-x-10 min-[1800px]:gap-x-[66px]';
+  'gap-x-2 sm:gap-x-3 md:gap-x-4 lg:gap-x-5 xl:gap-x-6 min-[1800px]:gap-x-8';
 
 /**
- * Locale / theme / icon cluster / cart — slightly tighter than full Figma 23px so heart & neighbors read as one group.
+ * Locale / theme / icons / cart — Figma 214:1054 `gap-[23px]`; reduced for denser toolbar.
  */
 export const HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS =
-  'gap-x-1.5 sm:gap-x-2 md:gap-x-2.5 lg:gap-x-3 xl:gap-x-4 min-[1800px]:gap-x-[18px]';
+  'gap-x-1 md:gap-x-1.5 lg:gap-x-2 xl:gap-x-2.5 min-[1800px]:gap-x-3';
 
 /**
- * Profile + compare + wishlist — single flex row; fixed gap (no per-icon margins).
- * Uses gap (not margin) so spacing stays even at 80%–125% zoom.
+ * Profile + compare + wishlist — single flex row; gap tighter than Figma 214:1054 icon row.
  */
 export const HEADER_TOOLBAR_ICON_CLUSTER_CLASS =
-  'flex shrink-0 flex-nowrap items-center gap-2';
+  'flex shrink-0 flex-nowrap items-center gap-1.5';
 
 /**
  * Categories bar + yellow search CTA — symmetric pill (same radius on left and right edges).
@@ -83,11 +82,14 @@ export const HEADER_SEARCH_SUBMIT_CLASS = `flex items-center justify-center self
 /** Language + currency pill — height matches `HEADER_ROW2_BAR_HEIGHT_CLASS` */
 export const HEADER_LOCALE_PILL_HEIGHT_CLASS = HEADER_ROW2_BAR_HEIGHT_CLASS;
 
-export const HEADER_LOCALE_PILL_MIN_WIDTH_CLASS = 'min-w-[176px]';
+/** Figma 214:1054 / 111:4306 frame width 212px */
+export const HEADER_LOCALE_PILL_MIN_WIDTH_CLASS = 'min-w-[212px]';
 
-export const HEADER_LOCALE_PILL_RADIUS_CLASS = 'rounded-[64px]';
+/** Figma 111:4306 pill radius */
+export const HEADER_LOCALE_PILL_RADIUS_CLASS = 'rounded-[80px]';
 
-export const HEADER_LOCALE_PILL_PADDING_X_CLASS = 'px-4';
+/** Figma 111:4306 horizontal inset */
+export const HEADER_LOCALE_PILL_PADDING_X_CLASS = 'px-[31px]';
 
 /** Tight rhythm for smaller pill */
 export const HEADER_LOCALE_PILL_INNER_GAP_CLASS = 'gap-1';
