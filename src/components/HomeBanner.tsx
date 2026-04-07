@@ -235,13 +235,14 @@ export function HomeBanner() {
           <DeliveryCard />
           <ElectronicsCard />
 
-          {/* Promo sub-copy — centered in lower band */}
-          <p
-            className="absolute left-1/2 max-w-[min(632px,calc(100%-2rem))] -translate-x-1/2 text-center text-[24px] font-semibold leading-[30px] text-white antialiased"
+          {/* Promo sub-copy — centered in lower band (title + subtitle from i18n) */}
+          <div
+            className="absolute left-1/2 max-w-[min(632px,calc(100%-2rem))] -translate-x-1/2 text-center text-white antialiased"
             style={{ top: by(668) }}
           >
-            {t('home.hero_subtitle')}
-          </p>
+            <p className="text-[24px] font-semibold leading-[30px]">{t('home.hero_title')}</p>
+            <p className="mt-2 text-[20px] font-semibold leading-[28px]">{t('home.hero_subtitle')}</p>
+          </div>
         </div>
       </div>
     </section>
