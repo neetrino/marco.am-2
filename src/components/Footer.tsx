@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Send } from 'lucide-react';
 import { useTranslation } from '../lib/i18n-client';
+import { MarcoGroupLogo } from './MarcoGroupLogo';
 
 const SOCIAL_BTN =
   'flex h-10 w-10 items-center justify-center rounded-full bg-[#ebebeb] text-[#333] transition-colors hover:bg-[#101010] hover:text-white';
@@ -17,13 +18,8 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Company */}
           <div>
-            <Link href="/" className="mb-4 inline-flex flex-col items-start">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#ffca03] bg-white">
-                <span className="text-lg font-bold text-[#2f4b5d]">M</span>
-              </div>
-              <span className="mt-1 text-[10px] font-semibold uppercase tracking-tight text-[#333]">
-                MARCO GROUP
-              </span>
+            <Link href="/" className="mb-4 inline-flex items-start" aria-label="MARCO GROUP">
+              <MarcoGroupLogo />
             </Link>
             <p className="text-sm text-[#444]">{t('common.footer.description')}</p>
           </div>

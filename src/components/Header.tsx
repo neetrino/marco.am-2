@@ -18,6 +18,7 @@ import { LocaleCurrencyPill } from './LocaleCurrencyPill';
 import { Instagram, Facebook, Sun, Send, Phone } from 'lucide-react';
 import { CompareIcon } from './icons/CompareIcon';
 import { CartIcon } from './icons/CartIcon';
+import { MarcoGroupLogo } from './MarcoGroupLogo';
 
 const headerFont = Montserrat({
   subsets: ['latin', 'latin-ext', 'cyrillic'],
@@ -714,13 +715,12 @@ export function Header() {
         {/* Row 1: logo, nav, social, phone, addresses */}
         <div className="border-b border-[#ebebeb] bg-white">
           <div className="mx-auto flex max-w-[1920px] flex-wrap items-center gap-x-[54px] gap-y-2 px-[151px] py-1.5">
-            <Link href="/" className="flex h-[73px] w-[83px] shrink-0 flex-col items-center justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border-4 border-[#ffca03] bg-white">
-                <span className="text-xl font-bold text-[#2f4b5d]">M</span>
-              </div>
-              <span className="mt-1 max-w-[83px] text-center text-[9px] font-semibold leading-tight text-[#333]">
-                MARCO GROUP
-              </span>
+            <Link
+              href="/"
+              className="flex aspect-[83/73] h-[73px] w-[83px] shrink-0 items-center justify-center"
+              aria-label="MARCO GROUP"
+            >
+              <MarcoGroupLogo priority />
             </Link>
             <nav className="flex flex-wrap items-center gap-x-[45px] gap-y-1 text-[16px] font-bold capitalize leading-[18px] text-[#333]">
               {headerNavLinks.map((link) => (
@@ -1032,10 +1032,8 @@ export function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
                 </svg>
               </button>
-              <Link href="/" className="flex items-center flex-shrink-0 group">
-                <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent group-hover:from-gray-800 group-hover:to-gray-600 transition-all duration-300">
-                  White-Shop
-                </span>
+              <Link href="/" className="flex shrink-0 items-center group" aria-label="MARCO GROUP">
+                <MarcoGroupLogo />
               </Link>
             </div>
             {/* Mobile locale + currency pill (same line as logo) */}
