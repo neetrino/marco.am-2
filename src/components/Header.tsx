@@ -19,18 +19,20 @@ import { HeaderSocialCircleLinks } from './header/HeaderSocialCircleLinks';
 import {
   HEADER_CART_BUTTON_CLASS,
   HEADER_CATEGORY_BUTTON_CLASS,
+  HEADER_CONTAINER_CLASS,
   HEADER_FIGMA_CLUSTER_GAP_CLASS,
   HEADER_FIGMA_CONTACT_CLUSTER_GAP_CLASS,
   HEADER_FIGMA_NAV_LINK_GAP_CLASS,
-  HEADER_FIGMA_PADDING_X_CLASS,
   HEADER_FIGMA_PADDING_Y_CLASS,
   HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS,
   HEADER_FIGMA_ROW2_MAIN_GAP_CLASS,
-  HEADER_FIGMA_ROW2_PADDING_X_CLASS,
   HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS,
   HEADER_FIGMA_ROW2_PADDING_Y_CLASS,
+  HEADER_FIGMA_PILL_RADIUS_CLASS,
+  HEADER_TOOLBAR_ICON_CLUSTER_CLASS,
   HEADER_REELS_EXTERNAL_HREF,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
+  HEADER_SEARCH_BAR_INNER_CLASS,
   HEADER_SEARCH_ICON_TEXT_GAP_CLASS,
   HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS,
   HEADER_SEARCH_SUBMIT_CLASS,
@@ -695,10 +697,10 @@ export function Header() {
       </Suspense>
       {/* MARCO — top row (desktop), Figma 111:4293 / nav 111:4294 */}
       <div
-        className={`hidden border-b border-marco-border bg-white md:block ${HEADER_FIGMA_PADDING_Y_CLASS}`}
+        className={`hidden w-full border-b border-marco-border bg-white md:block ${HEADER_FIGMA_PADDING_Y_CLASS}`}
       >
         <div
-          className={`mx-auto flex w-full min-w-0 max-w-[1920px] flex-nowrap items-center ${HEADER_FIGMA_CLUSTER_GAP_CLASS} ${HEADER_FIGMA_PADDING_X_CLASS}`}
+          className={`${HEADER_CONTAINER_CLASS} flex min-w-0 flex-nowrap items-center ${HEADER_FIGMA_CLUSTER_GAP_CLASS}`}
         >
           <MarcoLogo />
           <nav
@@ -760,7 +762,9 @@ export function Header() {
       </div>
 
       {/* Mobile — compact top */}
-      <div className="flex items-center justify-between gap-2 border-b border-marco-border px-4 py-2 md:hidden">
+      <div
+        className={`${HEADER_CONTAINER_CLASS} flex items-center justify-between gap-2 border-b border-marco-border py-2 md:hidden`}
+      >
         <button
           type="button"
           onClick={() => setMobileMenuOpen(true)}
@@ -777,9 +781,9 @@ export function Header() {
       </div>
 
       {/* Row 2 — Figma 111:4273 / 214:1055: left cluster gap 25, main gap 66, right cluster gap 23 */}
-      <div className="border-b bg-white">
+      <div className="w-full border-b bg-white">
         <div
-          className={`mx-auto flex w-full max-w-[1920px] flex-col flex-wrap gap-y-2 ${HEADER_FIGMA_ROW2_PADDING_X_CLASS} ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
+          className={`${HEADER_CONTAINER_CLASS} flex w-full min-w-0 flex-col flex-wrap gap-y-2 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
         >
           <div
             className={`flex min-w-0 w-full flex-1 flex-col gap-y-2 sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS}`}
@@ -788,7 +792,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setShowProductsMenu((open) => !open)}
-              className={`flex w-full items-center justify-center bg-marco-black text-white ${HEADER_CATEGORY_BUTTON_CLASS} [&_svg]:text-white`}
+              className={`flex w-full items-center justify-center bg-marco-black text-white md:justify-between ${HEADER_CATEGORY_BUTTON_CLASS} [&_svg]:text-white`}
               aria-expanded={showProductsMenu}
               aria-haspopup="true"
             >
@@ -817,13 +821,13 @@ export function Header() {
             )}
           </div>
 
-          <div ref={inlineSearchRef} className="relative min-w-0 flex-1">
+          <div ref={inlineSearchRef} className={`relative min-w-0 flex-1 ${HEADER_SEARCH_BAR_INNER_CLASS}`}>
             <form
               onSubmit={handleSearch}
-              className={`flex w-full min-w-0 flex-row items-stretch overflow-hidden rounded-[200px] bg-marco-gray ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
+              className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_FIGMA_PILL_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
             >
               <div
-                className={`flex min-h-0 min-w-0 flex-1 items-center ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-3`}
+                className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-3`}
               >
                 <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
                   <SearchIcon />
@@ -848,7 +852,7 @@ export function Header() {
               </div>
               <button
                 type="submit"
-                className={`flex items-center justify-center px-3 text-sm font-semibold leading-normal transition-opacity hover:opacity-90 sm:px-4 ${HEADER_SEARCH_SUBMIT_WIDTH_CLASS} ${HEADER_SEARCH_SUBMIT_CLASS}`}
+                className={`${HEADER_SEARCH_SUBMIT_WIDTH_CLASS} ${HEADER_SEARCH_SUBMIT_CLASS}`}
               >
                 {t('common.buttons.search')}
               </button>
@@ -871,7 +875,7 @@ export function Header() {
           </div>
 
           <div
-            className={`flex w-full shrink-0 flex-wrap items-center justify-center md:w-auto md:flex-nowrap md:justify-end ${HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS}`}
+            className={`flex w-full shrink-0 flex-wrap items-center justify-end md:w-auto md:flex-nowrap ${HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS}`}
           >
             <HeaderLocaleCurrencyPill
               selectedCurrency={selectedCurrency}
@@ -884,82 +888,84 @@ export function Header() {
             >
               <Sun className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden />
             </button>
-            <div className="relative" ref={userMenuRef}>
-              {isLoggedIn ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className={`flex items-center justify-center transition-all duration-200 group ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
-                  >
-                    <ProfileIconFilled />
-                  </button>
-                  {showUserMenu && (
-                    <div className="absolute right-0 top-full z-[60] mt-2 w-52 overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
-                      <Link
-                        href="/profile"
-                        className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gradient-to-r hover:from-gray-50 hover:to-white"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        {t('common.navigation.profile')}
-                      </Link>
-                      {isAdmin && (
+            <div className={HEADER_TOOLBAR_ICON_CLUSTER_CLASS}>
+              <div className="relative shrink-0" ref={userMenuRef}>
+                {isLoggedIn ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowUserMenu(!showUserMenu)}
+                      className={`flex items-center justify-center transition-all duration-200 group ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
+                    >
+                      <ProfileIconFilled />
+                    </button>
+                    {showUserMenu && (
+                      <div className="absolute right-0 top-full z-[60] mt-2 w-52 overflow-hidden rounded-xl border border-gray-200/80 bg-white shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
                         <Link
-                          href="/admin"
-                          className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-blue-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-blue-50 hover:to-white"
+                          href="/profile"
+                          className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-gray-700 transition-all duration-150 hover:bg-gradient-to-r hover:from-gray-50 hover:to-white"
                           onClick={() => setShowUserMenu(false)}
                         >
-                          <div className="flex items-center">
-                            <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            {t('common.navigation.adminPanel')}
-                          </div>
+                          {t('common.navigation.profile')}
                         </Link>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowUserMenu(false);
-                          logout();
-                        }}
-                        className="block w-full px-5 py-3 text-left text-sm font-medium text-red-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-red-50 hover:to-white"
-                      >
-                        {t('common.navigation.logout')}
-                      </button>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <Link
-                  href="/login"
-                  className={`flex items-center justify-center text-gray-700 transition-colors duration-150 group hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
-                >
-                  <ProfileIconOutline />
-                </Link>
-              )}
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-blue-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-blue-50 hover:to-white"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <div className="flex items-center">
+                              <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              {t('common.navigation.adminPanel')}
+                            </div>
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            logout();
+                          }}
+                          className="block w-full px-5 py-3 text-left text-sm font-medium text-red-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-red-50 hover:to-white"
+                        >
+                          {t('common.navigation.logout')}
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className={`flex items-center justify-center text-gray-700 transition-colors duration-150 group hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
+                  >
+                    <ProfileIconOutline />
+                  </Link>
+                )}
+              </div>
+
+              <Link
+                href="/compare"
+                className={`relative flex items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
+              >
+                <BadgeIcon icon={<CompareIcon size={16} />} badge={compareCount} />
+              </Link>
+
+              <Link
+                href="/wishlist"
+                className={`relative flex items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
+              >
+                <BadgeIcon icon={<WishlistIcon />} badge={wishlistCount} />
+              </Link>
             </div>
 
             <Link
-              href="/compare"
-              className={`relative flex items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
-            >
-              <BadgeIcon icon={<CompareIcon size={16} />} badge={compareCount} />
-            </Link>
-
-            <Link
-              href="/wishlist"
-              className={`relative flex items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
-            >
-              <BadgeIcon icon={<WishlistIcon />} badge={wishlistCount} />
-            </Link>
-
-            <Link
               href="/cart"
-              className={`relative flex items-center justify-center bg-marco-black text-white transition-opacity hover:opacity-90 ${HEADER_CART_BUTTON_CLASS}`}
+              className={`relative bg-marco-black text-white ${HEADER_CART_BUTTON_CLASS}`}
             >
-              <CartIcon size={20} className="h-[18px] w-[18px] brightness-0 invert" />
+              <CartIcon size={22} className="h-[21px] w-[22px] brightness-0 invert" />
               <span className="tabular-nums">{formatPrice(cartTotal, selectedCurrency)}</span>
               {cartCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">

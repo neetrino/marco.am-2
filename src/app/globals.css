@@ -90,6 +90,34 @@
   }
 }
 
+/**
+ * Header rows (nav + search) — same max-width and horizontal inset as `.hero-section-inset`.
+ * Single shell so both rows share identical left/right edges at any zoom or viewport width.
+ */
+.marco-header-container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1920px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .marco-header-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .marco-header-container {
+    padding-left: 135px;
+    padding-right: 135px;
+  }
+}
+
 .policy-page {
   max-width: 56rem; /* ~max-w-4xl */
   margin-left: auto;
