@@ -2,15 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Montserrat } from 'next/font/google';
+import { montserratArm } from '../fonts/montserrat-arm';
 import { CtaArrowCircleIcon } from './icons/CtaArrowCircleIcon';
 import { useTranslation } from '../lib/i18n-client';
-
-/** Figma "Montserrat arm" — Montserrat 700 (sofa «ԳՆԵԼ ՀԻՄԱ» CTA, help strip; Next types omit `armenian` subset). */
-const homeBannerMontserratArm = Montserrat({
-  subsets: ['latin', 'latin-ext', 'cyrillic'],
-  weight: ['700'],
-});
 
 /**
  * Figma MCP asset URLs — refresh from MCP when expired (~7 days).
@@ -103,7 +97,10 @@ function SofaCard() {
       </div>
 
       {/* Product label */}
-      <div className="absolute text-white text-base leading-[1.49] antialiased" style={{ left: x(195), top: by(712) }}>
+      <div
+        className={`${montserratArm.className} absolute text-base leading-[1.49] text-white antialiased`}
+        style={{ left: x(195), top: by(712) }}
+      >
         <p>{ARM.sofaName}</p>
         <p>Bellini</p>
       </div>
@@ -114,7 +111,7 @@ function SofaCard() {
         style={{ left: x(524), top: by(700), width: bx(243), height: by(56) }}
       >
         <span
-          className={`${homeBannerMontserratArm.className} min-w-0 text-center text-base font-bold leading-6 text-[#000]`}
+          className={`${montserratArm.className} min-w-0 text-center text-base font-bold leading-6 text-[#000]`}
         >
           {ARM.gnel} {ARM.hima}
         </span>
@@ -153,7 +150,7 @@ function DeliveryCard() {
       {/* CTA — Figma 305:2110: flex, padding, rounded 60px, bg #000 */}
       <Link
         href="/products"
-        className="absolute z-10 flex items-center justify-center rounded-[60px] bg-black pt-[15.929px] pb-[16.071px] pl-[72.5px] pr-[72.5px] text-[16px] font-bold leading-[24px] text-white antialiased"
+        className={`${montserratArm.className} absolute z-10 flex items-center justify-center rounded-[60px] bg-black pt-[15.929px] pb-[16.071px] pl-[72.5px] pr-[72.5px] text-[16px] font-bold leading-[24px] text-white antialiased`}
         style={{ left: bx(DELIVERY_BUY_CTA_LEFT_REF), top: by(502) }}
       >
         {ARM.gnel} {ARM.hima}
@@ -191,7 +188,7 @@ function ElectronicsCard() {
 
       {/* Sub-headline */}
       <div
-        className="absolute font-black whitespace-nowrap antialiased"
+        className={`${montserratArm.className} absolute font-black whitespace-nowrap antialiased`}
         style={{ left: bx(1350), top: by(378), fontSize: bx(28), lineHeight: `${by(33)}px` }}
       >
         <p className="text-[#facc15]">{ARM.nor}</p>
@@ -202,7 +199,7 @@ function ElectronicsCard() {
       {/* White "More" CTA */}
       <Link
         href="/products"
-        className="absolute flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased"
+        className={`${montserratArm.className} absolute flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased`}
         style={{ left: bx(1394), top: by(502), height: by(56), width: bx(250) }}
       >
         {ARM.avelin}
@@ -251,11 +248,11 @@ export function HomeBanner() {
         >
           {/* Large headline — above sofa row, optical balance with mask corner */}
           <p
-            className="absolute z-20 whitespace-nowrap font-black antialiased"
+            className={`${montserratArm.className} absolute z-20 whitespace-nowrap font-black antialiased`}
             style={{ left: bx(162), top: by(88), fontSize: bx(60), lineHeight: `${by(72)}px` }}
           >
-            <span className="text-black">{ARM.free} </span>
-            <span className="text-white">{ARM.delivery}</span>
+            <span className="home-banner-hero-stroke text-[#000]">{ARM.free} </span>
+            <span className="home-banner-hero-stroke text-[#FFF]">{ARM.delivery}</span>
           </p>
 
           <SofaCard />
@@ -276,7 +273,7 @@ export function HomeBanner() {
             </p>
             <Link
               href="/contact"
-              className={`${homeBannerMontserratArm.className} flex h-[56px] w-[311px] shrink-0 flex-row items-center justify-center self-end rounded-[68px] bg-[#2F4B5D] px-8 py-4 text-center text-base font-bold leading-6 text-[#FFF] shadow-[0_4px_24px_0_rgba(150,150,150,0.28)] antialiased`}
+              className={`${montserratArm.className} flex h-[56px] w-[311px] shrink-0 flex-row items-center justify-center self-end rounded-[68px] bg-[#2F4B5D] px-8 py-4 text-center text-base font-bold leading-6 text-[#FFF] shadow-[0_4px_24px_0_rgba(150,150,150,0.28)] antialiased`}
             >
               {t('home.hero_help_cta')}
             </Link>

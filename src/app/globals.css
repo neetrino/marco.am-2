@@ -66,6 +66,15 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /**
+   * Home hero headline: maximal optical weight (Armenian webfont max is Bold).
+   * Stroke matches text color via currentColor; ~1.15px is strong at scaled ~60px.
+   */
+  .home-banner-hero-stroke {
+    paint-order: stroke fill;
+    -webkit-text-stroke: 1.15px currentColor;
+  }
 }
 
 /* Policy pages typography & spacing */
