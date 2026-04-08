@@ -92,3 +92,26 @@ export const HERO_PROMO_STACK_CONTAINER_ASPECT_H = HERO_PROMO_STACK_SPAN_PX;
 
 /** Figma 305:2147 / stack frame — max link width matches design (px) */
 export const HERO_PROMO_STACK_LINK_MAX_WIDTH_PX = HERO_PROMO_STACK_CONTAINER_ASPECT_W;
+
+const BLUE_TOP_PCT = toPercent(HERO_PROMO_STACK_BLUE_TOP_PX);
+const BLUE_HEIGHT_PCT = toPercent(HERO_PROMO_STACK_BLUE_HEIGHT_PX);
+
+const chairScale = HERO_PROMO_CHAIR_GROUP_SCALE;
+const fgHeightPct = HERO_PROMO_FLOOR_GROUP_HEIGHT_RATIO * chairScale * 100;
+const fgWidthPct = HERO_PROMO_CHAIR_SHADOW_WIDTH_RATIO * chairScale * 100;
+const fgTopFromStackTopPct = 100 - HERO_PROMO_FLOOR_GROUP_BOTTOM_OFFSET_PCT - fgHeightPct;
+
+const handleTopFromStackTopPct =
+  fgTopFromStackTopPct + (HERO_PROMO_SLIDER_HANDLE_TOP_PCT / 100) * fgHeightPct;
+
+/** Handle knob is square; size follows width as % of floor group → % of stack width. */
+const handleSizePct = (HERO_PROMO_SLIDER_HANDLE_WIDTH_PCT / 100) * fgWidthPct;
+
+const handleCenterFromStackTopPct = handleTopFromStackTopPct + handleSizePct / 2;
+
+/**
+ * Vertical center of the CTA pill inside the blue layer (% of blue height from blue top).
+ * Midpoint between the slider handle center and the bottom of the stack frame.
+ */
+export const HERO_PROMO_STACK_CTA_CENTER_FROM_BLUE_TOP_PCT =
+  ((handleCenterFromStackTopPct + 100) / 2 - BLUE_TOP_PCT) / BLUE_HEIGHT_PCT * 100;
