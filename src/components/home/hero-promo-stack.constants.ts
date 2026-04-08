@@ -81,6 +81,11 @@ export const HERO_PROMO_FLOOR_GROUP_BOTTOM_OFFSET_PCT = 21;
  */
 export const HERO_PROMO_CHAIR_BOTTOM_OFFSET_PCT = 23;
 
+/**
+ * Scales chair + floor overlay vs Figma (1 = design). Lower = smaller asset, more margin inside the stack.
+ */
+export const HERO_PROMO_CHAIR_GROUP_SCALE = 0.88;
+
 /** Container `aspect-ratio` — Figma stack width × vertical span */
 export const HERO_PROMO_STACK_CONTAINER_ASPECT_W = 631;
 export const HERO_PROMO_STACK_CONTAINER_ASPECT_H = HERO_PROMO_STACK_SPAN_PX;

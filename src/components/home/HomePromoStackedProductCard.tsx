@@ -13,6 +13,7 @@ import {
 } from '../hero.constants';
 import {
   HERO_PROMO_CHAIR_BOTTOM_OFFSET_PCT,
+  HERO_PROMO_CHAIR_GROUP_SCALE,
   HERO_PROMO_CHAIR_HEIGHT_RATIO,
   HERO_PROMO_CHAIR_SHADOW_WIDTH_RATIO,
   HERO_PROMO_CHAIR_WIDTH_RATIO,
@@ -49,8 +50,8 @@ function StackLayer({ color, layerStyle, zIndex }: StackLayerProps) {
   return <div className="absolute left-0 right-0 overflow-hidden" style={style} />;
 }
 
-/** Matches `HERO_PROMO_STACK_LINK_MAX_WIDTH_PX` (631) — Next/Image `sizes` */
-const HERO_PROMO_STACK_IMAGE_SIZES = '(max-width: 640px) 88vw, 631px';
+/** Matches stacked card max width — Next/Image `sizes` */
+const HERO_PROMO_STACK_IMAGE_SIZES = '(max-width: 640px) 88vw, 520px';
 
 type PromoChairOverlayProps = {
   wrapStyle: CSSProperties;
@@ -130,23 +131,25 @@ export function HomePromoStackedProductCard({ ariaLabel }: HomePromoStackedProdu
     aspectRatio: `${HERO_PROMO_STACK_CONTAINER_ASPECT_W} / ${HERO_PROMO_STACK_CONTAINER_ASPECT_H}`,
   };
 
+  const chairScalePct = HERO_PROMO_CHAIR_GROUP_SCALE * 100;
+
   const floorGroupWrapStyle: CSSProperties = {
     bottom: `${HERO_PROMO_FLOOR_GROUP_BOTTOM_OFFSET_PCT}%`,
-    width: `${HERO_PROMO_CHAIR_SHADOW_WIDTH_RATIO * 100}%`,
-    height: `${HERO_PROMO_FLOOR_GROUP_HEIGHT_RATIO * 100}%`,
+    width: `${HERO_PROMO_CHAIR_SHADOW_WIDTH_RATIO * chairScalePct}%`,
+    height: `${HERO_PROMO_FLOOR_GROUP_HEIGHT_RATIO * chairScalePct}%`,
   };
 
   const chairWrapStyle: CSSProperties = {
     bottom: `${HERO_PROMO_CHAIR_BOTTOM_OFFSET_PCT}%`,
-    width: `${HERO_PROMO_CHAIR_WIDTH_RATIO * 100}%`,
-    height: `${HERO_PROMO_CHAIR_HEIGHT_RATIO * 100}%`,
+    width: `${HERO_PROMO_CHAIR_WIDTH_RATIO * chairScalePct}%`,
+    height: `${HERO_PROMO_CHAIR_HEIGHT_RATIO * chairScalePct}%`,
   };
 
   return (
     <Link
       href="/products"
       aria-label={ariaLabel}
-      className="relative block w-[min(88vw,220px)] sm:w-[260px] md:w-[min(52vw,380px)] lg:w-[min(48vw,480px)] xl:w-[631px]"
+      className="relative block w-[min(88vw,180px)] sm:w-[220px] md:w-[min(52vw,300px)] lg:w-[min(48vw,380px)] xl:w-[520px]"
     >
       <div className="relative w-full overflow-visible" style={aspectStyle}>
         <StackLayer color={HERO_PROMO_STACK_LAYER_WHITE} layerStyle={HERO_PROMO_STACK_WHITE_STYLE} zIndex={0} />

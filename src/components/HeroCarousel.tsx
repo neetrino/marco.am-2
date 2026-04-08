@@ -17,7 +17,7 @@ export function HeroCarousel() {
             Mobile: headline top / card bottom-right (fits short banner).
             md+: Figma 305 — headline then chair card stacked under «ԱՆՎՃԱՐ ԱՌԱՔՈՒՄ» / FREE DELIVERY.
           */}
-          <div className="pointer-events-auto absolute inset-0 flex flex-col justify-between pt-9 pl-10 pr-3 pb-3 sm:pr-5 sm:pb-5 md:justify-start md:gap-6 md:pr-7 md:pb-7 lg:gap-7 lg:pr-9 lg:pb-9">
+          <div className="pointer-events-auto absolute inset-0 flex flex-col justify-between pt-9 pl-10 pr-4 pb-6 sm:pr-5 sm:pb-6 md:justify-start md:gap-6 md:pr-7 md:pb-9 lg:gap-7 lg:pr-9 lg:pb-11">
             <div className="[&_p]:mb-0 w-max max-w-[min(580px,calc(100%-16px))]">
               <HomePromoYellowHeadline
                 emphasisText={t('home.promo_banner_headline_emphasis')}
