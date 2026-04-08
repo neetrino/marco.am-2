@@ -5,4 +5,4 @@
 export const HOME_PAGE_CONTAINER_CLASS = 'w-full max-w-[1600px] mx-auto px-4';
 
 /** Vertical gap between the sticky header and the home hero banner (px). */
-export const HOME_HERO_BANNER_HEADER_GAP_PX = 80;
+export const HOME_HERO_BANNER_HEADER_GAP_PX = 65;
