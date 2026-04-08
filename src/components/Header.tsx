@@ -19,6 +19,7 @@ import { Instagram, Facebook, Sun, Send, Phone } from 'lucide-react';
 import { CompareIcon } from './icons/CompareIcon';
 import { CartIcon } from './icons/CartIcon';
 import { MarcoGroupLogo } from './MarcoGroupLogo';
+import { WhatsAppIcon } from './icons/WhatsAppIcon';
 import { HEADER_DESKTOP_SHELL_CLASS, HEADER_VIEWPORT_LEFT_INSET_CLASS } from '@/constants/headerLayout';
 import { HOME_PAGE_CONTAINER_CLASS } from '@/constants/homePageLayout';
 
@@ -780,7 +781,7 @@ export function Header() {
                     className={socialBtnClass}
                     aria-label="WhatsApp"
                   >
-                    <Phone className="h-[22px] w-[22px] xl:h-6 xl:w-6 min-[1920px]:h-[26px] min-[1920px]:w-[26px]" />
+                    <WhatsAppIcon className="h-[22px] w-[22px] xl:h-6 xl:w-6 min-[1920px]:h-[26px] min-[1920px]:w-[26px]" />
                   </a>
                   <a
                     href={t('contact.social.viber') || '#'}
