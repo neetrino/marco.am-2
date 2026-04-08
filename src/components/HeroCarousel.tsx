@@ -12,7 +12,7 @@ export function HeroCarousel() {
       <div className="relative aspect-[141/79] min-h-[260px] w-full overflow-hidden rounded-3xl bg-marco-yellow box-border sm:min-h-[320px] md:min-h-[380px]">
         <HeroCarouselSlides />
         <div className="pointer-events-none absolute inset-0">
-          <div className="pointer-events-auto absolute left-[72px] top-[50px] w-max max-w-[min(645px,calc(100%-72px-16px))]">
+          <div className="pointer-events-auto absolute left-[40px] top-[36px] w-max max-w-[min(580px,calc(100%-40px-16px))]">
             <div className="[&_p]:mb-0">
               <HomePromoYellowHeadline
                 emphasisText={t('home.promo_banner_headline_emphasis')}
