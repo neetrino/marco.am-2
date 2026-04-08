@@ -16,7 +16,7 @@ export function HomePromoPromoCardTwo({ discountLabel, ctaLabel }: HomePromoProm
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-[#1a1a1a] ring-1 ring-white/10 ${PROMO_SMALL_CARD_MIN_HEIGHT_CLASS}`}
+      className={`relative overflow-hidden rounded-2xl bg-transparent ring-1 ring-black/10 ${PROMO_SMALL_CARD_MIN_HEIGHT_CLASS}`}
     >
       <div className="absolute right-3 top-3 z-10">
         <Link
@@ -28,7 +28,7 @@ export function HomePromoPromoCardTwo({ discountLabel, ctaLabel }: HomePromoProm
         </Link>
       </div>
       <div className="absolute left-3 top-1/2 z-10 -translate-y-[60%]">
-        <span className="text-3xl font-black tracking-tight text-marco-yellow sm:text-4xl">
+        <span className="text-3xl font-black tracking-tight text-marco-black sm:text-4xl">
           {discountLabel}
         </span>
       </div>
