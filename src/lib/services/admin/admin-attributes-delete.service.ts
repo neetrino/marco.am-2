@@ -1,4 +1,6 @@
 import { db } from "@white-shop/db";
+import { thrown } from "@/lib/types/catch-utils";
+import { getErrorMessage, getPrismaErrorCode } from "@/lib/types/errors";
 
 class AdminAttributesDeleteService {
   /**
@@ -48,11 +50,11 @@ class AdminAttributesDeleteService {
             where: { attributeId },
           });
           console.log('📊 [ADMIN ATTRIBUTES DELETE SERVICE] Product attributes count:', productAttributesCount);
-        } catch (countError: any) {
+        } catch (countError: unknown) {
           console.error('❌ [ADMIN ATTRIBUTES DELETE SERVICE] Product attributes count սխալ:', {
             error: countError,
-            message: countError?.message,
-            code: countError?.code,
+            message: getErrorMessage(countError),
+            code: getPrismaErrorCode(countError),
           });
           // Եթե count-ը չի աշխատում, փորձում ենք findMany-ով
           try {
@@ -62,7 +64,7 @@ class AdminAttributesDeleteService {
             });
             productAttributesCount = productAttributes.length;
             console.log('📊 [ADMIN ATTRIBUTES DELETE SERVICE] Product attributes count (via findMany):', productAttributesCount);
-          } catch (findError: any) {
+          } catch (findError: unknown) {
             console.warn('⚠️ [ADMIN ATTRIBUTES DELETE SERVICE] Product attributes findMany-ը նույնպես չի աշխատում, skip անում ենք ստուգումը');
             productAttributesCount = 0;
           }
@@ -102,11 +104,11 @@ class AdminAttributesDeleteService {
             },
           });
           console.log('📊 [ADMIN ATTRIBUTES DELETE SERVICE] Variant options count:', variantOptionsCount);
-        } catch (countError: any) {
+        } catch (countError: unknown) {
           console.error('❌ [ADMIN ATTRIBUTES DELETE SERVICE] Variant options count սխալ:', {
             error: countError,
-            message: countError?.message,
-            code: countError?.code,
+            message: getErrorMessage(countError),
+            code: getPrismaErrorCode(countError),
           });
           // Եթե count-ը չի աշխատում, փորձում ենք findMany-ով
           const variantOptions = await db.productVariantOption.findMany({
@@ -142,14 +144,15 @@ class AdminAttributesDeleteService {
       });
       
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const loose = thrown(error);
       // Եթե սա մեր ստեղծած սխալ է, ապա վերադարձնում ենք այն
-      if (error.status && error.type) {
+      if (loose.status && loose.type) {
         console.error('❌ [ADMIN ATTRIBUTES DELETE SERVICE] Ստանդարտ սխալ:', {
-          status: error.status,
-          type: error.type,
-          title: error.title,
-          detail: error.detail,
+          status: loose.status,
+          type: loose.type,
+          title: loose.title,
+          detail: loose.detail,
         });
         throw error;
       }
@@ -158,17 +161,17 @@ class AdminAttributesDeleteService {
       console.error('❌ [ADMIN ATTRIBUTES DELETE SERVICE] Attribute հեռացման սխալ:', {
         attributeId,
         error: {
-          name: error?.name,
-          message: error?.message,
-          code: error?.code,
-          meta: error?.meta,
-          stack: error?.stack?.substring(0, 1000),
+          name: loose.name,
+          message: loose.message,
+          code: loose.code,
+          meta: loose.meta,
+          stack: typeof loose.stack === 'string' ? loose.stack.substring(0, 1000) : undefined,
         },
         timestamp: new Date().toISOString(),
       });
 
       // Prisma սխալների մշակում
-      if (error?.code === 'P2025') {
+      if (getPrismaErrorCode(error) === 'P2025') {
         console.log('⚠️ [ADMIN ATTRIBUTES DELETE SERVICE] Prisma P2025: Գրառումը չի գտնվել');
         throw {
           status: 404,
@@ -183,7 +186,7 @@ class AdminAttributesDeleteService {
         status: 500,
         type: "https://api.shop.am/problems/internal-error",
         title: "Internal Server Error",
-        detail: error?.message || "Failed to delete attribute",
+        detail: getErrorMessage(error) || "Failed to delete attribute",
       };
     }
   }
@@ -272,7 +275,7 @@ class AdminAttributesDeleteService {
         name: translation?.name || attribute.key,
         type: attribute.type,
         filterable: attribute.filterable,
-        values: values.map((val: any) => {
+        values: values.map((val: (typeof values)[number]) => {
           const valTranslation = val.translations?.[0];
           return {
             id: val.id,
@@ -281,16 +284,16 @@ class AdminAttributesDeleteService {
           };
         }),
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [ADMIN ATTRIBUTES DELETE SERVICE] Error deleting attribute value:', error);
-      if (error.status) {
+      if (thrown(error).status) {
         throw error;
       }
       throw {
         status: 500,
         type: "https://api.shop.am/problems/internal-error",
         title: "Internal Server Error",
-        detail: error.message || "Failed to delete attribute value",
+        detail: getErrorMessage(error) || "Failed to delete attribute value",
       };
     }
   }

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { jsonErrorResponse } from "@/lib/api/json-error-response";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
 
@@ -176,27 +177,16 @@ export async function GET(req: NextRequest) {
     });
     
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     const totalTime = Date.now() - requestStartTime;
+    const err = error instanceof Error ? error : undefined;
     console.error("❌ [ADMIN PRODUCTS API] GET Error:", {
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name,
-      type: error?.type,
-      status: error?.status,
+      message: err?.message,
+      stack: err?.stack,
+      name: err?.name,
       time: `${totalTime}ms`,
     });
-    
-    return NextResponse.json(
-      {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
-        instance: req.url,
-      },
-      { status: error.status || 500 }
-    );
+    return jsonErrorResponse(error, req.url);
   }
 }
 
@@ -335,35 +325,38 @@ export async function POST(req: NextRequest) {
     const serviceStartTime = Date.now();
     const product = await adminService.createProduct(body);
     const serviceTime = Date.now() - serviceStartTime;
-    
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          type: "https://api.shop.am/problems/internal-error",
+          title: "Internal Server Error",
+          status: 500,
+          detail: "Product was not returned after creation",
+          instance: req.url,
+        },
+        { status: 500 }
+      );
+    }
+
     const totalTime = Date.now() - requestStartTime;
+    const displayTitle = product.translations?.[0]?.title ?? "";
     console.log(`✅ [ADMIN PRODUCTS API] Product created in ${totalTime}ms (service: ${serviceTime}ms)`, {
       productId: product.id,
-      title: product.title,
+      title: displayTitle,
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const totalTime = Date.now() - requestStartTime;
+    const err = error instanceof Error ? error : undefined;
     console.error("❌ [ADMIN PRODUCTS API] POST Error:", {
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name,
-      type: error?.type,
-      status: error?.status,
+      message: err?.message,
+      stack: err?.stack,
+      name: err?.name,
       time: `${totalTime}ms`,
     });
-    
-    return NextResponse.json(
-      {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
-        instance: req.url,
-      },
-      { status: error.status || 500 }
-    );
+    return jsonErrorResponse(error, req.url);
   }
 }
 

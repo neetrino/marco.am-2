@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
+import { getErrorMessage } from '@/lib/types/errors';
 import { useTranslation } from '../../../lib/i18n-client';
 import { formatPriceInCurrency, convertPrice, getStoredCurrency, initializeCurrencyRates, CurrencyCode } from '../../../lib/currency';
 
@@ -231,9 +232,9 @@ export function useOrders() {
     try {
       const response = await apiClient.get<OrderDetails>(`/api/v1/admin/orders/${orderId}`);
       setOrderDetails(response);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Failed to load order details:', err);
-      alert(err?.message || t('admin.orders.orderDetails.failedToLoad'));
+      alert(getApiOrErrorMessage(err, t('admin.orders.orderDetails.failedToLoad')));
       setSelectedOrderId(null);
     } finally {
       setLoadingOrderDetails(false);
@@ -293,9 +294,9 @@ export function useOrders() {
             const response = await apiClient.delete(`/api/v1/admin/orders/${id}`);
             console.log('✅ [ADMIN] Order deleted successfully:', id, response);
             return { id, success: true };
-          } catch (error: any) {
+          } catch (error: unknown) {
             console.error('❌ [ADMIN] Failed to delete order:', id, error);
-            return { id, success: false, error: error.message || t('admin.common.unknownErrorFallback') };
+            return { id, success: false, error: getErrorMessage(error) || t('admin.common.unknownErrorFallback') };
           }
         })
       );

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { getErrorMessage } from '@/lib/types/errors';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
@@ -116,9 +117,9 @@ export default function MessagesPage() {
       setSelectedIds(new Set());
       await fetchMessages();
       alert(t('admin.messages.deletedSuccess'));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Bulk delete messages error:', err);
-      alert(t('admin.messages.failedToDelete') + ': ' + (err.message || 'Unknown error'));
+      alert(t('admin.messages.failedToDelete') + ': ' + getErrorMessage(err));
     } finally {
       setBulkDeleting(false);
     }

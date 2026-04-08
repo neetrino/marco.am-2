@@ -388,7 +388,7 @@ export function useProductFormHandlers({
         setLoading,
         router,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error saving product:', err);
     } finally {
       setLoading(false);

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { AdminMenuDrawer } from '../../../components/AdminMenuDrawer';
 import { getAdminMenuTABS } from '../admin-menu.config';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -54,18 +54,9 @@ function BrandsSection() {
       console.log('✅ [ADMIN] Brand deleted successfully');
       fetchBrands();
       alert(t('admin.brands.deletedSuccess'));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error deleting brand:', err);
-      let errorMessage = 'Unknown error occurred';
-      if (err.data?.detail) {
-        errorMessage = err.data.detail;
-      } else if (err.detail) {
-        errorMessage = err.detail;
-      } else if (err.message) {
-        errorMessage = err.message;
-      } else if (err.response?.data?.detail) {
-        errorMessage = err.response.data.detail;
-      }
+      const errorMessage = getApiOrErrorMessage(err, 'Unknown error occurred');
       alert(t('admin.brands.errorDeleting') + '\n\n' + errorMessage);
     }
   };
@@ -118,18 +109,9 @@ function BrandsSection() {
       
       fetchBrands();
       handleCloseModal();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error saving brand:', err);
-      let errorMessage = 'Unknown error occurred';
-      if (err.data?.detail) {
-        errorMessage = err.data.detail;
-      } else if (err.detail) {
-        errorMessage = err.detail;
-      } else if (err.message) {
-        errorMessage = err.message;
-      } else if (err.response?.data?.detail) {
-        errorMessage = err.response.data.detail;
-      }
+      const errorMessage = getApiOrErrorMessage(err, 'Unknown error occurred');
       alert(t('admin.brands.errorSaving') + '\n\n' + errorMessage);
     } finally {
       setSubmitting(false);

@@ -1,4 +1,5 @@
 import { db } from "@white-shop/db";
+import { getErrorMessage, getPrismaErrorCode } from "@/lib/types/errors";
 
 class AdminAttributesReadService {
   /**
@@ -62,8 +63,8 @@ class AdminAttributesReadService {
       `);
 
       console.log('✅ [ADMIN ATTRIBUTES READ SERVICE] Migration completed successfully!');
-    } catch (error: any) {
-      console.error('❌ [ADMIN ATTRIBUTES READ SERVICE] Migration error:', error.message);
+    } catch (error: unknown) {
+      console.error('❌ [ADMIN ATTRIBUTES READ SERVICE] Migration error:', getErrorMessage(error));
       throw error; // Re-throw to handle in calling code
     }
   }
@@ -75,8 +76,8 @@ class AdminAttributesReadService {
     // Ensure colors and imageUrl columns exist (runtime migration)
     try {
       await this.ensureColorsColumnsExist();
-    } catch (migrationError: any) {
-      console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] Migration check failed:', migrationError.message);
+    } catch (migrationError: unknown) {
+      console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] Migration check failed:', getErrorMessage(migrationError));
       // Continue anyway - might already exist
     }
 
@@ -104,10 +105,15 @@ class AdminAttributesReadService {
           position: "asc",
         },
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const msg = getErrorMessage(error);
       // If attribute_values.colors column doesn't exist, fetch without it
-      if (error?.code === 'P2022' || error?.message?.includes('attribute_values.colors') || error?.message?.includes('does not exist')) {
-        console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] attribute_values.colors column not found, fetching without it:', error.message);
+      if (
+        getPrismaErrorCode(error) === 'P2022' ||
+        msg.includes('attribute_values.colors') ||
+        msg.includes('does not exist')
+      ) {
+        console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] attribute_values.colors column not found, fetching without it:', msg);
         // Fetch attributes first
         const attributesList = await db.attribute.findMany({
           include: {
@@ -123,7 +129,13 @@ class AdminAttributesReadService {
 
         // Fetch values separately without colors and imageUrl using Prisma
         // Try with select first, if it fails (because Prisma tries to select colors), use raw query
-        let allValues: any[];
+        let allValues: Array<{
+          id: string;
+          attributeId: string;
+          value: string;
+          position: number;
+          translations?: unknown[];
+        }>;
         try {
           allValues = await db.attributeValue.findMany({
             select: {
@@ -140,10 +152,10 @@ class AdminAttributesReadService {
               position: "asc",
             },
           });
-        } catch (selectError: any) {
+        } catch (selectError: unknown) {
           // If select also fails, use raw query with correct column name
           // Try with quoted name first, then without quotes
-          console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] Using raw query for attribute values:', selectError.message);
+          console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] Using raw query for attribute values:', getErrorMessage(selectError));
           try {
             allValues = await db.$queryRaw`
               SELECT 
@@ -153,10 +165,10 @@ class AdminAttributesReadService {
                 av.position
               FROM attribute_values av
               ORDER BY av.position ASC
-            ` as any[];
-          } catch (rawError: any) {
+            ` as Array<{ id: string; attributeId: string; value: string; position: number }>;
+          } catch (rawError: unknown) {
             // If quoted name doesn't work, try without quotes (snake_case)
-            console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] Trying with snake_case column name:', rawError.message);
+            console.warn('⚠️ [ADMIN ATTRIBUTES READ SERVICE] Trying with snake_case column name:', getErrorMessage(rawError));
             allValues = await db.$queryRaw`
               SELECT 
                 av.id,
@@ -165,11 +177,11 @@ class AdminAttributesReadService {
                 av.position
               FROM attribute_values av
               ORDER BY av.position ASC
-            ` as any[];
+            ` as Array<{ id: string; attributeId: string; value: string; position: number }>;
           }
           
           // Fetch translations separately
-          const valueIds = allValues.map((v: any) => v.id);
+          const valueIds = allValues.map((v) => v.id);
           const valueTranslations = valueIds.length > 0 
             ? await db.attributeValueTranslation.findMany({
                 where: {
@@ -180,17 +192,17 @@ class AdminAttributesReadService {
             : [];
           
           // Add translations to values
-          allValues = allValues.map((val: any) => ({
+          allValues = allValues.map((val) => ({
             ...val,
-            translations: valueTranslations.filter((t: any) => t.attributeValueId === val.id),
+            translations: valueTranslations.filter((t) => t.attributeValueId === val.id),
           }));
         }
 
         // Combine attributes with their values
-        attributes = attributesList.map((attr: any) => {
+        attributes = attributesList.map((attr) => {
           const attrValues = allValues
-            .filter((val: any) => val.attributeId === attr.id)
-            .map((val: any) => {
+            .filter((val) => val.attributeId === attr.id)
+            .map((val) => {
               return {
                 id: val.id,
                 attributeId: val.attributeId,
@@ -213,7 +225,7 @@ class AdminAttributesReadService {
     }
 
     return {
-      data: attributes.map((attribute: { id: string; key: string; type: string; filterable: boolean; translations?: Array<{ name: string }>; values?: Array<{ id: string; value: string; translations?: Array<{ label: string }>; colors?: any; imageUrl?: string | null }> }) => {
+      data: attributes.map((attribute) => {
         const translations = Array.isArray(attribute.translations) ? attribute.translations : [];
         const translation = translations[0] || null;
         const values = Array.isArray(attribute.values) ? attribute.values : [];
@@ -223,15 +235,15 @@ class AdminAttributesReadService {
           name: translation?.name || attribute.key,
           type: attribute.type,
           filterable: attribute.filterable,
-          values: values.map((value: any) => {
+          values: values.map((value) => {
             const valueTranslations = Array.isArray(value.translations) ? value.translations : [];
-            const valueTranslation = valueTranslations[0] || null;
+            const valueTranslation = (valueTranslations[0] as { label?: string } | undefined) ?? null;
             const colorsData = value.colors;
             let colorsArray: string[] = [];
             
             if (colorsData) {
               if (Array.isArray(colorsData)) {
-                colorsArray = colorsData;
+                colorsArray = colorsData.filter((c): c is string => typeof c === 'string');
               } else if (typeof colorsData === 'string') {
                 try {
                   colorsArray = JSON.parse(colorsData);

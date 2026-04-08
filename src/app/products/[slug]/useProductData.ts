@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import type { LanguageCode } from '../../../lib/language';
 import { getStoredLanguage } from '../../../lib/language';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getErrorHttpStatus } from '../../../lib/api-client';
 import { getStoredCurrency, type CurrencyCode } from '../../../lib/currency';
 import type { Product } from './types';
 import { RESERVED_ROUTES, WISHLIST_KEY, COMPARE_KEY } from './constants';
@@ -141,9 +141,9 @@ export function useProductData({
         data = await apiClient.get<Product>(`/api/v1/products/${slug}`, {
           params: { lang: currentLang },
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         // If 404 and not English, try fallback to English
-        if (error?.status === 404 && currentLang !== 'en') {
+        if (getErrorHttpStatus(error) === 404 && currentLang !== 'en') {
           try {
             data = await apiClient.get<Product>(`/api/v1/products/${slug}`, {
               params: { lang: 'en' },
@@ -162,9 +162,9 @@ export function useProductData({
       // Don't reset image index here - let the component handle it
 
       // Don't set initial variant here - let the component handle it
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If product not found (404), clear product state and show error
-      if (error?.status === 404) {
+      if (getErrorHttpStatus(error) === 404) {
         setProduct(null);
         // Optionally redirect to 404 page or show error message
         // router.push('/404');
@@ -260,7 +260,7 @@ export function useProductData({
           `/api/v1/products/${slug}/reviews`
         );
         setReviews(data || []);
-      } catch (error: any) {
+      } catch (error: unknown) {
         // If 404, product might not have reviews yet - that's okay
         setReviews([]);
       }

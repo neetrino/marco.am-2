@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/api-client';
+import { getErrorMessage } from '@/lib/types/errors';
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import type { Attribute } from '../types';
+import type { ProductLabel, Variant } from '../types';
 
 interface CreateAndSubmitPayloadProps {
   formData: {
@@ -13,11 +14,11 @@ interface CreateAndSubmitPayloadProps {
     imageUrls: string[];
     featuredImageIndex: number;
     mainProductImage: string;
-    labels: any[];
+    labels: ProductLabel[];
   };
   finalBrandIds: string[];
   finalPrimaryCategoryId: string;
-  variants: any[];
+  variants: Variant[];
   attributeIds: string[];
   finalMedia: string[];
   mainImage: string | null;
@@ -42,7 +43,7 @@ export async function createAndSubmitPayload({
   setLoading,
   router,
 }: CreateAndSubmitPayloadProps): Promise<void> {
-  const payload: any = {
+  const payload: Record<string, unknown> = {
       title: formData.title,
       slug: formData.slug,
       descriptionHtml: formData.descriptionHtml || undefined,
@@ -91,28 +92,24 @@ export async function createAndSubmitPayload({
       }
       
       router.push('/admin/products');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error saving product:', err);
-      
+
       let errorMessage = isEditMode ? 'Չհաջողվեց թարմացնել ապրանքը' : 'Չհաջողվեց ստեղծել ապրանքը';
-      
-      if (err?.data?.detail) {
-        errorMessage = err.data.detail;
-      } else if (err?.response?.data?.detail) {
-        errorMessage = err.response.data.detail;
-      } else if (err?.message) {
-        if (err.message.includes('<!DOCTYPE') || err.message.includes('<html')) {
-          const mongoErrorMatch = err.message.match(/MongoServerError[^<]+/);
-          if (mongoErrorMatch) {
-            errorMessage = `Տվյալների բազայի սխալ: ${mongoErrorMatch[0]}`;
-          } else {
-            errorMessage = 'Տվյալների բազայի սխալ: SKU-ն արդեն օգտագործված է կամ այլ սխալ:';
-          }
+      const raw = getErrorMessage(err);
+
+      if (raw.includes('<!DOCTYPE') || raw.includes('<html')) {
+        const mongoErrorMatch = raw.match(/MongoServerError[^<]+/);
+        if (mongoErrorMatch) {
+          errorMessage = `Տվյալների բազայի սխալ: ${mongoErrorMatch[0]}`;
         } else {
-          errorMessage = err.message;
+          errorMessage = 'Տվյալների բազայի սխալ: SKU-ն արդեն օգտագործված է կամ այլ սխալ:';
         }
+      } else if (raw && raw !== 'Unknown error') {
+        errorMessage = raw;
       }
-      
+
+      alert(errorMessage);
       throw err;
     } finally {
       setLoading(false);

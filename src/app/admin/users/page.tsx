@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button, Input } from '@shop/ui';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 
 interface User {
@@ -154,9 +154,9 @@ export default function UsersPage() {
       } else {
         alert(t('admin.users.userActive').replace('{name}', userName));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error updating user status:', err);
-      alert(t('admin.users.errorUpdatingStatus').replace('{message}', err.message || t('admin.common.unknownErrorFallback')));
+      alert(t('admin.users.errorUpdatingStatus').replace('{message}', getApiOrErrorMessage(err, t('admin.common.unknownErrorFallback'))));
     }
   };
 

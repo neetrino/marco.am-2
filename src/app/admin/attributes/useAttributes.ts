@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef, ChangeEvent } from 'react';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { showToast } from '../../../components/Toast';
 
@@ -117,9 +117,9 @@ export function useAttributes() {
       setFormData({ name: '' });
       fetchAttributes();
       showToast(t('admin.attributes.createdSuccess'), 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error creating attribute:', err);
-      const errorMessage = err?.data?.detail || err?.message || 'Failed to create attribute';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to create attribute');
       showToast(t('admin.attributes.errorCreating').replace('{message}', errorMessage), 'error');
     }
   };
@@ -135,9 +135,9 @@ export function useAttributes() {
       console.log('✅ [ADMIN] Attribute deleted successfully');
       fetchAttributes();
       showToast(t('admin.attributes.deletedSuccess'), 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error deleting attribute:', err);
-      const errorMessage = err?.data?.detail || err?.message || 'Failed to delete attribute';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to delete attribute');
       showToast(t('admin.attributes.errorDeleting').replace('{message}', errorMessage), 'error');
     }
   };
@@ -162,9 +162,9 @@ export function useAttributes() {
       setEditingAttributeName('');
       fetchAttributes();
       showToast(t('admin.attributes.nameUpdatedSuccess') || 'Attribute name updated successfully', 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error updating attribute name:', err);
-      const errorMessage = err?.data?.detail || err?.message || 'Failed to update attribute name';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to update attribute name');
       showToast(errorMessage, 'error');
     } finally {
       setSavingAttribute(false);
@@ -230,9 +230,9 @@ export function useAttributes() {
       setAddingValueTo(null);
       showToast(t('admin.attributes.valueAddedSuccess'), 'success');
       fetchAttributes();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error adding value:', err);
-      const errorMessage = err?.data?.detail || err?.message || t('admin.attributes.failedToAddValue');
+      const errorMessage = getApiOrErrorMessage(err, t('admin.attributes.failedToAddValue'));
       
       // Check if it's a duplicate error from backend
       if (errorMessage.includes('already exists') || errorMessage.includes('уже существует')) {
@@ -260,9 +260,9 @@ export function useAttributes() {
       fetchAttributes();
       setDeletingValue(null);
       showToast(t('admin.attributes.valueDeletedSuccess'), 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error deleting value:', err);
-      const errorMessage = err?.data?.detail || err?.message || 'Failed to delete value';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to delete value');
       showToast(t('admin.attributes.errorDeletingValue').replace('{message}', errorMessage), 'error');
       setDeletingValue(null);
     }
@@ -291,9 +291,9 @@ export function useAttributes() {
       console.log('✅ [ADMIN] Value updated successfully');
       fetchAttributes();
       showToast(t('admin.attributes.valueUpdatedSuccess'), 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error updating value:', err);
-      const errorMessage = err?.data?.detail || err?.message || 'Failed to update value';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to update value');
       showToast(t('admin.attributes.errorUpdatingValue')?.replace('{message}', errorMessage) || errorMessage, 'error');
       throw err;
     }
@@ -342,9 +342,9 @@ export function useAttributes() {
       setImageUploading(true);
       const base64 = await fileToBase64(imageFile);
       setEditingImageUrl(base64);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [ADMIN] Error uploading image:', error);
-      showToast(error?.message || t('admin.attributes.valueModal.failedToProcessImage'), 'error');
+      showToast(getApiOrErrorMessage(error, t('admin.attributes.valueModal.failedToProcessImage')), 'error');
     } finally {
       setImageUploading(false);
       if (event.target) {
@@ -373,7 +373,7 @@ export function useAttributes() {
       setEditingLabel('');
       setEditingColors([]);
       setEditingImageUrl(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [ADMIN] Error saving value:', error);
     } finally {
       setSavingValue(false);

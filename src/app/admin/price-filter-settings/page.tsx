@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button, Input } from '@shop/ui';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { AdminMenuDrawer } from '../../../components/AdminMenuDrawer';
 import { getAdminMenuTABS } from '../admin-menu.config';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -56,7 +56,7 @@ export default function PriceFilterSettingsPage() {
       prevStepSizeRef.current = fallbackStep;
       
       console.log('✅ [PRICE FILTER SETTINGS] Settings loaded:', response);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [PRICE FILTER SETTINGS] Error fetching settings:', err);
       // If settings don't exist, use empty values
       setMinPrice('');
@@ -206,9 +206,9 @@ export default function PriceFilterSettingsPage() {
       
       alert(t('admin.priceFilter.savedSuccess'));
       console.log('✅ [PRICE FILTER SETTINGS] Settings saved');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [PRICE FILTER SETTINGS] Error saving settings:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to save');
       alert(t('admin.priceFilter.errorSaving').replace('{message}', errorMessage));
     } finally {
       setSaving(false);

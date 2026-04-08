@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { AdminMenuDrawer } from '../../../components/AdminMenuDrawer';
 import { getAdminMenuTABS } from '../admin-menu.config';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -107,7 +107,7 @@ export default function ProductsPage() {
       const response = await apiClient.get<{ data: Category[] }>('/api/v1/admin/categories');
       setCategories(response.data || []);
       console.log('✅ [ADMIN] Categories loaded:', response.data?.length || 0);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error fetching categories:', err);
       setCategories([]);
     } finally {
@@ -181,9 +181,9 @@ export default function ProductsPage() {
 
       setProducts(filteredProducts);
       setMeta(response.meta || null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error fetching products:', err);
-      alert(t('admin.products.errorLoading').replace('{message}', err.message || t('admin.common.unknownErrorFallback')));
+      alert(t('admin.products.errorLoading').replace('{message}', getApiOrErrorMessage(err, t('admin.common.unknownErrorFallback'))));
     } finally {
       setLoading(false);
     }

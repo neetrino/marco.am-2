@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { AdminMenuDrawer } from '../../../components/AdminMenuDrawer';
 import { useTranslation } from '../../../lib/i18n-client';
 import { getAdminMenuTABS } from '../admin-menu.config';
@@ -52,7 +52,7 @@ export default function DeliveryPage() {
       const data = await apiClient.get<DeliverySettings>('/api/v1/admin/delivery');
       setLocations(data.locations || []);
       console.log('✅ [ADMIN] Delivery settings loaded:', data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error fetching delivery settings:', err);
       // Use defaults if error
       setLocations([]);
@@ -70,9 +70,9 @@ export default function DeliveryPage() {
       console.log('✅ [ADMIN] Delivery settings saved');
       setEditingId(null);
       await fetchDeliverySettings();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error saving delivery settings:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save delivery settings';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to save delivery settings');
       alert(t('admin.delivery.errorSaving').replace('{message}', errorMessage));
     } finally {
       setSaving(false);

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { QuickSettingsContent } from './QuickSettingsContent';
 
@@ -55,7 +55,7 @@ export default function QuickSettingsPage() {
       setCategoryDiscounts(settings.categoryDiscounts || {});
       setBrandDiscounts(settings.brandDiscounts || {});
       console.log('✅ [QUICK SETTINGS] Settings loaded:', settings);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error fetching settings:', err);
       setGlobalDiscount(0);
     } finally {
@@ -122,7 +122,7 @@ export default function QuickSettingsPage() {
         setProducts([]);
         console.warn('⚠️ [QUICK SETTINGS] No products data received');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error fetching products:', err);
       setProducts([]);
     } finally {
@@ -141,7 +141,7 @@ export default function QuickSettingsPage() {
       } else {
         setCategories([]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error fetching categories:', err);
       setCategories([]);
     } finally {
@@ -160,7 +160,7 @@ export default function QuickSettingsPage() {
       } else {
         setBrands([]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error fetching brands:', err);
       setBrands([]);
     } finally {
@@ -258,9 +258,9 @@ export default function QuickSettingsPage() {
       
       alert(t('admin.quickSettings.savedSuccess'));
       console.log('✅ [QUICK SETTINGS] Global discount saved');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error saving discount:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to save');
       alert(t('admin.quickSettings.errorSaving').replace('{message}', errorMessage));
     } finally {
       setDiscountSaving(false);
@@ -278,9 +278,9 @@ export default function QuickSettingsPage() {
       await fetchProducts();
       alert(t('admin.quickSettings.savedSuccess'));
       console.log('✅ [QUICK SETTINGS] Category discounts saved');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error saving category discounts:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to save');
       alert(t('admin.quickSettings.errorSaving').replace('{message}', errorMessage));
     } finally {
       setCategorySaving(false);
@@ -298,9 +298,9 @@ export default function QuickSettingsPage() {
       await fetchProducts();
       alert(t('admin.quickSettings.savedSuccess'));
       console.log('✅ [QUICK SETTINGS] Brand discounts saved');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error saving brand discounts:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to save');
       alert(t('admin.quickSettings.errorSaving').replace('{message}', errorMessage));
     } finally {
       setBrandSaving(false);
@@ -333,9 +333,9 @@ export default function QuickSettingsPage() {
       
       alert(t('admin.quickSettings.productDiscountSaved'));
       console.log('✅ [QUICK SETTINGS] Product discount saved');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [QUICK SETTINGS] Error saving product discount:', err);
-      const errorMessage = err.response?.data?.detail || err.message || 'Failed to save';
+      const errorMessage = getApiOrErrorMessage(err, 'Failed to save');
       alert(t('admin.quickSettings.errorSavingProduct').replace('{message}', errorMessage));
     } finally {
       setSavingProductId(null);

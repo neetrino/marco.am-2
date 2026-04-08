@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiClient, ApiError } from '../api-client';
+import { apiClient, ApiError, getClientErrorDetail, getErrorHttpStatus } from '../api-client';
+import { getErrorMessage } from '../types/errors';
 
 /**
  * User interface
@@ -147,13 +148,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.dispatchEvent(new Event('auth-updated'));
 
       // Don't redirect here - let the login page handle redirect based on query params
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AUTH] Login error:', error);
-      
-      // Extract error message from API response
+
       let errorMessage = 'Login failed. Please try again.';
-      
-      // Check if it's an ApiError
+
       if (error instanceof ApiError) {
         if (error.status === 401) {
           errorMessage = error.message || 'Invalid email/phone or password';
@@ -164,15 +163,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           errorMessage = error.message || errorMessage;
         }
-      } else if (error.status === 401) {
-        errorMessage = error.message || 'Invalid email/phone or password';
-      } else if (error.status === 403) {
-        errorMessage = error.message || 'Your account has been blocked';
-      } else if (error.status === 400) {
-        errorMessage = error.message || 'Please provide email/phone and password';
-      } else if (error.message) {
-        // Use the error message directly if available
-        errorMessage = error.message;
+      } else {
+        const status = getErrorHttpStatus(error);
+        const msg = getErrorMessage(error);
+        if (status === 401) {
+          errorMessage = msg || 'Invalid email/phone or password';
+        } else if (status === 403) {
+          errorMessage = msg || 'Your account has been blocked';
+        } else if (status === 400) {
+          errorMessage = msg || 'Please provide email/phone and password';
+        } else if (msg) {
+          errorMessage = msg;
+        }
       }
 
       throw new Error(errorMessage);
@@ -228,46 +230,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('🔄 [AUTH] Redirecting to home page...');
       // Redirect to home page
       router.push('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AUTH] Registration error:', error);
-      console.error('❌ [AUTH] Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name,
-      });
-      
-      // Extract error message from API response
+      if (error instanceof Error) {
+        console.error('❌ [AUTH] Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name,
+        });
+      }
+
       let errorMessage = 'Registration failed. Please try again.';
-      
-      if (error.message) {
-        // Check if error has structured data
-        if ((error as any).data && (error as any).data.detail) {
-          errorMessage = (error as any).data.detail;
-        } else if ((error as any).data && (error as any).data.message) {
-          errorMessage = (error as any).data.message;
-        } else {
-          // Fallback to parsing error message
-          const errorText = error.message;
-          if (errorText.includes('409') || errorText.includes('already exists') || errorText.includes('User already exists')) {
-            errorMessage = 'User with this email or phone already exists';
-          } else if (errorText.includes('400') || errorText.includes('Validation failed')) {
-            if (errorText.includes('password') || errorText.includes('Password')) {
-              errorMessage = 'Password must be at least 6 characters';
-            } else if (errorText.includes('email') || errorText.includes('phone')) {
-              errorMessage = 'Please provide email or phone and password';
-            } else {
-              errorMessage = 'Invalid registration data. Please check your input.';
-            }
-          } else if (errorText.includes('500') || errorText.includes('Internal Server Error')) {
-            errorMessage = 'Server error. Please try again later.';
-          } else if (errorText.includes('Failed to parse')) {
-            errorMessage = 'Invalid response from server. Please try again.';
+
+      if (error instanceof ApiError) {
+        const fromApi = getClientErrorDetail(error);
+        errorMessage = fromApi ?? error.message;
+      } else {
+        const errorText = getErrorMessage(error);
+        if (errorText.includes('409') || errorText.includes('already exists') || errorText.includes('User already exists')) {
+          errorMessage = 'User with this email or phone already exists';
+        } else if (errorText.includes('400') || errorText.includes('Validation failed')) {
+          if (errorText.includes('password') || errorText.includes('Password')) {
+            errorMessage = 'Password must be at least 6 characters';
+          } else if (errorText.includes('email') || errorText.includes('phone')) {
+            errorMessage = 'Please provide email or phone and password';
           } else {
-            // Try to extract meaningful message
-            const match = errorText.match(/detail[:\s]+([^,\n]+)/i);
-            if (match) {
-              errorMessage = match[1].trim();
-            }
+            errorMessage = 'Invalid registration data. Please check your input.';
+          }
+        } else if (errorText.includes('500') || errorText.includes('Internal Server Error')) {
+          errorMessage = 'Server error. Please try again later.';
+        } else if (errorText.includes('Failed to parse')) {
+          errorMessage = 'Invalid response from server. Please try again.';
+        } else {
+          const match = errorText.match(/detail[:\s]+([^,\n]+)/i);
+          if (match) {
+            errorMessage = match[1].trim();
+          } else if (errorText && errorText !== 'Unknown error') {
+            errorMessage = errorText;
           }
         }
       }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiClient } from '../../../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../../../lib/api-client';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Product, ProductsResponse } from '../types';
 
@@ -86,9 +86,9 @@ export function useProductHandlers({
       fetchProducts();
       
       alert(t('admin.products.deletedSuccess'));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error deleting product:', err);
-      alert(t('admin.products.errorDeleting').replace('{message}', err.message || t('admin.common.unknownErrorFallback')));
+      alert(t('admin.products.errorDeleting').replace('{message}', getApiOrErrorMessage(err, t('admin.common.unknownErrorFallback'))));
     }
   };
 
@@ -117,9 +117,9 @@ export function useProductHandlers({
       } else {
         alert(t('admin.products.productDraft').replace('{title}', productTitle));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error updating product status:', err);
-      alert(t('admin.products.errorUpdatingStatus').replace('{message}', err.message || t('admin.common.unknownErrorFallback')));
+      alert(t('admin.products.errorUpdatingStatus').replace('{message}', getApiOrErrorMessage(err, t('admin.common.unknownErrorFallback'))));
     }
   };
 
@@ -139,9 +139,9 @@ export function useProductHandlers({
       
       // Refresh products list
       fetchProducts();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error updating product featured status:', err);
-      alert(t('admin.products.errorUpdatingFeatured').replace('{message}', err.message || t('admin.common.unknownErrorFallback')));
+      alert(t('admin.products.errorUpdatingFeatured').replace('{message}', getApiOrErrorMessage(err, t('admin.common.unknownErrorFallback'))));
     }
   };
 

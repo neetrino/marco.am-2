@@ -4,6 +4,7 @@ import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button, Input, Card } from '@shop/ui';
 import Link from 'next/link';
+import { getErrorMessage } from '@/lib/types/errors';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '../../lib/i18n-client';
@@ -49,9 +50,9 @@ function LoginPageContent() {
       console.log('✅ [LOGIN PAGE] Login successful, redirecting to:', redirectTo);
       // Redirect to the specified page or home
       router.push(redirectTo);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [LOGIN PAGE] Login error:', err);
-      setError(err.message || t('login.errors.loginFailed'));
+      setError(getErrorMessage(err) || t('login.errors.loginFailed'));
     } finally {
       setIsSubmitting(false);
     }
