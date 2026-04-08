@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from '../lib/i18n-client';
-import { HomePromoBannerOne } from './home/HomePromoBannerOne';
+import { HomePromoStackedProductCard } from './home/HomePromoStackedProductCard';
 import { HomePromoYellowHeadline } from './home/HomePromoYellowHeadline';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
 
@@ -22,7 +22,7 @@ export function HeroCarousel() {
             </div>
           </div>
           <div className="pointer-events-auto absolute bottom-3 right-3 sm:bottom-5 sm:right-5 md:bottom-7 md:right-7 lg:bottom-9 lg:right-9">
-            <HomePromoBannerOne
+            <HomePromoStackedProductCard
               ariaLabel={`${t('home.promo_featured_title')}. ${t('home.promo_featured_subtitle')}`}
             />
           </div>

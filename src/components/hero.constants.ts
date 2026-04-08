@@ -13,10 +13,11 @@ export const HERO_PANEL_RADIUS_PX = 32;
 /** Vertical brick wall — top aligns with hero; bottom crops under `object-cover` + `object-top` */
 export const HERO_PRIMARY_IMAGE_SRC = '/assets/hero/hero-brick-wall-vertical.png' as const;
 
-/** Hero promo card — reference art 1024×983 (stacked layers + chair), on yellow panel */
-export const HERO_BANNER_ONE_IMAGE_SRC = '/assets/hero/hero-promo-banner-card.jpg' as const;
-export const HERO_BANNER_ONE_WIDTH_PX = 1024;
-export const HERO_BANNER_ONE_HEIGHT_PX = 983;
+/** Figma 101:4019–101:4021 — stacked layer fills + 101:4023 chair asset */
+export const HERO_PROMO_STACK_LAYER_WHITE = '#ffffff' as const;
+export const HERO_PROMO_STACK_LAYER_GRAY = '#c7c7c7' as const;
+export const HERO_PROMO_STACK_LAYER_BLUE = '#2f4b5d' as const;
+export const HERO_PROMO_CHAIR_IMAGE_SRC = '/assets/hero/hero-promo-chair-101-4023.png' as const;
 
 /** Hero headline box — design size (px); mirrored in `HomePromoYellowHeadline` Tailwind classes */
 export const HERO_HEADLINE_MAX_WIDTH_PX = 580;
