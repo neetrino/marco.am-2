@@ -3,6 +3,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Montserrat } from 'next/font/google';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import {
@@ -31,6 +32,13 @@ import {
   HERO_PROMO_SLIDER_HANDLE_WIDTH_PCT,
   HERO_PROMO_STACK_WHITE_STYLE,
 } from './hero-promo-stack.constants';
+
+/** CTA label: Figma — Montserrat 700, 16px / 24px (same as design "Montserrat arm"). */
+const montserratCta = Montserrat({
+  weight: '700',
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap',
+});
 
 type HomePromoStackedProductCardProps = {
   ariaLabel: string;
@@ -144,12 +152,27 @@ function HomePromoStackedProductCardBlueLabel() {
 }
 
 /** Figma 305:2096 — compact pill CTA inside blue layer (bottom-right) */
+/** From pill left edge to first letter of the label (px). */
+const HERO_PROMO_STACK_CTA_LABEL_INSET_LEFT_PX = 60;
+/** From end of label text to trailing icon circle (px). */
+const HERO_PROMO_STACK_CTA_TEXT_TO_ICON_GAP_PX = 24;
+
 function HomePromoStackedProductCardCta() {
   const { t } = useTranslation();
 
+  const ctaPillStyle: CSSProperties = {
+    paddingLeft: HERO_PROMO_STACK_CTA_LABEL_INSET_LEFT_PX,
+    gap: HERO_PROMO_STACK_CTA_TEXT_TO_ICON_GAP_PX,
+  };
+
   return (
-    <div className="inline-flex max-w-[min(100%,11rem)] items-center gap-1 rounded-full bg-marco-yellow py-0.5 pl-2 pr-0.5 shadow-sm transition group-hover:brightness-95 sm:max-w-[13rem] sm:gap-1.5 sm:py-1 sm:pl-2.5 sm:pr-1">
-      <span className="min-w-0 flex-1 truncate px-0.5 text-center text-[10px] font-bold leading-tight text-marco-black sm:text-xs md:text-sm">
+    <div
+      className="inline-flex max-w-[min(100%,18rem)] items-center rounded-full bg-marco-yellow py-1 pr-1 shadow-sm transition group-hover:brightness-95 sm:max-w-[22rem] sm:py-1.5"
+      style={ctaPillStyle}
+    >
+      <span
+        className={`${montserratCta.className} min-w-0 flex-1 truncate text-left text-base font-bold leading-6 text-marco-black`}
+      >
         {t('home.promo_featured_cta')}
       </span>
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marco-black text-white sm:h-9 sm:w-9">

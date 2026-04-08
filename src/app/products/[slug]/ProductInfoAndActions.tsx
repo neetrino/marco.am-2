@@ -10,14 +10,14 @@ import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import type { Product, ProductVariant } from './types';
 
-/** Figma MARCO 305:2096 — pill CTA height (48px icon circle + 4px vertical inset). */
-const PRODUCT_PRIMARY_CTA_HEIGHT_PX = 56;
-/** Figma — trailing icon circle diameter. */
-const PRODUCT_PRIMARY_CTA_ICON_PX = 48;
+/** Primary CTA pill — slimmer than default 56px for tighter product actions row. */
+const PRODUCT_PRIMARY_CTA_HEIGHT_PX = 44;
+/** Trailing icon circle diameter (scales with pill height). */
+const PRODUCT_PRIMARY_CTA_ICON_PX = 36;
 /** Space from pill left edge to label start. */
-const PRODUCT_PRIMARY_CTA_PADDING_LEFT_PX = 60;
+const PRODUCT_PRIMARY_CTA_PADDING_LEFT_PX = 48;
 /** Space from label block to trailing icon circle. */
-const PRODUCT_PRIMARY_CTA_GAP_TEXT_TO_ICON_PX = 24;
+const PRODUCT_PRIMARY_CTA_GAP_TEXT_TO_ICON_PX = 16;
 
 interface ProductInfoAndActionsProps {
   product: Product;
@@ -221,15 +221,15 @@ export function ProductInfoAndActions({
             <button 
               onClick={() => onQuantityAdjust(-1)} 
               disabled={quantity <= 1}
-              className="w-12 h-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-11 h-11 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               -
             </button>
-            <div className="w-12 text-center font-bold">{quantity}</div>
+            <div className="w-11 text-center font-bold text-sm">{quantity}</div>
             <button 
               onClick={() => onQuantityAdjust(1)} 
               disabled={quantity >= maxQuantity}
-              className="w-12 h-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-11 h-11 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               +
             </button>
@@ -242,10 +242,10 @@ export function ProductInfoAndActions({
               paddingLeft: PRODUCT_PRIMARY_CTA_PADDING_LEFT_PX,
               gap: PRODUCT_PRIMARY_CTA_GAP_TEXT_TO_ICON_PX,
             }}
-            className="flex min-w-0 flex-1 items-center rounded-full bg-marco-yellow py-1 pr-2 text-left font-bold text-marco-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+            className="flex min-w-0 flex-1 items-center rounded-full bg-marco-yellow py-0.5 pr-1.5 text-left text-sm font-bold leading-tight text-marco-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
             onClick={onAddToCart}
           >
-            <span className="min-w-0 flex-1 text-base leading-6">
+            <span className="min-w-0 flex-1">
               {isAddingToCart
                 ? t(language, 'product.adding')
                 : isOutOfStock
@@ -264,18 +264,18 @@ export function ProductInfoAndActions({
               }}
               aria-hidden
             >
-              <ArrowUpRight className="size-3 stroke-[2.5]" strokeWidth={2.5} />
+              <ArrowUpRight className="size-2.5 stroke-[2.5]" strokeWidth={2.5} />
             </span>
           </button>
           <button 
             onClick={onCompareToggle} 
-            className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+            className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
           >
             <CompareIcon isActive={isInCompare} />
           </button>
           <button 
             onClick={onAddToWishlist} 
-            className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
+            className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
           >
             <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
           </button>
