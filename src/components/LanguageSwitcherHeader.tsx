@@ -43,12 +43,8 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
   useEffect(() => {
     // Update on mount to ensure we have the latest language from localStorage
     const storedLang = getStoredLanguage();
-    // If stored language is 'ka' (Georgian), fallback to 'en' for header display
     const displayLang = storedLang === 'ka' ? 'en' : storedLang;
-    // Only update if different to avoid unnecessary re-renders
-    if (displayLang !== currentLang) {
-      setCurrentLang(displayLang);
-    }
+    setCurrentLang(displayLang);
 
     const handleLanguageUpdate = () => {
       const newLang = getStoredLanguage();
@@ -61,7 +57,7 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
     return () => {
       window.removeEventListener('language-updated', handleLanguageUpdate);
     };
-  }, [currentLang]); // Include currentLang to check for changes
+  }, []);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -94,8 +90,6 @@ export function LanguageSwitcherHeader({ triggerClassName }: LanguageSwitcherHea
       const displayLang = langCode === 'ka' ? 'en' : langCode;
       setCurrentLang(displayLang);
       
-      // Update language - this will reload the page after a small delay
-      // The delay ensures the UI state is updated before reload
       setStoredLanguage(langCode);
     }
   };

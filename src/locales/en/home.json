@@ -18,6 +18,17 @@
   "hero_subtitle": "Get up to 20% off today's pre-orders.",
   "hero_banner_promo": "Experience the power of technology: Get\nup to 20% off today's\npre-orders.",
   "hero_help_cta": "How can we help you?",
+  "hero_banner": {
+    "free": "FREE",
+    "delivery": "DELIVERY",
+    "buy_now": "BUY NOW",
+    "more": "MORE",
+    "new": "NEW",
+    "generation": "GENERATION",
+    "smartphones": "SMARTPHONES",
+    "sofa_product_name": "Corner sofa",
+    "sofa_brand": "Bellini"
+  },
   "hero_button_products": "PRODUCTS",
   "hero_button_view_more": "VIEW MORE",
   "features_title": "We provide high quality products",

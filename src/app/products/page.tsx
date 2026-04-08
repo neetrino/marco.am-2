@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { Button } from '@shop/ui';
 import { apiClient } from '../../lib/api-client';
-import { getStoredLanguage } from '../../lib/language';
+import type { LanguageCode } from '../../lib/language';
+import { getServerLanguage } from '../../lib/language-server';
 import { t } from '../../lib/i18n';
 import { PriceFilter } from '../../components/PriceFilter';
 import { ColorFilter } from '../../components/ColorFilter';
@@ -79,10 +80,10 @@ async function getProducts(
   colors?: string,
   sizes?: string,
   brand?: string,
-  limit: number = 12
+  limit: number = 12,
+  language: LanguageCode = 'en'
 ): Promise<ProductsResponse> {
   try {
-    const language = getStoredLanguage();
     const params: Record<string, string> = {
       page: page.toString(),
       limit: limit.toString(),
@@ -154,6 +155,8 @@ export default async function ProductsPage({
     : null;
   const perPage = parsedLimit ? Math.min(parsedLimit, 200) : 12;
 
+  const language = await getServerLanguage();
+
   const productsData = await getProducts(
     page,
     firstSearchParam(params.search),
@@ -163,7 +166,8 @@ export default async function ProductsPage({
     firstSearchParam(params.colors),
     firstSearchParam(params.sizes),
     firstSearchParam(params.brand),
-    perPage
+    perPage,
+    language
   );
 
   // ------------------------------------
@@ -219,9 +223,6 @@ export default async function ProductsPage({
     }
     return out;
   };
-
-  // Get language for translations
-  const language = getStoredLanguage();
 
   return (
     <div className="w-full overflow-x-hidden max-w-full">

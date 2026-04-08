@@ -26,18 +26,18 @@ const ASSETS = {
   ellipse87:     'https://www.figma.com/api/mcp/asset/31e7a0d8-5588-4ef0-bf2f-1a635a53a79e',
 } as const;
 
-/** Armenian copy for fixed-layout banner blocks (Figma). */
-const ARM = {
-  gnel:        'ԳՆԵԼ',
-  hima:        'ՀԻՄԱ',
-  avelin:      'ԱՎԵԼԻՆ',
-  free:        'ԱՆՎՃԱՐ',
-  delivery:    'ԱՌԱՔՈՒՄ',
-  nor:         'ՆՈՐ',
-  serndi:      'ՍԵՐՆԴԻ',
-  smartphones: 'ՍՄԱՐԹՖՈՆՆԵՐ',
-  sofaName:    'Անկյունային բազմոց',
-} as const;
+/** Hero overlay copy — paths under `home.hero_banner.*` in locales. */
+type HeroBannerCopy = {
+  free: string;
+  delivery: string;
+  buyNow: string;
+  more: string;
+  newLabel: string;
+  generation: string;
+  smartphones: string;
+  sofaProductName: string;
+  sofaBrand: string;
+};
 
 /** Figma Mask group 1 (305:2146) — background plate. */
 const MASK_BG_W = 1651;
@@ -95,7 +95,7 @@ const DELIVERY_BUY_CTA_LEFT_REF =
 /**
  * Left product card — sofa promo with stacked-card depth effect.
  */
-function SofaCard() {
+function SofaCard({ copy }: { copy: HeroBannerCopy }) {
   const x = (n: number) => bx(n) + SOFA_CARD_SHIFT_X;
 
   return (
@@ -108,7 +108,7 @@ function SofaCard() {
 
       {/* Sofa product image */}
       <div className="absolute" style={{ left: x(194), top: by(100), width: bx(563), height: by(563) }}>
-        <Image src={ASSETS.sofa} alt={ARM.sofaName} fill className="object-contain" unoptimized />
+        <Image src={ASSETS.sofa} alt={copy.sofaProductName} fill className="object-contain" unoptimized />
       </div>
 
       {/* Decorative orbit ring below sofa */}
@@ -121,8 +121,8 @@ function SofaCard() {
         className={`${montserratArm.className} absolute text-base leading-[1.49] text-white antialiased`}
         style={{ left: x(195), top: by(712) }}
       >
-        <p>{ARM.sofaName}</p>
-        <p>Беллини</p>
+        <p>{copy.sofaProductName}</p>
+        <p>{copy.sofaBrand}</p>
       </div>
 
       <Link
@@ -133,7 +133,7 @@ function SofaCard() {
         <span
           className={`${montserratArm.className} min-w-0 text-center text-base font-bold leading-6 text-[#000]`}
         >
-          {ARM.gnel} {ARM.hima}
+          {copy.buyNow}
         </span>
         <span className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2">
           <CtaArrowCircleIcon className="size-12 shrink-0" />
@@ -148,7 +148,7 @@ function SofaCard() {
  * Full-bleed raster: boxes photo fills the card, text + truck icon overlaid,
  * frosted-glass bottom panel with "Buy now" CTA.
  */
-function DeliveryCard() {
+function DeliveryCard({ copy }: { copy: HeroBannerCopy }) {
   const y = (n: number) => by(n + RIGHT_OF_CENTER_TOP_NUDGE_REF);
 
   return (
@@ -175,7 +175,7 @@ function DeliveryCard() {
         className={`${montserratArm.className} absolute z-10 flex items-center justify-center rounded-[60px] bg-black pt-[15.929px] pb-[16.071px] pl-[72.5px] pr-[72.5px] text-[16px] font-bold leading-[24px] text-white antialiased`}
         style={{ left: bx(DELIVERY_BUY_CTA_LEFT_REF), top: y(502) }}
       >
-        {ARM.gnel} {ARM.hima}
+        {copy.buyNow}
       </Link>
     </>
   );
@@ -184,7 +184,7 @@ function DeliveryCard() {
 /**
  * Right card — new-arrivals promo (flush with texture right edge).
  */
-function ElectronicsCard() {
+function ElectronicsCard({ copy }: { copy: HeroBannerCopy }) {
   const y = (n: number) => by(n + RIGHT_OF_CENTER_TOP_NUDGE_REF);
 
   return (
@@ -207,7 +207,7 @@ function ElectronicsCard() {
         className="absolute"
         style={{ left: bx(1412), top: y(96), width: bx(389), height: by(366) }}
       >
-        <Image src={ASSETS.sofa} alt="Product" fill className="object-cover" unoptimized />
+        <Image src={ASSETS.sofa} alt={copy.smartphones} fill className="object-cover" unoptimized />
       </div>
 
       {/* Sub-headline */}
@@ -215,9 +215,9 @@ function ElectronicsCard() {
         className={`${montserratArm.className} absolute font-black whitespace-nowrap antialiased`}
         style={{ left: bx(1350), top: y(378), fontSize: bx(28), lineHeight: `${by(33)}px` }}
       >
-        <p className="text-[#facc15]">{ARM.nor}</p>
-        <p className="text-white">{ARM.serndi}</p>
-        <p className="text-white">{ARM.smartphones}</p>
+        <p className="text-[#facc15]">{copy.newLabel}</p>
+        <p className="text-white">{copy.generation}</p>
+        <p className="text-white">{copy.smartphones}</p>
       </div>
 
       {/* White "More" CTA */}
@@ -226,7 +226,7 @@ function ElectronicsCard() {
         className={`${montserratArm.className} absolute flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased`}
         style={{ left: bx(1394), top: y(502), height: by(56), width: bx(250) }}
       >
-        {ARM.avelin}
+        {copy.more}
       </Link>
 
       {/* Arrow/link icon — right edge aligned to card (1312+402) */}
@@ -276,6 +276,18 @@ function HelpPromoEllipse() {
 export function HomeBanner() {
   const { t } = useTranslation();
 
+  const heroCopy: HeroBannerCopy = {
+    free: t('home.hero_banner.free'),
+    delivery: t('home.hero_banner.delivery'),
+    buyNow: t('home.hero_banner.buy_now'),
+    more: t('home.hero_banner.more'),
+    newLabel: t('home.hero_banner.new'),
+    generation: t('home.hero_banner.generation'),
+    smartphones: t('home.hero_banner.smartphones'),
+    sofaProductName: t('home.hero_banner.sofa_product_name'),
+    sofaBrand: t('home.hero_banner.sofa_brand'),
+  };
+
   const heroScale = `scale(calc(100cqw / ${MASK_BG_W}px))`;
 
   return (
@@ -322,13 +334,13 @@ export function HomeBanner() {
                 className={`${montserratArm.className} absolute z-20 whitespace-nowrap font-black antialiased`}
                 style={{ left: bx(162), top: by(88), fontSize: bx(60), lineHeight: `${by(72)}px` }}
               >
-                <span className="home-banner-hero-stroke text-[#000]">{ARM.free} </span>
-                <span className="home-banner-hero-stroke text-[#FFF]">{ARM.delivery}</span>
+                <span className="home-banner-hero-stroke text-[#000]">{heroCopy.free} </span>
+                <span className="home-banner-hero-stroke text-[#FFF]">{heroCopy.delivery}</span>
               </p>
 
-              <SofaCard />
-              <DeliveryCard />
-              <ElectronicsCard />
+              <SofaCard copy={heroCopy} />
+              <DeliveryCard copy={heroCopy} />
+              <ElectronicsCard copy={heroCopy} />
 
               {/* Promo sub-copy + help CTA; Ellipse 87 to the right of the help button (same row, right-aligned) */}
               <div
