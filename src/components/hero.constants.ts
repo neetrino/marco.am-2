@@ -2,12 +2,18 @@
  * Home hero — Figma MARCO (node 305:2146) primary asset.
  * Inset values are applied via `.hero-section-inset` in `globals.css`.
  */
-export const HERO_PRIMARY_IMAGE_SRC = '/assets/hero/hero-yellow-brick-wall.png' as const;
+
+/** Yellow panel shape — `aspect-[141/79]` in `HeroCarousel` */
+export const HERO_PANEL_ASPECT_W = 141;
+export const HERO_PANEL_ASPECT_H = 79;
+
+/** Vertical brick wall — top aligns with hero; bottom crops under `object-cover` + `object-top` */
+export const HERO_PRIMARY_IMAGE_SRC = '/assets/hero/hero-brick-wall-vertical.png' as const;
 
 /** Hero headline box — design size (px); mirrored in `HomePromoYellowHeadline` Tailwind classes */
 export const HERO_HEADLINE_MAX_WIDTH_PX = 645;
 export const HERO_HEADLINE_HEIGHT_PX = 72;
 
 /** Hero headline offset from yellow panel edges — sync with `HeroCarousel` (`top-[50px]`, `left-[72px]`) */
-export const HERO_HEADLINE_OFFSET_TOP_PX = 55;
-export const HERO_HEADLINE_OFFSET_LEFT_PX = 25;
+export const HERO_HEADLINE_OFFSET_TOP_PX = 50;
+export const HERO_HEADLINE_OFFSET_LEFT_PX = 72;

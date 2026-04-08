@@ -9,7 +9,7 @@ export function HeroCarouselSlides() {
           src={HERO_PRIMARY_IMAGE_SRC}
           alt=""
           fill
-          className="object-cover object-center"
+          className="object-cover object-top"
           priority
           sizes="100vw"
         />
