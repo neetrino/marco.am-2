@@ -19,6 +19,11 @@ import { Instagram, Facebook, Sun, Send, Phone } from 'lucide-react';
 import { CompareIcon } from './icons/CompareIcon';
 import { CartIcon } from './icons/CartIcon';
 import { MarcoGroupLogo } from './MarcoGroupLogo';
+import {
+  HEADER_DESKTOP_SHELL_CLASS,
+  HEADER_TOP_ROW_FRAME_CLASS,
+  HEADER_VIEWPORT_LEFT_INSET_CLASS,
+} from '@/constants/headerLayout';
 
 const headerFont = Montserrat({
   subsets: ['latin', 'latin-ext', 'cyrillic'],
@@ -33,13 +38,6 @@ const headerNavLinks = [
   { href: '/contact', translationKey: 'common.navigation.contact' },
   { href: '/', translationKey: 'common.navigation.reels' },
 ];
-
-/**
- * Desktop shell: fluid gutters on laptop (lg–xl), full Figma inset from 1920px.
- * Align HomeBanner outer padding when changing breakpoints.
- */
-const HEADER_DESKTOP_SHELL_CLASS =
-  'mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 min-[1920px]:px-[151px]';
 
 interface Category {
   id: string;
@@ -81,7 +79,7 @@ const ProfileIconOutline = () => (
  * Profile icon for logged in state (filled style with background)
  */
 const ProfileIconFilled = () => (
-  <div className="relative w-[19px] h-[19px] flex items-center justify-center">
+    <div className="relative w-[19px] h-[19px] flex items-center justify-center">
     {/* Background circle */}
     <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full opacity-90 group-hover:opacity-100 transition-opacity duration-200 shadow-md"></div>
     {/* Filled icon */}
@@ -709,7 +707,7 @@ export function Header() {
 
   return (
     <header
-      className={`${headerFont.className} sticky top-0 z-50 border-b border-[#ebebeb] bg-white pl-6 lg:pl-10 min-[1920px]:pl-14`}
+      className={`${headerFont.className} sticky top-0 z-50 border-b border-[#ebebeb] bg-white ${HEADER_VIEWPORT_LEFT_INSET_CLASS}`}
     >
       <Suspense fallback={null}>
         <HeaderSearchSync
@@ -724,11 +722,12 @@ export function Header() {
         {/* Row 1: logo | nav | socials | phone + addresses — spacing per Figma 111:4293 */}
         <div className="border-b border-[#ebebeb] bg-white">
           <div
-            className={`${HEADER_DESKTOP_SHELL_CLASS} flex flex-wrap items-center gap-x-5 gap-y-2.5 py-4 lg:gap-x-6 lg:gap-y-2 xl:flex-nowrap xl:gap-x-8 xl:gap-y-0 xl:py-3.5 2xl:gap-x-10 min-[1920px]:gap-x-[54px] min-[1920px]:py-3`}
+            className={`${HEADER_DESKTOP_SHELL_CLASS} ${HEADER_TOP_ROW_FRAME_CLASS} py-4 lg:py-3.5 min-[1920px]:py-[6px]`}
           >
+            <div className="flex w-full min-w-0 flex-wrap items-center gap-x-5 gap-y-2.5 lg:gap-x-6 lg:gap-y-2 xl:flex-nowrap xl:gap-x-8 xl:gap-y-0 2xl:gap-x-10 min-[1920px]:gap-x-[54px]">
             <Link
               href="/"
-              className="flex aspect-[83/73] h-[72px] w-[80px] shrink-0 items-center justify-center lg:h-[78px] lg:w-[86px] xl:h-[82px] xl:w-[92px] min-[1920px]:h-[88px] min-[1920px]:w-[98px]"
+              className="flex aspect-[93/73] h-[83px] w-[92px] shrink-0 items-center justify-center lg:h-[90px] lg:w-[99px] xl:h-[94px] xl:w-[106px] min-[1920px]:h-[101px] min-[1920px]:w-[113px]"
               aria-label="MARCO GROUP"
             >
               <MarcoGroupLogo priority />
@@ -820,6 +819,7 @@ export function Header() {
                 <span className="text-[17px] font-medium lg:text-[18px] min-[1920px]:text-[19px]">{t('common.header.addresses')}</span>
                 <ChevronDownIcon />
               </Link>
+            </div>
             </div>
           </div>
         </div>
@@ -1052,7 +1052,7 @@ export function Header() {
                 </svg>
               </button>
               <Link href="/" className="flex shrink-0 items-center group" aria-label="MARCO GROUP">
-                <MarcoGroupLogo />
+                <MarcoGroupLogo className="h-[82px] w-[93px] sm:h-[86px] sm:w-[98px]" />
               </Link>
             </div>
             {/* Mobile locale + currency pill (same line as logo) */}
