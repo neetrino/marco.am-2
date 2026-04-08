@@ -89,32 +89,36 @@ export function HomeReelsSection() {
 
       <div
         ref={scrollRef}
-        className="scrollbar-hide -mx-1 flex gap-6 overflow-x-auto pb-2 pt-1 md:gap-8 lg:gap-[108px]"
+        className="scrollbar-hide -mx-1 overflow-x-auto pb-2 pt-1"
       >
-        {REELS_THUMB_IMAGE_URLS.map((src, i) => (
-            <button
-              key={src}
-              type="button"
-              aria-label={captions[i]}
-              className={`${montserratArm.className} group flex w-[120px] shrink-0 flex-col items-center gap-3 text-left sm:w-[130px] md:w-[145px]`}
-            >
-              <div className="relative h-[120px] w-[120px] max-w-[min(145px,85vw)] rounded-full bg-[#f0f0f0] p-[11px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] ring-2 ring-white transition-transform group-hover:scale-[1.02] md:h-[145px] md:w-[145px]">
-                <div className="relative h-full w-full overflow-hidden rounded-full">
-                  <Image
-                    src={src}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="145px"
-                    unoptimized
-                  />
+        <div className="inline-flex min-w-full justify-center">
+          <div className="flex gap-6 md:gap-8 lg:gap-[108px]">
+            {REELS_THUMB_IMAGE_URLS.map((src, i) => (
+              <button
+                key={src}
+                type="button"
+                aria-label={captions[i]}
+                className={`${montserratArm.className} group flex w-[120px] shrink-0 flex-col items-center gap-3 text-left sm:w-[130px] md:w-[145px]`}
+              >
+                <div className="relative h-[120px] w-[120px] max-w-[min(145px,85vw)] rounded-full bg-[#f0f0f0] p-[11px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] ring-2 ring-white transition-transform group-hover:scale-[1.02] md:h-[145px] md:w-[145px]">
+                  <div className="relative h-full w-full overflow-hidden rounded-full">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="145px"
+                      unoptimized
+                    />
+                  </div>
                 </div>
-              </div>
-              <span className="max-w-[160px] text-center text-sm font-normal leading-7 text-[#050401] md:text-[18px]">
-                {captions[i]}
-              </span>
-            </button>
-        ))}
+                <span className="max-w-[160px] text-center text-sm font-normal leading-7 text-[#050401] md:text-[18px]">
+                  {captions[i]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 flex justify-center gap-2 md:mt-8" aria-hidden>
