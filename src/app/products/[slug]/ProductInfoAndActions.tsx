@@ -7,17 +7,15 @@ import { t, getProductText } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
 import { sanitizeHtml } from '../../../lib/utils/sanitize';
 import { CompareIcon } from '../../../components/icons/CompareIcon';
+import {
+  HEADER_FIGMA_PILL_RADIUS_CLASS,
+  HEADER_ROW2_BAR_HEIGHT_CLASS,
+} from '../../../components/header/header.constants';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import type { Product, ProductVariant } from './types';
 
-/** Primary CTA pill — slimmer than default 56px for tighter product actions row. */
-const PRODUCT_PRIMARY_CTA_HEIGHT_PX = 44;
-/** Trailing icon circle diameter (scales with pill height). */
+/** Trailing arrow circle — scales with row-2 bar height (same as qty / toolbar icons and header strip). */
 const PRODUCT_PRIMARY_CTA_ICON_PX = 36;
-/** Space from pill left edge to label start. */
-const PRODUCT_PRIMARY_CTA_PADDING_LEFT_PX = 48;
-/** Space from label block to trailing icon circle. */
-const PRODUCT_PRIMARY_CTA_GAP_TEXT_TO_ICON_PX = 16;
 
 interface ProductInfoAndActionsProps {
   product: Product;
@@ -237,12 +235,7 @@ export function ProductInfoAndActions({
           <button
             type="button"
             disabled={!canAddToCart || isAddingToCart}
-            style={{
-              minHeight: PRODUCT_PRIMARY_CTA_HEIGHT_PX,
-              paddingLeft: PRODUCT_PRIMARY_CTA_PADDING_LEFT_PX,
-              gap: PRODUCT_PRIMARY_CTA_GAP_TEXT_TO_ICON_PX,
-            }}
-            className="flex min-w-0 flex-1 items-center rounded-full bg-marco-yellow py-0.5 pr-1.5 text-left text-sm font-bold leading-tight text-marco-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+            className={`flex min-w-0 flex-1 items-center gap-1.5 bg-marco-yellow pl-3 pr-5 text-left text-sm font-semibold leading-normal text-marco-black transition-[filter,transform] hover:-translate-y-0.5 hover:brightness-95 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:brightness-100 md:max-w-[280px] md:flex-none md:pl-6 mr-5 ${HEADER_ROW2_BAR_HEIGHT_CLASS} ${HEADER_FIGMA_PILL_RADIUS_CLASS}`}
             onClick={onAddToCart}
           >
             <span className="min-w-0 flex-1">
@@ -264,7 +257,7 @@ export function ProductInfoAndActions({
               }}
               aria-hidden
             >
-              <ArrowUpRight className="size-2.5 stroke-[2.5]" strokeWidth={2.5} />
+              <ArrowUpRight className="size-2.5" strokeWidth={2.25} />
             </span>
           </button>
           <button 

@@ -209,7 +209,7 @@ function BlueStackLayerWithCta() {
         <HomePromoStackedProductCardBlueLabel />
       </div>
       <div
-        className="absolute right-2 z-[4] sm:right-2.5 md:right-3"
+        className="absolute right-6 z-[4]"
         style={ctaVerticalStyle}
       >
         <HomePromoStackedProductCardCta />
