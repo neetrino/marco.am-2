@@ -6,6 +6,7 @@ import { montserratArm } from '../fonts/montserrat-arm';
 import { CtaArrowCircleIcon } from './icons/CtaArrowCircleIcon';
 import { MessageSolidIcon } from './icons/MessageSolidIcon';
 import { useTranslation } from '../lib/i18n-client';
+import { HOME_HERO_BANNER_HEADER_GAP_PX } from '@/constants/homePageLayout';
 
 /**
  * Hero assets. `bgTexture`: yellow brick wall (portrait); `object-cover` crops to banner aspect.
@@ -268,7 +269,10 @@ export function HomeBanner() {
   const heroScale = `scale(calc(100cqw / ${MASK_BG_W}px))`;
 
   return (
-    <section className="relative w-full overflow-x-hidden">
+    <section
+      className="relative w-full overflow-x-hidden"
+      style={{ marginTop: HOME_HERO_BANNER_HEADER_GAP_PX }}
+    >
       <div className="w-full [container-type:inline-size]">
         <div
           className="relative w-full overflow-hidden rounded-[36px] shadow-[0_25px_80px_-24px_rgba(15,23,42,0.14)] ring-1 ring-black/[0.06]"
