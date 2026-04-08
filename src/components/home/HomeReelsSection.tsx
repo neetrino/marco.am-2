@@ -29,7 +29,7 @@ export function HomeReelsSection() {
   };
 
   return (
-    <section className="border-y border-[#ebebeb] bg-white py-10 md:py-12">
+    <section className="bg-white py-10 md:py-12">
       <div className="mb-6 flex items-center justify-between gap-4">
         <h2 className="text-2xl font-black uppercase tracking-wider text-[#101010] md:text-3xl">
           {t('home.reels_title')}

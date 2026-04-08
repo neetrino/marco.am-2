@@ -116,7 +116,7 @@ function SofaCard() {
         style={{ left: x(195), top: by(712) }}
       >
         <p>{ARM.sofaName}</p>
-        <p>Bellini</p>
+        <p>Беллини</p>
       </div>
 
       <Link
@@ -275,7 +275,7 @@ export function HomeBanner() {
     >
       <div className="w-full [container-type:inline-size]">
         <div
-          className="relative w-full overflow-hidden rounded-[36px] shadow-[0_25px_80px_-24px_rgba(15,23,42,0.14)] ring-1 ring-black/[0.06]"
+          className="relative w-full overflow-hidden rounded-[36px]"
           style={{ aspectRatio: `${MASK_BG_W} / ${MASK_BG_H}` }}
         >
             <div

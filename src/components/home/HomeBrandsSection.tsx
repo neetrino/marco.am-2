@@ -51,7 +51,7 @@ export function HomeBrandsSection() {
   }
 
   return (
-    <section className="bg-[#f8f8f8] py-10 md:py-14">
+    <section className="bg-white py-10 md:py-14">
       <h2 className="text-center text-xl font-black uppercase tracking-wide text-[#101010] md:text-2xl">
         {t('home.brands_title')}
       </h2>
