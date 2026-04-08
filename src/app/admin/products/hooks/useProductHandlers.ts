@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import { apiClient, getApiOrErrorMessage } from '../../../../lib/api-client';
 import { useTranslation } from '../../../../lib/i18n-client';
-import type { Product, ProductsResponse } from '../types';
+import type { Product } from '../types';
+import { logger } from "@/lib/utils/logger";
 
 interface UseProductHandlersProps {
   products: Product[];
@@ -18,7 +17,7 @@ interface UseProductHandlersProps {
 
 export function useProductHandlers({
   products,
-  setProducts,
+  setProducts: _setProducts,
   fetchProducts,
   selectedIds,
   setSelectedIds,
@@ -27,7 +26,6 @@ export function useProductHandlers({
   setTogglingAllFeatured,
 }: UseProductHandlersProps) {
   const { t } = useTranslation();
-  const router = useRouter();
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -80,7 +78,7 @@ export function useProductHandlers({
 
     try {
       await apiClient.delete(`/api/v1/admin/products/${productId}`);
-      console.log('✅ [ADMIN] Product deleted successfully');
+      logger.devLog('✅ [ADMIN] Product deleted successfully');
       
       // Refresh products list
       fetchProducts();
@@ -103,11 +101,11 @@ export function useProductHandlers({
         published: newStatus,
       };
       
-      console.log(`🔄 [ADMIN] Updating product status to ${newStatus ? 'published' : 'draft'}`);
+      logger.devLog(`🔄 [ADMIN] Updating product status to ${newStatus ? 'published' : 'draft'}`);
       
       await apiClient.put(`/api/v1/admin/products/${productId}`, updateData);
       
-      console.log(`✅ [ADMIN] Product ${newStatus ? 'published' : 'unpublished'} successfully`);
+      logger.devLog(`✅ [ADMIN] Product ${newStatus ? 'published' : 'unpublished'} successfully`);
       
       // Refresh products list
       fetchProducts();
@@ -123,7 +121,7 @@ export function useProductHandlers({
     }
   };
 
-  const handleToggleFeatured = async (productId: string, currentStatus: boolean, productTitle: string) => {
+  const handleToggleFeatured = async (productId: string, currentStatus: boolean, _productTitle: string) => {
     try {
       const newStatus = !currentStatus;
       
@@ -131,11 +129,11 @@ export function useProductHandlers({
         featured: newStatus,
       };
       
-      console.log(`⭐ [ADMIN] Updating product featured status to ${newStatus ? 'featured' : 'not featured'}`);
+      logger.devLog(`⭐ [ADMIN] Updating product featured status to ${newStatus ? 'featured' : 'not featured'}`);
       
       await apiClient.put(`/api/v1/admin/products/${productId}`, updateData);
       
-      console.log(`✅ [ADMIN] Product ${newStatus ? 'marked as featured' : 'removed from featured'} successfully`);
+      logger.devLog(`✅ [ADMIN] Product ${newStatus ? 'marked as featured' : 'removed from featured'} successfully`);
       
       // Refresh products list
       fetchProducts();
@@ -163,7 +161,7 @@ export function useProductHandlers({
       const failed = results.filter(r => r.status === 'rejected');
       const successCount = products.length - failed.length;
       
-      console.log(`✅ [ADMIN] Toggle all featured completed: ${successCount}/${products.length} successful`);
+      logger.devLog(`✅ [ADMIN] Toggle all featured completed: ${successCount}/${products.length} successful`);
       
       // Refresh products list
       await fetchProducts();

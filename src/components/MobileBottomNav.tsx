@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Home, UserRound, Store } from 'lucide-react';
 import { getCompareCount, getWishlistCount } from '../lib/storageCounts';
 import { CartIcon } from './icons/CartIcon';
+import { logger } from "@/lib/utils/logger";
 
 interface MobileNavItem {
   label: string;
@@ -31,7 +32,7 @@ export function MobileBottomNav() {
     const updateCounts = () => {
       const wishlist = getWishlistCount();
       const compare = getCompareCount();
-      console.debug('[MobileBottomNav] wishlist/compare counts refreshed', { wishlist, compare });
+      logger.devDebug('[MobileBottomNav] wishlist/compare counts refreshed', { wishlist, compare });
       setWishlistCount(wishlist);
       setCompareCount(compare);
     };
@@ -60,7 +61,7 @@ export function MobileBottomNav() {
         href: '/products', 
         icon: Store, 
         visible: true,
-        onClick: () => console.info('🛒 [MobileBottomNav] Shop tapped, navigating to /products'),
+        onClick: () => logger.devInfo('🛒 [MobileBottomNav] Shop tapped, navigating to /products'),
       },
       // On mobile we show Cart instead of Wishlist
       { 

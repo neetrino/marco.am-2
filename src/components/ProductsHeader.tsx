@@ -18,7 +18,7 @@ interface ProductsHeaderProps {
   perPage: number;
 }
 
-function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
+function ProductsHeaderContent({ total, perPage: _perPage }: ProductsHeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();

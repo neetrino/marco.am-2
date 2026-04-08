@@ -11,6 +11,7 @@ import { formatPrice, getStoredCurrency } from '../../lib/currency';
 import { getStoredLanguage } from '../../lib/language';
 import { useTranslation } from '../../lib/i18n-client';
 import { useAuth } from '../../lib/auth/AuthContext';
+import { logger } from "@/lib/utils/logger";
 
 interface Product {
   id: string;
@@ -60,7 +61,7 @@ export default function WishlistPage() {
    */
   const fetchWishlistProducts = useCallback(async (idsToLoad: string[]) => {
     if (idsToLoad.length === 0) {
-      console.info('[Wishlist] Skip fetch because ids array is empty');
+      logger.devInfo('[Wishlist] Skip fetch because ids array is empty');
       setProducts([]);
       setLoading(false);
       return;
@@ -68,7 +69,7 @@ export default function WishlistPage() {
 
     try {
       setLoading(true);
-      console.info(`[Wishlist] Fetching ${idsToLoad.length} products for render`);
+      logger.devInfo(`[Wishlist] Fetching ${idsToLoad.length} products for render`);
       const languagePreference = getStoredLanguage();
       const response = await apiClient.get<{
         data: Product[];
@@ -130,7 +131,7 @@ export default function WishlistPage() {
   }, [fetchWishlistProducts]);
 
   const handleRemove = (productId: string) => {
-    console.info(`[Wishlist] Removing product ${productId} from wishlist UI`);
+    logger.devInfo(`[Wishlist] Removing product ${productId} from wishlist UI`);
     
     // Mark as local update to prevent re-fetch in event handler
     isLocalUpdateRef.current = true;

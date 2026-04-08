@@ -7,6 +7,7 @@
  */
 
 import type { Redis as IORedis } from "ioredis";
+import { logger } from "@/lib/utils/logger";
 
 // Redis client will be initialized lazily
 let redisClient: IORedis | null = null;
@@ -103,7 +104,7 @@ async function initRedis() {
     });
 
     redisClient.on('connect', () => {
-      console.log('✅ Redis connected');
+      logger.alwaysInfo("Redis connected");
       errorLogged = false;
       redisAvailable = true;
     });
@@ -153,7 +154,7 @@ export async function get(key: string): Promise<string | null> {
       return await redisClient.get(key);
     }
     return memoryGet(key);
-  } catch (error) {
+  } catch (_error) {
     return memoryGet(key);
   }
 }
@@ -180,7 +181,7 @@ export async function set(key: string, value: string): Promise<boolean> {
       return true;
     }
     return false;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -209,7 +210,7 @@ export async function setex(key: string, seconds: number, value: string): Promis
     }
     memorySetex(key, seconds, value);
     return true;
-  } catch (error) {
+  } catch (_error) {
     memorySetex(key, seconds, value);
     return true;
   }
@@ -239,7 +240,7 @@ export async function del(key: string): Promise<boolean> {
       return true;
     }
     return true;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -264,7 +265,7 @@ export async function keys(pattern: string): Promise<string[]> {
       return await redisClient.keys(pattern);
     }
     return [];
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }
@@ -307,7 +308,7 @@ export async function deletePattern(pattern: string): Promise<number> {
       return matchingKeys.length + memoryDeleted;
     }
     return memoryDeleted;
-  } catch (error) {
+  } catch (_error) {
     return memoryDeleted;
   }
 }

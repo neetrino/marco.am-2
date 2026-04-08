@@ -7,6 +7,7 @@ import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
+import { logger } from "@/lib/utils/logger";
 
 interface Message {
   id: string;
@@ -50,7 +51,7 @@ export default function MessagesPage() {
   const fetchMessages = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('📧 [ADMIN] Fetching messages...', { page });
+      logger.devLog('📧 [ADMIN] Fetching messages...', { page });
       
       const response = await apiClient.get<MessagesResponse>('/api/v1/admin/messages', {
         params: {
@@ -59,7 +60,7 @@ export default function MessagesPage() {
         },
       });
 
-      console.log('✅ [ADMIN] Messages fetched:', response);
+      logger.devLog('✅ [ADMIN] Messages fetched:', response);
       setMessages(response.data || []);
       setMeta(response.meta || null);
     } catch (err) {
@@ -73,7 +74,7 @@ export default function MessagesPage() {
     if (isLoggedIn && isAdmin) {
       fetchMessages();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isLoggedIn, isAdmin, page]);
 
   const toggleSelect = (id: string) => {

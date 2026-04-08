@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { Button } from '@shop/ui';
-import { apiClient } from '../../lib/api-client';
 import { getStoredLanguage } from '../../lib/language';
 import { t } from '../../lib/i18n';
 import { PriceFilter } from '../../components/PriceFilter';

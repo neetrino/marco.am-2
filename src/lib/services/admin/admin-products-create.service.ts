@@ -8,6 +8,7 @@ import {
   cleanImageUrls,
   separateMainAndVariantImages,
 } from "../../utils/image-utils";
+import { logger } from "@/lib/utils/logger";
 import type { PrismaTransactionClient } from "@/lib/types/prisma";
 import { getErrorMessage, getPrismaErrorCode } from "@/lib/types/errors";
 
@@ -58,13 +59,13 @@ class AdminProductsCreateService {
         
         if (!existing) {
           usedSkus.add(trimmedSku);
-          console.log(`✅ [ADMIN PRODUCTS CREATE SERVICE] Using provided SKU: ${trimmedSku}`);
+          logger.devLog(`✅ [ADMIN PRODUCTS CREATE SERVICE] Using provided SKU: ${trimmedSku}`);
           return trimmedSku;
         } else {
-          console.log(`⚠️ [ADMIN PRODUCTS CREATE SERVICE] SKU already exists in DB: ${trimmedSku}, generating new one`);
+          logger.devLog(`⚠️ [ADMIN PRODUCTS CREATE SERVICE] SKU already exists in DB: ${trimmedSku}, generating new one`);
         }
       } else {
-        console.log(`⚠️ [ADMIN PRODUCTS CREATE SERVICE] SKU already used in transaction: ${trimmedSku}, generating new one`);
+        logger.devLog(`⚠️ [ADMIN PRODUCTS CREATE SERVICE] SKU already used in transaction: ${trimmedSku}, generating new one`);
       }
     }
 
@@ -92,17 +93,17 @@ class AdminProductsCreateService {
       
       if (!existing) {
         usedSkus.add(newSku);
-        console.log(`✅ [ADMIN PRODUCTS CREATE SERVICE] Generated unique SKU: ${newSku}`);
+        logger.devLog(`✅ [ADMIN PRODUCTS CREATE SERVICE] Generated unique SKU: ${newSku}`);
         return newSku;
       }
       
-      console.log(`⚠️ [ADMIN PRODUCTS CREATE SERVICE] Generated SKU exists in DB: ${newSku}, trying again...`);
+      logger.devLog(`⚠️ [ADMIN PRODUCTS CREATE SERVICE] Generated SKU exists in DB: ${newSku}, trying again...`);
     } while (attempt < 100); // Safety limit
     
     // Fallback: use timestamp + random if all attempts failed
     const finalSku = `${baseSlug.toUpperCase()}-${Date.now()}-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
     usedSkus.add(finalSku);
-    console.log(`✅ [ADMIN PRODUCTS CREATE SERVICE] Using fallback SKU: ${finalSku}`);
+    logger.devLog(`✅ [ADMIN PRODUCTS CREATE SERVICE] Using fallback SKU: ${finalSku}`);
     return finalSku;
   }
 
@@ -146,7 +147,7 @@ class AdminProductsCreateService {
     }>;
   }) {
     try {
-      console.log('🆕 [ADMIN PRODUCTS CREATE SERVICE] Creating product:', data.title);
+      logger.devLog('🆕 [ADMIN PRODUCTS CREATE SERVICE] Creating product:', data.title);
 
       const result = await db.$transaction(async (tx: PrismaTransactionClient) => {
         // Track used SKUs within this transaction to ensure uniqueness
@@ -269,7 +270,7 @@ class AdminProductsCreateService {
             const attributesJson =
               Object.keys(attributesMap).length > 0 ? attributesMap : undefined;
 
-            console.log(`📦 [ADMIN PRODUCTS CREATE SERVICE] Variant ${variantIndex + 1} attributes:`, JSON.stringify(attributesJson ?? null, null, 2));
+            logger.devLog(`📦 [ADMIN PRODUCTS CREATE SERVICE] Variant ${variantIndex + 1} attributes:`, JSON.stringify(attributesJson ?? null, null, 2));
 
             // Process and validate variant imageUrl
             let processedVariantImageUrl: string | undefined = undefined;
@@ -299,7 +300,7 @@ class AdminProductsCreateService {
         // Final validation: log all SKUs to ensure uniqueness
         const allSkus = variantsData.map(v => v.sku).filter(Boolean);
         const uniqueSkus = new Set(allSkus);
-        console.log(`📋 [ADMIN PRODUCTS CREATE SERVICE] Generated ${variantsData.length} variants with SKUs:`, allSkus);
+        logger.devLog(`📋 [ADMIN PRODUCTS CREATE SERVICE] Generated ${variantsData.length} variants with SKUs:`, allSkus);
         
         if (allSkus.length !== uniqueSkus.size) {
           console.error('❌ [ADMIN PRODUCTS CREATE SERVICE] Duplicate SKUs detected!', {
@@ -310,7 +311,7 @@ class AdminProductsCreateService {
           throw new Error('Duplicate SKUs detected in variants. This should not happen.');
         }
         
-        console.log('✅ [ADMIN PRODUCTS CREATE SERVICE] All variant SKUs are unique');
+        logger.devLog('✅ [ADMIN PRODUCTS CREATE SERVICE] All variant SKUs are unique');
 
         // Collect all variant images to exclude from main media
         const allVariantImages: string[] = [];
@@ -326,7 +327,7 @@ class AdminProductsCreateService {
         if (data.mainProductImage && rawMedia.length === 0) {
           // If mainProductImage is provided but media is empty, use mainProductImage as first media item
           rawMedia = [data.mainProductImage];
-          console.log('📸 [ADMIN PRODUCTS CREATE SERVICE] Using mainProductImage as media:', data.mainProductImage.substring(0, 50) + '...');
+          logger.devLog('📸 [ADMIN PRODUCTS CREATE SERVICE] Using mainProductImage as media:', data.mainProductImage.substring(0, 50) + '...');
         } else if (data.mainProductImage && rawMedia.length > 0) {
           // If both are provided, ensure mainProductImage is first in media array
           const mainImageIndex = rawMedia.findIndex((m: ProductMediaItem) => {
@@ -336,13 +337,13 @@ class AdminProductsCreateService {
           if (mainImageIndex === -1) {
             // mainProductImage not in media array, add it as first
             rawMedia = [data.mainProductImage, ...rawMedia];
-            console.log('📸 [ADMIN PRODUCTS CREATE SERVICE] Added mainProductImage as first media item');
+            logger.devLog('📸 [ADMIN PRODUCTS CREATE SERVICE] Added mainProductImage as first media item');
           } else if (mainImageIndex > 0) {
             // mainProductImage is in media but not first, move it to first
             const mainImage = rawMedia[mainImageIndex];
             rawMedia.splice(mainImageIndex, 1);
             rawMedia.unshift(mainImage);
-            console.log('📸 [ADMIN PRODUCTS CREATE SERVICE] Moved mainProductImage to first position in media');
+            logger.devLog('📸 [ADMIN PRODUCTS CREATE SERVICE] Moved mainProductImage to first position in media');
           }
         }
 
@@ -350,8 +351,8 @@ class AdminProductsCreateService {
         const { main } = separateMainAndVariantImages(rawMedia, allVariantImages);
         const finalMedia = cleanImageUrls(main);
         
-        console.log('📸 [ADMIN PRODUCTS CREATE SERVICE] Final main media count:', finalMedia.length);
-        console.log('📸 [ADMIN PRODUCTS CREATE SERVICE] Variant images excluded:', allVariantImages.length);
+        logger.devLog('📸 [ADMIN PRODUCTS CREATE SERVICE] Final main media count:', finalMedia.length);
+        logger.devLog('📸 [ADMIN PRODUCTS CREATE SERVICE] Variant images excluded:', allVariantImages.length);
 
         const product = await tx.product.create({
           data: {
@@ -393,7 +394,7 @@ class AdminProductsCreateService {
             // Ensure table exists (for Vercel deployments where migrations might not run)
             await ensureProductAttributesTable();
             
-            console.log('🔗 [ADMIN PRODUCTS CREATE SERVICE] Creating ProductAttribute relations for product:', product.id, 'attributes:', data.attributeIds);
+            logger.devLog('🔗 [ADMIN PRODUCTS CREATE SERVICE] Creating ProductAttribute relations for product:', product.id, 'attributes:', data.attributeIds);
             await tx.productAttribute.createMany({
               data: data.attributeIds.map((attributeId) => ({
                 productId: product.id,
@@ -401,7 +402,7 @@ class AdminProductsCreateService {
               })),
               skipDuplicates: true,
             });
-            console.log('✅ [ADMIN PRODUCTS CREATE SERVICE] Created ProductAttribute relations:', data.attributeIds);
+            logger.devLog('✅ [ADMIN PRODUCTS CREATE SERVICE] Created ProductAttribute relations:', data.attributeIds);
           } catch (error: unknown) {
             console.error('❌ [ADMIN PRODUCTS CREATE SERVICE] Failed to create ProductAttribute relations:', error);
             console.error('   Product ID:', product.id);
@@ -429,7 +430,7 @@ class AdminProductsCreateService {
 
       // Revalidate cache
       try {
-        console.log('🧹 [ADMIN PRODUCTS CREATE SERVICE] Revalidating paths for new product');
+        logger.devLog('🧹 [ADMIN PRODUCTS CREATE SERVICE] Revalidating paths for new product');
         revalidatePath('/');
         revalidatePath('/products');
         // @ts-expect-error - revalidateTag type issue in Next.js

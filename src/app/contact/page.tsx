@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Input } from '@shop/ui';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import { apiClient } from '../../lib/api-client';

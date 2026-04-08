@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { jsonErrorResponse } from "@/lib/api/json-error-response";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
+import { logger } from "@/lib/utils/logger";
 
 /**
  * Валидация и нормализация параметров запроса для GET /api/v1/admin/products
@@ -134,7 +135,7 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
  */
 export async function GET(req: NextRequest) {
   const requestStartTime = Date.now();
-  console.log("🌐 [ADMIN PRODUCTS API] GET request received", { url: req.url });
+  logger.devLog("🌐 [ADMIN PRODUCTS API] GET request received", { url: req.url });
   
   try {
     // Аутентификация и проверка прав администратора
@@ -163,14 +164,14 @@ export async function GET(req: NextRequest) {
     }
 
     const filters = validationResult.filters!;
-    console.log("🌐 [ADMIN PRODUCTS API] Calling adminService.getProducts with filters:", filters);
+    logger.devLog("🌐 [ADMIN PRODUCTS API] Calling adminService.getProducts with filters:", filters);
     
     const serviceStartTime = Date.now();
     const result = await adminService.getProducts(filters);
     const serviceTime = Date.now() - serviceStartTime;
     
     const totalTime = Date.now() - requestStartTime;
-    console.log(`✅ [ADMIN PRODUCTS API] Request completed in ${totalTime}ms (service: ${serviceTime}ms)`, {
+    logger.devLog(`✅ [ADMIN PRODUCTS API] Request completed in ${totalTime}ms (service: ${serviceTime}ms)`, {
       page: filters.page,
       limit: filters.limit,
       resultCount: result.data?.length || 0,
@@ -212,7 +213,7 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   const requestStartTime = Date.now();
-  console.log("📤 [ADMIN PRODUCTS API] POST request received", { url: req.url });
+  logger.devLog("📤 [ADMIN PRODUCTS API] POST request received", { url: req.url });
   
   try {
     // Аутентификация и проверка прав администратора
@@ -315,7 +316,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log("📤 [ADMIN PRODUCTS API] Creating product:", {
+    logger.devLog("📤 [ADMIN PRODUCTS API] Creating product:", {
       title: body.title,
       slug: body.slug,
       variantsCount: body.variants?.length || 0,
@@ -341,7 +342,7 @@ export async function POST(req: NextRequest) {
 
     const totalTime = Date.now() - requestStartTime;
     const displayTitle = product.translations?.[0]?.title ?? "";
-    console.log(`✅ [ADMIN PRODUCTS API] Product created in ${totalTime}ms (service: ${serviceTime}ms)`, {
+    logger.devLog(`✅ [ADMIN PRODUCTS API] Product created in ${totalTime}ms (service: ${serviceTime}ms)`, {
       productId: product.id,
       title: displayTitle,
     });
