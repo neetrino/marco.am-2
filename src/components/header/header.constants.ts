@@ -7,13 +7,6 @@ export const HEADER_REELS_EXTERNAL_HREF = 'https://www.instagram.com/reels/';
  */
 export const HEADER_CONTAINER_CLASS = 'marco-header-container';
 
-/**
- * Row 2 only — caps toolbar width so categories, search, and actions sit on a narrower band (centered).
- * Outer shell still uses `HEADER_CONTAINER_CLASS` for the same horizontal gutters as the rest of the site.
- */
-export const HEADER_ROW2_CONTENT_MAX_WIDTH_CLASS =
-  'mx-auto w-full max-w-[min(100%,900px)] sm:max-w-[min(100%,980px)] md:max-w-[min(100%,1020px)] lg:max-w-[min(100%,1080px)] xl:max-w-[min(100%,1140px)] min-[1800px]:max-w-[min(100%,1180px)]';
-
 /** Top row vertical padding — Figma 111:4293 `py-[6px]` */
 export const HEADER_FIGMA_PADDING_Y_CLASS = 'py-1.5';
 
