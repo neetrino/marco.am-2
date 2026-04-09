@@ -37,7 +37,7 @@ export function HomePromoFreeDeliveryBanner() {
         {/* Scales with tile: % of card box — same aspect container as raster */}
         <div
           aria-hidden
-          className="pointer-events-none absolute right-[6%] top-[10%] z-10 aspect-square w-[22%]"
+          className="pointer-events-none absolute right-0 top-0 z-10 aspect-square w-[20%]"
         >
           <Image
             src={HERO_FREE_DELIVERY_TILE_CTA_ICON_SRC}
