@@ -17,7 +17,7 @@ export function HeroCarousel() {
         <div className="pointer-events-none absolute inset-0 z-10">
           {/*
             Mobile: headline top / card bottom-right (fits short banner).
-            md+: Figma 305 — headline; blue stacked card; smartphones (305:2154) + free-delivery (305:2151) on the right.
+            md+: Figma 305 — headline; blue stacked card; free-delivery (305:2151) then smartphones (305:2154) on the right.
           */}
           <div className="pointer-events-auto absolute inset-0 flex flex-col justify-between pt-9 pl-10 pr-4 pb-6 sm:pr-5 sm:pb-6 md:justify-start md:gap-6 md:pr-7 md:pb-9 lg:gap-7 lg:pr-9 lg:pb-11">
             <div className="[&_p]:mb-0 w-max max-w-[min(580px,calc(100%-16px))]">
@@ -31,8 +31,8 @@ export function HeroCarousel() {
                 ariaLabel={`${t('home.promo_featured_title')}. ${t('home.promo_featured_subtitle')}`}
               />
               <div className="absolute left-[570px] top-[46px] flex items-end gap-2 sm:gap-3 md:gap-4">
-                <HomePromoSmartphonesBanner />
                 <HomePromoFreeDeliveryBanner />
+                <HomePromoSmartphonesBanner />
               </div>
             </div>
           </div>
