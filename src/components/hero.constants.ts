@@ -35,7 +35,11 @@ export const HERO_FREE_DELIVERY_BANNER_IMAGE_SRC =
 export const HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC =
   '/assets/hero/hero-promo-smartphones-banner-305-2154.png' as const;
 
-/** Figma 305:2151 frame — shared by free-delivery + smartphones tiles (same visual weight in a row) */
+/** Fixed frame for the 80% smartphones tile only (free-delivery keeps shared side-tile sizing). */
+export const HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX = 360;
+export const HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX = 497;
+
+/** Figma 305:2151 frame — free-delivery tile (`HomePromoFreeDeliveryBanner`; 80% tile uses fixed px above) */
 export const HERO_SIDE_PROMO_TILE_ASPECT_W = 404;
 export const HERO_SIDE_PROMO_TILE_ASPECT_H = 557;
 

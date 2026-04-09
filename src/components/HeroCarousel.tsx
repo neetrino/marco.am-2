@@ -20,7 +20,7 @@ export function HeroCarousel() {
             md+: free-delivery nudged slightly left; smartphones shifted toward the right edge (translate).
           */}
           <div className="pointer-events-auto absolute inset-0">
-            <div className="pointer-events-auto absolute right-4 top-[46px] z-20 hidden flex-row items-end gap-3 sm:right-5 sm:gap-4 md:right-7 md:flex md:gap-5 lg:right-9 lg:gap-6">
+            <div className="pointer-events-auto absolute right-4 top-[46px] z-20 hidden flex-row items-end gap-1.5 sm:right-5 sm:gap-2 md:right-7 md:flex md:gap-2 lg:right-9 lg:gap-3">
               <div className="shrink-0 -translate-x-2 sm:-translate-x-2.5 md:-translate-x-3">
                 <HomePromoFreeDeliveryBanner />
               </div>
