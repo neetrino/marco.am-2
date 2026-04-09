@@ -33,15 +33,26 @@ export const HEADER_FIGMA_CONTACT_CLUSTER_GAP_CLASS =
 export const HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS =
   'gap-x-1 sm:gap-x-1.5 md:gap-x-2 lg:gap-x-2.5 min-[1800px]:gap-x-3';
 
-/** Between (categories+search) and right toolbar */
-export const HEADER_FIGMA_ROW2_MAIN_GAP_CLASS =
-  'gap-x-1 sm:gap-x-1.5 md:gap-x-2 lg:gap-x-3 xl:gap-x-3.5 min-[1800px]:gap-x-5';
+/** Horizontal gap (px) between search cluster and locale pill — row 2 when `md:flex-row`. */
+export const HEADER_ROW2_SEARCH_TO_LOCALE_GAP_PX = 66;
+
+/**
+ * Between (categories+search) and right toolbar.
+ * Must stay in sync with `HEADER_ROW2_SEARCH_TO_LOCALE_GAP_PX` (Tailwind JIT needs a static arbitrary value).
+ */
+export const HEADER_FIGMA_ROW2_MAIN_GAP_CLASS = 'md:gap-x-[66px]';
 
 /**
  * Locale / theme / icons / cart — Figma 214:1054 `gap-[23px]`; reduced for denser toolbar.
  */
 export const HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS =
   'gap-x-0.5 md:gap-x-0.5 lg:gap-x-1 xl:gap-x-1.5 min-[1800px]:gap-x-2';
+
+/**
+ * Additional space between locale/currency pill and theme toggle (row-2 toolbar).
+ */
+export const HEADER_LOCALE_TO_THEME_MARGIN_CLASS =
+  'ml-2 md:ml-2.5 lg:ml-3 xl:ml-3.5 min-[1800px]:ml-4';
 
 /**
  * Profile + compare + wishlist — single flex row; only these three share this gap.

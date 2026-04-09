@@ -29,6 +29,7 @@ import {
   HEADER_FIGMA_ROW2_MAIN_GAP_CLASS,
   HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS,
   HEADER_FIGMA_ROW2_PADDING_Y_CLASS,
+  HEADER_LOCALE_TO_THEME_MARGIN_CLASS,
   HEADER_FIGMA_PILL_RADIUS_CLASS,
   HEADER_TOOLBAR_ICON_CLUSTER_CLASS,
   HEADER_REELS_EXTERNAL_HREF,
@@ -900,7 +901,7 @@ export function Header({ initialLanguage }: HeaderProps) {
             />
             <button
               type="button"
-              className={`flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition-opacity hover:opacity-90 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
+              className={`flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition-opacity hover:opacity-90 ${HEADER_LOCALE_TO_THEME_MARGIN_CLASS} ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
               aria-label="Theme"
             >
               <Sun className="h-4 w-4" strokeWidth={1.75} aria-hidden />
