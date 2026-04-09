@@ -18,10 +18,10 @@ import type { Product, ProductVariant } from './types';
 /** Trailing arrow circle — scales with row-2 bar height (same as qty / toolbar icons and header strip). */
 const PRODUCT_PRIMARY_CTA_ICON_PX = 36;
 
-/** Buy CTA — slightly taller than header row-2 bar; icon nudged left for optical balance. */
+/** Buy CTA — taller row; trailing circle with light left nudge (−4px). */
 const PRODUCT_BUY_CTA_HEIGHT_CLASS = 'h-12';
 const PRODUCT_BUY_CTA_ICON_PX = 38;
-const PRODUCT_BUY_CTA_ICON_NUDGE_LEFT_CLASS = '-translate-x-2';
+const PRODUCT_BUY_CTA_ICON_NUDGE_LEFT_CLASS = '-translate-x-1';
 
 /** Figma: offer CTA sits slightly above the purchase row — transform only, layout box unchanged. */
 const PRODUCT_OFFER_CTA_LIFT_CLASS = '-translate-y-1.5 sm:-translate-y-2';

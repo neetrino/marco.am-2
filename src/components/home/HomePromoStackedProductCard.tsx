@@ -168,6 +168,8 @@ const HERO_PROMO_STACK_CTA_LABEL_INSET_LEFT_PX = 48;
 /** From end of label text to trailing icon circle (px). */
 const HERO_PROMO_STACK_CTA_TEXT_TO_ICON_GAP_PX = 18;
 
+const HERO_PROMO_STACK_CTA_ICON_NUDGE_LEFT_CLASS = '-translate-x-1';
+
 function HomePromoStackedProductCardCta() {
   const { t } = useTranslation();
 
@@ -186,7 +188,9 @@ function HomePromoStackedProductCardCta() {
       >
         {t('home.promo_featured_cta')}
       </span>
-      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-marco-black text-white sm:h-7 sm:w-7">
+      <span
+        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-marco-black text-white sm:h-7 sm:w-7 ${HERO_PROMO_STACK_CTA_ICON_NUDGE_LEFT_CLASS}`}
+      >
         <ArrowUpRight className="h-2.5 w-2.5 sm:h-3 sm:w-3" strokeWidth={2.5} aria-hidden />
       </span>
     </div>
