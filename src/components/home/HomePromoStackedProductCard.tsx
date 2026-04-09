@@ -149,10 +149,10 @@ function HomePromoStackedProductCardBlueLabel() {
 
   return (
     <div className="flex min-w-0 max-w-[58%] flex-col gap-0 pr-1 text-left text-white sm:max-w-[55%]">
-      <p className="mb-0 text-xs leading-snug sm:text-base sm:leading-[1.4875]">
+      <p className="mb-0 text-[11px] leading-snug sm:text-sm sm:leading-[1.4]">
         {t('home.promo_stack_blue_label_line1')}
       </p>
-      <p className="text-xs leading-snug sm:text-base sm:leading-[1.4875]">
+      <p className="text-[11px] leading-snug sm:text-sm sm:leading-[1.4]">
         {t('home.promo_stack_blue_label_line2')}
       </p>
     </div>
