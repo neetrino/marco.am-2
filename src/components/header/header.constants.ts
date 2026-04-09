@@ -75,8 +75,8 @@ export const HEADER_ROW2_BAR_HEIGHT_CLASS = 'h-10';
  */
 export const HEADER_SEARCH_BAR_HEIGHT_CLASS = HEADER_ROW2_BAR_HEIGHT_CLASS;
 
-/** Yellow «Search» button — inset in `HEADER_ROW2_BAR_HEIGHT_CLASS` track */
-export const HEADER_SEARCH_SUBMIT_HEIGHT_CLASS = 'h-9';
+/** Yellow «Search» button — same height as gray search track */
+export const HEADER_SEARCH_SUBMIT_HEIGHT_CLASS = HEADER_ROW2_BAR_HEIGHT_CLASS;
 
 /**
  * Search pill spans the flex slot between categories and the right toolbar (full width).
