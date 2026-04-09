@@ -19,7 +19,8 @@ const SOCIAL_VECTOR_ICON_PX = 16;
  */
 const SOCIAL_RASTER_FULL_PX = 32;
 
-const SOCIAL_LUCIDE_CLASS = 'shrink-0 text-marco-black';
+/** Lucide strokes use `currentColor` — `primary` is true black vs `marco-black` for heavier contrast on gray circles. */
+const SOCIAL_LUCIDE_CLASS = 'shrink-0 text-primary';
 const SOCIAL_RASTER_IMG_CLASS =
   'size-8 shrink-0 rounded-full object-contain object-center block';
 
@@ -63,7 +64,7 @@ function socialControlClass(entry: SocialEntry, enabled: boolean): string {
   if (isRasterEntry(entry)) {
     return `${base} bg-transparent p-0 ${enabled ? 'hover:opacity-90' : 'opacity-50'}`;
   }
-  return `${base} bg-marco-gray text-marco-black ${enabled ? 'hover:bg-marco-yellow/40' : 'opacity-50'}`;
+  return `${base} bg-marco-gray text-primary ${enabled ? 'hover:bg-marco-yellow/40' : 'opacity-50'}`;
 }
 
 function SocialGlyph({ entry }: { entry: SocialEntry }) {
@@ -84,7 +85,7 @@ function SocialGlyph({ entry }: { entry: SocialEntry }) {
     <Icon
       size={SOCIAL_VECTOR_ICON_PX}
       className={SOCIAL_LUCIDE_CLASS}
-      strokeWidth={1.75}
+      strokeWidth={2}
       aria-hidden
     />
   );
