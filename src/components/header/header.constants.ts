@@ -18,22 +18,22 @@ export const HEADER_FIGMA_CLUSTER_GAP_CLASS =
 export const HEADER_FIGMA_NAV_LINK_GAP_CLASS =
   'gap-x-3 md:gap-x-4 lg:gap-x-6 xl:gap-x-8 2xl:gap-x-[45px]';
 
-/** Gap between phone and addresses — tight on md, full when space allows */
+/** Gap between phone and addresses — tight cluster */
 export const HEADER_FIGMA_CONTACT_CLUSTER_GAP_CLASS =
-  'gap-x-2 md:gap-x-2.5 lg:gap-x-4 xl:gap-x-5 2xl:gap-x-[29px]';
+  'gap-x-1 md:gap-x-1.5 lg:gap-x-2.5 xl:gap-x-3 2xl:gap-x-4';
 
-/** Categories + search — compact row-2 rhythm */
+/** Categories + search — 22px gap (row on `sm+`, column on narrow) */
 export const HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS =
-  'gap-x-1 sm:gap-x-1.5 md:gap-x-2 lg:gap-x-2.5 min-[1800px]:gap-x-3';
+  'gap-y-[22px] gap-x-[22px] sm:gap-y-0';
 
-/** Horizontal gap (px) between search cluster and locale pill — row 2 when `md:flex-row`. */
-export const HEADER_ROW2_SEARCH_TO_LOCALE_GAP_PX = 66;
+/** Horizontal gap (px) between search cluster and right toolbar — row 2 when `md:flex-row`. */
+export const HEADER_ROW2_SEARCH_TO_LOCALE_GAP_PX = 52;
 
 /**
  * Between (categories+search) and right toolbar.
  * Must stay in sync with `HEADER_ROW2_SEARCH_TO_LOCALE_GAP_PX` (Tailwind JIT needs a static arbitrary value).
  */
-export const HEADER_FIGMA_ROW2_MAIN_GAP_CLASS = 'md:gap-x-[66px]';
+export const HEADER_FIGMA_ROW2_MAIN_GAP_CLASS = 'md:gap-x-[52px]';
 
 /**
  * Locale / theme / icons / cart — Figma 214:1054 `gap-[23px]`; reduced for denser toolbar.
@@ -94,15 +94,15 @@ export const HEADER_SEARCH_SUBMIT_CLASS = `flex items-center justify-center self
 /** Language + currency pill — height matches `HEADER_ROW2_BAR_HEIGHT_CLASS` */
 export const HEADER_LOCALE_PILL_HEIGHT_CLASS = HEADER_ROW2_BAR_HEIGHT_CLASS;
 
-/** Compact language pill — matches narrowed row-2 toolbar */
-export const HEADER_LOCALE_PILL_MIN_WIDTH_CLASS = 'min-w-[132px]';
+/** Language + currency pill — compact width in row-2 toolbar */
+export const HEADER_LOCALE_PILL_MIN_WIDTH_CLASS = 'min-w-[128px]';
 
 /** Figma 111:4306 pill radius */
 export const HEADER_LOCALE_PILL_RADIUS_CLASS = 'rounded-[80px]';
 
 export const HEADER_LOCALE_PILL_PADDING_X_CLASS = 'px-3';
 
-/** Tight rhythm for smaller pill */
+/** Tight rhythm between globe, labels, currency, chevron */
 export const HEADER_LOCALE_PILL_INNER_GAP_CLASS = 'gap-1';
 
 /** Row 2 vertical padding — space above/below the toolbar strip (controls unchanged) */

@@ -800,7 +800,7 @@ export function Header({ initialLanguage }: HeaderProps) {
             className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
           >
           <div
-            className={`flex min-w-0 w-full flex-1 flex-col gap-y-1.5 sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS}`}
+            className={`flex min-w-0 w-full flex-1 flex-col sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS}`}
           >
           <div ref={productsMenuRef} className="relative w-full shrink-0 sm:w-auto">
             <button
