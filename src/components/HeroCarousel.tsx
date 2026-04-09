@@ -16,11 +16,11 @@ export function HeroCarousel() {
         <HeroCarouselSlides />
         <div className="pointer-events-none absolute inset-0 z-10">
           {/*
-            Mobile: headline + stacked card; side tiles from md.
-            md+: free-delivery nudged slightly left; smartphones nudged right (keeps pair tight vs gap).
+            Mobile: headline + stacked card; side tiles from sm (very narrow: hidden).
+            sm+: free-delivery nudged slightly left; smartphones nudged right (keeps pair tight vs gap).
           */}
           <div className="pointer-events-auto absolute inset-0">
-            <div className="pointer-events-auto absolute -right-2 -top-16 z-20 hidden flex-row items-end gap-0 sm:-right-2 md:-right-3 md:flex lg:-right-4">
+            <div className="pointer-events-auto absolute -right-2 -top-16 z-20 hidden flex-row items-end gap-0 sm:-right-2 sm:flex md:-right-3 lg:-right-4">
               <div className="shrink-0 -translate-x-2 sm:-translate-x-2.5 md:-translate-x-3">
                 <HomePromoFreeDeliveryBanner />
               </div>

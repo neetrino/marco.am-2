@@ -35,9 +35,16 @@ export const HERO_FREE_DELIVERY_BANNER_IMAGE_SRC =
 export const HERO_FREE_DELIVERY_TILE_CTA_ICON_SRC =
   '/assets/hero/hero-promo-free-delivery-cta-icon.png' as const;
 
+/** Height of bottom frosted strip on free-delivery tile (`%` of card) — `backdrop-blur` over raster */
+export const HERO_FREE_DELIVERY_TILE_BOTTOM_FROST_HEIGHT_PERCENT = 35;
+
 /** Figma 305:2154 — 80% / smartphones promo tile (beside free-delivery banner) */
 export const HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC =
   '/assets/hero/hero-promo-smartphones-banner-305-2154.png' as const;
+
+/** CTA icon on 80% smartphones tile (`HomePromoSmartphonesBanner`) — diagonal arrow */
+export const HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC =
+  '/assets/hero/hero-promo-smartphones-tile-cta-icon.png' as const;
 
 /** Fixed frame for the 80% smartphones tile only (free-delivery keeps shared side-tile sizing). */
 export const HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX = 360;

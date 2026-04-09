@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslation } from '../../lib/i18n-client';
 import {
   HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC,
+  HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC,
   HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX,
   HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX,
 } from '../hero.constants';
@@ -30,7 +31,7 @@ export function HomePromoSmartphonesBanner() {
       className="block shrink-0 transition hover:opacity-95"
       aria-label={t('home.promo_smartphones_banner_aria')}
     >
-      <div className="relative shrink-0" style={smartphonesTileFrameStyle}>
+      <div className="relative isolate shrink-0" style={smartphonesTileFrameStyle}>
         <Image
           src={HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC}
           alt=""
@@ -39,6 +40,18 @@ export function HomePromoSmartphonesBanner() {
           sizes={SMARTPHONES_BANNER_IMAGE_SIZES}
           priority
         />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 z-20 aspect-square w-[20%]"
+        >
+          <Image
+            src={HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC}
+            alt=""
+            fill
+            className="object-contain"
+            sizes="72px"
+          />
+        </div>
       </div>
     </Link>
   );
