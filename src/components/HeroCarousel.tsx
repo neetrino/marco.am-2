@@ -30,7 +30,7 @@ export function HeroCarousel() {
               <HomePromoStackedProductCard
                 ariaLabel={`${t('home.promo_featured_title')}. ${t('home.promo_featured_subtitle')}`}
               />
-              <div className="absolute left-[570px] top-[46px] flex items-end gap-2 sm:gap-3 md:gap-4">
+              <div className="absolute left-[570px] top-[46px] flex flex-row items-end gap-3 sm:gap-4 md:gap-5">
                 <HomePromoFreeDeliveryBanner />
                 <HomePromoSmartphonesBanner />
               </div>

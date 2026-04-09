@@ -35,6 +35,20 @@ export const HERO_FREE_DELIVERY_BANNER_IMAGE_SRC =
 export const HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC =
   '/assets/hero/hero-promo-smartphones-banner-305-2154.png' as const;
 
+/** Figma 305:2151 frame — shared by free-delivery + smartphones tiles (same visual weight in a row) */
+export const HERO_SIDE_PROMO_TILE_ASPECT_W = 404;
+export const HERO_SIDE_PROMO_TILE_ASPECT_H = 557;
+
+/**
+ * Responsive width shared by both side promo tiles so they stay one size and align.
+ * `lg+` max 280px (was 236px) for a larger, matched pair.
+ */
+export const HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME =
+  'w-[min(42vw,200px)] sm:w-[min(38vw,220px)] md:w-[min(32vw,250px)] lg:w-[280px]' as const;
+
+/** Tailwind aspect matching `HERO_SIDE_PROMO_TILE_ASPECT_W`∶`HERO_SIDE_PROMO_TILE_ASPECT_H` */
+export const HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME = 'aspect-[404/557]' as const;
+
 /** Hero headline box — design size (px); mirrored in `HomePromoYellowHeadline` Tailwind classes */
 export const HERO_HEADLINE_MAX_WIDTH_PX = 580;
 export const HERO_HEADLINE_HEIGHT_PX = 56;
