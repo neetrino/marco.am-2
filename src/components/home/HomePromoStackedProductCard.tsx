@@ -14,6 +14,7 @@ import {
   HERO_PROMO_STACK_LAYER_GRAY,
   HERO_PROMO_STACK_LAYER_WHITE,
 } from '../hero.constants';
+import { HomePromoStackDiscountCaption } from './HomePromoStackDiscountCaption';
 import {
   HERO_PROMO_CHAIR_BOTTOM_OFFSET_PCT,
   HERO_PROMO_CHAIR_NUDGE_UP_PX,
@@ -29,7 +30,6 @@ import {
   HERO_PROMO_STACK_CONTAINER_ASPECT_W,
   HERO_PROMO_STACK_CTA_CENTER_FROM_BLUE_TOP_PCT,
   HERO_PROMO_STACK_CTA_NUDGE_DOWN_PX,
-  HERO_PROMO_STACK_CTA_RIGHT_BASE_REM,
   HERO_PROMO_STACK_CTA_RIGHT_EXTRA_PX,
   HERO_PROMO_STACK_GRAY_STYLE,
   HERO_PROMO_STACK_RADIUS_PX,
@@ -270,6 +270,7 @@ export function HomePromoStackedProductCard({ ariaLabel }: HomePromoStackedProdu
         <PromoChairFloorGroup wrapStyle={floorGroupWrapStyle} />
         <PromoChairAsset wrapStyle={chairWrapStyle} />
       </div>
+      <HomePromoStackDiscountCaption />
     </div>
   );
 }

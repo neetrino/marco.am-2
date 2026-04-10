@@ -160,3 +160,14 @@ export const HERO_PROMO_STACK_CTA_RIGHT_EXTRA_PX = 3;
 
 /** Added inside `translateY(calc(-50% + …))` — positive nudges down, negative nudges up. */
 export const HERO_PROMO_STACK_CTA_NUDGE_DOWN_PX = -4;
+
+/** Horizontal inset for discount caption under the stack (`HomePromoStackDiscountCaption`). */
+export const HERO_PROMO_STACK_DISCOUNT_CAPTION_MARGIN_LEFT_PX = 430;
+
+/** Extra shift vs `MARGIN_LEFT` / base position — right and up (CSS px). */
+export const HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_RIGHT_PX = 98;
+export const HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_UP_PX = 80;
+
+/** Figma — Montserrat SemiBold body for discount caption lines. */
+export const HERO_PROMO_STACK_DISCOUNT_CAPTION_FONT_SIZE_PX = 18;
+export const HERO_PROMO_STACK_DISCOUNT_CAPTION_LINE_HEIGHT_PX = 22;
