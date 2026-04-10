@@ -12,7 +12,7 @@ import { SearchDropdown } from './SearchDropdown';
 import { useAuth } from '../lib/auth/AuthContext';
 import { apiClient } from '../lib/api-client';
 import { CART_KEY, getCompareCount, getWishlistCount } from '../lib/storageCounts';
-import { MapPin, Phone, Sun } from 'lucide-react';
+import { MapPin, Phone, Search, Sun } from 'lucide-react';
 import { MarcoLogo } from './header/MarcoLogo';
 import { HeaderLocaleCurrencyPill } from './header/HeaderLocaleCurrencyPill';
 import { HeaderSocialCircleLinks } from './header/HeaderSocialCircleLinks';
@@ -30,6 +30,8 @@ import {
   HEADER_FIGMA_ROW2_PADDING_Y_CLASS,
   HEADER_LOCALE_TO_THEME_MARGIN_CLASS,
   HEADER_FIGMA_PILL_RADIUS_CLASS,
+  HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS,
+  HEADER_MOBILE_SEARCH_FAB_CLASS,
   HEADER_TOOLBAR_ICON_CLUSTER_CLASS,
   HEADER_REELS_EXTERNAL_HREF,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
@@ -779,28 +781,45 @@ export function Header({ initialLanguage }: HeaderProps) {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(true)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition-colors hover:bg-gray-50"
+          className={HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS}
           aria-label={t('common.ariaLabels.openMenu')}
           aria-expanded={mobileMenuOpen}
         >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7h16M4 12h16M4 17h16" />
+          <svg className="h-6 w-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M5 8h14M5 12h14M5 16h14"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeWidth={2}
+            />
           </svg>
         </button>
         <MarcoLogo />
-        <div className="w-10 shrink-0" aria-hidden />
+        <button
+          type="button"
+          className={HEADER_MOBILE_SEARCH_FAB_CLASS}
+          aria-label={t('common.ariaLabels.search')}
+          onClick={() => {
+            headerSearchInputRef.current?.focus({ preventScroll: false });
+            if (searchQuery.trim().length >= 1) {
+              setSearchDropdownOpen(true);
+            }
+          }}
+        >
+          <Search className="h-6 w-6 shrink-0" strokeWidth={1.75} aria-hidden />
+        </button>
       </div>
 
-      {/* Row 2 — Figma 111:4273; right strip 214:1054 (gaps tightened in header.constants) */}
-      <div className="w-full border-b bg-white">
+      {/* Row 2 — desktop/tablet only; mobile uses burger + search FAB (language/search/cart in drawer) */}
+      <div className="w-full border-b border-marco-border bg-white max-md:border-b-0">
         <div className={HEADER_CONTAINER_CLASS}>
           <div
-            className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
+            className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 max-md:gap-y-0 max-md:py-0 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
           >
           <div
-            className={`flex min-w-0 w-full flex-1 flex-col sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS}`}
+            className={`flex min-w-0 w-full flex-1 flex-col sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS} max-md:min-h-0 max-md:gap-y-0`}
           >
-          <div ref={productsMenuRef} className="relative w-full shrink-0 sm:w-auto">
+          <div ref={productsMenuRef} className="relative hidden w-full shrink-0 sm:w-auto md:block">
             <button
               type="button"
               onClick={() => setShowProductsMenu((open) => !open)}
@@ -835,42 +854,47 @@ export function Header({ initialLanguage }: HeaderProps) {
             )}
           </div>
 
-          <div ref={inlineSearchRef} className={`relative min-w-0 flex-1 ${HEADER_SEARCH_BAR_INNER_CLASS}`}>
-            <form
-              onSubmit={handleSearch}
-              className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_FIGMA_PILL_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
-            >
-              <div
-                className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-2`}
+          <div
+            ref={inlineSearchRef}
+            className={`relative min-w-0 flex-1 ${HEADER_SEARCH_BAR_INNER_CLASS}`}
+          >
+            <div className="max-md:sr-only">
+              <form
+                onSubmit={handleSearch}
+                className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_FIGMA_PILL_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
               >
-                <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
-                  <SearchIcon />
-                </span>
-                <input
-                  ref={headerSearchInputRef}
-                  type="search"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    if (e.target.value.trim().length >= 1) setSearchDropdownOpen(true);
-                  }}
-                  onFocus={() => {
-                    if (searchQuery.trim().length >= 1) setSearchDropdownOpen(true);
-                  }}
-                  onKeyDown={searchHandleKeyDown}
-                  placeholder={t('common.placeholders.search')}
-                  className="min-h-0 min-w-0 flex-1 border-0 bg-transparent text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
-                  aria-controls="search-results"
-                  aria-autocomplete="list"
-                />
-              </div>
-              <button
-                type="submit"
-                className={`${HEADER_SEARCH_SUBMIT_WIDTH_CLASS} ${HEADER_SEARCH_SUBMIT_CLASS}`}
-              >
-                {t('common.buttons.search')}
-              </button>
-            </form>
+                <div
+                  className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-2`}
+                >
+                  <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
+                    <SearchIcon />
+                  </span>
+                  <input
+                    ref={headerSearchInputRef}
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (e.target.value.trim().length >= 1) setSearchDropdownOpen(true);
+                    }}
+                    onFocus={() => {
+                      if (searchQuery.trim().length >= 1) setSearchDropdownOpen(true);
+                    }}
+                    onKeyDown={searchHandleKeyDown}
+                    placeholder={t('common.placeholders.search')}
+                    className="min-h-0 min-w-0 flex-1 border-0 bg-transparent text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
+                    aria-controls="search-results"
+                    aria-autocomplete="list"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className={`${HEADER_SEARCH_SUBMIT_WIDTH_CLASS} ${HEADER_SEARCH_SUBMIT_CLASS}`}
+                >
+                  {t('common.buttons.search')}
+                </button>
+              </form>
+            </div>
             <SearchDropdown
               results={searchResults}
               loading={searchLoading}
@@ -884,12 +908,13 @@ export function Header({ initialLanguage }: HeaderProps) {
               }}
               onClose={() => setSearchDropdownOpen(false)}
               onSeeAllClick={() => undefined}
+              className="max-md:fixed max-md:left-3 max-md:right-3 max-md:top-[4.5rem] max-md:mt-0 max-md:z-[70]"
             />
           </div>
           </div>
 
           <div
-            className={`flex w-full shrink-0 flex-wrap items-center justify-end md:w-auto md:flex-nowrap ${HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS}`}
+            className={`hidden w-full shrink-0 flex-wrap items-center justify-end md:flex md:w-auto md:flex-nowrap ${HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS}`}
           >
             <HeaderLocaleCurrencyPill
               selectedCurrency={selectedCurrency}

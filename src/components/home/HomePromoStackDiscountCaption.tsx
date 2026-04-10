@@ -25,9 +25,10 @@ export function HomePromoStackDiscountCaption() {
     <div
       className={`pointer-events-none -mt-2 w-full max-w-full pr-1 text-left not-italic text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.35)] sm:-mt-3 [&_p]:mb-0 ${montserratDiscountCaption.className}`}
       style={{
-        marginLeft:
+        marginLeft: `${
           HERO_PROMO_STACK_DISCOUNT_CAPTION_MARGIN_LEFT_PX +
-          HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_RIGHT_PX,
+          HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_RIGHT_PX
+        }px`,
         transform: `translateY(-${HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_UP_PX}px)`,
         fontSize: HERO_PROMO_STACK_DISCOUNT_CAPTION_FONT_SIZE_PX,
         lineHeight: `${HERO_PROMO_STACK_DISCOUNT_CAPTION_LINE_HEIGHT_PX}px`,

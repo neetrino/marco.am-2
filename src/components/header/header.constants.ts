@@ -119,3 +119,13 @@ export const HEADER_TOOLBAR_ICON_BUTTON_CLASS = 'h-10 w-10 shrink-0';
 /** Cart pill — same height as row-2 strip; wider pill for icon + price */
 export const HEADER_CART_BUTTON_CLASS =
   'flex h-10 min-w-[124px] items-center justify-center gap-1.5 rounded-[68px] pl-4 pr-3.5 text-xs font-bold leading-tight transition-[opacity,filter] hover:opacity-95 active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25';
+
+/**
+ * Mobile header top row — round dark controls (Figma 314:2501 search, 314:2503 menu).
+ * Compact: `p-2.5` (10px), inner glyph 24×24px (`h-6 w-6`); fill `#050401`.
+ */
+export const HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS =
+  'flex shrink-0 items-center justify-center rounded-full bg-[#050401] p-2.5 text-white shadow-sm transition-[opacity,filter] hover:opacity-95 active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marco-black/25';
+
+/** Figma 314:2501 — mobile search FAB (same shell as {@link HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS}). */
+export const HEADER_MOBILE_SEARCH_FAB_CLASS = HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS;
