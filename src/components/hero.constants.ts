@@ -103,9 +103,9 @@ export const HERO_HEADLINE_OFFSET_LEFT_PX = 40;
 /**
  * Hero chat FAB — Figma ref. 101:4070 100px; UI scaled down for the hero panel.
  */
-export const HERO_CHAT_FAB_SIZE_PX = 76;
+export const HERO_CHAT_FAB_SIZE_PX = 64;
 /** Narrow viewports — compact circle so it does not crowd the stacked card */
-export const HERO_CHAT_FAB_SIZE_COMPACT_PX = 56;
+export const HERO_CHAT_FAB_SIZE_COMPACT_PX = 48;
 
 /**
  * Figma 101:4071 — `mynaui:message-solid` (same path as `@mynaui/icons-react` MessageSolid, MIT).
@@ -117,7 +117,7 @@ export const HERO_CHAT_FAB_MESSAGE_SOLID_PATH_D =
 export const HERO_CHAT_FAB_ICON_FILL = '#2d4656' as const;
 
 /** Figma 101:4068 — pill label left of chat FAB (`bg` = `HERO_PROMO_STACK_LAYER_BLUE`); UI scaled down */
-export const HERO_CHAT_PILL_MIN_HEIGHT_PX = 48;
-export const HERO_CHAT_PILL_MAX_WIDTH_PX = 268;
-export const HERO_CHAT_PILL_BORDER_RADIUS_PX = 56;
+export const HERO_CHAT_PILL_MIN_HEIGHT_PX = 40;
+export const HERO_CHAT_PILL_MAX_WIDTH_PX = 232;
+export const HERO_CHAT_PILL_BORDER_RADIUS_PX = 48;
 export const HERO_CHAT_PILL_BOX_SHADOW = '0 4px 24px rgba(150, 150, 150, 0.28)' as const;

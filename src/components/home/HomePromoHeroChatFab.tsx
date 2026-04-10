@@ -12,17 +12,17 @@ import {
 } from '../hero.constants';
 
 const HERO_CHAT_CLUSTER_LINK_CLASSNAME =
-  'inline-flex max-w-full flex-row items-center gap-3.5 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black/40';
+  'inline-flex max-w-full flex-row items-center gap-2.5 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black/40 sm:gap-3';
 
 const HERO_CHAT_FAB_CIRCLE_CLASSNAME =
   'flex shrink-0 items-center justify-center rounded-full bg-white shadow-[0_6px_28px_rgba(0,0,0,0.14)] transition hover:bg-white hover:shadow-[0_8px_32px_rgba(0,0,0,0.18)]';
 
-const HERO_CHAT_FAB_SIZE_CLASSNAME = 'size-[56px] md:size-[76px]';
+const HERO_CHAT_FAB_SIZE_CLASSNAME = 'size-[48px] md:size-[64px]';
 
-const HERO_CHAT_FAB_ICON_FRAME_CLASSNAME = 'size-[28px] md:size-[38px] shrink-0';
+const HERO_CHAT_FAB_ICON_FRAME_CLASSNAME = 'size-[24px] md:size-[32px] shrink-0';
 
 const HERO_CHAT_PILL_TEXT_CLASSNAME =
-  'text-center text-xs font-bold leading-5 text-white sm:text-sm sm:leading-6 whitespace-normal sm:whitespace-nowrap';
+  'text-center text-xs font-bold leading-4 text-white sm:leading-5 whitespace-normal sm:whitespace-nowrap';
 
 /**
  * Pill background matches `HERO_PROMO_STACK_LAYER_BLUE` (Figma primary); hover from Figma node name.
@@ -39,7 +39,7 @@ export function HomePromoHeroChatFab() {
   return (
     <Link href="/contact" className={HERO_CHAT_CLUSTER_LINK_CLASSNAME}>
       <span
-        className={`inline-flex min-w-0 items-center justify-center px-3 py-2 sm:px-6 sm:py-3 ${HERO_CHAT_PILL_SURFACE_CLASSNAME}`}
+        className={`inline-flex min-w-0 items-center justify-center px-2.5 py-1.5 sm:px-4 sm:py-2 ${HERO_CHAT_PILL_SURFACE_CLASSNAME}`}
         style={{
           minHeight: HERO_CHAT_PILL_MIN_HEIGHT_PX,
           maxWidth: `min(${HERO_CHAT_PILL_MAX_WIDTH_PX}px, calc(100vw - 7rem))`,
