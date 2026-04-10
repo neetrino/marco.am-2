@@ -2,14 +2,16 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import {
+  HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX,
+  HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE,
   HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC,
   HERO_PROMO_SMARTPHONES_TILE_CTA_ANCHOR_FROM_TOP_FRAC,
   HERO_PROMO_SMARTPHONES_TILE_CTA_BORDER_RADIUS_PX,
-  HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC,
   HERO_PROMO_SMARTPHONES_TILE_CTA_LEFT_FRAC,
   HERO_PROMO_SMARTPHONES_TILE_CTA_MIN_WIDTH_PX,
   HERO_PROMO_SMARTPHONES_TILE_CTA_NUDGE_DOWN_PX,
@@ -71,18 +73,20 @@ export function HomePromoSmartphonesBanner() {
         >
           {t('home.promo_smartphones_banner_cta')}
         </Link>
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-2 -top-3 z-20 aspect-square w-[20%] sm:-right-2.5 sm:-top-4"
+        <Link
+          href="/products"
+          className="absolute right-0 top-0 z-[3] flex max-h-full shrink-0 items-center justify-center rounded-full bg-marco-black text-marco-yellow shadow-md ring-1 ring-white/20 transition hover:brightness-95"
+          style={HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE}
+          aria-label={t('home.promo_card_arrow_aria')}
         >
-          <Image
-            src={HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC}
-            alt=""
-            fill
-            className="object-contain"
-            sizes="72px"
+          <ArrowUpRight
+            className="shrink-0"
+            width={HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX}
+            height={HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX}
+            strokeWidth={2.5}
+            aria-hidden
           />
-        </div>
+        </Link>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
@@ -12,8 +13,10 @@ import {
   HERO_FREE_DELIVERY_TILE_CTA_NUDGE_UP_PX,
   HERO_FREE_DELIVERY_TILE_CTA_HEIGHT_PX,
   HERO_FREE_DELIVERY_TILE_CTA_WIDTH_PX,
+  HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX,
   HERO_FREE_DELIVERY_TILE_MASK_BITE_RADIUS_PX,
   HERO_FREE_DELIVERY_TILE_MASK_CORNER_RADIUS_PX,
+  HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE,
   HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME,
   HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME,
 } from '../hero.constants';
@@ -68,18 +71,21 @@ export function HomePromoFreeDeliveryBanner() {
     <div
       className={`relative isolate shrink-0 bg-transparent ${HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME}`}
     >
-      <div
-        className={`relative overflow-hidden bg-transparent ${HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME}`}
-        style={{ clipPath: freeDeliveryTileMaskClipPath }}
-      >
-        <Image
-          src={HERO_FREE_DELIVERY_BANNER_IMAGE_SRC}
-          alt=""
-          fill
-          className="pointer-events-none z-0 bg-transparent object-cover object-center"
-          sizes="(max-width: 640px) 42vw, (max-width: 768px) 38vw, (max-width: 1024px) 30vw, 280px"
-          priority
-        />
+      <div className={`relative bg-transparent ${HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME}`}>
+        {/* Mask only the raster; CTA + arrow stay unclipped (Figma 101:4047 — TR round button) */}
+        <div
+          className="absolute inset-0 overflow-hidden"
+          style={{ clipPath: freeDeliveryTileMaskClipPath }}
+        >
+          <Image
+            src={HERO_FREE_DELIVERY_BANNER_IMAGE_SRC}
+            alt=""
+            fill
+            className="pointer-events-none z-0 bg-transparent object-cover object-center"
+            sizes="(max-width: 640px) 42vw, (max-width: 768px) 38vw, (max-width: 1024px) 30vw, 280px"
+            priority
+          />
+        </div>
         <Link
           href="/products"
           className={`${montserratFreeDeliveryCta.className} absolute z-[2] flex items-center justify-center bg-black px-2.5 text-center text-xs font-bold leading-4 text-white transition hover:brightness-110 sm:text-sm sm:leading-5`}
@@ -87,6 +93,20 @@ export function HomePromoFreeDeliveryBanner() {
           aria-label={t('home.promo_free_delivery_banner_aria')}
         >
           {t('home.promo_free_delivery_banner_cta')}
+        </Link>
+        <Link
+          href="/products"
+          className="absolute right-0 top-0 z-[3] flex max-h-full shrink-0 items-center justify-center rounded-full bg-marco-black text-marco-yellow shadow-md ring-1 ring-white/20 transition hover:brightness-95"
+          style={HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE}
+          aria-label={t('home.promo_card_arrow_aria')}
+        >
+          <ArrowUpRight
+            className="shrink-0"
+            width={HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX}
+            height={HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX}
+            strokeWidth={2.5}
+            aria-hidden
+          />
         </Link>
       </div>
     </div>

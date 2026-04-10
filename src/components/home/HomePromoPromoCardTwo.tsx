@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { useId } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import {
@@ -20,18 +21,21 @@ export function HomePromoPromoCardTwo() {
   return (
     <Link
       href="/products"
-      className={`relative block overflow-hidden shadow-sm ring-1 ring-black/10 transition hover:opacity-95 ${PROMO_SMALL_CARD_MIN_HEIGHT_CLASS}`}
-      style={{ clipPath: `url(#${clipPathId})` }}
+      className={`relative block shadow-sm ring-1 ring-black/10 transition hover:opacity-95 ${PROMO_SMALL_CARD_MIN_HEIGHT_CLASS}`}
       aria-label={t('home.promo_side_card_two_aria')}
     >
-      <svg width={0} height={0} className="absolute" aria-hidden>
+      <svg width={0} height={0} className="pointer-events-none absolute" aria-hidden>
         <defs>
           <clipPath id={clipPathId} clipPathUnits="objectBoundingBox">
             <path d={PROMO_CARD_TWO_CLIP_PATH_D} />
           </clipPath>
         </defs>
       </svg>
-      <div className="absolute inset-0">
+      {/* Clip only the banner layer so the CTA icon is not clipped by the mask */}
+      <div
+        className="absolute inset-0 overflow-hidden"
+        style={{ clipPath: `url(#${clipPathId})` }}
+      >
         <Image
           src={PROMO_SIDE_CARD_B_BANNER_SRC}
           alt=""
@@ -40,6 +44,12 @@ export function HomePromoPromoCardTwo() {
           sizes={PROMO_CARD_TWO_IMAGE_SIZES}
           priority
         />
+      </div>
+      <div
+        className="pointer-events-none absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-marco-black text-marco-yellow shadow-md ring-1 ring-white/20"
+        aria-hidden
+      >
+        <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={2.5} aria-hidden />
       </div>
     </Link>
   );

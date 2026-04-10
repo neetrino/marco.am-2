@@ -3,6 +3,8 @@
  * Inset values are applied via `.hero-section-inset` in `globals.css`.
  */
 
+import type { CSSProperties } from 'react';
+
 /** Yellow panel shape — `aspect-[141/79]` in `HeroCarousel` */
 export const HERO_PANEL_ASPECT_W = 141;
 export const HERO_PANEL_ASPECT_H = 79;
@@ -50,13 +52,23 @@ export const HERO_FREE_DELIVERY_TILE_CTA_ANCHOR_FROM_TOP_FRAC = 0.86;
 /** Fine vertical nudge after centering (`translateY`) — px up */
 export const HERO_FREE_DELIVERY_TILE_CTA_NUDGE_UP_PX = 1;
 
+/** Top-right arrow control — compact vs Figma 101:4047 for tile UI */
+export const HERO_FREE_DELIVERY_TILE_ARROW_FRAME_WIDTH_PX = 52;
+export const HERO_FREE_DELIVERY_TILE_ARROW_FRAME_HEIGHT_PX = 54;
+
+/** Lucide arrow glyph — ~44% of min(frame) */
+export const HERO_FREE_DELIVERY_TILE_ARROW_ICON_PX = 24;
+
+/** TR arrow `Link` — free-delivery tile + 80% tile (Figma 101:4047 / 305:2130) */
+export const HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE: CSSProperties = {
+  width: `${HERO_FREE_DELIVERY_TILE_ARROW_FRAME_WIDTH_PX}px`,
+  height: `${HERO_FREE_DELIVERY_TILE_ARROW_FRAME_HEIGHT_PX}px`,
+  maxWidth: `min(100%, ${HERO_FREE_DELIVERY_TILE_ARROW_FRAME_WIDTH_PX}px)`,
+};
+
 /** Figma 305:2154 — 80% / smartphones promo tile (beside free-delivery banner) */
 export const HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC =
   '/assets/hero/hero-promo-smartphones-banner-305-2154.png' as const;
-
-/** CTA icon on 80% smartphones tile (`HomePromoSmartphonesBanner`) — diagonal arrow */
-export const HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC =
-  '/assets/hero/hero-promo-smartphones-tile-cta-icon.png' as const;
 
 /** Fixed frame for the 80% smartphones tile only (free-delivery keeps shared side-tile sizing). */
 export const HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX = 360;
