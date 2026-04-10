@@ -5,6 +5,10 @@ import { HomePromoFreeDeliveryBanner } from './home/HomePromoFreeDeliveryBanner'
 import { HomePromoSmartphonesBanner } from './home/HomePromoSmartphonesBanner';
 import { HomePromoStackedProductCard } from './home/HomePromoStackedProductCard';
 import { HomePromoHeroChatFab } from './home/HomePromoHeroChatFab';
+import { HomePromoMobileHeroChair } from './home/HomePromoMobileHeroChair';
+import { HomePromoMobileHeroHeadline } from './home/HomePromoMobileHeroHeadline';
+import { HomePromoMobileHeroSlateCta } from './home/HomePromoMobileHeroSlateCta';
+import { HomePromoMobileHeroSlatePanel } from './home/HomePromoMobileHeroSlatePanel';
 import { HomePromoYellowHeadline } from './home/HomePromoYellowHeadline';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
 
@@ -12,12 +16,23 @@ export function HeroCarousel() {
   const { t } = useTranslation();
 
   return (
-    <div className="hero-section-inset w-full">
+    <div className="hero-section-inset w-full" id="hero">
       <div className="relative aspect-[141/79] min-h-[260px] w-full overflow-hidden rounded-[32px] bg-marco-yellow box-border sm:min-h-[320px] md:min-h-[380px]">
         <HeroCarouselSlides />
-        <div className="pointer-events-none absolute inset-0 z-10">
+        <HomePromoMobileHeroSlatePanel />
+        <HomePromoMobileHeroChair />
+        <HomePromoMobileHeroSlateCta />
+        <div className="pointer-events-none absolute inset-0 z-[14] flex justify-start md:hidden">
+          <div className="box-border w-full max-w-full px-4 pt-8 sm:px-5 sm:pt-9">
+            <HomePromoMobileHeroHeadline
+              emphasisText={t('home.promo_banner_headline_emphasis')}
+              accentText={t('home.promo_banner_headline_accent')}
+            />
+          </div>
+        </div>
+        <div className="pointer-events-none absolute inset-0 z-10 max-md:hidden">
           {/*
-            Mobile: headline + stacked card; side tiles from sm (very narrow: hidden).
+            max-md: mobile headline (Figma 314:2400) only; md+: headline + stacked card.
             sm+: free-delivery nudged slightly left; smartphones nudged right (keeps pair tight vs gap).
           */}
           <div className="pointer-events-auto absolute inset-0">
@@ -44,7 +59,7 @@ export function HeroCarousel() {
             </div>
           </div>
         </div>
-        <div className="pointer-events-auto absolute bottom-3 right-5 z-30 sm:bottom-5 sm:right-6 md:bottom-7 md:right-9">
+        <div className="pointer-events-auto absolute bottom-3 right-5 z-30 max-md:hidden sm:bottom-5 sm:right-6 md:bottom-7 md:right-9">
           <HomePromoHeroChatFab />
         </div>
       </div>

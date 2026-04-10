@@ -15,11 +15,21 @@ export const HERO_PANEL_RADIUS_PX = 32;
 /** Vertical brick wall — top aligns with hero; bottom crops under `object-cover` + `object-top` */
 export const HERO_PRIMARY_IMAGE_SRC = '/assets/hero/hero-brick-wall-vertical.png' as const;
 
+/**
+ * Mobile hero raster — Figma 314:2380 (full-bleed yellow brick texture).
+ * `md+` uses {@link HERO_PRIMARY_IMAGE_SRC} in `HeroCarouselSlides`.
+ */
+export const HERO_MOBILE_PRIMARY_IMAGE_SRC =
+  '/assets/hero/hero-mobile-brick-wall-314-2380.jpg' as const;
+
 /** Figma 101:4019–101:4021 — stacked layer fills + 101:4023 chair asset */
 export const HERO_PROMO_STACK_LAYER_WHITE = '#ffffff' as const;
 export const HERO_PROMO_STACK_LAYER_GRAY = '#c7c7c7' as const;
 export const HERO_PROMO_STACK_LAYER_BLUE = '#2f4b5d' as const;
 export const HERO_PROMO_CHAIR_IMAGE_SRC = '/assets/hero/hero-promo-chair-101-4023.png' as const;
+/** Raster pixel size — used by Next/Image `width`/`height` (natural asset). */
+export const HERO_PROMO_CHAIR_IMAGE_NATURAL_WIDTH_PX = 500;
+export const HERO_PROMO_CHAIR_IMAGE_NATURAL_HEIGHT_PX = 500;
 
 /** Figma 101:4025 — elliptical floor shadow under chair */
 export const HERO_PROMO_CHAIR_SHADOW_IMAGE_SRC =
@@ -115,6 +125,96 @@ export const HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME =
 
 /** Tailwind aspect matching `HERO_SIDE_PROMO_TILE_ASPECT_W`∶`HERO_SIDE_PROMO_TILE_ASPECT_H` */
 export const HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME = 'aspect-[428/589]' as const;
+
+/** Figma 314:2400 — mobile-only hero headline (Montserrat Black); tuned −2px vs Figma export */
+export const HERO_MOBILE_HEADLINE_FONT_SIZE_PX = 33;
+export const HERO_MOBILE_HEADLINE_LINE_HEIGHT_PX = 32;
+/** Nudge headline left vs padding (px) */
+export const HERO_MOBILE_HEADLINE_NUDGE_LEFT_PX = 2;
+
+/**
+ * Figma 314:2384 — mobile hero slate rounded panel (`Rectangle 289`).
+ * Position vs `marco mobile2` hero: mask frame 399×288 @ y=130; panel @ (146, 227).
+ * Size tuned ~+5% vs Figma export for clearer presence on device.
+ */
+export const HERO_MOBILE_SLATE_PANEL_WIDTH_PX = 267;
+export const HERO_MOBILE_SLATE_PANEL_HEIGHT_PX = 186;
+export const HERO_MOBILE_SLATE_PANEL_RADIUS_PX = 33;
+/** Figma artboard width for mobile home (430) — horizontal placement */
+export const HERO_MOBILE_FIGMA_FRAME_WIDTH_PX = 430;
+/** Mask group height in Figma — vertical placement baseline */
+export const HERO_MOBILE_FIGMA_HERO_MASK_HEIGHT_PX = 288;
+/** Panel left edge / frame width */
+export const HERO_MOBILE_SLATE_PANEL_LEFT_FRAC =
+  146 / HERO_MOBILE_FIGMA_FRAME_WIDTH_PX;
+/**
+ * Panel top − mask top = 227 − 130 (px); as fraction of mask height for responsive top.
+ */
+export const HERO_MOBILE_SLATE_PANEL_TOP_FRAC =
+  (227 - 130) / HERO_MOBILE_FIGMA_HERO_MASK_HEIGHT_PX;
+
+/** Width / Figma frame — `min(..., ...%)` on slate panel */
+export const HERO_MOBILE_SLATE_PANEL_WIDTH_FRAC =
+  HERO_MOBILE_SLATE_PANEL_WIDTH_PX / HERO_MOBILE_FIGMA_FRAME_WIDTH_PX;
+
+/** Shared absolute box for slate background + mobile CTA overlay (Figma 314:2384). */
+export const HERO_MOBILE_SLATE_PANEL_BOX_STYLE: CSSProperties = {
+  left: `${HERO_MOBILE_SLATE_PANEL_LEFT_FRAC * 100}%`,
+  top: `${HERO_MOBILE_SLATE_PANEL_TOP_FRAC * 100}%`,
+  width: `min(${HERO_MOBILE_SLATE_PANEL_WIDTH_PX}px, ${HERO_MOBILE_SLATE_PANEL_WIDTH_FRAC * 100}%)`,
+  aspectRatio: `${HERO_MOBILE_SLATE_PANEL_WIDTH_PX} / ${HERO_MOBILE_SLATE_PANEL_HEIGHT_PX}`,
+  maxWidth: `min(${HERO_MOBILE_SLATE_PANEL_WIDTH_PX}px, calc(100% - 1rem))`,
+};
+
+/**
+ * Figma 314:2394 — yellow pill CTA (`Button w-fit bg-primary…`) inside slate (mobile).
+ * Sized down so the larger chair can overlap the control visually.
+ */
+export const HERO_MOBILE_SLATE_CTA_HEIGHT_PX = 44;
+export const HERO_MOBILE_SLATE_CTA_MAX_WIDTH_PX = 168;
+export const HERO_MOBILE_SLATE_CTA_ICON_CIRCLE_PX = 36;
+export const HERO_MOBILE_SLATE_CTA_PILL_RADIUS_PX = 44;
+/** Horizontal nudge of pill inside slate panel (px right). */
+export const HERO_MOBILE_SLATE_CTA_NUDGE_RIGHT_PX = 8;
+
+/**
+ * Figma 314:2385 `Group 9209` — chair + floor graphic; height includes shadow.
+ */
+export const HERO_MOBILE_CHAIR_GROUP_HEIGHT_PX = 203.5873260498047;
+
+/**
+ * Figma 314:2386 — mobile hero chair (`863-removebg-preview 1`); raster matches {@link HERO_PROMO_CHAIR_IMAGE_SRC}.
+ * Crop in frame — Figma dev export percentages. Scaled up vs export so it overlaps slate CTA (z-order).
+ */
+export const HERO_MOBILE_CHAIR_FRAME_WIDTH_PX = 270;
+export const HERO_MOBILE_CHAIR_FRAME_HEIGHT_PX = 196.631103515625;
+export const HERO_MOBILE_CHAIR_LEFT_FRAC = 6 / HERO_MOBILE_FIGMA_FRAME_WIDTH_PX;
+/** Shift whole chair group left (px) — `translateX(-n)` on mobile hero. */
+export const HERO_MOBILE_CHAIR_GROUP_NUDGE_LEFT_PX = 14;
+export const HERO_MOBILE_CHAIR_IMAGE_HEIGHT_PCT = 138.14;
+export const HERO_MOBILE_CHAIR_IMAGE_TOP_PCT = -38.05;
+
+/**
+ * Figma 314:2387 `Group 3` — floor ellipse under chair; asset {@link HERO_PROMO_CHAIR_SHADOW_IMAGE_SRC}.
+ * Positions relative to `Group 9209` (origin 6,227 page; shadow vs group top-left).
+ */
+export const HERO_MOBILE_FLOOR_SHADOW_LEFT_FRAC =
+  (43.36433410644531 - 6) / HERO_MOBILE_CHAIR_FRAME_WIDTH_PX;
+export const HERO_MOBILE_FLOOR_SHADOW_TOP_FRAC =
+  (341.35731506347656 - 227) / HERO_MOBILE_CHAIR_GROUP_HEIGHT_PX;
+export const HERO_MOBILE_FLOOR_SHADOW_WIDTH_FRAC =
+  169.28050231933594 / HERO_MOBILE_CHAIR_FRAME_WIDTH_PX;
+export const HERO_MOBILE_FLOOR_SHADOW_HEIGHT_FRAC =
+  69.23001098632812 / HERO_MOBILE_CHAIR_GROUP_HEIGHT_PX;
+
+/**
+ * Figma 314:2390 `Ellipse 4` — knob on the floor arc; same asset as {@link HERO_PROMO_SLIDER_HANDLE_IMAGE_SRC}.
+ * Width vs floor shadow; placed bottom-center on shadow (midpoint of arc).
+ */
+export const HERO_MOBILE_FLOOR_ARC_KNOB_WIDTH_FRAC =
+  15.674118041992188 / 169.28050231933594;
+/** Positive — shift knob down vs shadow bottom (`bottom: -n px`). */
+export const HERO_MOBILE_FLOOR_ARC_KNOB_NUDGE_DOWN_PX = 6;
 
 /** Hero headline box — design size (px); mirrored in `HomePromoYellowHeadline` Tailwind classes */
 export const HERO_HEADLINE_MAX_WIDTH_PX = 580;
