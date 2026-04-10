@@ -3,10 +3,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { Montserrat } from 'next/font/google';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import {
   HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC,
+  HERO_PROMO_SMARTPHONES_TILE_CTA_BORDER_RADIUS_PX,
+  HERO_PROMO_SMARTPHONES_TILE_CTA_BOTTOM_PX,
+  HERO_PROMO_SMARTPHONES_TILE_CTA_LEFT_PX,
+  HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_X_PX,
+  HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_Y_PX,
   HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX,
   HERO_PROMO_SMARTPHONES_TILE_TR_ICON_FRAME_PX,
   HERO_PROMO_SMARTPHONES_TILE_TR_ICON_GLYPH_PX,
@@ -14,6 +20,13 @@ import {
   HERO_PROMO_SMARTPHONES_TILE_TR_ICON_TOP_PX,
   HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX,
 } from '../hero.constants';
+
+/** Figma 305:2159 — Montserrat Bold 14 / leading 20 */
+const montserratSmartphonesBottomCta = Montserrat({
+  weight: '700',
+  subsets: ['latin', 'cyrillic'],
+  display: 'swap',
+});
 
 const smartphonesTileFrameStyle = {
   width: HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX,
@@ -28,6 +41,17 @@ const smartphonesTrIconLinkStyle: CSSProperties = {
   top: HERO_PROMO_SMARTPHONES_TILE_TR_ICON_TOP_PX,
   right: HERO_PROMO_SMARTPHONES_TILE_TR_ICON_RIGHT_PX,
   left: 'auto',
+};
+
+const smartphonesBottomCtaStyle: CSSProperties = {
+  bottom: HERO_PROMO_SMARTPHONES_TILE_CTA_BOTTOM_PX,
+  left: HERO_PROMO_SMARTPHONES_TILE_CTA_LEFT_PX,
+  right: 'auto',
+  paddingLeft: HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_X_PX,
+  paddingRight: HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_X_PX,
+  paddingTop: HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_Y_PX,
+  paddingBottom: HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_Y_PX,
+  borderRadius: HERO_PROMO_SMARTPHONES_TILE_CTA_BORDER_RADIUS_PX,
 };
 
 /**
@@ -47,6 +71,13 @@ export function HomePromoSmartphonesBanner() {
           sizes={SMARTPHONES_BANNER_IMAGE_SIZES}
           priority
         />
+        <Link
+          href="/products"
+          className={`${montserratSmartphonesBottomCta.className} absolute z-[2] flex max-w-[calc(100%-2rem)] shrink-0 items-center justify-center bg-white text-center text-sm font-bold leading-5 text-black shadow-sm ring-1 ring-black/10 transition hover:brightness-95`}
+          style={smartphonesBottomCtaStyle}
+        >
+          {t('home.promo_smartphones_banner_cta')}
+        </Link>
         <Link
           href="/products"
           className="absolute z-[3] flex shrink-0 items-center justify-center rounded-full bg-white text-marco-black shadow-md ring-1 ring-black/10 transition hover:brightness-95"

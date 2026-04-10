@@ -92,6 +92,16 @@ export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_RIGHT_PX = 78;
 export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_FRAME_PX = HERO_PROMO_SIDE_TILE_TR_ICON_FRAME_PX;
 export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_GLYPH_PX = HERO_PROMO_SIDE_TILE_TR_ICON_GLYPH_PX;
 
+/**
+ * Figma 305:2159 — bottom white pill CTA on 80% tile (`HomePromoSmartphonesBanner`).
+ * Compact pill; Montserrat Bold 14 / line 20; anchored bottom-left in tile space.
+ */
+export const HERO_PROMO_SMARTPHONES_TILE_CTA_LEFT_PX = 57;
+export const HERO_PROMO_SMARTPHONES_TILE_CTA_BOTTOM_PX = 30;
+export const HERO_PROMO_SMARTPHONES_TILE_CTA_BORDER_RADIUS_PX = 36;
+export const HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_X_PX = 56;
+export const HERO_PROMO_SMARTPHONES_TILE_CTA_PADDING_Y_PX = 8;
+
 /** Free-delivery tile (`HomePromoFreeDeliveryBanner`; 80% tile uses fixed px above) — matches banner raster */
 export const HERO_SIDE_PROMO_TILE_ASPECT_W = 428;
 export const HERO_SIDE_PROMO_TILE_ASPECT_H = 589;
