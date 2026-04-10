@@ -42,7 +42,7 @@ export function HomePromoSmartphonesBanner() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute right-0 top-0 z-20 aspect-square w-[20%]"
+          className="pointer-events-none absolute -right-2 -top-3 z-20 aspect-square w-[20%] sm:-right-2.5 sm:-top-4"
         >
           <Image
             src={HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC}

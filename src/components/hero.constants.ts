@@ -27,19 +27,28 @@ export const HERO_PROMO_CHAIR_SHADOW_IMAGE_SRC =
 export const HERO_PROMO_SLIDER_HANDLE_IMAGE_SRC =
   '/assets/hero/hero-promo-slider-handle-101-4026.svg' as const;
 
-/** Free delivery tile raster — RGBA, shaped transparency; 404×556 (Figma mask group) */
+/** Free delivery tile raster — 428×589; full art (text + icon), mask applied in `HomePromoFreeDeliveryBanner` */
 export const HERO_FREE_DELIVERY_BANNER_IMAGE_SRC =
-  '/assets/hero/hero-free-delivery-banner-rgba-404x556.png' as const;
-
-/** CTA icon on free-delivery side tile (`HomePromoFreeDeliveryBanner`) — black disc, yellow arrow */
-export const HERO_FREE_DELIVERY_TILE_CTA_ICON_SRC =
-  '/assets/hero/hero-promo-free-delivery-cta-icon.png' as const;
+  '/assets/hero/hero-free-delivery-banner-428x589.png' as const;
 
 /** Figma 101:4039 / mask — outer `border-radius` on free-delivery card (Subtract group) */
 export const HERO_FREE_DELIVERY_TILE_MASK_CORNER_RADIUS_PX = 36;
 
 /** Figma — concave top-right circular bite (`clip-path` / subtract from rectangle) */
 export const HERO_FREE_DELIVERY_TILE_MASK_BITE_RADIUS_PX = 80;
+
+/** Free-delivery tile pill CTA — compact strip */
+export const HERO_FREE_DELIVERY_TILE_CTA_WIDTH_PX = 168;
+export const HERO_FREE_DELIVERY_TILE_CTA_HEIGHT_PX = 38;
+export const HERO_FREE_DELIVERY_TILE_CTA_BORDER_RADIUS_PX = 38;
+
+/**
+ * Raster: lower ~⅓ is blurred; CTA anchor slightly below band midpoint (tweak visually).
+ */
+export const HERO_FREE_DELIVERY_TILE_CTA_ANCHOR_FROM_TOP_FRAC = 0.86;
+
+/** Fine vertical nudge after centering (`translateY`) — px up */
+export const HERO_FREE_DELIVERY_TILE_CTA_NUDGE_UP_PX = 1;
 
 /** Figma 305:2154 — 80% / smartphones promo tile (beside free-delivery banner) */
 export const HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC =
@@ -53,9 +62,9 @@ export const HERO_PROMO_SMARTPHONES_TILE_CTA_ICON_SRC =
 export const HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX = 360;
 export const HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX = 497;
 
-/** Figma 305:2151 frame — free-delivery tile (`HomePromoFreeDeliveryBanner`; 80% tile uses fixed px above) */
-export const HERO_SIDE_PROMO_TILE_ASPECT_W = 404;
-export const HERO_SIDE_PROMO_TILE_ASPECT_H = 557;
+/** Free-delivery tile (`HomePromoFreeDeliveryBanner`; 80% tile uses fixed px above) — matches banner raster */
+export const HERO_SIDE_PROMO_TILE_ASPECT_W = 428;
+export const HERO_SIDE_PROMO_TILE_ASPECT_H = 589;
 
 /**
  * Responsive width shared by both side promo tiles so they stay one size and align.
@@ -65,7 +74,7 @@ export const HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME =
   'w-[min(42vw,200px)] sm:w-[min(38vw,220px)] md:w-[min(32vw,250px)] lg:w-[280px]' as const;
 
 /** Tailwind aspect matching `HERO_SIDE_PROMO_TILE_ASPECT_W`∶`HERO_SIDE_PROMO_TILE_ASPECT_H` */
-export const HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME = 'aspect-[404/557]' as const;
+export const HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME = 'aspect-[428/589]' as const;
 
 /** Hero headline box — design size (px); mirrored in `HomePromoYellowHeadline` Tailwind classes */
 export const HERO_HEADLINE_MAX_WIDTH_PX = 580;
