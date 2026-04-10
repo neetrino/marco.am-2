@@ -4,6 +4,7 @@ import { useTranslation } from '../lib/i18n-client';
 import { HomePromoFreeDeliveryBanner } from './home/HomePromoFreeDeliveryBanner';
 import { HomePromoSmartphonesBanner } from './home/HomePromoSmartphonesBanner';
 import { HomePromoStackedProductCard } from './home/HomePromoStackedProductCard';
+import { HomePromoHeroChatFab } from './home/HomePromoHeroChatFab';
 import { HomePromoYellowHeadline } from './home/HomePromoYellowHeadline';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
 
@@ -42,6 +43,9 @@ export function HeroCarousel() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="pointer-events-auto absolute bottom-3 right-5 z-30 sm:bottom-5 sm:right-6 md:bottom-7 md:right-9">
+          <HomePromoHeroChatFab />
         </div>
       </div>
     </div>

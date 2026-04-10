@@ -99,3 +99,25 @@ export const HERO_HEADLINE_HEIGHT_PX = 56;
 /** Hero headline offset from yellow panel edges — sync with `HeroCarousel` (`top-[36px]`, `left-[40px]`) */
 export const HERO_HEADLINE_OFFSET_TOP_PX = 36;
 export const HERO_HEADLINE_OFFSET_LEFT_PX = 40;
+
+/**
+ * Hero chat FAB — Figma ref. 101:4070 100px; UI scaled down for the hero panel.
+ */
+export const HERO_CHAT_FAB_SIZE_PX = 76;
+/** Narrow viewports — compact circle so it does not crowd the stacked card */
+export const HERO_CHAT_FAB_SIZE_COMPACT_PX = 56;
+
+/**
+ * Figma 101:4071 — `mynaui:message-solid` (same path as `@mynaui/icons-react` MessageSolid, MIT).
+ */
+export const HERO_CHAT_FAB_MESSAGE_SOLID_PATH_D =
+  'M11.953 2.25c-2.317 0-4.118 0-5.52.15-1.418.153-2.541.47-3.437 1.186-.92.736-1.35 1.693-1.553 2.9-.193 1.152-.193 2.618-.193 4.446v.183c0 1.782 0 3.015.2 3.934.108.495.278.925.545 1.323.264.392.6.722 1.001 1.042.631.505 1.375.81 2.254 1V21a.75.75 0 0 0 1.123.65c.586-.335 1.105-.7 1.58-1.044l.304-.221a22 22 0 0 1 1.036-.73c.844-.548 1.65-.905 2.707-.905h.047c2.317 0 4.118 0 5.52-.15 1.418-.153 2.541-.47 3.437-1.186.4-.32.737-.65 1-1.042.268-.398.438-.828.546-1.323.2-.919.2-2.152.2-3.934v-.183c0-1.828 0-3.294-.193-4.445-.203-1.208-.633-2.165-1.553-2.901-.896-.717-2.019-1.033-3.437-1.185-1.402-.151-3.203-.151-5.52-.151z' as const;
+
+/** Icon fill — Figma dev (slate; pairs with promo stack blue) */
+export const HERO_CHAT_FAB_ICON_FILL = '#2d4656' as const;
+
+/** Figma 101:4068 — pill label left of chat FAB (`bg` = `HERO_PROMO_STACK_LAYER_BLUE`); UI scaled down */
+export const HERO_CHAT_PILL_MIN_HEIGHT_PX = 48;
+export const HERO_CHAT_PILL_MAX_WIDTH_PX = 268;
+export const HERO_CHAT_PILL_BORDER_RADIUS_PX = 56;
+export const HERO_CHAT_PILL_BOX_SHADOW = '0 4px 24px rgba(150, 150, 150, 0.28)' as const;
