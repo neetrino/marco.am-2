@@ -5,9 +5,6 @@
 /** Horizontal gap between product cards in the carousel. */
 export const SPECIAL_OFFERS_CARD_GAP_PX = 16;
 
-/** Min width of each card column (carousel tile below lg — horizontal scroll). */
-export const SPECIAL_OFFERS_CARD_MIN_WIDTH_PX = 260;
-
 /** Product cards visible at once in the rail (lg+), aligned with Figma strip. */
 export const SPECIAL_OFFERS_VISIBLE_COLUMNS = 4;
 
@@ -26,11 +23,57 @@ export const SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX = 48;
 /** Card shell — Figma Product2 fill. */
 export const SPECIAL_OFFERS_CARD_BG = '#f6f6f6';
 
+/** Design reference: max card width (carousel slot may be narrower on lg). */
+export const SPECIAL_OFFERS_CARD_MAX_WIDTH_PX = 360;
+
+/** Design reference: fixed card height. */
+export const SPECIAL_OFFERS_CARD_HEIGHT_PX = 480;
+
+/** Bottom-right scallop — circle diameter (same role as `::after` in the design spec). */
+export const SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX = 92;
+
+/**
+ * Corner mask `translate(28%, 28%)` — offset as percent of the circle’s own size.
+ */
+export const SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT = 28;
+
+/**
+ * Corner mask fill — must match `HomeSpecialOffersSection` surface (`bg-white`).
+ */
+export const SPECIAL_OFFERS_CARD_CORNER_MASK_BG = '#ffffff';
+
+/**
+ * Floating cart — inset from card inner bottom (`position: absolute` on the control).
+ * Does not change card height.
+ */
+export const SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX = 3;
+
+/** Floating cart — inset from card inner right (shifted toward the edge). */
+export const SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX = 3;
+
+/** Floating add-to-cart circle (edge length). */
+export const SPECIAL_OFFERS_CART_BUTTON_SIZE_PX = 46;
+
+/** Inner Figma cart icon — scaled with `SPECIAL_OFFERS_CART_BUTTON_SIZE_PX`. */
+export const SPECIAL_OFFERS_CART_FIGMA_ICON_WIDTH_PX = 19;
+
+/** Inner Figma cart icon — scaled with `SPECIAL_OFFERS_CART_BUTTON_SIZE_PX`. */
+export const SPECIAL_OFFERS_CART_FIGMA_ICON_HEIGHT_PX = 19;
+
+/** Loading spinner inside the cart control. */
+export const SPECIAL_OFFERS_CART_BUTTON_SPINNER_PX = 17;
+
+/**
+ * Width reserved beside price text — cart size + small gap so text does not overlap.
+ */
+export const SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX =
+  SPECIAL_OFFERS_CART_BUTTON_SIZE_PX + 10;
+
 /** Image well height inside special-offer card (Figma). */
-export const SPECIAL_OFFERS_IMAGE_WELL_HEIGHT_PX = 248;
+export const SPECIAL_OFFERS_IMAGE_WELL_HEIGHT_PX = 212;
 
 /** Top padding under card shell before image well (Figma ~17). */
-export const SPECIAL_OFFERS_CARD_PADDING_TOP_PX = 17;
+export const SPECIAL_OFFERS_CARD_PADDING_TOP_PX = 8;
 
 /** Vertical space between the product image well and the brand/title text block. */
 export const SPECIAL_OFFERS_IMAGE_TO_TEXT_GAP_PX = 24;

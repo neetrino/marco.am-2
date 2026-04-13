@@ -994,7 +994,7 @@ export function Header({ initialLanguage }: HeaderProps) {
               href="/cart"
               className={`relative bg-marco-black text-white ${HEADER_CART_BUTTON_CLASS}`}
             >
-              <CartIcon size={19} className="h-[18px] w-[19px] brightness-0 invert" />
+              <CartIcon size={19} className="h-[18px] w-[19px] text-white" />
               <span className="tabular-nums">{formatPrice(cartTotal, selectedCurrency)}</span>
               {cartCount > 0 && (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[18px] items-center justify-center rounded-full bg-red-600 px-0.5 text-[9px] font-bold text-white">

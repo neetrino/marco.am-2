@@ -13,6 +13,8 @@ import { SpecialOfferCard } from './SpecialOfferCard';
 import type { SpecialOfferProduct } from './special-offer-product.types';
 import {
   SPECIAL_OFFERS_CARD_GAP_PX,
+  SPECIAL_OFFERS_CARD_HEIGHT_PX,
+  SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
@@ -40,8 +42,7 @@ const SPECIAL_OFFERS_NAV_BUTTON_CLASS =
 
 const SPECIAL_OFFERS_NAV_ICON_CLASS = 'h-3 w-3 shrink-0 text-marco-black';
 
-const SPECIAL_OFFERS_CARD_SLOT_MOBILE_CLASS =
-  'shrink-0 snap-start min-w-0 w-[min(100%,260px)]';
+const SPECIAL_OFFERS_CARD_SLOT_MOBILE_CLASS = 'shrink-0 snap-start min-w-0';
 
 const PRODUCTS_LIMIT = 8;
 
@@ -120,7 +121,10 @@ export function HomeSpecialOffersSection() {
   const railSlotStyle =
     railSlotWidthPx != null
       ? { width: railSlotWidthPx, flexShrink: 0 as const }
-      : undefined;
+      : {
+          width: `min(100%, ${SPECIAL_OFFERS_CARD_MAX_WIDTH_PX}px)`,
+          flexShrink: 0 as const,
+        };
 
   return (
     <section
@@ -209,7 +213,13 @@ export function HomeSpecialOffersSection() {
               {loading
                 ? Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className={railSlotClassName} style={railSlotStyle}>
-                      <div className="min-h-[420px] animate-pulse rounded-[32px] bg-gray-200" />
+                      <div
+                        className="animate-pulse rounded-[32px] bg-gray-200"
+                        style={{
+                          height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
+                          maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
+                        }}
+                      />
                     </div>
                   ))
                 : products.map((product) => (
