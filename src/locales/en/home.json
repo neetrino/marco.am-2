@@ -63,7 +63,9 @@
     "cta": "See more",
     "error_loading": "Could not load offers",
     "try_again": "Try again",
-    "empty": "No special offers right now."
+    "empty": "No special offers right now.",
+    "gallery_dot_aria": "View photo {{n}} of {{total}}",
+    "gallery_pagination_aria": "Product photos"
   },
   "featured_products": {
     "title": "Featured Products",

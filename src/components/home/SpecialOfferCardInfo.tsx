@@ -4,7 +4,12 @@ import Link from 'next/link';
 
 import { ProductColors } from '../ProductCard/ProductColors';
 
-import { SPECIAL_OFFERS_IMAGE_TO_TEXT_GAP_PX } from './home-special-offers.constants';
+import {
+  SPECIAL_OFFERS_COLOR_SWATCH_COLUMN_PADDING_TOP_PX,
+  SPECIAL_OFFERS_COLOR_SWATCH_GAP_PX,
+  SPECIAL_OFFERS_COLOR_SWATCH_SIZE_PX,
+  SPECIAL_OFFERS_IMAGE_TO_TEXT_GAP_PX,
+} from './home-special-offers.constants';
 import type { SpecialOfferProduct } from './special-offer-product.types';
 
 interface SpecialOfferCardInfoProps {
@@ -34,8 +39,19 @@ export function SpecialOfferCardInfo({
         </Link>
       </div>
       {product.colors && product.colors.length > 0 ? (
-        <div className="shrink-0 pt-0.5">
-          <ProductColors colors={product.colors} isCompact maxVisible={2} />
+        <div
+          className="shrink-0"
+          style={{
+            paddingTop: SPECIAL_OFFERS_COLOR_SWATCH_COLUMN_PADDING_TOP_PX,
+          }}
+        >
+          <ProductColors
+            colors={product.colors}
+            isCompact
+            maxVisible={2}
+            swatchSizePx={SPECIAL_OFFERS_COLOR_SWATCH_SIZE_PX}
+            gapPx={SPECIAL_OFFERS_COLOR_SWATCH_GAP_PX}
+          />
         </div>
       ) : null}
     </div>

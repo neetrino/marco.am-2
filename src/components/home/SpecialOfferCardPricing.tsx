@@ -13,6 +13,9 @@ import {
   SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX,
   SPECIAL_OFFERS_CART_BUTTON_SIZE_PX,
   SPECIAL_OFFERS_CART_BUTTON_SPINNER_PX,
+  SPECIAL_OFFERS_OLD_PRICE_FONT_SIZE_PX,
+  SPECIAL_OFFERS_PRICE_FONT_SIZE_PX,
+  SPECIAL_OFFERS_PRICE_LINE_HEIGHT_PX,
   SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX,
 } from './home-special-offers.constants';
 
@@ -29,14 +32,23 @@ export function SpecialOfferCardPricing({
 }: SpecialOfferCardPricingProps) {
   return (
     <div
-      className="mt-3 min-w-0"
+      className="min-w-0"
       style={{ paddingRight: SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX }}
     >
-      <p className="text-[20px] font-black leading-7 text-[#181111]">
+      <p
+        className="font-black text-[#181111]"
+        style={{
+          fontSize: SPECIAL_OFFERS_PRICE_FONT_SIZE_PX,
+          lineHeight: `${SPECIAL_OFFERS_PRICE_LINE_HEIGHT_PX}px`,
+        }}
+      >
         {formatPrice(price, currency)}
       </p>
       {oldPrice ? (
-        <p className="text-[12px] text-gray-400 line-through">
+        <p
+          className="text-gray-400 line-through"
+          style={{ fontSize: SPECIAL_OFFERS_OLD_PRICE_FONT_SIZE_PX }}
+        >
           {formatPrice(oldPrice, currency)}
         </p>
       ) : null}
@@ -64,7 +76,7 @@ export function SpecialOfferCartFloatingButton({
 }: SpecialOfferCartFloatingButtonProps) {
   return (
     <div
-      className="pointer-events-none absolute z-20"
+      className="pointer-events-none absolute z-30"
       style={{
         right: SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX,
         bottom: SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX,

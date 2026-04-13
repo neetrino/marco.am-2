@@ -9,6 +9,8 @@ import {
   SPECIAL_OFFERS_CARD_HEIGHT_PX,
   SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
   SPECIAL_OFFERS_CARD_PADDING_TOP_PX,
+  SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+  SPECIAL_OFFERS_PRICE_BLOCK_LIFT_FROM_BOTTOM_PX,
 } from './home-special-offers.constants';
 import {
   SpecialOfferActionsStack,
@@ -22,6 +24,7 @@ import {
 } from './SpecialOfferCardPricing';
 import { SpecialOfferCardStars } from './SpecialOfferCardStars';
 import type { SpecialOfferProduct } from './special-offer-product.types';
+import { duplicateSingleImageForDevGalleryTest } from './special-offer-dev-gallery';
 import { useSpecialOfferCard } from './useSpecialOfferCard';
 
 export type { SpecialOfferProduct };
@@ -53,73 +56,95 @@ export function SpecialOfferCard({ product }: SpecialOfferCardProps) {
 
   const brandClass = getSpecialOfferBrandTextClass(product.brand?.name);
 
+  const galleryImages = duplicateSingleImageForDevGalleryTest(
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : [],
+  );
+
   const cornerTranslate = `${SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT}%`;
 
   return (
-    <article
-      className="relative isolate flex min-w-0 max-w-full flex-col overflow-hidden rounded-[32px]"
-      style={{
-        backgroundColor: SPECIAL_OFFERS_CARD_BG,
-        height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
-        maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
-      }}
+    <div
+      className="relative z-10 mx-auto min-w-0 w-full max-w-full hover:z-30 focus-within:z-30"
+      style={{ maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX }}
     >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 right-0 z-0 rounded-full"
+      <article
+        className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden"
         style={{
-          width: SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
-          height: SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
-          backgroundColor: SPECIAL_OFFERS_CARD_CORNER_MASK_BG,
-          transform: `translate(${cornerTranslate}, ${cornerTranslate})`,
+          backgroundColor: SPECIAL_OFFERS_CARD_BG,
+          height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
+          borderRadius: SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
         }}
-      />
-      <div
-        className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-6"
-        style={{ paddingTop: SPECIAL_OFFERS_CARD_PADDING_TOP_PX }}
       >
-        <SpecialOfferActionsStack
-          showDiscountPill={showDiscountPill}
-          discountPercent={product.discountPercent}
-          isInWishlist={isInWishlist}
-          isInCompare={isInCompare}
-          wishlistAria={wishlistAria}
-          compareAria={compareAria}
-          onWishlist={handleWishlist}
-          onCompare={handleCompare}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute bottom-0 right-0 z-0 rounded-full"
+          style={{
+            width: SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
+            height: SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
+            backgroundColor: SPECIAL_OFFERS_CARD_CORNER_MASK_BG,
+            transform: `translate(${cornerTranslate}, ${cornerTranslate})`,
+          }}
         />
+        <div
+          className="relative z-10 flex min-h-0 flex-1 flex-col px-4 pb-6"
+          style={{ paddingTop: SPECIAL_OFFERS_CARD_PADDING_TOP_PX }}
+        >
+          <SpecialOfferWarrantyBadge
+            line1={t('home.special_offers.warranty_line1')}
+            line2={t('home.special_offers.warranty_line2')}
+          />
 
-        <SpecialOfferWarrantyBadge
-          line1={t('home.special_offers.warranty_line1')}
-          line2={t('home.special_offers.warranty_line2')}
-        />
+          <SpecialOfferCardMedia
+            slug={product.slug}
+            title={product.title}
+            images={galleryImages}
+            showPlaceholder={showPlaceholder}
+            onImageError={onImageError}
+          />
 
-        <SpecialOfferCardMedia
-          slug={product.slug}
-          title={product.title}
-          image={product.image}
-          showPlaceholder={showPlaceholder}
-          onImageError={onImageError}
-        />
+          <div className="flex min-h-0 w-full flex-1 flex-col">
+            <SpecialOfferCardInfo product={product} brandClass={brandClass} />
 
-        <SpecialOfferCardInfo product={product} brandClass={brandClass} />
+            <SpecialOfferCardStars reviewCount={product.reviewCount} />
 
-        <SpecialOfferCardStars />
+            <div
+              className="mt-auto w-full min-w-0"
+              style={{
+                marginBottom: SPECIAL_OFFERS_PRICE_BLOCK_LIFT_FROM_BOTTOM_PX,
+              }}
+            >
+              <SpecialOfferCardPricing
+                price={product.price}
+                oldPrice={oldPrice}
+                currency={currency}
+              />
+            </div>
+          </div>
 
-        <SpecialOfferCardPricing
-          price={product.price}
-          oldPrice={oldPrice}
-          currency={currency}
-        />
+          <SpecialOfferCartFloatingButton
+            inStock={product.inStock}
+            isAddingToCart={isAddingToCart}
+            addToCartAria={t('common.ariaLabels.addToCart')}
+            outOfStockAria={t('common.ariaLabels.outOfStock')}
+            onAddToCart={handleCart}
+          />
+        </div>
+      </article>
 
-        <SpecialOfferCartFloatingButton
-          inStock={product.inStock}
-          isAddingToCart={isAddingToCart}
-          addToCartAria={t('common.ariaLabels.addToCart')}
-          outOfStockAria={t('common.ariaLabels.outOfStock')}
-          onAddToCart={handleCart}
-        />
-      </div>
-    </article>
+      <SpecialOfferActionsStack
+        showDiscountPill={showDiscountPill}
+        discountPercent={product.discountPercent}
+        isInWishlist={isInWishlist}
+        isInCompare={isInCompare}
+        wishlistAria={wishlistAria}
+        compareAria={compareAria}
+        onWishlist={handleWishlist}
+        onCompare={handleCompare}
+      />
+    </div>
   );
 }

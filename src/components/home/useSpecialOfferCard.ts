@@ -63,7 +63,9 @@ export function useSpecialOfferCard(product: SpecialOfferProduct) {
     addToCart();
   };
 
-  const showPlaceholder = !product.image || imageError;
+  const hasGallery =
+    (product.images && product.images.length > 0) || Boolean(product.image);
+  const showPlaceholder = !hasGallery || imageError;
 
   return {
     t,

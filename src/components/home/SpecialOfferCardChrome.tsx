@@ -5,6 +5,11 @@ import { Heart } from 'lucide-react';
 
 import { CompareIcon } from '../icons/CompareIcon';
 import {
+  SPECIAL_OFFERS_ACTIONS_STACK_OUTSET_RIGHT_PX,
+  SPECIAL_OFFERS_ACTIONS_STACK_OUTSET_TOP_PX,
+  SPECIAL_OFFERS_ACTIONS_STACK_RIGHT_FROM_CARD_OUTER_PX,
+  SPECIAL_OFFERS_ACTIONS_STACK_SHIFT_LEFT_PX,
+  SPECIAL_OFFERS_ACTIONS_STACK_TOP_FROM_CARD_OUTER_PX,
   SPECIAL_OFFERS_WARRANTY_BADGE_ACCENT,
   SPECIAL_OFFERS_WARRANTY_BADGE_BG,
   SPECIAL_OFFERS_WARRANTY_BADGE_MIN_HEIGHT_PX,
@@ -23,7 +28,7 @@ export function SpecialOfferWarrantyBadge({
 }: SpecialOfferWarrantyBadgeProps) {
   return (
     <div
-      className="absolute left-3 top-3 z-20 flex flex-col items-center justify-center px-2 py-1 text-center font-bold not-italic"
+      className="absolute left-3 top-3 z-30 flex flex-col items-center justify-center px-2 py-1 text-center font-bold not-italic"
       style={{
         minWidth: SPECIAL_OFFERS_WARRANTY_BADGE_MIN_WIDTH_PX,
         minHeight: SPECIAL_OFFERS_WARRANTY_BADGE_MIN_HEIGHT_PX,
@@ -64,7 +69,18 @@ export function SpecialOfferActionsStack({
   onCompare,
 }: SpecialOfferActionsStackProps) {
   return (
-    <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
+    <div
+      className="absolute z-40 flex flex-col items-end gap-2"
+      style={{
+        top:
+          SPECIAL_OFFERS_ACTIONS_STACK_TOP_FROM_CARD_OUTER_PX -
+          SPECIAL_OFFERS_ACTIONS_STACK_OUTSET_TOP_PX,
+        right:
+          SPECIAL_OFFERS_ACTIONS_STACK_RIGHT_FROM_CARD_OUTER_PX -
+          SPECIAL_OFFERS_ACTIONS_STACK_OUTSET_RIGHT_PX +
+          SPECIAL_OFFERS_ACTIONS_STACK_SHIFT_LEFT_PX,
+      }}
+    >
       <button
         type="button"
         onClick={onWishlist}

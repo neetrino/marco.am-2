@@ -15,6 +15,7 @@ import {
   SPECIAL_OFFERS_CARD_GAP_PX,
   SPECIAL_OFFERS_CARD_HEIGHT_PX,
   SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
+  SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
@@ -227,10 +228,11 @@ export function HomeSpecialOffersSection() {
                 ? Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className={railSlotClassName} style={railSlotStyle}>
                       <div
-                        className="animate-pulse rounded-[32px] bg-gray-200"
+                        className="mx-auto w-full max-w-full animate-pulse bg-gray-200"
                         style={{
                           height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
                           maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
+                          borderRadius: SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
                         }}
                       />
                     </div>
