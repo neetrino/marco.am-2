@@ -64,7 +64,7 @@ const reelsPaginationDotStyle = {
 } as const;
 
 /** Dark chevrons; readable on yellow hover fill */
-const REELS_NAV_ICON_CLASS = 'h-3.5 w-3.5 shrink-0 text-marco-black';
+const REELS_NAV_ICON_CLASS = 'h-3 w-3 shrink-0 text-marco-black';
 
 /**
  * REELS: circular category thumbnails in a centered row with arrow scroll.
@@ -114,7 +114,7 @@ export function HomeReelsSection() {
             >
               <ChevronLeft
                 className={REELS_NAV_ICON_CLASS}
-                strokeWidth={2.25}
+                strokeWidth={2}
                 aria-hidden
               />
             </button>
@@ -127,7 +127,7 @@ export function HomeReelsSection() {
             >
               <ChevronRight
                 className={REELS_NAV_ICON_CLASS}
-                strokeWidth={2.25}
+                strokeWidth={2}
                 aria-hidden
               />
             </button>

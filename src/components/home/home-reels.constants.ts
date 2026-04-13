@@ -38,10 +38,10 @@ export const REELS_TITLE_TO_RAIL_GAP_PX = 32;
 export const REELS_CAROUSEL_NAV_INSET_RIGHT_PX = 32;
 
 /**
- * Prev/next carousel controls — compact pill (ratio ~1.27).
+ * Prev/next carousel controls — compact pill (ratio ~1.28).
  */
-export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 38;
-export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 30;
+export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 32;
+export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 25;
 
 /** Space between the reel rail and dot pagination. */
 export const REELS_RAIL_TO_PAGINATION_GAP_PX = 20;
