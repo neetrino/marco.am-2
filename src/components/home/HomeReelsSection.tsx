@@ -18,7 +18,8 @@ import {
   REELS_TITLE_INSET_LEFT_PX,
   REELS_TITLE_TO_RAIL_GAP_PX,
   REELS_CAROUSEL_NAV_INSET_RIGHT_PX,
-  REELS_CAROUSEL_NAV_BUTTON_SIZE_PX,
+  REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
+  REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
   REELS_RAIL_TO_PAGINATION_GAP_PX,
   REELS_PAGINATION_DOT_GAP_PX,
   REELS_PAGINATION_DOT_SIZE_PX,
@@ -49,19 +50,21 @@ const SECTION_CONTAINER_CLASS =
   'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
 
 const reelsNavButtonStyle = {
-  width: REELS_CAROUSEL_NAV_BUTTON_SIZE_PX,
-  height: REELS_CAROUSEL_NAV_BUTTON_SIZE_PX,
+  width: REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
+  height: REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
 } as const;
 
+/** Pill: default white + gray border; hover filled marco-yellow (like former primary/black fill). */
 const REELS_NAV_BUTTON_CLASS =
-  'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-marco-border bg-white p-0 text-marco-black transition-colors hover:bg-gray-50';
+  'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
 
 const reelsPaginationDotStyle = {
   width: REELS_PAGINATION_DOT_SIZE_PX,
   height: REELS_PAGINATION_DOT_SIZE_PX,
 } as const;
 
-const REELS_NAV_ICON_CLASS = 'h-3.5 w-3.5 shrink-0';
+/** Dark chevrons; readable on yellow hover fill */
+const REELS_NAV_ICON_CLASS = 'h-3.5 w-3.5 shrink-0 text-marco-black';
 
 /**
  * REELS: circular category thumbnails in a centered row with arrow scroll.
@@ -111,7 +114,7 @@ export function HomeReelsSection() {
             >
               <ChevronLeft
                 className={REELS_NAV_ICON_CLASS}
-                strokeWidth={2.5}
+                strokeWidth={2.25}
                 aria-hidden
               />
             </button>
@@ -124,7 +127,7 @@ export function HomeReelsSection() {
             >
               <ChevronRight
                 className={REELS_NAV_ICON_CLASS}
-                strokeWidth={2.5}
+                strokeWidth={2.25}
                 aria-hidden
               />
             </button>

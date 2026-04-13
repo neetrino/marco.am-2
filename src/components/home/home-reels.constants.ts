@@ -37,8 +37,11 @@ export const REELS_TITLE_TO_RAIL_GAP_PX = 32;
 /** Inset prev/next controls from the section’s right edge (shifts them left). */
 export const REELS_CAROUSEL_NAV_INSET_RIGHT_PX = 32;
 
-/** Circular prev/next controls (Figma — thin gray ring). */
-export const REELS_CAROUSEL_NAV_BUTTON_SIZE_PX = 32;
+/**
+ * Prev/next carousel controls — compact pill (ratio ~1.27).
+ */
+export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 38;
+export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 30;
 
 /** Space between the reel rail and dot pagination. */
 export const REELS_RAIL_TO_PAGINATION_GAP_PX = 20;
