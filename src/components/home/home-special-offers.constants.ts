@@ -40,6 +40,21 @@ export const SPECIAL_OFFERS_CARD_MAX_WIDTH_PX = 360;
 /** Design reference: fixed card height. */
 export const SPECIAL_OFFERS_CARD_HEIGHT_PX = 480;
 
+/** Figma `101:3350` — warranty pill background. */
+export const SPECIAL_OFFERS_WARRANTY_BADGE_BG = '#1e1e1e';
+
+/** Figma `101:3350` — top line (e.g. «3 ՏԱՐԻ»). */
+export const SPECIAL_OFFERS_WARRANTY_BADGE_ACCENT = '#FFCA03';
+
+/** Figma `101:3350` — pill minimum size. */
+export const SPECIAL_OFFERS_WARRANTY_BADGE_MIN_WIDTH_PX = 81;
+
+/** Figma `101:3350` — pill minimum size. */
+export const SPECIAL_OFFERS_WARRANTY_BADGE_MIN_HEIGHT_PX = 43;
+
+/** Figma `101:3350` — corner radius (`rounded-[16px]`). */
+export const SPECIAL_OFFERS_WARRANTY_BADGE_RADIUS_PX = 16;
+
 /**
  * Bottom-right scallop — circle diameter. Larger circle = fuller, rounder arc at the corner.
  */

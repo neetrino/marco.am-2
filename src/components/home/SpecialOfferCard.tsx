@@ -10,7 +10,10 @@ import {
   SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
   SPECIAL_OFFERS_CARD_PADDING_TOP_PX,
 } from './home-special-offers.constants';
-import { SpecialOfferActionsStack } from './SpecialOfferCardChrome';
+import {
+  SpecialOfferActionsStack,
+  SpecialOfferWarrantyBadge,
+} from './SpecialOfferCardChrome';
 import { SpecialOfferCardInfo } from './SpecialOfferCardInfo';
 import { SpecialOfferCardMedia } from './SpecialOfferCardMedia';
 import {
@@ -84,6 +87,11 @@ export function SpecialOfferCard({ product }: SpecialOfferCardProps) {
           compareAria={compareAria}
           onWishlist={handleWishlist}
           onCompare={handleCompare}
+        />
+
+        <SpecialOfferWarrantyBadge
+          line1={t('home.special_offers.warranty_line1')}
+          line2={t('home.special_offers.warranty_line2')}
         />
 
         <SpecialOfferCardMedia

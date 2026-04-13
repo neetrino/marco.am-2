@@ -4,6 +4,13 @@ import type { MouseEvent } from 'react';
 import { Heart } from 'lucide-react';
 
 import { CompareIcon } from '../icons/CompareIcon';
+import {
+  SPECIAL_OFFERS_WARRANTY_BADGE_ACCENT,
+  SPECIAL_OFFERS_WARRANTY_BADGE_BG,
+  SPECIAL_OFFERS_WARRANTY_BADGE_MIN_HEIGHT_PX,
+  SPECIAL_OFFERS_WARRANTY_BADGE_MIN_WIDTH_PX,
+  SPECIAL_OFFERS_WARRANTY_BADGE_RADIUS_PX,
+} from './home-special-offers.constants';
 
 interface SpecialOfferWarrantyBadgeProps {
   line1: string;
@@ -15,9 +22,22 @@ export function SpecialOfferWarrantyBadge({
   line2,
 }: SpecialOfferWarrantyBadgeProps) {
   return (
-    <div className="absolute left-3 top-3 z-20 flex h-[43px] w-[81px] flex-col items-center justify-center rounded-2xl bg-[#1e1e1e] px-1 text-center font-bold leading-tight">
-      <span className="text-[14px] text-marco-yellow">{line1}</span>
-      <span className="text-[11px] text-white">{line2}</span>
+    <div
+      className="absolute left-3 top-3 z-20 flex flex-col items-center justify-center px-2 py-1 text-center font-bold not-italic"
+      style={{
+        minWidth: SPECIAL_OFFERS_WARRANTY_BADGE_MIN_WIDTH_PX,
+        minHeight: SPECIAL_OFFERS_WARRANTY_BADGE_MIN_HEIGHT_PX,
+        borderRadius: SPECIAL_OFFERS_WARRANTY_BADGE_RADIUS_PX,
+        backgroundColor: SPECIAL_OFFERS_WARRANTY_BADGE_BG,
+      }}
+    >
+      <span
+        className="whitespace-nowrap text-[14px] leading-[15px]"
+        style={{ color: SPECIAL_OFFERS_WARRANTY_BADGE_ACCENT }}
+      >
+        {line1}
+      </span>
+      <span className="text-[11px] leading-[15px] text-white">{line2}</span>
     </div>
   );
 }
@@ -44,15 +64,19 @@ export function SpecialOfferActionsStack({
   onCompare,
 }: SpecialOfferActionsStackProps) {
   return (
-    <div className="absolute right-3 top-3 z-20 flex flex-col items-end gap-2">
+    <div className="absolute right-4 top-4 z-20 flex flex-col items-end gap-2">
       <button
         type="button"
         onClick={onWishlist}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-marco-black shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-marco-black text-white shadow-sm transition-colors hover:bg-marco-text"
         aria-label={wishlistAria}
       >
         <Heart
-          className={`h-4 w-4 ${isInWishlist ? 'fill-red-600 text-red-600' : ''}`}
+          className={`h-4 w-4 ${
+            isInWishlist
+              ? 'fill-red-500 text-red-500'
+              : 'fill-none text-white'
+          }`}
           strokeWidth={2}
         />
       </button>
