@@ -168,18 +168,23 @@ export const HERO_MOBILE_SLATE_PANEL_BOX_STYLE: CSSProperties = {
 
 /**
  * Figma 314:2394 — mobile slate CTA pill (`212×56`, text 314:2395, icon group 314:2396).
+ * Width/padding/icon tuned slightly under Figma; nudged vs export for device fit.
  */
-export const HERO_MOBILE_SLATE_CTA_WIDTH_PX = 198;
+export const HERO_MOBILE_SLATE_CTA_WIDTH_PX = 186;
 export const HERO_MOBILE_SLATE_CTA_HEIGHT_PX = 53;
-export const HERO_MOBILE_SLATE_CTA_ICON_CIRCLE_PX = 45;
+export const HERO_MOBILE_SLATE_CTA_ICON_CIRCLE_PX = 43;
 export const HERO_MOBILE_SLATE_CTA_PILL_RADIUS_PX = HERO_MOBILE_SLATE_CTA_HEIGHT_PX / 2;
 /** Left inset — larger = label + icon chip sit further right inside the pill. */
-export const HERO_MOBILE_SLATE_CTA_PADDING_LEFT_PX = 45;
+export const HERO_MOBILE_SLATE_CTA_PADDING_LEFT_PX = 38;
 export const HERO_MOBILE_SLATE_CTA_PADDING_RIGHT_PX = 0;
-export const HERO_MOBILE_SLATE_CTA_LABEL_ICON_GAP_PX = 8;
+export const HERO_MOBILE_SLATE_CTA_LABEL_ICON_GAP_PX = 7;
 export const HERO_MOBILE_SLATE_CTA_ARROW_ICON_PX = 21;
+/**
+ * Negative margin on the arrow chip — pulls the black circle toward the label.
+ */
+export const HERO_MOBILE_SLATE_CTA_ICON_PULL_LEFT_PX = 2;
 /** Whole CTA row — nudge vs slate panel (`HomePromoMobileHeroSlateCta` wrapper). */
-export const HERO_MOBILE_SLATE_CTA_NUDGE_RIGHT_PX = 4;
+export const HERO_MOBILE_SLATE_CTA_NUDGE_RIGHT_PX = 10;
 /** Positive — shift whole button up (px); applied as `translateY(-n)`. */
 export const HERO_MOBILE_SLATE_CTA_NUDGE_UP_PX = 5;
 
