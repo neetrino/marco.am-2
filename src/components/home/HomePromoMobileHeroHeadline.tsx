@@ -3,7 +3,6 @@
 import {
   HERO_MOBILE_HEADLINE_FONT_SIZE_PX,
   HERO_MOBILE_HEADLINE_LINE_HEIGHT_PX,
-  HERO_MOBILE_HEADLINE_NUDGE_LEFT_PX,
 } from '../hero.constants';
 
 type HomePromoMobileHeroHeadlineProps = {
@@ -22,12 +21,7 @@ export function HomePromoMobileHeroHeadline({
   accentText,
 }: HomePromoMobileHeroHeadlineProps) {
   return (
-    <p
-      className="pointer-events-none box-border max-w-full whitespace-nowrap font-black tracking-tight"
-      style={{
-        transform: `translateX(-${HERO_MOBILE_HEADLINE_NUDGE_LEFT_PX}px)`,
-      }}
-    >
+    <p className="pointer-events-none box-border max-w-full min-w-0 break-words font-black tracking-tight">
       <span className="text-marco-black" style={mobileHeadlineTypography}>
         {emphasisText}
       </span>

@@ -26,7 +26,7 @@ import {
   HERO_PROMO_FLOOR_GROUP_HEIGHT_RATIO,
   HERO_PROMO_STACK_BLUE_LABEL_BOTTOM_CLASS,
   HERO_PROMO_STACK_BLUE_STYLE,
-  HERO_PROMO_STACK_CARD_OFFSET_DOWN_PX,
+  HERO_PROMO_STACK_CARD_TRANSLATE_Y_PX,
   HERO_PROMO_STACK_CONTAINER_ASPECT_H,
   HERO_PROMO_STACK_CONTAINER_ASPECT_W,
   HERO_PROMO_STACK_CTA_CENTER_FROM_BLUE_TOP_PCT,
@@ -258,12 +258,12 @@ export function HomePromoStackedProductCard({ ariaLabel }: HomePromoStackedProdu
   };
 
   const cardRootStyle: CSSProperties = {
-    transform: `translateY(${HERO_PROMO_STACK_CARD_OFFSET_DOWN_PX}px)`,
+    transform: `translateY(${HERO_PROMO_STACK_CARD_TRANSLATE_Y_PX}px)`,
   };
 
   return (
     <div
-      className="relative block w-[min(88vw,164px)] sm:w-[206px] md:w-[min(52vw,274px)] lg:w-[min(48vw,342px)] xl:w-[472px]"
+      className="relative block w-full max-w-[164px] sm:max-w-[206px] md:max-w-[min(274px,100%)] lg:max-w-[min(342px,100%)] xl:max-w-[472px]"
       style={cardRootStyle}
     >
       <div className="relative w-full overflow-visible" style={aspectStyle}>

@@ -1,6 +1,6 @@
 /**
  * Home hero — Figma MARCO (node 305:2146) primary asset.
- * Inset values are applied via `.hero-section-inset` in `globals.css`.
+ * Page horizontal inset matches other home sections (`max-w-7xl` + shared padding in `HeroCarousel`).
  */
 
 import type { CSSProperties } from 'react';
@@ -78,6 +78,24 @@ export const HERO_FREE_DELIVERY_TILE_ARROW_NUDGE_X_PX = 2;
 /** Fine vertical nudge — negative moves up */
 export const HERO_FREE_DELIVERY_TILE_ARROW_NUDGE_Y_PX = -1;
 
+/**
+ * Optional horizontal nudge for the free-delivery tile root (CSS px, negative margin-left).
+ * Hero desktop: 0 — tile is beside the sofa stack; flex gap handles spacing.
+ */
+export const HERO_FREE_DELIVERY_TILE_ROW_NUDGE_LEFT_PX = 0;
+
+/**
+ * Vertical nudge for the free-delivery tile root beside the sofa stack (CSS px).
+ * Negative moves the tile up.
+ */
+export const HERO_FREE_DELIVERY_TILE_TRANSLATE_Y_PX = -205;
+
+/**
+ * Horizontal nudge for the free-delivery tile root (CSS px, paired with translateY).
+ * Positive moves the tile right.
+ */
+export const HERO_FREE_DELIVERY_TILE_TRANSLATE_X_PX = 38;
+
 /** TR arrow `Link` — free-delivery tile (Figma 101:4047) */
 export const HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE: CSSProperties = {
   width: `${HERO_FREE_DELIVERY_TILE_ARROW_FRAME_WIDTH_PX}px`,
@@ -126,9 +144,9 @@ export const HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME =
 /** Tailwind aspect matching `HERO_SIDE_PROMO_TILE_ASPECT_W`∶`HERO_SIDE_PROMO_TILE_ASPECT_H` */
 export const HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME = 'aspect-[428/589]' as const;
 
-/** Figma 314:2400 — mobile-only hero headline (Montserrat Black); tuned −2px vs Figma export */
-export const HERO_MOBILE_HEADLINE_FONT_SIZE_PX = 33;
-export const HERO_MOBILE_HEADLINE_LINE_HEIGHT_PX = 32;
+/** Figma 314:2400 — mobile-only hero headline (Montserrat Black); slightly above base for readability */
+export const HERO_MOBILE_HEADLINE_FONT_SIZE_PX = 38;
+export const HERO_MOBILE_HEADLINE_LINE_HEIGHT_PX = 38;
 /** Nudge headline left vs padding (px) */
 export const HERO_MOBILE_HEADLINE_NUDGE_LEFT_PX = 2;
 
@@ -265,7 +283,10 @@ export const HERO_MOBILE_FLOOR_ARC_KNOB_NUDGE_DOWN_PX = 6;
 
 /** Hero headline box — design size (px); mirrored in `HomePromoYellowHeadline` Tailwind classes */
 export const HERO_HEADLINE_MAX_WIDTH_PX = 580;
-export const HERO_HEADLINE_HEIGHT_PX = 56;
+export const HERO_HEADLINE_HEIGHT_PX = 60;
+
+/** Fine vertical nudge for the yellow headline block (CSS px; positive moves down). */
+export const HERO_YELLOW_HEADLINE_TRANSLATE_Y_PX = 2;
 
 /** Hero headline offset from yellow panel edges — sync with `HeroCarousel` (`top-[36px]`, `left-[40px]`) */
 export const HERO_HEADLINE_OFFSET_TOP_PX = 36;

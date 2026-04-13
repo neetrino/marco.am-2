@@ -18,6 +18,9 @@ import {
   HERO_FREE_DELIVERY_TILE_ARROW_NUDGE_Y_PX,
   HERO_FREE_DELIVERY_TILE_MASK_BITE_RADIUS_PX,
   HERO_FREE_DELIVERY_TILE_MASK_CORNER_RADIUS_PX,
+  HERO_FREE_DELIVERY_TILE_ROW_NUDGE_LEFT_PX,
+  HERO_FREE_DELIVERY_TILE_TRANSLATE_X_PX,
+  HERO_FREE_DELIVERY_TILE_TRANSLATE_Y_PX,
   HERO_PROMO_SIDE_TILE_ARROW_LINK_STYLE,
   HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME,
   HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME,
@@ -77,6 +80,10 @@ export function HomePromoFreeDeliveryBanner() {
   return (
     <div
       className={`relative isolate shrink-0 bg-transparent ${HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME}`}
+      style={{
+        marginLeft: -HERO_FREE_DELIVERY_TILE_ROW_NUDGE_LEFT_PX,
+        transform: `translate(${HERO_FREE_DELIVERY_TILE_TRANSLATE_X_PX}px, ${HERO_FREE_DELIVERY_TILE_TRANSLATE_Y_PX}px)`,
+      }}
     >
       <div className={`relative bg-transparent ${HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME}`}>
         {/* Mask only the raster; CTA + arrow stay unclipped (Figma 101:4047 — TR round button) */}

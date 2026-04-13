@@ -29,11 +29,13 @@ const montserratSmartphonesBottomCta = Montserrat({
 });
 
 const smartphonesTileFrameStyle = {
-  width: HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX,
-  height: HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX,
+  width: '100%',
+  maxWidth: HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX,
+  aspectRatio: `${HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX} / ${HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX}`,
 } as const;
 
-const SMARTPHONES_BANNER_IMAGE_SIZES = `${HERO_PROMO_SMARTPHONES_TILE_WIDTH_PX}px`;
+const SMARTPHONES_BANNER_IMAGE_SIZES =
+  '(max-width: 768px) 45vw, (max-width: 1024px) 32vw, 360px';
 
 const smartphonesTrIconLinkStyle: CSSProperties = {
   width: `${HERO_PROMO_SMARTPHONES_TILE_TR_ICON_FRAME_PX}px`,
@@ -61,8 +63,8 @@ export function HomePromoSmartphonesBanner() {
   const { t } = useTranslation();
 
   return (
-    <div className="block shrink-0">
-      <div className="relative isolate shrink-0" style={smartphonesTileFrameStyle}>
+    <div className="block min-w-0 max-w-full shrink">
+      <div className="relative isolate w-full max-w-[min(100%,360px)] shrink-0" style={smartphonesTileFrameStyle}>
         <Image
           src={HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC}
           alt=""

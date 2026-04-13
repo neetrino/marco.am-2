@@ -13,55 +13,58 @@ import { HomePromoMobileHeroSlatePanel } from './home/HomePromoMobileHeroSlatePa
 import { HomePromoYellowHeadline } from './home/HomePromoYellowHeadline';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
 
+/** Same shell as home sections (`TopCategories`, `FeaturesSection`): bounded width + shared horizontal padding. */
+const HERO_PAGE_CONTAINER_CLASS =
+  'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 lg:pt-[65px]';
+
 export function HeroCarousel() {
   const { t } = useTranslation();
 
   return (
-    <div className="hero-section-inset w-full" id="hero">
-      <div className="relative aspect-[141/79] min-h-[260px] w-full overflow-hidden rounded-[32px] bg-marco-yellow box-border sm:min-h-[320px] md:min-h-[380px]">
+    <div className={HERO_PAGE_CONTAINER_CLASS} id="hero">
+      <div className="relative aspect-[141/79] min-h-[260px] w-full min-w-0 overflow-hidden rounded-[32px] bg-marco-yellow box-border sm:min-h-[320px] md:min-h-[380px]">
         <HeroCarouselSlides />
         <HomePromoMobileHeroSlatePanel />
         <HomePromoMobileHeroSlateLabel />
         <HomePromoMobileHeroChair />
         <HomePromoMobileHeroSlateCta />
-        <div className="pointer-events-none absolute inset-0 z-[14] flex justify-start md:hidden">
-          <div className="box-border w-full max-w-full px-4 pt-8 sm:px-5 sm:pt-9">
+        <div className="pointer-events-none absolute inset-0 z-[14] flex flex-col md:hidden">
+          <div className="box-border w-full min-w-0 max-w-full px-4 pt-8 sm:px-5 sm:pt-9">
             <HomePromoMobileHeroHeadline
               emphasisText={t('home.promo_banner_headline_emphasis')}
               accentText={t('home.promo_banner_headline_accent')}
             />
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-0 z-10 max-md:hidden">
+        <div className="pointer-events-none absolute inset-0 z-10 hidden min-w-0 flex-col md:flex">
           {/*
-            max-md: mobile headline (Figma 314:2400) only; md+: headline + stacked card.
-            sm+: free-delivery nudged slightly left; smartphones nudged right (keeps pair tight vs gap).
+            Top row must stack above the stacked chair card: large translateY on the card
+            would otherwise paint the raster over the free-delivery + 80% tiles.
           */}
-          <div className="pointer-events-auto absolute inset-0">
-            <div className="pointer-events-auto absolute -right-2 -top-16 z-20 hidden flex-row items-end gap-0 sm:-right-2 sm:flex md:-right-3 lg:-right-4">
-              <div className="shrink-0 -translate-x-2 sm:-translate-x-2.5 md:-translate-x-3">
-                <HomePromoFreeDeliveryBanner />
-              </div>
-              <div className="shrink-0 -ml-1.5 translate-x-2 sm:-ml-1 sm:translate-x-3 md:translate-x-4 lg:translate-x-5 xl:translate-x-6">
-                <HomePromoSmartphonesBanner />
-              </div>
-            </div>
-            <div className="pointer-events-auto absolute inset-0 flex flex-col justify-between pt-9 pl-10 pr-4 pb-6 sm:pr-5 sm:pb-6 md:justify-start md:gap-6 md:pr-7 md:pb-9 lg:gap-7 lg:pr-9 lg:pb-11">
-              <div className="[&_p]:mb-0 w-max max-w-[min(580px,calc(100%-16px))]">
+          <div className="pointer-events-auto relative flex h-full min-h-0 min-w-0 flex-col justify-between gap-6 px-4 pb-6 pt-9 sm:px-5 sm:pb-6 md:px-7 md:pb-9 lg:gap-7 lg:px-9 lg:pb-11">
+            <div className="relative z-20 flex min-w-0 flex-row flex-wrap items-start justify-between gap-x-4 gap-y-4">
+              <div className="min-w-0 max-w-full flex-[1_1_min(580px,100%)] [&_p]:mb-0">
                 <HomePromoYellowHeadline
                   emphasisText={t('home.promo_banner_headline_emphasis')}
                   accentText={t('home.promo_banner_headline_accent')}
                 />
               </div>
-              <div className="flex flex-col items-end gap-3 self-end sm:flex-row sm:items-end sm:gap-4 md:gap-5 md:self-start lg:gap-6">
-                <HomePromoStackedProductCard
-                  ariaLabel={`${t('home.promo_featured_title')}. ${t('home.promo_featured_subtitle')}`}
-                />
+              <div className="flex min-w-0 shrink flex-row flex-wrap items-end justify-end">
+                <HomePromoSmartphonesBanner />
               </div>
+            </div>
+            {/*
+              Sofa/chair stack stays left; free-delivery tile (van art + black CTA) sits to its right.
+            */}
+            <div className="relative z-[5] flex w-full min-w-0 flex-row flex-wrap items-end justify-start gap-4 md:gap-6 lg:gap-8">
+              <HomePromoStackedProductCard
+                ariaLabel={`${t('home.promo_featured_title')}. ${t('home.promo_featured_subtitle')}`}
+              />
+              <HomePromoFreeDeliveryBanner />
             </div>
           </div>
         </div>
-        <div className="pointer-events-auto absolute bottom-3 right-5 z-30 max-md:hidden sm:bottom-5 sm:right-6 md:bottom-7 md:right-9">
+        <div className="pointer-events-auto absolute bottom-3 right-4 z-30 max-md:hidden sm:bottom-5 sm:right-6 md:bottom-7 md:right-7 lg:right-9">
           <HomePromoHeroChatFab />
         </div>
       </div>
