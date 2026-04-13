@@ -167,15 +167,21 @@ export const HERO_MOBILE_SLATE_PANEL_BOX_STYLE: CSSProperties = {
 };
 
 /**
- * Figma 314:2394 — yellow pill CTA (`Button w-fit bg-primary…`) inside slate (mobile).
- * Sized down so the larger chair can overlap the control visually.
+ * Figma 314:2394 — mobile slate CTA pill (`212×56`, text 314:2395, icon group 314:2396).
  */
-export const HERO_MOBILE_SLATE_CTA_HEIGHT_PX = 44;
-export const HERO_MOBILE_SLATE_CTA_MAX_WIDTH_PX = 168;
-export const HERO_MOBILE_SLATE_CTA_ICON_CIRCLE_PX = 36;
-export const HERO_MOBILE_SLATE_CTA_PILL_RADIUS_PX = 44;
-/** Horizontal nudge of pill inside slate panel (px right). */
-export const HERO_MOBILE_SLATE_CTA_NUDGE_RIGHT_PX = 8;
+export const HERO_MOBILE_SLATE_CTA_WIDTH_PX = 198;
+export const HERO_MOBILE_SLATE_CTA_HEIGHT_PX = 53;
+export const HERO_MOBILE_SLATE_CTA_ICON_CIRCLE_PX = 45;
+export const HERO_MOBILE_SLATE_CTA_PILL_RADIUS_PX = HERO_MOBILE_SLATE_CTA_HEIGHT_PX / 2;
+/** Left inset — larger = label + icon chip sit further right inside the pill. */
+export const HERO_MOBILE_SLATE_CTA_PADDING_LEFT_PX = 45;
+export const HERO_MOBILE_SLATE_CTA_PADDING_RIGHT_PX = 0;
+export const HERO_MOBILE_SLATE_CTA_LABEL_ICON_GAP_PX = 8;
+export const HERO_MOBILE_SLATE_CTA_ARROW_ICON_PX = 21;
+/** Whole CTA row — nudge vs slate panel (`HomePromoMobileHeroSlateCta` wrapper). */
+export const HERO_MOBILE_SLATE_CTA_NUDGE_RIGHT_PX = 4;
+/** Positive — shift whole button up (px); applied as `translateY(-n)`. */
+export const HERO_MOBILE_SLATE_CTA_NUDGE_UP_PX = 5;
 
 /**
  * Figma 314:2385 `Group 9209` — chair + floor graphic; height includes shadow.
@@ -190,7 +196,7 @@ export const HERO_MOBILE_CHAIR_FRAME_WIDTH_PX = 270;
 export const HERO_MOBILE_CHAIR_FRAME_HEIGHT_PX = 196.631103515625;
 export const HERO_MOBILE_CHAIR_LEFT_FRAC = 6 / HERO_MOBILE_FIGMA_FRAME_WIDTH_PX;
 /** Shift whole chair group left (px) — `translateX(-n)` on mobile hero. */
-export const HERO_MOBILE_CHAIR_GROUP_NUDGE_LEFT_PX = 14;
+export const HERO_MOBILE_CHAIR_GROUP_NUDGE_LEFT_PX = 18;
 export const HERO_MOBILE_CHAIR_IMAGE_HEIGHT_PCT = 138.14;
 export const HERO_MOBILE_CHAIR_IMAGE_TOP_PCT = -38.05;
 
@@ -206,6 +212,20 @@ export const HERO_MOBILE_FLOOR_SHADOW_WIDTH_FRAC =
   169.28050231933594 / HERO_MOBILE_CHAIR_FRAME_WIDTH_PX;
 export const HERO_MOBILE_FLOOR_SHADOW_HEIGHT_FRAC =
   69.23001098632812 / HERO_MOBILE_CHAIR_GROUP_HEIGHT_PX;
+
+/**
+ * Positive — shift floor ellipse + arc knob horizontally (px right) vs Figma-derived `left`;
+ * does not move the chair raster.
+ */
+export const HERO_MOBILE_FLOOR_ARC_GROUP_NUDGE_RIGHT_PX = 10;
+
+/**
+ * Positive — shift floor ellipse + arc knob down (px); independent of chair raster.
+ */
+export const HERO_MOBILE_FLOOR_ARC_GROUP_NUDGE_DOWN_PX = 6;
+
+/** Uniform scale for floor ellipse + knob; applied with bottom-centered `transform-origin` on mobile hero. */
+export const HERO_MOBILE_FLOOR_ARC_GROUP_SCALE = 1.06;
 
 /**
  * Figma 314:2390 `Ellipse 4` — knob on the floor arc; same asset as {@link HERO_PROMO_SLIDER_HANDLE_IMAGE_SRC}.
