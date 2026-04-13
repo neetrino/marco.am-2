@@ -34,6 +34,8 @@
   "reels_prev_aria": "Прокрутить влево",
   "reels_next_aria": "Прокрутить вправо",
   "reels_pagination_aria": "Навигация по Reels",
+  "reels_pagination_go_first": "Перейти на первую страницу",
+  "reels_pagination_go_second": "Перейти на вторую страницу",
   "reels_item_washing_machines": "Стиральные машины",
   "reels_item_vacuum_cleaners": "Пылесосы",
   "reels_item_small_appliances": "Мелкая техника",

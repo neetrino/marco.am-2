@@ -34,6 +34,8 @@
   "reels_prev_aria": "Scroll left",
   "reels_next_aria": "Scroll right",
   "reels_pagination_aria": "Reels pagination",
+  "reels_pagination_go_first": "Go to first reels page",
+  "reels_pagination_go_second": "Go to second reels page",
   "reels_item_washing_machines": "Washing machines",
   "reels_item_vacuum_cleaners": "Vacuum cleaners",
   "reels_item_small_appliances": "Small appliances",

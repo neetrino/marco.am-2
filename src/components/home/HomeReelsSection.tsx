@@ -14,12 +14,14 @@ import {
   REELS_ITEM_HREF,
   REELS_LABEL_FONT_SIZE_PX,
   REELS_LABEL_LINE_HEIGHT_PX,
-  REELS_TITLE_ACCENT_WIDTH_REM,
+  REELS_TITLE_EMPHASIS_CHAR_COUNT,
   REELS_TITLE_INSET_LEFT_PX,
   REELS_TITLE_TO_RAIL_GAP_PX,
   REELS_CAROUSEL_NAV_INSET_RIGHT_PX,
-  REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
-  REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
+  REELS_CAROUSEL_NAV_BUTTON_SIZE_PX,
+  REELS_RAIL_TO_PAGINATION_GAP_PX,
+  REELS_PAGINATION_DOT_GAP_PX,
+  REELS_PAGINATION_DOT_SIZE_PX,
   REELS_TITLE_FONT_SIZE_CLAMP,
   REELS_TITLE_LETTER_SPACING_PX,
   REELS_TITLE_LINE_HEIGHT,
@@ -47,12 +49,17 @@ const SECTION_CONTAINER_CLASS =
   'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
 
 const reelsNavButtonStyle = {
-  width: REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
-  height: REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
+  width: REELS_CAROUSEL_NAV_BUTTON_SIZE_PX,
+  height: REELS_CAROUSEL_NAV_BUTTON_SIZE_PX,
 } as const;
 
 const REELS_NAV_BUTTON_CLASS =
-  'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 text-marco-black transition-colors hover:bg-marco-yellow';
+  'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-marco-border bg-white p-0 text-marco-black transition-colors hover:bg-gray-50';
+
+const reelsPaginationDotStyle = {
+  width: REELS_PAGINATION_DOT_SIZE_PX,
+  height: REELS_PAGINATION_DOT_SIZE_PX,
+} as const;
 
 const REELS_NAV_ICON_CLASS = 'h-3.5 w-3.5 shrink-0';
 
@@ -61,7 +68,12 @@ const REELS_NAV_ICON_CLASS = 'h-3.5 w-3.5 shrink-0';
  */
 export function HomeReelsSection() {
   const { t } = useTranslation();
-  const { scrollerRef, scrollPrev, scrollNext } = useHomeReelsCarousel();
+  const { scrollerRef, scrollPrev, scrollNext, activePage, scrollToPage } =
+    useHomeReelsCarousel();
+
+  const fullTitle = t('home.reels_title');
+  const titlePrefix = fullTitle.slice(0, REELS_TITLE_EMPHASIS_CHAR_COUNT);
+  const titleSuffix = fullTitle.slice(REELS_TITLE_EMPHASIS_CHAR_COUNT);
 
   return (
     <section
@@ -82,13 +94,9 @@ export function HomeReelsSection() {
               className="font-bold uppercase text-marco-black"
               style={reelsTitleStyle}
             >
-              {t('home.reels_title')}
+              <span className="border-b-4 border-marco-yellow">{titlePrefix}</span>
+              <span>{titleSuffix}</span>
             </h2>
-            <div
-              className="mt-2 h-1 bg-marco-yellow"
-              style={{ width: `${REELS_TITLE_ACCENT_WIDTH_REM}rem` }}
-              aria-hidden
-            />
           </div>
           <div
             className="flex shrink-0 flex-row gap-2"
@@ -141,7 +149,7 @@ export function HomeReelsSection() {
                 style={{ minWidth: REELS_COLUMN_MIN_WIDTH_PX }}
               >
                 <div
-                  className="relative shrink-0 overflow-hidden rounded-full bg-marco-gray"
+                  className="relative shrink-0 overflow-hidden rounded-full border border-marco-border bg-marco-gray"
                   style={{
                     width: REELS_CIRCLE_SIZE_PX,
                     height: REELS_CIRCLE_SIZE_PX,
@@ -157,7 +165,7 @@ export function HomeReelsSection() {
                   />
                 </div>
                 <span
-                  className="whitespace-nowrap font-normal text-marco-black"
+                  className="whitespace-nowrap font-medium text-marco-text"
                   style={reelsLabelStyle}
                 >
                   {label}
@@ -165,6 +173,36 @@ export function HomeReelsSection() {
               </Link>
             );
           })}
+        </div>
+
+        <div
+          className="flex flex-row items-center justify-center"
+          style={{
+            marginTop: `${REELS_RAIL_TO_PAGINATION_GAP_PX}px`,
+            gap: `${REELS_PAGINATION_DOT_GAP_PX}px`,
+          }}
+          role="group"
+          aria-label={t('home.reels_pagination_aria')}
+        >
+          {([0, 1] as const).map((page) => (
+            <button
+              key={page}
+              type="button"
+              className={`rounded-full p-0 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black ${
+                activePage === page ? 'bg-marco-black' : 'bg-marco-border'
+              }`}
+              style={reelsPaginationDotStyle}
+              aria-current={activePage === page ? 'page' : undefined}
+              aria-label={
+                page === 0
+                  ? t('home.reels_pagination_go_first')
+                  : t('home.reels_pagination_go_second')
+              }
+              onClick={() => {
+                scrollToPage(page);
+              }}
+            />
+          ))}
         </div>
       </div>
     </section>

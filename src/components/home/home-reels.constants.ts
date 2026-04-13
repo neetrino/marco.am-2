@@ -25,8 +25,8 @@ export const REELS_LABEL_LINE_HEIGHT_PX = 21;
 /** Figma — title tracking. */
 export const REELS_TITLE_LETTER_SPACING_PX = -0.6;
 
-/** Yellow accent bar under title. */
-export const REELS_TITLE_ACCENT_WIDTH_REM = 4.75;
+/** First N characters of `reels_title` get the yellow underline (Figma: “RE”). */
+export const REELS_TITLE_EMPHASIS_CHAR_COUNT = 2;
 
 /** Nudge title + accent bar slightly right from section alignment. */
 export const REELS_TITLE_INSET_LEFT_PX = 40;
@@ -37,12 +37,15 @@ export const REELS_TITLE_TO_RAIL_GAP_PX = 32;
 /** Inset prev/next controls from the section’s right edge (shifts them left). */
 export const REELS_CAROUSEL_NAV_INSET_RIGHT_PX = 32;
 
-/**
- * Figma 101:2802 — pill-shaped prev/next control (not a circle).
- * Compact frame; chevrons are sized larger than the pill for emphasis.
- */
-export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 34;
-export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 22;
+/** Circular prev/next controls (Figma — thin gray ring). */
+export const REELS_CAROUSEL_NAV_BUTTON_SIZE_PX = 32;
+
+/** Space between the reel rail and dot pagination. */
+export const REELS_RAIL_TO_PAGINATION_GAP_PX = 20;
+
+/** Dot pagination (two-page scroll affordance). */
+export const REELS_PAGINATION_DOT_SIZE_PX = 8;
+export const REELS_PAGINATION_DOT_GAP_PX = 10;
 
 /** Default destination for reel tiles until category slugs are wired. */
 export const REELS_ITEM_HREF = '/products' as const;
