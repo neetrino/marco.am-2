@@ -113,10 +113,10 @@ export const HERO_PROMO_SMARTPHONES_TILE_HEIGHT_PX = 497;
 
 /**
  * Figma 305:2130 — `Group 9208` top-right control on 80% tile: white circle, black NE arrow.
- * Position nudged down + left vs corner; size slightly under design px for hero scale.
+ * Lower `top` (px) moves the control up inside the tile frame.
  */
-export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_TOP_PX = 108;
-export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_RIGHT_PX = 78;
+export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_TOP_PX = 28;
+export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_RIGHT_PX = 28;
 export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_FRAME_PX = HERO_PROMO_SIDE_TILE_TR_ICON_FRAME_PX;
 export const HERO_PROMO_SMARTPHONES_TILE_TR_ICON_GLYPH_PX = HERO_PROMO_SIDE_TILE_TR_ICON_GLYPH_PX;
 
