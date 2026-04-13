@@ -25,8 +25,8 @@ export const REELS_LABEL_LINE_HEIGHT_PX = 21;
 /** Figma — title tracking. */
 export const REELS_TITLE_LETTER_SPACING_PX = -0.6;
 
-/** First N characters of `reels_title` get the yellow underline (Figma: “RE”). */
-export const REELS_TITLE_EMPHASIS_CHAR_COUNT = 2;
+/** First N characters of `reels_title` get the yellow underline (Figma: “REE”). */
+export const REELS_TITLE_EMPHASIS_CHAR_COUNT = 3;
 
 /** Nudge title + accent bar slightly right from section alignment. */
 export const REELS_TITLE_INSET_LEFT_PX = 40;
