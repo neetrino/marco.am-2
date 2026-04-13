@@ -2,7 +2,6 @@ import { HeroCarousel } from '../components/HeroCarousel';
 import { HomeReelsSection } from '../components/home/HomeReelsSection';
 
 import { FeaturesSection } from '../components/FeaturesSection';
-import { TopCategories } from '../components/TopCategories';
 import { FeaturedProductsTabs } from '../components/FeaturedProductsTabs';
 
 export default async function HomePage() {
@@ -12,9 +11,6 @@ export default async function HomePage() {
       <HeroCarousel />
 
       <HomeReelsSection />
-
-      {/* Top Categories */}
-      <TopCategories />
 
       {/* Featured Products with Tabs */}
       <FeaturedProductsTabs />
