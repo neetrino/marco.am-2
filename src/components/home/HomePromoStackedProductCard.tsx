@@ -24,6 +24,7 @@ import {
   HERO_PROMO_CHAIR_WIDTH_RATIO,
   HERO_PROMO_FLOOR_GROUP_BOTTOM_OFFSET_PCT,
   HERO_PROMO_FLOOR_GROUP_HEIGHT_RATIO,
+  HERO_PROMO_STACK_BLUE_LABEL_BOTTOM_CLASS,
   HERO_PROMO_STACK_BLUE_STYLE,
   HERO_PROMO_STACK_CARD_OFFSET_DOWN_PX,
   HERO_PROMO_STACK_CONTAINER_ASPECT_H,
@@ -224,7 +225,9 @@ function BlueStackLayerWithCta({ ctaAriaLabel }: BlueStackLayerWithCtaProps) {
 
   return (
     <div className="absolute left-0 right-0 overflow-hidden" style={style}>
-      <div className="absolute bottom-[20px] right-6 z-[4] flex items-end sm:bottom-[22px] sm:right-6 md:bottom-[45px] md:left-6">
+      <div
+        className={`absolute right-6 z-[4] flex items-end sm:right-6 md:left-6 ${HERO_PROMO_STACK_BLUE_LABEL_BOTTOM_CLASS}`}
+      >
         <HomePromoStackedProductCardBlueLabel />
       </div>
       <div className="absolute z-[4]" style={ctaVerticalStyle}>

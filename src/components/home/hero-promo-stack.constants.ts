@@ -161,6 +161,13 @@ export const HERO_PROMO_STACK_CTA_RIGHT_EXTRA_PX = 3;
 /** Added inside `translateY(calc(-50% + …))` — positive nudges down, negative nudges up. */
 export const HERO_PROMO_STACK_CTA_NUDGE_DOWN_PX = -4;
 
+/**
+ * White two-line label on blue layer (`HomePromoStackedProductCardBlueLabel` anchor).
+ * Smaller bottom inset = label sits lower on the blue card.
+ */
+export const HERO_PROMO_STACK_BLUE_LABEL_BOTTOM_CLASS =
+  'bottom-[14px] sm:bottom-[16px] md:bottom-[39px]';
+
 /** Horizontal inset for discount caption under the stack (`HomePromoStackDiscountCaption`). */
 export const HERO_PROMO_STACK_DISCOUNT_CAPTION_MARGIN_LEFT_PX = 430;
 
