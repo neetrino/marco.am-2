@@ -174,7 +174,7 @@ export const HERO_PROMO_STACK_BLUE_LABEL_BOTTOM_CLASS =
 export const HERO_PROMO_STACK_DISCOUNT_CAPTION_MARGIN_LEFT_PX = 430;
 
 /** Extra shift vs `MARGIN_LEFT` / base position — right and up (CSS px). */
-export const HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_RIGHT_PX = 98;
+export const HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_RIGHT_PX = 106;
 export const HERO_PROMO_STACK_DISCOUNT_CAPTION_NUDGE_UP_PX = 80;
 
 /** Figma — Montserrat SemiBold body for discount caption lines. */
