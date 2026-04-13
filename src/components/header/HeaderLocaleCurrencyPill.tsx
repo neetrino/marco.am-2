@@ -10,6 +10,7 @@ import {
   HEADER_LOCALE_PILL_MIN_WIDTH_CLASS,
   HEADER_LOCALE_PILL_PADDING_X_CLASS,
   HEADER_LOCALE_PILL_RADIUS_CLASS,
+  HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS,
 } from './header.constants';
 
 const ChevronDownIcon = () => (
@@ -246,6 +247,70 @@ export function HeaderLocaleCurrencyPill({
           onCurrencySelect={handleCurrencySelect}
         />
       )}
+    </div>
+  );
+}
+
+/**
+ * Inline language + currency lists for the mobile burger drawer (desktop uses {@link HeaderLocaleCurrencyPill}).
+ */
+interface MobileHeaderLanguageSwitchProps {
+  initialLanguage?: LanguageCode;
+  ariaLabel: string;
+}
+
+/**
+ * Round mobile header control (same shell as burger) — opens language list only.
+ */
+export function MobileHeaderLanguageSwitch({ initialLanguage, ariaLabel }: MobileHeaderLanguageSwitchProps) {
+  const { showMenu, setShowMenu, currentLang, menuRef, changeLanguage } = useLocaleCurrencyPillState(
+    (_code: CurrencyCode) => undefined,
+    initialLanguage,
+  );
+
+  return (
+    <div className="relative shrink-0" ref={menuRef as React.RefObject<HTMLDivElement>}>
+      <button
+        type="button"
+        onClick={() => setShowMenu((open) => !open)}
+        aria-expanded={showMenu}
+        aria-label={ariaLabel}
+        className={HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS}
+      >
+        <Globe className="h-6 w-6 shrink-0" strokeWidth={1.75} aria-hidden />
+      </button>
+      {showMenu && (
+        <div className="absolute right-0 top-full z-[70] mt-1 w-52 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+          <LocaleLanguageRows currentLang={currentLang} onLanguageSelect={changeLanguage} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function MobileDrawerLocaleCurrencySection({
+  selectedCurrency,
+  onCurrencyChange,
+  initialLanguage,
+}: HeaderLocaleCurrencyPillProps) {
+  const { currentLang, changeLanguage, handleCurrencySelect } = useLocaleCurrencyPillState(
+    onCurrencyChange,
+    initialLanguage,
+  );
+
+  return (
+    <div className="normal-case">
+      <p className="border-b border-gray-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Language
+      </p>
+      <LocaleLanguageRows currentLang={currentLang} onLanguageSelect={changeLanguage} />
+      <p className="border-b border-t border-gray-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Currency
+      </p>
+      <LocaleCurrencyRows
+        selectedCurrency={selectedCurrency}
+        onCurrencySelect={handleCurrencySelect}
+      />
     </div>
   );
 }

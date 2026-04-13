@@ -12,9 +12,13 @@ import { SearchDropdown } from './SearchDropdown';
 import { useAuth } from '../lib/auth/AuthContext';
 import { apiClient } from '../lib/api-client';
 import { CART_KEY, getCompareCount, getWishlistCount } from '../lib/storageCounts';
-import { MapPin, Phone, Search, Sun } from 'lucide-react';
+import { MapPin, Phone, Sun } from 'lucide-react';
 import { MarcoLogo } from './header/MarcoLogo';
-import { HeaderLocaleCurrencyPill } from './header/HeaderLocaleCurrencyPill';
+import {
+  HeaderLocaleCurrencyPill,
+  MobileDrawerLocaleCurrencySection,
+  MobileHeaderLanguageSwitch,
+} from './header/HeaderLocaleCurrencyPill';
 import { HeaderSocialCircleLinks } from './header/HeaderSocialCircleLinks';
 import {
   HEADER_CART_BUTTON_CLASS,
@@ -31,7 +35,6 @@ import {
   HEADER_LOCALE_TO_THEME_MARGIN_CLASS,
   HEADER_FIGMA_PILL_RADIUS_CLASS,
   HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS,
-  HEADER_MOBILE_SEARCH_FAB_CLASS,
   HEADER_TOOLBAR_ICON_CLUSTER_CLASS,
   HEADER_REELS_EXTERNAL_HREF,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
@@ -795,26 +798,17 @@ export function Header({ initialLanguage }: HeaderProps) {
           </svg>
         </button>
         <MarcoLogo />
-        <button
-          type="button"
-          className={HEADER_MOBILE_SEARCH_FAB_CLASS}
-          aria-label={t('common.ariaLabels.search')}
-          onClick={() => {
-            headerSearchInputRef.current?.focus({ preventScroll: false });
-            if (searchQuery.trim().length >= 1) {
-              setSearchDropdownOpen(true);
-            }
-          }}
-        >
-          <Search className="h-6 w-6 shrink-0" strokeWidth={1.75} aria-hidden />
-        </button>
+        <MobileHeaderLanguageSwitch
+          initialLanguage={initialLanguage}
+          ariaLabel={t('common.ariaLabels.languageMenu')}
+        />
       </div>
 
-      {/* Row 2 — desktop/tablet only; mobile uses burger + search FAB (language/search/cart in drawer) */}
+      {/* Row 2 — search bar visible on mobile; locale pill is desktop-only; mobile locale is in burger drawer */}
       <div className="w-full border-b border-marco-border bg-white max-md:border-b-0">
         <div className={HEADER_CONTAINER_CLASS}>
           <div
-            className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 max-md:gap-y-0 max-md:py-0 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
+            className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 max-md:gap-y-0 max-md:py-2 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
           >
           <div
             className={`flex min-w-0 w-full flex-1 flex-col sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS} max-md:min-h-0 max-md:gap-y-0`}
@@ -858,43 +852,41 @@ export function Header({ initialLanguage }: HeaderProps) {
             ref={inlineSearchRef}
             className={`relative min-w-0 flex-1 ${HEADER_SEARCH_BAR_INNER_CLASS}`}
           >
-            <div className="max-md:sr-only">
-              <form
-                onSubmit={handleSearch}
-                className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_FIGMA_PILL_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
+            <form
+              onSubmit={handleSearch}
+              className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_FIGMA_PILL_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
+            >
+              <div
+                className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-2`}
               >
-                <div
-                  className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-2`}
-                >
-                  <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
-                    <SearchIcon />
-                  </span>
-                  <input
-                    ref={headerSearchInputRef}
-                    type="search"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      if (e.target.value.trim().length >= 1) setSearchDropdownOpen(true);
-                    }}
-                    onFocus={() => {
-                      if (searchQuery.trim().length >= 1) setSearchDropdownOpen(true);
-                    }}
-                    onKeyDown={searchHandleKeyDown}
-                    placeholder={t('common.placeholders.search')}
-                    className="min-h-0 min-w-0 flex-1 border-0 bg-transparent text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
-                    aria-controls="search-results"
-                    aria-autocomplete="list"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className={`${HEADER_SEARCH_SUBMIT_WIDTH_CLASS} ${HEADER_SEARCH_SUBMIT_CLASS}`}
-                >
-                  {t('common.buttons.search')}
-                </button>
-              </form>
-            </div>
+                <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
+                  <SearchIcon />
+                </span>
+                <input
+                  ref={headerSearchInputRef}
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    if (e.target.value.trim().length >= 1) setSearchDropdownOpen(true);
+                  }}
+                  onFocus={() => {
+                    if (searchQuery.trim().length >= 1) setSearchDropdownOpen(true);
+                  }}
+                  onKeyDown={searchHandleKeyDown}
+                  placeholder={t('common.placeholders.search')}
+                  className="min-h-0 min-w-0 flex-1 border-0 bg-transparent text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
+                  aria-controls="search-results"
+                  aria-autocomplete="list"
+                />
+              </div>
+              <button
+                type="submit"
+                className={`${HEADER_SEARCH_SUBMIT_WIDTH_CLASS} ${HEADER_SEARCH_SUBMIT_CLASS}`}
+              >
+                {t('common.buttons.search')}
+              </button>
+            </form>
             <SearchDropdown
               results={searchResults}
               loading={searchLoading}
@@ -1047,6 +1039,11 @@ export function Header({ initialLanguage }: HeaderProps) {
             <div className="flex-1 overflow-hidden min-h-0">
               <nav className="flex h-full flex-col border-y border-gray-200 text-sm font-semibold uppercase tracking-wide text-gray-800 bg-white">
                 <div className="flex-1 overflow-y-auto divide-y divide-gray-200">
+                  <MobileDrawerLocaleCurrencySection
+                    selectedCurrency={selectedCurrency}
+                    onCurrencyChange={handleCurrencyChange}
+                    initialLanguage={initialLanguage}
+                  />
                   {primaryNavLinks.map((link) => {
                     if (link.translationKey === 'common.navigation.reels') {
                       return (
