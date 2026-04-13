@@ -13,7 +13,9 @@ import { SpecialOfferCard } from './SpecialOfferCard';
 import type { SpecialOfferProduct } from './special-offer-product.types';
 import {
   SPECIAL_OFFERS_CARD_GAP_PX,
-  SPECIAL_OFFERS_NAV_BUTTON_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
   SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX,
@@ -32,8 +34,9 @@ const montserratSpecial = Montserrat({
 const SECTION_CONTAINER_CLASS =
   'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
 
+/** Pill: default white + gray border; hover marco-yellow — same as REELS. */
 const SPECIAL_OFFERS_NAV_BUTTON_CLASS =
-  'flex shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
+  'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
 
 const SPECIAL_OFFERS_NAV_ICON_CLASS = 'h-3 w-3 shrink-0 text-marco-black';
 
@@ -100,9 +103,9 @@ export function HomeSpecialOffersSection() {
   const titleHighlight = tr('home.special_offers.title_highlight');
   const titleRest = tr('home.special_offers.title_rest');
 
-  const navBtnStyle = {
-    width: SPECIAL_OFFERS_NAV_BUTTON_PX,
-    height: SPECIAL_OFFERS_NAV_BUTTON_PX,
+  const specialOffersNavButtonStyle = {
+    width: SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
+    height: SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
   } as const;
 
   const paginationDotStyle = {
@@ -145,12 +148,15 @@ export function HomeSpecialOffersSection() {
               <span>{titleRest}</span>
             </h2>
           </div>
-          <div className="flex shrink-0 flex-row gap-2">
+          <div
+            className="flex shrink-0 flex-row gap-2"
+            style={{ marginRight: `${SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX}px` }}
+          >
             <button
               type="button"
               onClick={scrollPrev}
               className={SPECIAL_OFFERS_NAV_BUTTON_CLASS}
-              style={navBtnStyle}
+              style={specialOffersNavButtonStyle}
               aria-label={tr('home.special_offers.prev_aria')}
             >
               <ChevronLeft
@@ -163,7 +169,7 @@ export function HomeSpecialOffersSection() {
               type="button"
               onClick={scrollNext}
               className={SPECIAL_OFFERS_NAV_BUTTON_CLASS}
-              style={navBtnStyle}
+              style={specialOffersNavButtonStyle}
               aria-label={tr('home.special_offers.next_aria')}
             >
               <ChevronRight

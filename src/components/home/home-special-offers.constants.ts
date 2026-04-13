@@ -35,8 +35,14 @@ export const SPECIAL_OFFERS_CARD_PADDING_TOP_PX = 17;
 /** Match Tailwind `lg` — fixed four-column rail uses pixel widths from ResizeObserver. */
 export const SPECIAL_OFFERS_RAIL_LG_MIN_WIDTH_PX = 1024;
 
-/** Prev/next control sizing (circular, Figma-aligned). */
-export const SPECIAL_OFFERS_NAV_BUTTON_PX = 40;
+/**
+ * Prev/next carousel controls — same compact pill as REELS (ratio ~1.28).
+ */
+export const SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 32;
+export const SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 25;
+
+/** Inset prev/next controls from the section’s right edge (matches REELS). */
+export const SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX = 32;
 
 /** Dot pagination below the rail. */
 export const SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX = 8;
