@@ -22,6 +22,9 @@ import {
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
   SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP,
+  SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_GAP_PX,
+  SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_HEIGHT_PX,
+  SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_WIDTH_PERCENT,
   SPECIAL_OFFERS_TITLE_LETTER_SPACING_PX,
   SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX,
 } from './home-special-offers.constants';
@@ -146,8 +149,18 @@ export function HomeSpecialOffersSection() {
                 lineHeight: 1.05,
               }}
             >
-              <span className="border-b-4 border-marco-yellow text-marco-yellow">
+              <span className="relative inline-block text-marco-yellow">
                 {titleHighlight}
+                <span
+                  aria-hidden
+                  className="absolute left-0 bg-marco-yellow"
+                  style={{
+                    top: '100%',
+                    marginTop: SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_GAP_PX,
+                    width: `${SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_WIDTH_PERCENT}%`,
+                    height: SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_HEIGHT_PX,
+                  }}
+                />
               </span>
               <span>{titleRest}</span>
             </h2>

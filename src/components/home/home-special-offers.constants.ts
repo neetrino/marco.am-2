@@ -11,14 +11,25 @@ export const SPECIAL_OFFERS_VISIBLE_COLUMNS = 4;
 /** Portion of scroller width to move per arrow tap. */
 export const SPECIAL_OFFERS_SCROLL_FRACTION = 0.85;
 
-/** Section title (Montserrat Bold) — matches Figma scale. */
-export const SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP = 'clamp(22px, 4vw, 54px)';
+/** Section title (Montserrat Bold) — «Հատուկ առաջարկներ» / special offers heading. */
+export const SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP = 'clamp(20px, 3.5vw, 50px)';
 
 /** Title tracking from Figma. */
 export const SPECIAL_OFFERS_TITLE_LETTER_SPACING_PX = -0.6;
 
-/** Space between heading row and card rail (Figma breathing room). */
-export const SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX = 48;
+/** Space between heading row (yellow title line) and card rail. */
+export const SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX = 69;
+
+/**
+ * Yellow underline under the highlighted title segment — narrower than the word (`border-b-4` width).
+ */
+export const SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_WIDTH_PERCENT = 48;
+
+/** Same thickness as former `border-b-4`. */
+export const SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_HEIGHT_PX = 4;
+
+/** Space between baseline and the yellow bar. */
+export const SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_GAP_PX = 12;
 
 /** Card shell — Figma Product2 fill. */
 export const SPECIAL_OFFERS_CARD_BG = '#f6f6f6';
