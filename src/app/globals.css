@@ -75,7 +75,7 @@
 /* Policy pages typography & spacing */
 /* Home hero — Figma MARCO (305:2146): 65px top, 135px horizontal on large screens */
 .hero-section-inset {
-  padding-top: 65px;
+  padding-top: 2rem; /* 32px mobile */
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -84,11 +84,13 @@
   .hero-section-inset {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+    padding-top: 4rem; /* 64px tablet */
   }
 }
 
 @media (min-width: 1024px) {
   .hero-section-inset {
+    padding-top: 65px;
     padding-left: 135px;
     padding-right: 135px;
   }

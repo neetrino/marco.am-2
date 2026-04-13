@@ -27,7 +27,6 @@ import {
   HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS,
   HEADER_FIGMA_ROW2_MAIN_GAP_CLASS,
   HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS,
-  HEADER_FIGMA_ROW2_PADDING_Y_CLASS,
   HEADER_LOCALE_TO_THEME_MARGIN_CLASS,
   HEADER_FIGMA_PILL_RADIUS_CLASS,
   HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS,
@@ -806,7 +805,7 @@ export function Header({ initialLanguage }: HeaderProps) {
       <div className="w-full border-b border-marco-border bg-white max-md:border-b-0">
         <div className={HEADER_CONTAINER_CLASS}>
           <div
-            className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 max-md:gap-y-0 max-md:py-2 ${HEADER_FIGMA_ROW2_PADDING_Y_CLASS} md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
+            className={`flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 max-md:gap-y-0 py-2 md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${HEADER_FIGMA_ROW2_MAIN_GAP_CLASS}`}
           >
           <div
             className={`flex min-w-0 w-full flex-1 flex-col sm:flex-row sm:items-center ${HEADER_FIGMA_ROW2_LEFT_INNER_GAP_CLASS} max-md:min-h-0 max-md:gap-y-0`}
