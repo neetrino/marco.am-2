@@ -142,7 +142,7 @@ export function FeaturedProductsTabs() {
   }, [fetchProducts]);
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Title */}
         <h2 className="text-3xl font-bold text-gray-900 text-center">

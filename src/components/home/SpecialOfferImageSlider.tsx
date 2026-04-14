@@ -122,7 +122,7 @@ export function SpecialOfferImageSlider({
     >
       {/* Images only — clipped; dots stay outside this layer so they paint on top. */}
       <div
-        className="absolute inset-0 overflow-hidden bg-gray-50"
+        className="absolute inset-0 overflow-hidden bg-white"
         style={{ borderRadius: wellRadiusPx }}
       >
         <div

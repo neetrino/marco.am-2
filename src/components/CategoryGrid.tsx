@@ -71,7 +71,7 @@ function getCategoryIcon(categoryTitle: string, categorySlug: string): ReactNode
   // Cables
   if (title.includes('cable') || slug.includes('cable')) {
     return (
-      <div className="w-20 h-20 rounded-lg bg-gray-50 flex items-center justify-center shadow-sm border border-gray-200">
+      <div className="w-20 h-20 rounded-lg bg-white flex items-center justify-center shadow-sm border border-gray-200">
         <svg className="w-10 h-10 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16M4 12l4-4m-4 4l4 4m12-4l-4-4m4 4l-4 4" />
           <circle cx="6" cy="12" r="2" fill="currentColor"/>

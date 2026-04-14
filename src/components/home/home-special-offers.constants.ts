@@ -149,7 +149,7 @@ export const SPECIAL_OFFERS_GALLERY_DOTS_GAP_PX = 0;
 export const SPECIAL_OFFERS_GALLERY_DOTS_OVERLAP_PX = 6;
 
 /**
- * How far the gallery dot row sits below the gray image well bottom (CSS `bottom: -value`).
+ * How far the gallery dot row sits below the image well bottom (CSS `bottom: -value`).
  */
 export const SPECIAL_OFFERS_GALLERY_DOTS_BELOW_WELL_PX = 30;
 

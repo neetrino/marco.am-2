@@ -213,7 +213,7 @@ export default async function ProductsPage({ searchParams }: any) {
           minPrice={params?.minPrice}
           maxPrice={params?.maxPrice}
         >
-        <aside className="w-64 hidden lg:block bg-gray-50 rounded-xl flex-shrink-0">
+        <aside className="w-64 hidden lg:block bg-white rounded-xl flex-shrink-0">
           <div className="sticky top-4 p-4 space-y-6">
             <Suspense fallback={<div>{t(language, 'common.messages.loadingFilters')}</div>}>
               <PriceFilter currentMinPrice={params?.minPrice} currentMaxPrice={params?.maxPrice} category={params?.category} search={params?.search} />
