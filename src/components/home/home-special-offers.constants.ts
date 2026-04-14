@@ -45,7 +45,7 @@ export const SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP_MOBILE =
 export const SPECIAL_OFFERS_TITLE_LETTER_SPACING_PX = -0.6;
 
 /** Space between heading row (yellow title line) and card rail. */
-export const SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX = 69;
+export const SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX = 59;
 
 /**
  * Yellow underline under the highlighted title segment — narrower than the word (`border-b-4` width).
@@ -110,12 +110,12 @@ export const SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT = 24;
 /**
  * Mobile (`max-md`): centered bottom notch — white “tab” (see reference `.card::after`).
  */
-export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_WIDTH_PX = 88;
+export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_WIDTH_PX = 76;
 
-export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_HEIGHT_PX = 44;
+export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_HEIGHT_PX = 38;
 
 /** Top radii of the notch (half-circle cap). */
-export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_TOP_RADIUS_PX = 44;
+export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_TOP_RADIUS_PX = 38;
 
 /**
  * Corner mask fill — must match `HomeSpecialOffersSection` surface (`bg-white`).
