@@ -51,8 +51,9 @@ export function LocaleCurrencyPill({
   variant = 'desktop',
 }: LocaleCurrencyPillProps) {
   const [showMenu, setShowMenu] = useState(false);
+  /** Must match SSR (`getStoredLanguage()` on server is always `'en'`). Sync from storage after mount in `useEffect`. */
   const [currentLang, setCurrentLang] = useState<Exclude<LanguageCode, 'ka'>>(() =>
-    toHeaderLanguage(getStoredLanguage()),
+    toHeaderLanguage('en'),
   );
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -63,6 +64,7 @@ export function LocaleCurrencyPill({
       setCurrentLang(toHeaderLanguage(getStoredLanguage()));
     };
 
+    handleLanguageUpdate();
     window.addEventListener('language-updated', handleLanguageUpdate);
     return () => {
       window.removeEventListener('language-updated', handleLanguageUpdate);
