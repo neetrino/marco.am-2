@@ -1,8 +1,25 @@
 /** REELS rail — circle thumbnail size. */
 export const REELS_CIRCLE_SIZE_PX = 128;
 
+/** Mobile — smaller circles so three fit per viewport width. */
+export const REELS_MOBILE_CIRCLE_SIZE_PX = 80;
+
 /** Horizontal gap between reel tiles (circles). */
 export const REELS_ITEM_GAP_PX = 44;
+
+/**
+ * Mobile (`max-md`): gap between reel tiles; paired with `REELS_MOBILE_TILE_BASIS_CSS` (three columns).
+ */
+export const REELS_MOBILE_ITEM_GAP_PX = 8;
+
+/** Mobile rail: exactly this many tiles visible across the scroller width (`max-md`). */
+export const REELS_MOBILE_VISIBLE_COLUMN_COUNT = 3;
+
+/**
+ * Flex-basis for each mobile reel tile — `(100% − (n−1)×gap) / n` so only `n` circles fit per view.
+ * Set on scroller as `--reels-mobile-tile-basis` for `HomeReelsSection` links.
+ */
+export const REELS_MOBILE_TILE_BASIS_CSS = `calc((100% - ${(REELS_MOBILE_VISIBLE_COLUMN_COUNT - 1) * REELS_MOBILE_ITEM_GAP_PX}px) / ${REELS_MOBILE_VISIBLE_COLUMN_COUNT})`;
 
 /** Minimum column width for each tile (label uses nowrap; column can grow). */
 export const REELS_COLUMN_MIN_WIDTH_PX = 148;
@@ -10,11 +27,20 @@ export const REELS_COLUMN_MIN_WIDTH_PX = 148;
 /** Portion of viewport width to scroll per arrow tap (horizontal strip). */
 export const REELS_SCROLL_FRACTION = 0.9;
 
-/** Title (Montserrat Bold); compact vs full Figma spec. */
+/** Title (Montserrat Bold) — desktop (`md+`). */
 export const REELS_TITLE_FONT_SIZE_CLAMP = 'clamp(18px, 3.75vw, 36px)';
 
-/** Tight headline line height. */
+/** Title — mobile: larger than desktop minimum for readability. */
+export const REELS_TITLE_FONT_SIZE_CLAMP_MOBILE = 'clamp(24px, 6.5vw, 36px)';
+
+/** Tight headline line height — desktop. */
 export const REELS_TITLE_LINE_HEIGHT = '1.05';
+
+/** Mobile: tighter line box so the yellow bar sits closer to the letters. */
+export const REELS_TITLE_LINE_HEIGHT_MOBILE = '0.92';
+
+/** Mobile: distance (px) between “REE” glyphs and the yellow underline. */
+export const REELS_TITLE_EMPHASIS_UNDERLINE_OFFSET_MOBILE_PX = 8;
 
 /** Label (Montserrat Regular). */
 export const REELS_LABEL_FONT_SIZE_PX = 14;
@@ -28,8 +54,11 @@ export const REELS_TITLE_LETTER_SPACING_PX = -0.6;
 /** First N characters of `reels_title` get the yellow underline (Figma: “REE”). */
 export const REELS_TITLE_EMPHASIS_CHAR_COUNT = 3;
 
-/** Nudge title + accent bar slightly right from section alignment. */
+/** Nudge title + accent bar slightly right from section alignment (`md+`). */
 export const REELS_TITLE_INSET_LEFT_PX = 40;
+
+/** Mobile: title flush with section content (no extra inset). */
+export const REELS_TITLE_INSET_LEFT_MOBILE_PX = 0;
 
 /** Vertical space between the REELS heading row and the circle rail. */
 export const REELS_TITLE_TO_RAIL_GAP_PX = 32;
@@ -46,7 +75,10 @@ export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 25;
 /** Space between the reel rail and dot pagination. */
 export const REELS_RAIL_TO_PAGINATION_GAP_PX = 20;
 
-/** Dot pagination (two-page scroll affordance). */
+/** Dot pagination — scroll range split into this many segments (synced with `useHomeReelsCarousel`). */
+export const REELS_PAGINATION_PAGE_COUNT = 3;
+
+/** Dot pagination affordance. */
 export const REELS_PAGINATION_DOT_SIZE_PX = 8;
 export const REELS_PAGINATION_DOT_GAP_PX = 10;
 

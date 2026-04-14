@@ -21,12 +21,15 @@ export function HomePromoMobileHeroHeadline({
   accentText,
 }: HomePromoMobileHeroHeadlineProps) {
   return (
-    <p className="pointer-events-none box-border max-w-full min-w-0 break-words font-black tracking-tight">
-      <span className="text-marco-black" style={mobileHeadlineTypography}>
+    <p className="pointer-events-none box-border flex w-full max-w-full min-w-0 flex-row flex-nowrap items-baseline justify-center gap-x-1 font-black tracking-tight sm:gap-x-1.5">
+      <span className="shrink-0 text-marco-black" style={mobileHeadlineTypography}>
         {emphasisText}
       </span>
-      <span className="text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.14)]" style={mobileHeadlineTypography}>
-        {` ${accentText}`}
+      <span
+        className="shrink-0 text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.14)]"
+        style={mobileHeadlineTypography}
+      >
+        {accentText}
       </span>
     </p>
   );

@@ -1,21 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { REELS_SCROLL_FRACTION } from './home-reels.constants';
+import {
+  REELS_PAGINATION_PAGE_COUNT,
+  REELS_SCROLL_FRACTION,
+} from './home-reels.constants';
 
-function getReelsActivePageIndex(el: HTMLDivElement): 0 | 1 {
+function getReelsActivePageIndex(el: HTMLDivElement): number {
   const maxScroll = el.scrollWidth - el.clientWidth;
   if (maxScroll <= 0) {
     return 0;
   }
-  return el.scrollLeft / maxScroll < 0.5 ? 0 : 1;
+  const ratio = el.scrollLeft / maxScroll;
+  const n = REELS_PAGINATION_PAGE_COUNT;
+  const idx = Math.min(n - 1, Math.floor(ratio * n));
+  return idx;
 }
 
 /**
- * Horizontal REELS strip: arrow scroll, two-step pagination synced to scroll.
+ * Horizontal REELS strip: arrow scroll, pagination synced to scroll (`REELS_PAGINATION_PAGE_COUNT` segments).
  */
 export function useHomeReelsCarousel() {
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [activePage, setActivePage] = useState<0 | 1>(0);
+  const [activePage, setActivePage] = useState(0);
 
   const syncActivePage = useCallback(() => {
     const el = scrollerRef.current;
@@ -51,13 +57,19 @@ export function useHomeReelsCarousel() {
     el.scrollBy({ left: delta, behavior: 'smooth' });
   }, []);
 
-  const scrollToPage = useCallback((page: 0 | 1) => {
+  const scrollToPage = useCallback((page: number) => {
     const el = scrollerRef.current;
     if (!el) {
       return;
     }
+    const maxPage = REELS_PAGINATION_PAGE_COUNT - 1;
+    const clamped = Math.max(0, Math.min(maxPage, page));
     const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
-    const left = page === 0 ? 0 : maxScroll;
+    if (maxPage === 0) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+      return;
+    }
+    const left = (maxScroll * clamped) / maxPage;
     el.scrollTo({ left, behavior: 'smooth' });
   }, []);
 

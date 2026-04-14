@@ -173,9 +173,9 @@ export const HERO_PROMO_DESKTOP_FREE_DELIVERY_BANNER_TRANSLATE_Y_PX = -430;
 export const HERO_PROMO_SMARTPHONES_CORNER_NUDGE_X_PX = 77;
 export const HERO_PROMO_SMARTPHONES_CORNER_NUDGE_Y_PX = -96;
 
-/** Figma 314:2400 — mobile-only hero headline (Montserrat Black); slightly above base for readability */
-export const HERO_MOBILE_HEADLINE_FONT_SIZE_PX = 38;
-export const HERO_MOBILE_HEADLINE_LINE_HEIGHT_PX = 38;
+/** Figma 314:2400 — mobile-only hero headline (Montserrat Black); tuned down vs Figma so one-line pair centers on narrow widths */
+export const HERO_MOBILE_HEADLINE_FONT_SIZE_PX = 34;
+export const HERO_MOBILE_HEADLINE_LINE_HEIGHT_PX = 34;
 /** Nudge headline left vs padding (px) */
 export const HERO_MOBILE_HEADLINE_NUDGE_LEFT_PX = 2;
 

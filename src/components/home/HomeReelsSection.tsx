@@ -8,14 +8,15 @@ import { Montserrat } from 'next/font/google';
 import { useTranslation } from '../../lib/i18n-client';
 import {
   REELS_CIRCLE_SIZE_PX,
-  REELS_COLUMN_MIN_WIDTH_PX,
-  REELS_ITEM_GAP_PX,
+  REELS_MOBILE_CIRCLE_SIZE_PX,
+  REELS_MOBILE_TILE_BASIS_CSS,
   REELS_ITEMS,
   REELS_ITEM_HREF,
   REELS_LABEL_FONT_SIZE_PX,
   REELS_LABEL_LINE_HEIGHT_PX,
   REELS_TITLE_EMPHASIS_CHAR_COUNT,
   REELS_TITLE_INSET_LEFT_PX,
+  REELS_TITLE_INSET_LEFT_MOBILE_PX,
   REELS_TITLE_TO_RAIL_GAP_PX,
   REELS_CAROUSEL_NAV_INSET_RIGHT_PX,
   REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
@@ -23,9 +24,13 @@ import {
   REELS_RAIL_TO_PAGINATION_GAP_PX,
   REELS_PAGINATION_DOT_GAP_PX,
   REELS_PAGINATION_DOT_SIZE_PX,
+  REELS_PAGINATION_PAGE_COUNT,
   REELS_TITLE_FONT_SIZE_CLAMP,
+  REELS_TITLE_FONT_SIZE_CLAMP_MOBILE,
   REELS_TITLE_LETTER_SPACING_PX,
   REELS_TITLE_LINE_HEIGHT,
+  REELS_TITLE_LINE_HEIGHT_MOBILE,
+  REELS_TITLE_EMPHASIS_UNDERLINE_OFFSET_MOBILE_PX,
 } from './home-reels.constants';
 import { useHomeReelsCarousel } from './useHomeReelsCarousel';
 
@@ -35,9 +40,17 @@ const montserratReels = Montserrat({
   display: 'swap',
 });
 
-const reelsTitleStyle = {
-  fontSize: REELS_TITLE_FONT_SIZE_CLAMP,
-  lineHeight: REELS_TITLE_LINE_HEIGHT,
+const reelsTitleCssVars = {
+  ['--reels-title-fs-mobile' as string]: REELS_TITLE_FONT_SIZE_CLAMP_MOBILE,
+  ['--reels-title-fs-desktop' as string]: REELS_TITLE_FONT_SIZE_CLAMP,
+  ['--reels-title-lh-mobile' as string]: REELS_TITLE_LINE_HEIGHT_MOBILE,
+  ['--reels-title-lh-desktop' as string]: REELS_TITLE_LINE_HEIGHT,
+  ['--reels-title-emphasis-underline-offset-mobile' as string]: `${REELS_TITLE_EMPHASIS_UNDERLINE_OFFSET_MOBILE_PX}px`,
+  ['--reels-title-inset-mobile' as string]: `${REELS_TITLE_INSET_LEFT_MOBILE_PX}px`,
+  ['--reels-title-inset-desktop' as string]: `${REELS_TITLE_INSET_LEFT_PX}px`,
+} as const;
+
+const reelsTitleLetterSpacingStyle = {
   letterSpacing: `${REELS_TITLE_LETTER_SPACING_PX}px`,
 } as const;
 
@@ -78,9 +91,16 @@ export function HomeReelsSection() {
   const titlePrefix = fullTitle.slice(0, REELS_TITLE_EMPHASIS_CHAR_COUNT);
   const titleSuffix = fullTitle.slice(REELS_TITLE_EMPHASIS_CHAR_COUNT);
 
+  const reelsPaginationAriaKeys = [
+    'reels_pagination_go_first',
+    'reels_pagination_go_second',
+    'reels_pagination_go_third',
+  ] as const;
+
   return (
     <section
       className={`bg-white py-8 sm:py-10 ${montserratReels.className}`}
+      style={reelsTitleCssVars}
       aria-labelledby="home-reels-heading"
     >
       <div className={SECTION_CONTAINER_CLASS}>
@@ -88,16 +108,15 @@ export function HomeReelsSection() {
           className="flex flex-row flex-wrap items-end justify-between gap-4"
           style={{ marginBottom: `${REELS_TITLE_TO_RAIL_GAP_PX}px` }}
         >
-          <div
-            className="min-w-0"
-            style={{ paddingLeft: `${REELS_TITLE_INSET_LEFT_PX}px` }}
-          >
+          <div className="min-w-0 max-md:[padding-left:var(--reels-title-inset-mobile)] md:[padding-left:var(--reels-title-inset-desktop)]">
             <h2
               id="home-reels-heading"
-              className="font-bold uppercase text-marco-black"
-              style={reelsTitleStyle}
+              className="font-bold uppercase text-marco-black max-md:[font-size:var(--reels-title-fs-mobile)] max-md:[line-height:var(--reels-title-lh-mobile)] md:[font-size:var(--reels-title-fs-desktop)] md:[line-height:var(--reels-title-lh-desktop)]"
+              style={reelsTitleLetterSpacingStyle}
             >
-              <span className="border-b-4 border-marco-yellow">{titlePrefix}</span>
+              <span className="border-b-4 border-marco-yellow max-md:border-b-0 max-md:underline max-md:decoration-marco-yellow max-md:decoration-4 max-md:[text-underline-offset:var(--reels-title-emphasis-underline-offset-mobile)]">
+                {titlePrefix}
+              </span>
               <span>{titleSuffix}</span>
             </h2>
           </div>
@@ -136,10 +155,10 @@ export function HomeReelsSection() {
 
         <div
           ref={scrollerRef}
-          className="flex min-w-0 flex-row flex-nowrap justify-center overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex min-w-0 flex-row flex-nowrap justify-start gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:justify-center md:gap-11 [&::-webkit-scrollbar]:hidden"
           style={{
-            gap: `${REELS_ITEM_GAP_PX}px`,
             scrollSnapType: 'x mandatory',
+            ['--reels-mobile-tile-basis' as string]: REELS_MOBILE_TILE_BASIS_CSS,
           }}
         >
           {REELS_ITEMS.map((item) => {
@@ -148,15 +167,11 @@ export function HomeReelsSection() {
               <Link
                 key={item.labelKey}
                 href={REELS_ITEM_HREF}
-                className="flex shrink-0 snap-start flex-col items-center gap-2.5 text-center"
-                style={{ minWidth: REELS_COLUMN_MIN_WIDTH_PX }}
+                title={label}
+                className="flex max-md:min-w-0 max-md:flex-[0_0_var(--reels-mobile-tile-basis)] shrink-0 snap-start flex-col items-center gap-2.5 text-center md:min-w-[148px]"
               >
                 <div
-                  className="relative shrink-0 overflow-hidden rounded-full border border-marco-border bg-marco-gray"
-                  style={{
-                    width: REELS_CIRCLE_SIZE_PX,
-                    height: REELS_CIRCLE_SIZE_PX,
-                  }}
+                  className="relative mx-auto h-20 w-20 shrink-0 overflow-hidden rounded-full border border-marco-border bg-marco-gray md:mx-0 md:h-32 md:w-32"
                 >
                   <Image
                     src={item.imageSrc}
@@ -164,11 +179,11 @@ export function HomeReelsSection() {
                     width={REELS_CIRCLE_SIZE_PX}
                     height={REELS_CIRCLE_SIZE_PX}
                     className="h-full w-full object-cover object-center"
-                    sizes={`${REELS_CIRCLE_SIZE_PX}px`}
+                    sizes={`(max-width: 767px) ${REELS_MOBILE_CIRCLE_SIZE_PX}px, ${REELS_CIRCLE_SIZE_PX}px`}
                   />
                 </div>
                 <span
-                  className="whitespace-nowrap font-medium text-marco-text"
+                  className="w-full max-w-full font-medium text-marco-text max-md:truncate md:whitespace-nowrap"
                   style={reelsLabelStyle}
                 >
                   {label}
@@ -187,7 +202,7 @@ export function HomeReelsSection() {
           role="group"
           aria-label={t('home.reels_pagination_aria')}
         >
-          {([0, 1] as const).map((page) => (
+          {Array.from({ length: REELS_PAGINATION_PAGE_COUNT }, (_, page) => (
             <button
               key={page}
               type="button"
@@ -196,11 +211,7 @@ export function HomeReelsSection() {
               }`}
               style={reelsPaginationDotStyle}
               aria-current={activePage === page ? 'page' : undefined}
-              aria-label={
-                page === 0
-                  ? t('home.reels_pagination_go_first')
-                  : t('home.reels_pagination_go_second')
-              }
+              aria-label={t(`home.${reelsPaginationAriaKeys[page]}`)}
               onClick={() => {
                 scrollToPage(page);
               }}
