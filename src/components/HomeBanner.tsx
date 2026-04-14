@@ -117,6 +117,8 @@ const ELECTRONICS_CARD_H = 557;
 const ELECTRONICS_CARD_TOP_N_REF = 80;
 const ELECTRONICS_LINK_ICON_LEFT_REF = 1659;
 const ELECTRONICS_BUY_CTA_LEFT_REF = ELECTRONICS_CARD_LEFT_REF + (ELECTRONICS_CARD_W - 250) / 2;
+/** Optical nudge left vs centered "More" pill; aligns with left-aligned copy above. Layout-ref px. */
+const ELECTRONICS_MORE_CTA_NUDGE_LEFT_REF = 48;
 const DELIVERY_BUY_CTA_LEFT_REF = 965; // Figma 305:2110 x=965
 
 /** Figma HERO: `305:2147` — x=174, y=225, w=631, h=606 (layout-ref space). */
@@ -264,11 +266,16 @@ function ElectronicsCard({ copy }: { copy: HeroBannerCopy }) {
         <Image src={ASSETS.linkIcon2} alt="" fill className="object-contain" unoptimized />
       </div>
 
-      {/* White "More" CTA — centered; row aligned with BANNER2 black CTA */}
+      {/* White "More" CTA — slightly left of center; row aligned with BANNER2 black CTA */}
       <Link
         href="/products"
         className={`${montserratArm.className} absolute z-10 flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased`}
-        style={{ left: bx(ELECTRONICS_BUY_CTA_LEFT_REF), top: y(540), height: by(56), width: bx(250) }}
+        style={{
+          left: bx(ELECTRONICS_BUY_CTA_LEFT_REF - ELECTRONICS_MORE_CTA_NUDGE_LEFT_REF),
+          top: y(540),
+          height: by(56),
+          width: bx(250),
+        }}
       >
         {copy.more}
       </Link>
