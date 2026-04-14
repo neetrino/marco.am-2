@@ -3,34 +3,31 @@
 import Image from 'next/image';
 
 import { useTranslation } from '../lib/i18n-client';
+import {
+  FOOTER_PAYMENT_STRIP_HEIGHT_PX,
+  FOOTER_PAYMENT_STRIP_SRC,
+  FOOTER_PAYMENT_STRIP_WIDTH_PX,
+} from './footer-payment-logos.constants';
 
 /**
- * Payment marks row — ArCa & Idram from local SVGs; Visa/Mastercard wordmarks (Figma 101:2835).
+ * Payment marks — single raster from Figma (Visa, Mastercard, ArCa, Idram).
  */
 export function FooterPaymentLogos() {
   const { t } = useTranslation();
 
   return (
     <div
-      className="flex flex-wrap items-center justify-end gap-2 sm:gap-3"
+      className="flex w-full max-w-44 justify-end sm:max-w-48"
       aria-label={t('common.footer.paymentMethods')}
     >
-      <div className="flex h-9 min-w-[52px] items-center justify-center rounded bg-white px-2 shadow-sm">
-        <span className="font-sans text-[11px] font-bold italic tracking-tight text-[#1a1f71]">VISA</span>
-      </div>
-      <div className="flex h-9 min-w-[72px] items-center justify-center gap-1 rounded bg-white px-2 shadow-sm">
-        <span className="relative h-3 w-5">
-          <span className="absolute left-0 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-[#eb001b]" />
-          <span className="absolute left-2 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-[#f79e1b]" />
-        </span>
-        <span className="text-[8px] font-semibold leading-none text-marco-black">Mastercard</span>
-      </div>
-      <div className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded bg-white px-1 shadow-sm">
-        <Image src="/assets/payments/arca.svg" alt="ArCa" width={48} height={28} className="h-7 w-auto object-contain" />
-      </div>
-      <div className="flex h-9 w-[52px] items-center justify-center overflow-hidden rounded bg-white px-1 shadow-sm">
-        <Image src="/assets/payments/idram.svg" alt="Idram" width={48} height={28} className="h-7 w-auto object-contain" />
-      </div>
+      <Image
+        src={FOOTER_PAYMENT_STRIP_SRC}
+        alt=""
+        width={FOOTER_PAYMENT_STRIP_WIDTH_PX}
+        height={FOOTER_PAYMENT_STRIP_HEIGHT_PX}
+        className="h-auto w-full max-h-5 object-contain object-right sm:max-h-6"
+        sizes="(max-width: 640px) 100vw, 192px"
+      />
     </div>
   );
 }
