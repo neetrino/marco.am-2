@@ -10,23 +10,23 @@ import { HOME_HERO_BANNER_HEADER_GAP_PX } from '@/constants/homePageLayout';
 
 /**
  * Hero assets. `bgTexture`: yellow brick wall (portrait); `object-cover` crops to banner aspect.
- * Other URLs — Figma MCP; refresh when expired (~7 days). Overlay ref ~1714×924.
+ * Figma MCP `/api/mcp/asset/*` URLs expire (~7 days); product and UI rasters are stored under `/public/images/`.
+ * Overlay ref ~1714×924.
  */
 const ASSETS = {
   bgTexture: '/images/home-banner-brick-bg.png',
-  sofa:          'https://www.figma.com/api/mcp/asset/1a5ccb5d-3c4f-45e8-8489-29d2d9124fd1',
-  sofaCircle:    'https://www.figma.com/api/mcp/asset/2f91b1da-a2d5-43d1-b75f-f8c532cd6471',
-  truckIcon:     'https://www.figma.com/api/mcp/asset/5249941e-732f-48e2-a3b4-bcadfc9d8ced',
+  /** BANNER 1 — Figma node `305:2147` (631×606 ref); exported PNG, not MCP hotlink. */
+  banner1: '/images/home-banner-305-2147.png',
   /** Group 9233 — Figma `305:2115` (black circle + yellow arrow); local SVG matches MCP export. */
-  linkIcon1:     '/images/home-banner-banner2-link-icon.svg',
+  linkIcon1: '/images/home-banner-banner2-link-icon.svg',
   /** Group 9233 — Figma node `305:2131` (BANNER3); local export (white circle + arrow). */
-  linkIcon2:     '/images/home-banner-banner3-link-icon.svg',
+  linkIcon2: '/images/home-banner-banner3-link-icon.svg',
   /** BANNER2 1 — Figma node 305:2151, downloaded locally (404×556 px). */
-  banner2:       '/images/home-banner-305-2151.png',
+  banner2: '/images/home-banner-305-2151.png',
   /** BANNER3 1 — Figma node 305:2154, downloaded locally (772×834 px). */
-  banner3:       '/images/home-banner-305-2154.png',
-  /** Ellipse 87 — Figma node 101:4070; soft white circle + shadow (100×100 ref px). */
-  ellipse87:     'https://www.figma.com/api/mcp/asset/31e7a0d8-5588-4ef0-bf2f-1a635a53a79e',
+  banner3: '/images/home-banner-305-2154.png',
+  /** Ellipse 87 — Figma node 101:4070; soft white circle + shadow. */
+  ellipse87: '/images/home-banner-101-4070.png',
 } as const;
 
 /** Hero overlay copy — paths under `home.hero_banner.*` in locales. */
@@ -119,33 +119,41 @@ const ELECTRONICS_LINK_ICON_LEFT_REF = 1659;
 const ELECTRONICS_BUY_CTA_LEFT_REF = ELECTRONICS_CARD_LEFT_REF + (ELECTRONICS_CARD_W - 250) / 2;
 const DELIVERY_BUY_CTA_LEFT_REF = 965; // Figma 305:2110 x=965
 
+/** Figma HERO: `305:2147` — x=174, y=225, w=631, h=606 (layout-ref space). */
+const SOFA_BANNER_LEFT_REF = 174;
+const SOFA_BANNER_TOP_REF = 225;
+const SOFA_BANNER_W_REF = 631;
+const SOFA_BANNER_H_REF = 606;
+
 /**
- * Left product card — sofa promo with stacked-card depth effect.
+ * Left product card — BANNER 1 (Figma `305:2147`); single raster + copy/CTA overlays.
  */
 function SofaCard({ copy }: { copy: HeroBannerCopy }) {
   const x = (n: number) => bx(n) + SOFA_CARD_SHIFT_X;
 
   return (
     <>
-      {/* Stacked card backgrounds (scaleY-flip creates depth illusion) — scaled to MASK_BG_* */}
-      <div className="absolute bg-white rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(204), width: bx(629), height: by(475) }} />
-      <div className="absolute bg-white rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(204), width: bx(629), height: by(475) }} />
-      <div className="absolute bg-[#c7c7c7] rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(260), width: bx(629), height: by(477) }} />
-      <div className="absolute bg-[#2f4b5d] rounded-[36px] -scale-y-100" style={{ left: x(162), top: by(323), width: bx(631), height: by(481) }} />
-
-      {/* Sofa product image */}
-      <div className="absolute" style={{ left: x(194), top: by(100), width: bx(563), height: by(563) }}>
-        <Image src={ASSETS.sofa} alt={copy.sofaProductName} fill className="object-contain" unoptimized />
-      </div>
-
-      {/* Decorative orbit ring below sofa */}
-      <div className="absolute" style={{ left: x(274), top: by(502), width: bx(404), height: by(165) }}>
-        <Image src={ASSETS.sofaCircle} alt="" fill className="object-contain" unoptimized />
+      <div
+        className="absolute z-0 overflow-hidden rounded-[36px]"
+        style={{
+          left: bx(SOFA_BANNER_LEFT_REF) + SOFA_CARD_SHIFT_X,
+          top: by(SOFA_BANNER_TOP_REF),
+          width: bx(SOFA_BANNER_W_REF),
+          height: by(SOFA_BANNER_H_REF),
+        }}
+      >
+        <Image
+          src={ASSETS.banner1}
+          alt={copy.sofaProductName}
+          fill
+          className="object-cover object-center"
+          unoptimized
+        />
       </div>
 
       {/* Product label */}
       <div
-        className={`${montserratArm.className} absolute text-base leading-[1.49] text-white antialiased`}
+        className={`${montserratArm.className} absolute z-10 text-base leading-[1.49] text-white antialiased`}
         style={{ left: x(195), top: by(712) }}
       >
         <p>{copy.sofaProductName}</p>
@@ -154,7 +162,7 @@ function SofaCard({ copy }: { copy: HeroBannerCopy }) {
 
       <Link
         href="/products"
-        className="absolute flex items-center justify-center overflow-hidden rounded-[68px] bg-[#facc15] py-1 pl-4 pr-14 antialiased"
+        className="absolute z-10 flex items-center justify-center overflow-hidden rounded-[68px] bg-[#facc15] py-1 pl-4 pr-14 antialiased"
         style={{ left: x(524), top: by(700), width: bx(243), height: by(56) }}
       >
         <span
