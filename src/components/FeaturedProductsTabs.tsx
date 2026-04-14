@@ -6,10 +6,8 @@ import { Montserrat } from 'next/font/google';
 
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage, type LanguageCode } from '../lib/language';
-import { ProductCard } from './ProductCard';
 import { t } from '../lib/i18n';
 import { logger } from '../lib/utils/logger';
-import type { ProductLabel } from './ProductLabels';
 import {
   FEATURED_PRODUCTS_TITLE_BAR_THICKNESS_PX,
   FEATURED_PRODUCTS_TITLE_BAR_WIDTH_PERCENT,
@@ -18,17 +16,23 @@ import {
   FEATURED_PRODUCTS_TITLE_LINE_HEIGHT,
   FEATURED_PRODUCTS_TITLE_TEXT_TO_BAR_GAP_PX,
   FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX,
+  FEATURED_PRODUCTS_VISIBLE_COUNT,
 } from './featured-products-tabs.constants';
+import { SpecialOfferCard } from './home/SpecialOfferCard';
+import {
+  SPECIAL_OFFERS_CARD_HEIGHT_PX,
+  SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
+} from './home/home-special-offers.constants';
 import {
   REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX,
   REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX,
   REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX,
 } from './home/home-reels.constants';
-import {
-  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
-  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
-  SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
-} from './home/home-special-offers.constants';
+import type { SpecialOfferProduct } from './home/special-offer-product.types';
+import { useIsMaxMd } from './home/use-is-max-md';
 
 const montserratFeatured = Montserrat({
   subsets: ['latin'],
@@ -36,31 +40,8 @@ const montserratFeatured = Montserrat({
   display: 'swap',
 });
 
-interface Product {
-  id: string;
-  slug: string;
-  title: string;
-  price: number;
-  compareAtPrice?: number | null;
-  image: string | null;
-  inStock: boolean;
-  brand: {
-    id: string;
-    name: string;
-  } | null;
-  colors?: Array<{ value: string; imageUrl?: string | null; colors?: string[] | null }>;
-  sizes?: Array<{ value: string; imageUrl?: string | null }>;
-  attributes?: Record<
-    string,
-    Array<{ valueId?: string; value: string; label: string; imageUrl?: string | null; colors?: string[] | null }>
-  >;
-  originalPrice?: number | null;
-  discountPercent?: number | null;
-  labels?: ProductLabel[];
-}
-
 interface ProductsResponse {
-  data: Product[];
+  data: SpecialOfferProduct[];
   meta: {
     total: number;
     page: number;
@@ -70,11 +51,6 @@ interface ProductsResponse {
 }
 
 type FilterType = 'new' | 'featured' | 'bestseller';
-
-const PRODUCTS_PER_PAGE = 10;
-
-const MOBILE_GRID_LAYOUT =
-  'grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
 
 const TAB_ORDER: FilterType[] = ['new', 'bestseller', 'featured'];
 
@@ -90,7 +66,10 @@ const FILTER_BY_TAB: Record<FilterType, string> = {
   featured: 'featured',
 };
 
-/** Same pill + chevrons as `HomeSpecialOffersSection` / `HomeReelsSection`. */
+/** 2×4 mobile, 4×2 desktop — spacing aligned with special-offers grid / rail gaps. */
+const FEATURED_OFFERS_GRID_CLASS =
+  'grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 md:gap-x-6 md:gap-y-6';
+
 const FEATURED_NAV_BUTTON_CLASS =
   'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
 
@@ -122,20 +101,25 @@ const featuredTitleBarStyle = {
   height: `${FEATURED_PRODUCTS_TITLE_BAR_THICKNESS_PX}px`,
 } as const;
 
+const featuredCardSkeletonStyle = {
+  height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
+  borderRadius: SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+} as const;
+
 /**
- * Featured products — Figma header (large title, yellow bar, round prev/next cycling tabs).
+ * «Նորույթներ» — special-offer tiles in a fixed 8-up grid (4×2 / 2×4), tab filter via header arrows.
  */
 export function FeaturedProductsTabs() {
+  const isMaxMd = useIsMaxMd();
   const [language, setLanguage] = useState<LanguageCode>('en');
   const [activeTab, setActiveTab] = useState<FilterType>('new');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<SpecialOfferProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const updateLanguage = () => {
-      const storedLang = getStoredLanguage();
-      setLanguage(storedLang);
+      setLanguage(getStoredLanguage());
     };
 
     updateLanguage();
@@ -159,7 +143,7 @@ export function FeaturedProductsTabs() {
         const currentLang = language;
         const params: Record<string, string> = {
           page: '1',
-          limit: PRODUCTS_PER_PAGE.toString(),
+          limit: String(FEATURED_PRODUCTS_VISIBLE_COUNT),
           lang: currentLang,
         };
 
@@ -171,7 +155,8 @@ export function FeaturedProductsTabs() {
           params,
         });
 
-        setProducts((response.data || []).slice(0, PRODUCTS_PER_PAGE));
+        const rows = response.data ?? [];
+        setProducts(rows.slice(0, FEATURED_PRODUCTS_VISIBLE_COUNT));
       } catch (err) {
         logger.error('[FeaturedProductsTabs] fetch failed', { error: err });
         setError(t(language, 'home.featured_products.errorLoading'));
@@ -205,6 +190,7 @@ export function FeaturedProductsTabs() {
   }, [fetchProducts]);
 
   const activeHeading = t(language, TAB_LABEL_KEY[activeTab]);
+  const cardLayout = isMaxMd ? 'mobileGrid' : 'default';
 
   return (
     <section
@@ -254,15 +240,10 @@ export function FeaturedProductsTabs() {
         </div>
 
         {loading ? (
-          <div className={MOBILE_GRID_LAYOUT}>
-            {[...Array(PRODUCTS_PER_PAGE)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg overflow-hidden animate-pulse">
-                <div className="aspect-square bg-gray-200" />
-                <div className="p-4 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-3 bg-gray-200 rounded w-1/2" />
-                  <div className="h-5 bg-gray-200 rounded w-1/3" />
-                </div>
+          <div className={FEATURED_OFFERS_GRID_CLASS}>
+            {[...Array(FEATURED_PRODUCTS_VISIBLE_COUNT)].map((_, i) => (
+              <div key={i} className="min-w-0">
+                <div className="w-full animate-pulse bg-gray-200" style={featuredCardSkeletonStyle} />
               </div>
             ))}
           </div>
@@ -278,9 +259,11 @@ export function FeaturedProductsTabs() {
             </button>
           </div>
         ) : products.length > 0 ? (
-          <div className={MOBILE_GRID_LAYOUT}>
-            {products.slice(0, PRODUCTS_PER_PAGE).map((product) => (
-              <ProductCard key={product.id} product={product} />
+          <div className={FEATURED_OFFERS_GRID_CLASS}>
+            {products.map((product) => (
+              <div key={product.id} className="min-w-0">
+                <SpecialOfferCard product={product} layout={cardLayout} />
+              </div>
             ))}
           </div>
         ) : (
