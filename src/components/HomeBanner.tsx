@@ -17,9 +17,11 @@ const ASSETS = {
   sofa:          'https://www.figma.com/api/mcp/asset/1a5ccb5d-3c4f-45e8-8489-29d2d9124fd1',
   sofaCircle:    'https://www.figma.com/api/mcp/asset/2f91b1da-a2d5-43d1-b75f-f8c532cd6471',
   truckIcon:     'https://www.figma.com/api/mcp/asset/5249941e-732f-48e2-a3b4-bcadfc9d8ced',
-linkIcon1:     'https://www.figma.com/api/mcp/asset/7e5dbdc4-4d4e-47a3-a26b-76000d469a4d',
-  linkIcon2:     'https://www.figma.com/api/mcp/asset/01c4ecb0-959a-4403-a191-8d4fe959ea88',
-  /** BANNER2 1 — Figma node 305:2151, downloaded locally (404×557 px). */
+  /** Group 9233 — Figma node 305:2115 (BANNER2 `305:2161`); local export. */
+  linkIcon1:     '/images/home-banner-banner2-link-icon.svg',
+  /** Group 9233 — Figma node `305:2131` (BANNER3); local export (white circle + arrow). */
+  linkIcon2:     '/images/home-banner-banner3-link-icon.svg',
+  /** BANNER2 1 — Figma node 305:2151, downloaded locally (404×556 px). */
   banner2:       '/images/home-banner-305-2151.png',
   /** BANNER3 1 — Figma node 305:2154, downloaded locally (772×834 px). */
   banner3:       '/images/home-banner-305-2154.png',
@@ -85,16 +87,28 @@ const ELLIPSE87_BOX_PX = 80;
 const ELLIPSE87_ICON_PX = 40;
 
 /**
- * BANNER3 1 (Figma 305:2154): x=1337, y=124, w=516, h=557.
- * CTA button (~250px) centered horizontally: offset = (516−250)/2 = 133.
- * Link icon pinned near top-right: offset = 516−86 = 430.
+ * BANNER2 1 (`305:2151`) + overlay BANNER2 (`305:2161`) — layout-ref space.
+ * Background: x=890, y=124, w=404, h=556. Icon 305:2115; CTA 305:2110 at x=965, y=584.
  */
-const DELIVERY_CARD_LEFT_REF = 878;
+const DELIVERY_BANNER_BG_LEFT_REF = 890;
+const DELIVERY_BANNER_BG_W_REF = 404;
+const DELIVERY_BANNER_BG_H_REF = 556;
+/** Document Y = 124 → `y(80)` with `RIGHT_OF_CENTER_TOP_NUDGE_REF`. */
+const DELIVERY_BANNER_BG_TOP_N_REF = 80;
+
+/**
+ * BANNER3 1 (`305:2154`) + overlay — layout-ref space.
+ * Card: x=1337, y=124, w=516, h=557. Group 9233 link icon `305:2131`: x=1659, y=124, 86×86.
+ * CTA ~250×56 centered: x = 1337 + (516−250)/2 = 1470; align row with BANNER2 CTA (doc y=584 → `y(540)`).
+ */
 const ELECTRONICS_CARD_LEFT_REF = 1337;
 const ELECTRONICS_CARD_W = 516;
 const ELECTRONICS_CARD_H = 557;
-const ELECTRONICS_BUY_CTA_LEFT_REF = ELECTRONICS_CARD_LEFT_REF + 80; // centered in visible (clipped) portion
-const DELIVERY_BUY_CTA_LEFT_REF = DELIVERY_CARD_LEFT_REF + 76; // (403−250)/2
+/** Document Y = 124 → `y(80)` with `RIGHT_OF_CENTER_TOP_NUDGE_REF`. */
+const ELECTRONICS_CARD_TOP_N_REF = 80;
+const ELECTRONICS_LINK_ICON_LEFT_REF = 1659;
+const ELECTRONICS_BUY_CTA_LEFT_REF = ELECTRONICS_CARD_LEFT_REF + (ELECTRONICS_CARD_W - 250) / 2;
+const DELIVERY_BUY_CTA_LEFT_REF = 965; // Figma 305:2110 x=965
 
 /**
  * Left product card — sofa promo with stacked-card depth effect.
@@ -157,8 +171,16 @@ function DeliveryCard({ copy }: { copy: HeroBannerCopy }) {
 
   return (
     <>
-      {/* Full card — photo fills all 4 corners (rounded-[36px]) */}
-      <div className="absolute overflow-hidden rounded-[36px]" style={{ left: bx(878), top: y(52), width: bx(403), height: by(556) }}>
+      {/* Full card — BANNER2 1 (`305:2151`); overlay BANNER2 (`305:2161`) below */}
+      <div
+        className="absolute overflow-hidden rounded-[36px]"
+        style={{
+          left: bx(DELIVERY_BANNER_BG_LEFT_REF),
+          top: y(DELIVERY_BANNER_BG_TOP_N_REF),
+          width: bx(DELIVERY_BANNER_BG_W_REF),
+          height: by(DELIVERY_BANNER_BG_H_REF),
+        }}
+      >
         <Image
           src={ASSETS.banner2}
           alt=""
@@ -168,16 +190,16 @@ function DeliveryCard({ copy }: { copy: HeroBannerCopy }) {
         />
       </div>
 
-      {/* Arrow/link icon — top-right of card */}
-      <div className="absolute" style={{ left: bx(1194), top: y(52), width: bx(87), height: by(87) }}>
+      {/* Group 9233 — Figma 305:2115 (inside `305:2161`); ~86.9×86.5 ref px */}
+      <div className="absolute z-10" style={{ left: bx(1207), top: y(80), width: bx(87), height: by(87) }}>
         <Image src={ASSETS.linkIcon1} alt="" fill className="object-contain" unoptimized />
       </div>
 
-      {/* CTA — Figma 305:2110: flex, padding, rounded 60px, bg #000 */}
+      {/* CTA — Figma 305:2110: x=965, y=584 */}
       <Link
         href="/products"
         className={`${montserratArm.className} absolute z-10 flex items-center justify-center rounded-[60px] bg-black pt-[15.929px] pb-[16.071px] pl-[72.5px] pr-[72.5px] text-[16px] font-bold leading-[24px] text-white antialiased`}
-        style={{ left: bx(DELIVERY_BUY_CTA_LEFT_REF), top: y(502) }}
+        style={{ left: bx(DELIVERY_BUY_CTA_LEFT_REF), top: y(540) }}
       >
         {copy.buyNow}
       </Link>
@@ -193,8 +215,16 @@ function ElectronicsCard({ copy }: { copy: HeroBannerCopy }) {
 
   return (
     <>
-      {/* Full card — BANNER3 1 pre-rendered image (Figma 305:2154): 516×557 */}
-      <div className="absolute overflow-hidden rounded-[36px]" style={{ left: bx(ELECTRONICS_CARD_LEFT_REF), top: y(55), width: bx(ELECTRONICS_CARD_W), height: by(ELECTRONICS_CARD_H) }}>
+      {/* Full card — BANNER3 1 (`305:2154`); overlays: `305:2131` + CTA */}
+      <div
+        className="absolute overflow-hidden rounded-[36px]"
+        style={{
+          left: bx(ELECTRONICS_CARD_LEFT_REF),
+          top: y(ELECTRONICS_CARD_TOP_N_REF),
+          width: bx(ELECTRONICS_CARD_W),
+          height: by(ELECTRONICS_CARD_H),
+        }}
+      >
         <Image
           src={ASSETS.banner3}
           alt={copy.smartphones}
@@ -204,16 +234,16 @@ function ElectronicsCard({ copy }: { copy: HeroBannerCopy }) {
         />
       </div>
 
-      {/* Arrow/link icon — top-right corner of card */}
-      <div className="absolute" style={{ left: bx(ELECTRONICS_CARD_LEFT_REF + 430), top: y(53), width: bx(86), height: by(86) }}>
+      {/* Group 9233 — Figma `305:2131` (doc 1659,124); 86×86 ref px */}
+      <div className="absolute z-10" style={{ left: bx(ELECTRONICS_LINK_ICON_LEFT_REF), top: y(80), width: bx(86), height: by(86) }}>
         <Image src={ASSETS.linkIcon2} alt="" fill className="object-contain" unoptimized />
       </div>
 
-      {/* White "More" CTA — centered horizontally in card */}
+      {/* White "More" CTA — centered; row aligned with BANNER2 black CTA */}
       <Link
         href="/products"
-        className={`${montserratArm.className} absolute flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased`}
-        style={{ left: bx(ELECTRONICS_BUY_CTA_LEFT_REF), top: y(502), height: by(56), width: bx(250) }}
+        className={`${montserratArm.className} absolute z-10 flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased`}
+        style={{ left: bx(ELECTRONICS_BUY_CTA_LEFT_REF), top: y(540), height: by(56), width: bx(250) }}
       >
         {copy.more}
       </Link>
