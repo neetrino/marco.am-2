@@ -17,7 +17,7 @@ const ASSETS = {
   sofa:          'https://www.figma.com/api/mcp/asset/1a5ccb5d-3c4f-45e8-8489-29d2d9124fd1',
   sofaCircle:    'https://www.figma.com/api/mcp/asset/2f91b1da-a2d5-43d1-b75f-f8c532cd6471',
   truckIcon:     'https://www.figma.com/api/mcp/asset/5249941e-732f-48e2-a3b4-bcadfc9d8ced',
-  /** Group 9233 — Figma node 305:2115 (BANNER2 `305:2161`); local export. */
+  /** Group 9233 — Figma `305:2115` (black circle + yellow arrow); local SVG matches MCP export. */
   linkIcon1:     '/images/home-banner-banner2-link-icon.svg',
   /** Group 9233 — Figma node `305:2131` (BANNER3); local export (white circle + arrow). */
   linkIcon2:     '/images/home-banner-banner3-link-icon.svg',
@@ -88,13 +88,22 @@ const ELLIPSE87_ICON_PX = 40;
 
 /**
  * BANNER2 1 (`305:2151`) + overlay BANNER2 (`305:2161`) — layout-ref space.
- * Background: x=890, y=124, w=404, h=556. Icon 305:2115; CTA 305:2110 at x=965, y=584.
+ * Background: x=890, y=124, w=404, h=556.
+ * Group 9233 link icon `305:2115`: x=1206, y=119, ~86.9×86.5. CTA `305:2110`: x=965, y=584.
  */
 const DELIVERY_BANNER_BG_LEFT_REF = 890;
 const DELIVERY_BANNER_BG_W_REF = 404;
 const DELIVERY_BANNER_BG_H_REF = 556;
 /** Document Y = 124 → `y(80)` with `RIGHT_OF_CENTER_TOP_NUDGE_REF`. */
 const DELIVERY_BANNER_BG_TOP_N_REF = 80;
+/** Group 9233 (`305:2115`): doc y=119 → `y(75)`. */
+const DELIVERY_LINK_ICON_LEFT_REF = 1206;
+/** Layout-ref px — optical nudge right vs Figma. */
+const DELIVERY_LINK_ICON_SHIFT_RIGHT_REF = 10;
+const DELIVERY_LINK_ICON_TOP_N_REF = 75;
+/** Figma ref px — `bx`/`by` scale to mask. */
+const DELIVERY_LINK_ICON_W_REF = 86.924;
+const DELIVERY_LINK_ICON_H_REF = 86.524;
 
 /**
  * BANNER3 1 (`305:2154`) + overlay — layout-ref space.
@@ -190,8 +199,16 @@ function DeliveryCard({ copy }: { copy: HeroBannerCopy }) {
         />
       </div>
 
-      {/* Group 9233 — Figma 305:2115 (inside `305:2161`); ~86.9×86.5 ref px */}
-      <div className="absolute z-10" style={{ left: bx(1207), top: y(80), width: bx(87), height: by(87) }}>
+      {/* Group 9233 — Figma `305:2115` */}
+      <div
+        className="absolute z-10"
+        style={{
+          left: bx(DELIVERY_LINK_ICON_LEFT_REF + DELIVERY_LINK_ICON_SHIFT_RIGHT_REF),
+          top: y(DELIVERY_LINK_ICON_TOP_N_REF),
+          width: bx(DELIVERY_LINK_ICON_W_REF),
+          height: by(DELIVERY_LINK_ICON_H_REF),
+        }}
+      >
         <Image src={ASSETS.linkIcon1} alt="" fill className="object-contain" unoptimized />
       </div>
 
