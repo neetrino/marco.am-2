@@ -20,7 +20,7 @@ export const SPECIAL_OFFERS_MOBILE_PAGINATION_PAGE_COUNT = 3;
 export const SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX = 12;
 
 /** Vertical gap between the two rows in the mobile grid (px). */
-export const SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX = 36;
+export const SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX = 60;
 
 /**
  * Bottom padding inside the horizontal scroller on mobile 2×2 slides — reserves space for the
@@ -283,7 +283,7 @@ export const SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX = 10;
 export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX = 20;
 
 /** Extra space above dot row on `max-md` (2×2 grid + floating cart needs more air). */
-export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 55;
+export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 36;
 
 /**
  * Brand line — Tailwind text classes (Figma reference).
