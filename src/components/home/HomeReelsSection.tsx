@@ -46,7 +46,21 @@ const montserratReels = Montserrat({
   display: 'swap',
 });
 
+/**
+ * When a label is exactly two whitespace-separated words, mobile stacks them vertically.
+ */
+function getReelLabelTwoWordParts(
+  label: string,
+): { first: string; second: string } | null {
+  const parts = label.trim().split(/\s+/);
+  if (parts.length !== 2) {
+    return null;
+  }
+  return { first: parts[0], second: parts[1] };
+}
+
 const reelsTitleCssVars = {
+  ['--reels-mobile-circle' as string]: `${REELS_MOBILE_CIRCLE_SIZE_PX}px`,
   ['--reels-title-fs-mobile' as string]: REELS_TITLE_FONT_SIZE_CLAMP_MOBILE,
   ['--reels-title-fs-desktop' as string]: REELS_TITLE_FONT_SIZE_CLAMP,
   ['--reels-title-lh-mobile' as string]: REELS_TITLE_LINE_HEIGHT_MOBILE,
@@ -183,6 +197,7 @@ export function HomeReelsSection() {
         >
           {REELS_ITEMS.map((item) => {
             const label = t(`home.${item.labelKey}`);
+            const twoWordParts = getReelLabelTwoWordParts(label);
             return (
               <Link
                 key={item.labelKey}
@@ -191,7 +206,7 @@ export function HomeReelsSection() {
                 className="flex max-md:min-w-0 max-md:flex-[0_0_var(--reels-mobile-tile-basis)] shrink-0 snap-start flex-col items-center gap-2.5 text-center md:min-w-[148px]"
               >
                 <div
-                  className="relative mx-auto h-20 w-20 shrink-0 overflow-hidden rounded-full border border-marco-border bg-marco-gray md:mx-0 md:h-32 md:w-32"
+                  className="relative mx-auto shrink-0 overflow-hidden rounded-full border border-marco-border bg-marco-gray max-md:h-[var(--reels-mobile-circle)] max-md:w-[var(--reels-mobile-circle)] md:mx-0 md:h-32 md:w-32"
                 >
                   <Image
                     src={item.imageSrc}
@@ -203,10 +218,22 @@ export function HomeReelsSection() {
                   />
                 </div>
                 <span
-                  className="w-full max-w-full font-medium text-marco-text max-md:truncate md:whitespace-nowrap"
+                  className={`w-full max-w-full font-medium text-marco-text md:whitespace-nowrap ${
+                    twoWordParts ? 'max-md:leading-snug' : 'max-md:truncate'
+                  }`}
                   style={reelsLabelStyle}
                 >
-                  {label}
+                  {twoWordParts ? (
+                    <>
+                      <span className="hidden md:inline">{label}</span>
+                      <span className="flex flex-col items-center md:hidden">
+                        <span>{twoWordParts.first}</span>
+                        <span>{twoWordParts.second}</span>
+                      </span>
+                    </>
+                  ) : (
+                    label
+                  )}
                 </span>
               </Link>
             );

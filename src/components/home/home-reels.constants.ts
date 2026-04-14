@@ -1,8 +1,8 @@
 /** REELS rail — circle thumbnail size. */
 export const REELS_CIRCLE_SIZE_PX = 128;
 
-/** Mobile — smaller circles so three fit per viewport width. */
-export const REELS_MOBILE_CIRCLE_SIZE_PX = 80;
+/** Mobile — circle size; three columns still fit via `REELS_MOBILE_TILE_BASIS_CSS`. */
+export const REELS_MOBILE_CIRCLE_SIZE_PX = 88;
 
 /** Horizontal gap between reel tiles (circles). */
 export const REELS_ITEM_GAP_PX = 44;
@@ -70,7 +70,8 @@ export const REELS_TITLE_INSET_LEFT_MOBILE_PX = 0;
  * Mobile (`max-md`): nudge title, reel rail, and dot pagination right (`translateX`).
  * Does not affect prev/next arrows — use `REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX` for those.
  */
-export const REELS_MOBILE_SECTION_NUDGE_RIGHT_PX = 13;
+/** Smaller nudge so the rail reads more centered on narrow screens. */
+export const REELS_MOBILE_SECTION_NUDGE_RIGHT_PX = 6;
 
 /** Vertical space between the REELS heading row and the circle rail. */
 export const REELS_TITLE_TO_RAIL_GAP_PX = 32;
