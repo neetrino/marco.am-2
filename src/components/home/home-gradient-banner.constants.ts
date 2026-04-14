@@ -4,20 +4,27 @@
 
 export const HOME_GRADIENT_BANNER_IMAGE_PATH = '/assets/home/home-gradient-banner.jpg';
 
-export const HOME_GRADIENT_BANNER_MAX_WIDTH_PX = 560;
+/** First banner — between compact 420 and legacy 560. */
+export const HOME_GRADIENT_BANNER_MAX_WIDTH_PX = 460;
 
 /** Align with `HomeAppBanner` — same inner container, flush start (no extra nudge). */
 export const HOME_GRADIENT_BANNER_OFFSET_LEFT_PX = 0;
 
 /** Pull gradient + secondary banner block slightly up toward app banner above. */
-export const HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX = -8;
+export const HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX = -5;
+
+/**
+ * Solid fill behind photo + overlay — matches slate tint base so no light-gray edge strip shows.
+ * Same RGB as overlay `rgb(47 75 93)`.
+ */
+export const HOME_GRADIENT_BANNER_SURFACE_BASE_HEX = '#2f4b5d';
 
 /** Figma 101:4129 — headline fill. */
 export const HOME_GRADIENT_BANNER_HEADLINE_COLOR_HEX = '#fadd1a';
 
-/** Responsive headline — smaller cap than original 110px; sits higher via banner layout. */
+/** Responsive headline — scaled down with banner size. */
 export const HOME_GRADIENT_BANNER_HEADLINE_FONT_SIZE_CLAMP =
-  'clamp(1.25rem, 5.5vw, 56px)';
+  'clamp(1.08rem, 4.2vw, 46px)';
 
 export const HOME_GRADIENT_BANNER_HEADLINE_LINE_HEIGHT_RATIO = '0.91';
 
@@ -31,10 +38,10 @@ export const HOME_GRADIENT_BANNER_CTA_ROW_OFFSET_X_PX = 30;
 
 export const HOME_GRADIENT_BANNER_CTA_ROW_OFFSET_Y_PX = -10;
 
-/** Matches `aspect-ratio: 56/37` with width 560px → height 370px. */
-export const HOME_GRADIENT_BANNER_ASPECT_RATIO = '56 / 37';
+/** Slightly taller than 56/32 — a bit more visual mass. */
+export const HOME_GRADIENT_BANNER_ASPECT_RATIO = '56 / 34';
 
-export const HOME_GRADIENT_BANNER_RADIUS_PX = 20;
+export const HOME_GRADIENT_BANNER_RADIUS_PX = 16;
 
 /** Overlay opacity so the photo stays visible under the slate tint (solid #2F4B5D would hide it). */
 export const HOME_GRADIENT_BANNER_OVERLAY_OPACITY = 0.58;

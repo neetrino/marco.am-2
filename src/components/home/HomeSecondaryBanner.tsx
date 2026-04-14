@@ -10,6 +10,7 @@ import {
   HOME_SECONDARY_BANNER_CTA_ROW_OFFSET_X_PX,
   HOME_SECONDARY_BANNER_CTA_ROW_OFFSET_Y_PX,
   HOME_SECONDARY_BANNER_RADIUS_PX,
+  HOME_SECONDARY_BANNER_STACK_ASPECT_CLASS,
 } from './home-secondary-banner.constants';
 import { HomeSecondaryBannerCta } from './HomeSecondaryBannerCta';
 
@@ -43,7 +44,7 @@ export function HomeSecondaryBanner({ language }: HomeSecondaryBannerProps) {
 
   return (
     <div
-      className={`relative flex h-full w-full min-h-0 max-lg:aspect-[945/370] flex-col overflow-hidden lg:aspect-auto ${montserratSecondaryHeadline.className}`}
+      className={`relative flex h-full w-full min-h-0 ${HOME_SECONDARY_BANNER_STACK_ASPECT_CLASS} flex-col overflow-hidden lg:aspect-auto ${montserratSecondaryHeadline.className}`}
       style={buildSurfaceStyle()}
       role="region"
       aria-label={t(language, 'home.secondary_banner.aria')}

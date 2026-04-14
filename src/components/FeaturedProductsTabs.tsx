@@ -21,6 +21,7 @@ import {
   FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX,
   FEATURED_PRODUCTS_TITLE_INSET_LEFT_PX,
   FEATURED_PRODUCTS_VISIBLE_COUNT,
+  FEATURED_HOME_BANNERS_BLOCK_PADDING_Y_CLASS,
   FEATURED_SECTION_PADDING_TOP_CLASS,
 } from './featured-products-tabs.constants';
 import {
@@ -244,8 +245,10 @@ export function FeaturedProductsTabs() {
         />
       </div>
 
-      <HomeAppBanner language={language} />
-      <HomeGradientBanner language={language} />
+      <div className={`w-full ${FEATURED_HOME_BANNERS_BLOCK_PADDING_Y_CLASS}`}>
+        <HomeAppBanner language={language} />
+        <HomeGradientBanner language={language} />
+      </div>
     </section>
   );
 }

@@ -14,6 +14,7 @@ import {
   HOME_GRADIENT_BANNER_CTA_ROW_OFFSET_Y_PX,
   HOME_GRADIENT_BANNER_HEADLINE_COLOR_HEX,
   HOME_GRADIENT_BANNER_HEADLINE_FONT_SIZE_CLAMP,
+  HOME_GRADIENT_BANNER_SURFACE_BASE_HEX,
   HOME_GRADIENT_BANNER_HEADLINE_LINE_HEIGHT_RATIO,
   HOME_GRADIENT_BANNER_IMAGE_PATH,
   HOME_GRADIENT_BANNER_MAX_WIDTH_PX,
@@ -22,7 +23,10 @@ import {
   HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX,
   HOME_GRADIENT_BANNER_RADIUS_PX,
 } from './home-gradient-banner.constants';
-import { HOME_BANNERS_ROW_GAP_PX } from './home-secondary-banner.constants';
+import {
+  HOME_BANNERS_LG_GRID_COLS_CLASS,
+  HOME_BANNERS_ROW_GAP_PX,
+} from './home-secondary-banner.constants';
 import { HomeSecondaryBanner } from './HomeSecondaryBanner';
 import { HomeGradientBannerCta } from './HomeGradientBannerCta';
 
@@ -44,7 +48,7 @@ function buildBannerSurfaceStyle(): CSSProperties {
     marginLeft: `${HOME_GRADIENT_BANNER_OFFSET_LEFT_PX}px`,
     aspectRatio: HOME_GRADIENT_BANNER_ASPECT_RATIO,
     borderRadius: `${HOME_GRADIENT_BANNER_RADIUS_PX}px`,
-    backgroundColor: 'lightgray',
+    backgroundColor: HOME_GRADIENT_BANNER_SURFACE_BASE_HEX,
     backgroundImage: `linear-gradient(0deg, ${overlay} 0%, ${overlay} 100%), url(${HOME_GRADIENT_BANNER_IMAGE_PATH})`,
     backgroundPosition: `0 0, ${HOME_GRADIENT_BANNER_BG_POSITION_X_PX}px ${HOME_GRADIENT_BANNER_BG_POSITION_Y_PX}px`,
     backgroundSize: `auto, ${HOME_GRADIENT_BANNER_BG_SIZE_WIDTH_PERCENT}% ${HOME_GRADIENT_BANNER_BG_SIZE_HEIGHT_PERCENT}%`,
@@ -70,7 +74,7 @@ export function HomeGradientBanner({ language }: HomeGradientBannerProps) {
       style={{ marginTop: `${HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX}px` }}
     >
       <div
-        className={`${HOME_APP_BANNER_INNER_CLASS} grid w-full grid-cols-1 lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)] lg:items-stretch`}
+        className={`${HOME_APP_BANNER_INNER_CLASS} grid w-full grid-cols-1 ${HOME_BANNERS_LG_GRID_COLS_CLASS} lg:items-stretch`}
         style={{ gap: `${HOME_BANNERS_ROW_GAP_PX}px` }}
       >
         <div className="min-w-0">

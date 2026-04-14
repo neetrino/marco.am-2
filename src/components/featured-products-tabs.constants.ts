@@ -5,6 +5,9 @@
 /** Section top padding — larger pushes the «Նորություններ» block slightly lower on the page. */
 export const FEATURED_SECTION_PADDING_TOP_CLASS = 'pt-6 sm:pt-8';
 
+/** Vertical breathing room around app + gradient/secondary banners (below grid, above section end). */
+export const FEATURED_HOME_BANNERS_BLOCK_PADDING_Y_CLASS = 'pt-8 pb-10 md:pt-10 md:pb-12';
+
 /** Title — slightly smaller than original Figma 54px cap. */
 export const FEATURED_PRODUCTS_TITLE_FONT_SIZE_CLAMP = 'clamp(22px, 3.6vw, 40px)';
 
