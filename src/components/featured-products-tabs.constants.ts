@@ -22,7 +22,10 @@ export const FEATURED_PRODUCTS_TITLE_BAR_WIDTH_PERCENT = 38;
 export const FEATURED_PRODUCTS_TITLE_LETTER_SPACING_PX = -0.6;
 
 /** Space below heading row before product grid. */
-export const FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX = 32;
+export const FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX = 42;
+
+/** Nudge «նորույթներ» heading right from the content edge (px). */
+export const FEATURED_PRODUCTS_TITLE_INSET_LEFT_PX = 16;
 
 /** Same strip as special offers: 4×2 desktop, 2×4 mobile. */
 export const FEATURED_PRODUCTS_VISIBLE_COUNT = 8;

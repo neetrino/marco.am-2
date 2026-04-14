@@ -16,6 +16,7 @@ import {
   FEATURED_PRODUCTS_TITLE_LINE_HEIGHT,
   FEATURED_PRODUCTS_TITLE_TEXT_TO_BAR_GAP_PX,
   FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX,
+  FEATURED_PRODUCTS_TITLE_INSET_LEFT_PX,
   FEATURED_PRODUCTS_VISIBLE_COUNT,
 } from './featured-products-tabs.constants';
 import { SpecialOfferCard } from './home/SpecialOfferCard';
@@ -203,7 +204,10 @@ export function FeaturedProductsTabs() {
           className="flex flex-row flex-wrap items-end justify-between gap-4"
           style={{ marginBottom: `${FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX}px` }}
         >
-          <div className="min-w-0">
+          <div
+            className="min-w-0"
+            style={{ paddingLeft: `${FEATURED_PRODUCTS_TITLE_INSET_LEFT_PX}px` }}
+          >
             <h2
               id="home-featured-products-heading"
               className="font-bold uppercase text-marco-black [font-size:var(--fp-title-fs)] [line-height:var(--fp-title-lh)]"
