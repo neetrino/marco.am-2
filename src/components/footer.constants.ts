@@ -13,6 +13,23 @@ export const FOOTER_HEADING_TEXT_CLASS = 'text-[#181111]';
 
 export const NEETRINO_STUDIO_HREF = 'https://neetrino.com/';
 
+/**
+ * Brand logo frame — larger than legacy 91×81; same ~91:81 aspect.
+ * Blurb sits below with gap; mark is lifted via {@link FOOTER_BRAND_LOGO_SHIFT_CLASS}.
+ */
+export const FOOTER_BRAND_LOGO_BOX_CLASS =
+  'relative h-[178px] w-[200px] shrink-0';
+
+/**
+ * Lifts the MARCO mark: stronger from `md` so its top lines up with the Company column heading;
+ * single-column layout keeps a smaller nudge.
+ */
+export const FOOTER_BRAND_LOGO_SHIFT_CLASS =
+  'max-md:-translate-y-[25px] md:-translate-y-[48px]';
+
+/** Spacing between logo block and brand blurb when not overlapping. */
+export const FOOTER_BRAND_COLUMN_GAP_CLASS = 'gap-4';
+
 export type FooterNavItem = {
   readonly href: string;
   readonly labelKey: string;

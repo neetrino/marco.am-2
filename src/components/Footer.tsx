@@ -6,6 +6,9 @@ import { MapPin } from 'lucide-react';
 
 import { useTranslation } from '../lib/i18n-client';
 import {
+  FOOTER_BRAND_COLUMN_GAP_CLASS,
+  FOOTER_BRAND_LOGO_BOX_CLASS,
+  FOOTER_BRAND_LOGO_SHIFT_CLASS,
   FOOTER_COMPANY_LINKS,
   FOOTER_HEADING_TEXT_CLASS,
   FOOTER_MUTED_TEXT_CLASS,
@@ -22,7 +25,7 @@ import {
 import { FooterPaymentLogos } from './FooterPaymentLogos';
 import { FooterSocialLinks } from './FooterSocialLinks';
 
-const FOOTER_LINK_CLASS = `${FOOTER_MUTED_TEXT_CLASS} text-sm transition-colors hover:text-marco-black`;
+const FOOTER_LINK_CLASS = `${FOOTER_MUTED_TEXT_CLASS} text-xs transition-colors hover:text-marco-black`;
 
 function FooterNavColumn({
   titleKey,
@@ -34,13 +37,13 @@ function FooterNavColumn({
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       <p
-        className={`text-sm font-bold uppercase tracking-[0.05em] ${FOOTER_HEADING_TEXT_CLASS}`}
+        className={`text-xs font-bold uppercase tracking-[0.05em] ${FOOTER_HEADING_TEXT_CLASS}`}
       >
         {t(titleKey)}
       </p>
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col gap-2">
         {items.map((item) => (
           <li key={`${item.href}-${item.labelKey}`}>
             <Link href={item.href} className={FOOTER_LINK_CLASS}>
@@ -61,7 +64,7 @@ function FooterContactsColumn() {
   return (
     <div className="flex flex-col gap-4">
       <p
-        className={`text-sm font-bold uppercase tracking-[0.05em] ${FOOTER_HEADING_TEXT_CLASS}`}
+        className={`text-xs font-bold uppercase tracking-[0.05em] ${FOOTER_HEADING_TEXT_CLASS}`}
       >
         {t('common.footer.marco.headings.contacts')}
       </p>
@@ -71,7 +74,7 @@ function FooterContactsColumn() {
           strokeWidth={2}
           aria-hidden
         />
-        <p className={`text-sm leading-relaxed ${FOOTER_MUTED_TEXT_CLASS}`}>{t('contact.address')}</p>
+        <p className={`text-xs leading-relaxed ${FOOTER_MUTED_TEXT_CLASS}`}>{t('contact.address')}</p>
       </div>
       <div className="flex items-start gap-3">
         <img
@@ -84,7 +87,7 @@ function FooterContactsColumn() {
         />
         <a
           href={telHref}
-          className="text-sm font-bold text-marco-black transition-colors hover:underline"
+          className="text-xs font-bold text-marco-black transition-colors hover:underline"
         >
           {phoneRaw}
         </a>
@@ -100,7 +103,7 @@ function FooterContactsColumn() {
         />
         <a
           href={`mailto:${t('contact.email')}`}
-          className={`text-sm transition-colors hover:text-marco-black ${FOOTER_MUTED_TEXT_CLASS}`}
+          className={`text-xs transition-colors hover:text-marco-black ${FOOTER_MUTED_TEXT_CLASS}`}
         >
           {t('contact.email')}
         </a>
@@ -140,19 +143,21 @@ export function Footer() {
   return (
     <footer className={`${FOOTER_SURFACE_CLASS} border-t border-black/5`}>
       <div className="mx-auto max-w-7xl px-4 pb-10 pt-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-          <div className="flex max-w-sm flex-col gap-6">
-            <div className="relative h-[81px] w-[91px] shrink-0">
+        <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+          <div
+            className={`flex max-w-sm flex-col ${FOOTER_BRAND_COLUMN_GAP_CLASS}`}
+          >
+            <div className={`${FOOTER_BRAND_LOGO_BOX_CLASS} ${FOOTER_BRAND_LOGO_SHIFT_CLASS}`}>
               <Image
                 src="/assets/brand/marco-group-logo.png"
                 alt="MARCO GROUP"
                 fill
                 className="object-contain object-left-top"
-                sizes="91px"
+                sizes="200px"
                 priority={false}
               />
             </div>
-            <p className={`text-sm leading-relaxed ${FOOTER_MUTED_TEXT_CLASS}`}>
+            <p className={`text-xs leading-relaxed ${FOOTER_MUTED_TEXT_CLASS}`}>
               {t('common.footer.marco.brandDescription')}
             </p>
           </div>
