@@ -12,6 +12,11 @@ import { useTranslation } from '../../lib/i18n-client';
 import { SpecialOfferCard } from './SpecialOfferCard';
 import type { SpecialOfferProduct } from './special-offer-product.types';
 import {
+  REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX,
+  REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX,
+  REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX,
+} from './home-reels.constants';
+import {
   SPECIAL_OFFERS_CARD_GAP_PX,
   SPECIAL_OFFERS_CARD_HEIGHT_PX,
   SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
@@ -45,7 +50,9 @@ const SECTION_CONTAINER_CLASS =
 const SPECIAL_OFFERS_NAV_BUTTON_CLASS =
   'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
 
-const SPECIAL_OFFERS_NAV_ICON_CLASS = 'h-3 w-3 shrink-0 text-marco-black';
+/** Match `HomeReelsSection` chevrons — larger on `max-md`. */
+const SPECIAL_OFFERS_NAV_ICON_CLASS =
+  'h-3 w-3 shrink-0 text-marco-black max-md:h-5 max-md:w-5';
 
 const SPECIAL_OFFERS_CARD_SLOT_MOBILE_CLASS = 'shrink-0 snap-start min-w-0';
 
@@ -111,11 +118,6 @@ export function HomeSpecialOffersSection() {
   const titleHighlightTrimmed = titleHighlight.trim();
   const titleRestTrimmed = titleRest.trim();
 
-  const specialOffersNavButtonStyle = {
-    width: SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
-    height: SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
-  } as const;
-
   const paginationDotStyle = {
     width: SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
     height: SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
@@ -140,6 +142,12 @@ export function HomeSpecialOffersSection() {
         ['--special-offers-title-fs' as string]: SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP,
         ['--special-offers-title-fs-mobile' as string]:
           SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP_MOBILE,
+        ['--so-nav-btn-w-mobile' as string]: `${REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX}px`,
+        ['--so-nav-btn-h-mobile' as string]: `${REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX}px`,
+        ['--so-nav-btn-w' as string]: `${SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX}px`,
+        ['--so-nav-btn-h' as string]: `${SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX}px`,
+        ['--so-nav-inset-mobile' as string]: `${REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX}px`,
+        ['--so-nav-inset-desktop' as string]: `${SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX}px`,
       }}
       aria-labelledby="home-special-offers-heading"
     >
@@ -196,15 +204,11 @@ export function HomeSpecialOffersSection() {
               </span>
             </h2>
           </div>
-          <div
-            className="flex shrink-0 flex-row gap-2"
-            style={{ marginRight: `${SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX}px` }}
-          >
+          <div className="flex shrink-0 flex-row gap-2 max-md:[margin-right:var(--so-nav-inset-mobile)] md:[margin-right:var(--so-nav-inset-desktop)]">
             <button
               type="button"
               onClick={scrollPrev}
-              className={SPECIAL_OFFERS_NAV_BUTTON_CLASS}
-              style={specialOffersNavButtonStyle}
+              className={`${SPECIAL_OFFERS_NAV_BUTTON_CLASS} h-[var(--so-nav-btn-h-mobile)] w-[var(--so-nav-btn-w-mobile)] md:h-[var(--so-nav-btn-h)] md:w-[var(--so-nav-btn-w)]`}
               aria-label={tr('home.special_offers.prev_aria')}
             >
               <ChevronLeft
@@ -216,8 +220,7 @@ export function HomeSpecialOffersSection() {
             <button
               type="button"
               onClick={scrollNext}
-              className={SPECIAL_OFFERS_NAV_BUTTON_CLASS}
-              style={specialOffersNavButtonStyle}
+              className={`${SPECIAL_OFFERS_NAV_BUTTON_CLASS} h-[var(--so-nav-btn-h-mobile)] w-[var(--so-nav-btn-w-mobile)] md:h-[var(--so-nav-btn-h)] md:w-[var(--so-nav-btn-w)]`}
               aria-label={tr('home.special_offers.next_aria')}
             >
               <ChevronRight
