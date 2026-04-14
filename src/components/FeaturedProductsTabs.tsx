@@ -11,7 +11,6 @@ import { t } from '../lib/i18n';
 import { logger } from '../lib/utils/logger';
 import type { ProductLabel } from './ProductLabels';
 import {
-  FEATURED_PRODUCTS_NAV_BUTTON_PX,
   FEATURED_PRODUCTS_TITLE_BAR_THICKNESS_PX,
   FEATURED_PRODUCTS_TITLE_BAR_WIDTH_PERCENT,
   FEATURED_PRODUCTS_TITLE_FONT_SIZE_CLAMP,
@@ -20,6 +19,16 @@ import {
   FEATURED_PRODUCTS_TITLE_TEXT_TO_BAR_GAP_PX,
   FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX,
 } from './featured-products-tabs.constants';
+import {
+  REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX,
+  REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX,
+  REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX,
+} from './home/home-reels.constants';
+import {
+  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
+  SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
+} from './home/home-special-offers.constants';
 
 const montserratFeatured = Montserrat({
   subsets: ['latin'],
@@ -81,15 +90,22 @@ const FILTER_BY_TAB: Record<FilterType, string> = {
   featured: 'featured',
 };
 
+/** Same pill + chevrons as `HomeSpecialOffersSection` / `HomeReelsSection`. */
 const FEATURED_NAV_BUTTON_CLASS =
   'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
 
-const FEATURED_NAV_ICON_CLASS = 'h-3 w-3 shrink-0 text-marco-black';
+const FEATURED_NAV_ICON_CLASS =
+  'h-3 w-3 shrink-0 text-marco-black max-md:h-5 max-md:w-5';
 
 const featuredTitleCssVars = {
   ['--fp-title-fs' as string]: FEATURED_PRODUCTS_TITLE_FONT_SIZE_CLAMP,
   ['--fp-title-lh' as string]: FEATURED_PRODUCTS_TITLE_LINE_HEIGHT,
-  ['--fp-nav-btn' as string]: `${FEATURED_PRODUCTS_NAV_BUTTON_PX}px`,
+  ['--fp-nav-btn-w-mobile' as string]: `${REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX}px`,
+  ['--fp-nav-btn-h-mobile' as string]: `${REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX}px`,
+  ['--fp-nav-btn-w' as string]: `${SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX}px`,
+  ['--fp-nav-btn-h' as string]: `${SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX}px`,
+  ['--fp-nav-inset-mobile' as string]: `${REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX}px`,
+  ['--fp-nav-inset-desktop' as string]: `${SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX}px`,
 } as const;
 
 const featuredTitleLetterSpacingStyle = {
@@ -217,11 +233,11 @@ export function FeaturedProductsTabs() {
               </span>
             </h2>
           </div>
-          <div className="flex shrink-0 flex-row gap-2">
+          <div className="flex shrink-0 flex-row gap-2 max-md:[margin-right:var(--fp-nav-inset-mobile)] md:[margin-right:var(--fp-nav-inset-desktop)]">
             <button
               type="button"
               onClick={() => shiftTab(-1)}
-              className={`${FEATURED_NAV_BUTTON_CLASS} h-[var(--fp-nav-btn)] w-[var(--fp-nav-btn)]`}
+              className={`${FEATURED_NAV_BUTTON_CLASS} h-[var(--fp-nav-btn-h-mobile)] w-[var(--fp-nav-btn-w-mobile)] md:h-[var(--fp-nav-btn-h)] md:w-[var(--fp-nav-btn-w)]`}
               aria-label={t(language, 'home.featured_products.carousel_prev_aria')}
             >
               <ChevronLeft className={FEATURED_NAV_ICON_CLASS} strokeWidth={2} aria-hidden />
@@ -229,7 +245,7 @@ export function FeaturedProductsTabs() {
             <button
               type="button"
               onClick={() => shiftTab(1)}
-              className={`${FEATURED_NAV_BUTTON_CLASS} h-[var(--fp-nav-btn)] w-[var(--fp-nav-btn)]`}
+              className={`${FEATURED_NAV_BUTTON_CLASS} h-[var(--fp-nav-btn-h-mobile)] w-[var(--fp-nav-btn-w-mobile)] md:h-[var(--fp-nav-btn-h)] md:w-[var(--fp-nav-btn-w)]`}
               aria-label={t(language, 'home.featured_products.carousel_next_aria')}
             >
               <ChevronRight className={FEATURED_NAV_ICON_CLASS} strokeWidth={2} aria-hidden />

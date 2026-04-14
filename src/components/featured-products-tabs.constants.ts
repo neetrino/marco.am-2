@@ -23,6 +23,3 @@ export const FEATURED_PRODUCTS_TITLE_LETTER_SPACING_PX = -0.6;
 
 /** Space below heading row before product grid. */
 export const FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX = 32;
-
-/** Prev/next — Figma 40×40 circular buttons. */
-export const FEATURED_PRODUCTS_NAV_BUTTON_PX = 40;
