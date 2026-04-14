@@ -27,7 +27,7 @@ export function HomeMobileMessageCta() {
   const { t } = useTranslation();
 
   return (
-    <section className="md:hidden -translate-y-[15px] bg-white pb-4 pt-2">
+    <section className="relative z-0 md:hidden -translate-y-[15px] bg-white pb-4 pt-2">
       <div className={SECTION_CONTAINER_CLASS}>
         <div className="flex justify-end">
           <Link

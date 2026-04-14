@@ -137,7 +137,7 @@ export function HomeSpecialOffersSection() {
 
   return (
     <section
-      className={`bg-white pb-10 pt-0 max-md:-mt-3 sm:py-12 ${montserratSpecial.className}`}
+      className={`relative z-10 bg-white pb-10 pt-0 max-md:-mt-6 sm:py-12 ${montserratSpecial.className}`}
       style={{
         ['--special-offers-title-fs' as string]: SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP,
         ['--special-offers-title-fs-mobile' as string]:
