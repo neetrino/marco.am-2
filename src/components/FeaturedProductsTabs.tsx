@@ -8,7 +8,9 @@ import { apiClient } from '../lib/api-client';
 import { getStoredLanguage, type LanguageCode } from '../lib/language';
 import { t } from '../lib/i18n';
 import { logger } from '../lib/utils/logger';
+import { FeaturedProductsStrip } from './FeaturedProductsStrip';
 import {
+  FEATURED_PRODUCTS_SLIDE_PAGE_COUNT,
   FEATURED_PRODUCTS_TITLE_BAR_THICKNESS_PX,
   FEATURED_PRODUCTS_TITLE_BAR_WIDTH_PERCENT,
   FEATURED_PRODUCTS_TITLE_FONT_SIZE_CLAMP,
@@ -19,10 +21,7 @@ import {
   FEATURED_PRODUCTS_TITLE_INSET_LEFT_PX,
   FEATURED_PRODUCTS_VISIBLE_COUNT,
 } from './featured-products-tabs.constants';
-import { SpecialOfferCard } from './home/SpecialOfferCard';
 import {
-  SPECIAL_OFFERS_CARD_HEIGHT_PX,
-  SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
@@ -33,6 +32,7 @@ import {
   REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX,
 } from './home/home-reels.constants';
 import type { SpecialOfferProduct } from './home/special-offer-product.types';
+import { useSpecialOffersCarousel } from './home/useSpecialOffersCarousel';
 import { useIsMaxMd } from './home/use-is-max-md';
 
 const montserratFeatured = Montserrat({
@@ -67,10 +67,6 @@ const FILTER_BY_TAB: Record<FilterType, string> = {
   featured: 'featured',
 };
 
-/** 2×4 mobile, 4×2 desktop — spacing aligned with special-offers grid / rail gaps. */
-const FEATURED_OFFERS_GRID_CLASS =
-  'grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-4 md:gap-x-6 md:gap-y-6';
-
 const FEATURED_NAV_BUTTON_CLASS =
   'flex shrink-0 items-center justify-center overflow-visible rounded-full border border-gray-200 bg-white p-0 transition-colors hover:border-marco-yellow hover:bg-marco-yellow focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';
 
@@ -102,13 +98,8 @@ const featuredTitleBarStyle = {
   height: `${FEATURED_PRODUCTS_TITLE_BAR_THICKNESS_PX}px`,
 } as const;
 
-const featuredCardSkeletonStyle = {
-  height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
-  borderRadius: SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
-} as const;
-
 /**
- * «Նորույթներ» — special-offer tiles in a fixed 8-up grid (4×2 / 2×4), tab filter via header arrows.
+ * «Նորույթներ» — special-offer tiles in a 2-slide rail, dots + CTA like «Հատուկ առաջարկներ».
  */
 export function FeaturedProductsTabs() {
   const isMaxMd = useIsMaxMd();
@@ -117,6 +108,12 @@ export function FeaturedProductsTabs() {
   const [products, setProducts] = useState<SpecialOfferProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const railVisible = !loading && products.length > 0;
+  const { scrollerRef, activePage, scrollToPage } = useSpecialOffersCarousel({
+    isRailVisible: railVisible,
+    paginationPageCount: FEATURED_PRODUCTS_SLIDE_PAGE_COUNT,
+  });
 
   useEffect(() => {
     const updateLanguage = () => {
@@ -134,6 +131,10 @@ export function FeaturedProductsTabs() {
       window.removeEventListener('language-updated', handleLanguageUpdate);
     };
   }, []);
+
+  useEffect(() => {
+    scrollToPage(0);
+  }, [activeTab, scrollToPage]);
 
   const fetchProducts = useCallback(
     async (filter: string | null) => {
@@ -243,38 +244,19 @@ export function FeaturedProductsTabs() {
           </div>
         </div>
 
-        {loading ? (
-          <div className={FEATURED_OFFERS_GRID_CLASS}>
-            {[...Array(FEATURED_PRODUCTS_VISIBLE_COUNT)].map((_, i) => (
-              <div key={i} className="min-w-0">
-                <div className="w-full animate-pulse bg-gray-200" style={featuredCardSkeletonStyle} />
-              </div>
-            ))}
-          </div>
-        ) : error ? (
-          <div className="text-center py-12">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              type="button"
-              onClick={() => fetchProducts(FILTER_BY_TAB[activeTab])}
-              className="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors"
-            >
-              {t(language, 'home.featured_products.tryAgain')}
-            </button>
-          </div>
-        ) : products.length > 0 ? (
-          <div className={FEATURED_OFFERS_GRID_CLASS}>
-            {products.map((product) => (
-              <div key={product.id} className="min-w-0">
-                <SpecialOfferCard product={product} layout={cardLayout} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">{t(language, 'home.featured_products.noProducts')}</p>
-          </div>
-        )}
+        <FeaturedProductsStrip
+          language={language}
+          activeTab={activeTab}
+          loading={loading}
+          error={error}
+          products={products}
+          cardLayout={cardLayout}
+          isMaxMd={isMaxMd}
+          scrollerRef={scrollerRef}
+          activePage={activePage}
+          scrollToPage={scrollToPage}
+          onRetryFetch={() => fetchProducts(FILTER_BY_TAB[activeTab])}
+        />
       </div>
     </section>
   );

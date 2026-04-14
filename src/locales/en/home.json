@@ -72,6 +72,9 @@
   "featured_products": {
     "title": "Featured Products",
     "subtitle": "Three quick choices: New Arrivals, Best Sellers and Featured Selections",
+    "pagination_aria": "New arrivals slider pagination",
+    "page_first_aria": "Go to first page",
+    "page_second_aria": "Go to second page",
     "carousel_prev_aria": "Previous selection",
     "carousel_next_aria": "Next selection",
     "tab_new": "NEW ARRIVALS",
