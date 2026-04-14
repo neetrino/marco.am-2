@@ -69,9 +69,9 @@ const SOFA_CARD_SHIFT_X = -22;
 
 /**
  * Vertical nudge for cards right of center (delivery + electronics) and matching bottom strip.
- * Layout-ref Y delta; scales with `by()`.
+ * Layout-ref Y delta; scales with `by()`. Lower = higher on screen.
  */
-const RIGHT_OF_CENTER_TOP_NUDGE_REF = 44;
+const RIGHT_OF_CENTER_TOP_NUDGE_REF = 12;
 
 /** Layout-ref X for `hero_banner_promo` block; increase to move copy toward the right. */
 const PROMO_COPY_LEFT_REF = 880;
