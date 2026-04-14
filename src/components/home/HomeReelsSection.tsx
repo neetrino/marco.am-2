@@ -105,7 +105,7 @@ const reelsPaginationDotStyle = {
 
 /** Dark chevrons; readable on yellow hover fill */
 const REELS_NAV_ICON_CLASS =
-  'h-3 w-3 shrink-0 text-marco-black max-md:h-6 max-md:w-6';
+  'h-3 w-3 shrink-0 text-marco-black max-md:h-5 max-md:w-5';
 
 /**
  * REELS: circular category thumbnails in a centered row with arrow scroll.

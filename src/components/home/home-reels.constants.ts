@@ -90,12 +90,12 @@ export const REELS_CAROUSEL_NAV_INSET_RIGHT_MOBILE_PX = 3;
 /**
  * Prev/next carousel controls — compact pill (ratio ~1.28). Desktop (`md+`).
  */
-export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 32;
-export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 25;
+export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX = 30;
+export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 24;
 
 /** Prev/next on mobile — slightly larger than desktop controls. */
-export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX = 48;
-export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX = 37;
+export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX = 44;
+export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX = 34;
 
 /** Space between the reel rail and dot pagination. */
 export const REELS_RAIL_TO_PAGINATION_GAP_PX = 20;
