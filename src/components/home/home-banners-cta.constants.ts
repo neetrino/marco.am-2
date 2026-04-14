@@ -4,9 +4,9 @@
 
 export const HOME_BANNERS_CTA_HEIGHT_PX = 48;
 
-export const HOME_BANNERS_CTA_WIDTH_PX = 172;
+export const HOME_BANNERS_CTA_WIDTH_PX = 170;
 
-export const HOME_BANNERS_CTA_ICON_CIRCLE_PX = 40;
+export const HOME_BANNERS_CTA_ICON_CIRCLE_PX = 36;
 
 export const HOME_BANNERS_CTA_PILL_RADIUS_PX = HOME_BANNERS_CTA_HEIGHT_PX / 2;
 
@@ -16,7 +16,7 @@ export const HOME_BANNERS_CTA_PADDING_RIGHT_PX = 0;
 
 export const HOME_BANNERS_CTA_LABEL_ICON_GAP_PX = 6;
 
-export const HOME_BANNERS_CTA_ARROW_ICON_PX = 20;
+export const HOME_BANNERS_CTA_ARROW_ICON_PX = 18;
 
 /** Overlap of icon circle into label area (same idea as hero slate CTA). */
 export const HOME_BANNERS_CTA_ICON_PULL_LEFT_PX = 2;

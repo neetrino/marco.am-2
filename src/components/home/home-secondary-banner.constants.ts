@@ -29,12 +29,12 @@ export const HOME_SECONDARY_BANNER_HEADLINE_LINE_HEIGHT_RATIO = '0.91';
 export const HOME_SECONDARY_BANNER_CTA_HREF = '/products';
 
 /** `margin-left` on yellow chip (px) — shift right; scaled with `HOME_BANNERS_CTA_*`. */
-export const HOME_SECONDARY_BANNER_CTA_ICON_MARGIN_LEFT_PX = 21;
+export const HOME_SECONDARY_BANNER_CTA_ICON_MARGIN_LEFT_PX = 23;
 
 /** Visual nudge for CTA label only (`translateX`); does not move the yellow chip. */
 export const HOME_SECONDARY_BANNER_CTA_LABEL_NUDGE_RIGHT_PX = 6;
 
 /** Whole CTA row offset: positive X = right, negative Y = up. */
-export const HOME_SECONDARY_BANNER_CTA_ROW_OFFSET_X_PX = 16;
+export const HOME_SECONDARY_BANNER_CTA_ROW_OFFSET_X_PX = 19;
 
 export const HOME_SECONDARY_BANNER_CTA_ROW_OFFSET_Y_PX = -14;
