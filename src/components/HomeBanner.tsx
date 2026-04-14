@@ -17,11 +17,12 @@ const ASSETS = {
   sofa:          'https://www.figma.com/api/mcp/asset/1a5ccb5d-3c4f-45e8-8489-29d2d9124fd1',
   sofaCircle:    'https://www.figma.com/api/mcp/asset/2f91b1da-a2d5-43d1-b75f-f8c532cd6471',
   truckIcon:     'https://www.figma.com/api/mcp/asset/5249941e-732f-48e2-a3b4-bcadfc9d8ced',
-  rightCardBg:   'https://www.figma.com/api/mcp/asset/3f677413-36ef-44bb-a898-711eec0caed7',
-  linkIcon1:     'https://www.figma.com/api/mcp/asset/7e5dbdc4-4d4e-47a3-a26b-76000d469a4d',
+linkIcon1:     'https://www.figma.com/api/mcp/asset/7e5dbdc4-4d4e-47a3-a26b-76000d469a4d',
   linkIcon2:     'https://www.figma.com/api/mcp/asset/01c4ecb0-959a-4403-a191-8d4fe959ea88',
   /** BANNER2 1 — Figma node 305:2151, downloaded locally (404×557 px). */
   banner2:       '/images/home-banner-305-2151.png',
+  /** BANNER3 1 — Figma node 305:2154, downloaded locally (772×834 px). */
+  banner3:       '/images/home-banner-305-2154.png',
   /** Ellipse 87 — Figma node 101:4070; soft white circle + shadow (100×100 ref px). */
   ellipse87:     'https://www.figma.com/api/mcp/asset/31e7a0d8-5588-4ef0-bf2f-1a635a53a79e',
 } as const;
@@ -84,13 +85,16 @@ const ELLIPSE87_BOX_PX = 80;
 const ELLIPSE87_ICON_PX = 40;
 
 /**
- * Middle delivery card (878) — same horizontal inset as electronics card CTA (1394 − 1312 = 82 ref px).
+ * BANNER3 1 (Figma 305:2154): x=1337, y=124, w=516, h=557.
+ * CTA button (~250px) centered horizontally: offset = (516−250)/2 = 133.
+ * Link icon pinned near top-right: offset = 516−86 = 430.
  */
 const DELIVERY_CARD_LEFT_REF = 878;
-const ELECTRONICS_CARD_LEFT_REF = 1312;
-const ELECTRONICS_BUY_CTA_LEFT_REF = 1394;
-const DELIVERY_BUY_CTA_LEFT_REF =
-  DELIVERY_CARD_LEFT_REF + (ELECTRONICS_BUY_CTA_LEFT_REF - ELECTRONICS_CARD_LEFT_REF);
+const ELECTRONICS_CARD_LEFT_REF = 1337;
+const ELECTRONICS_CARD_W = 516;
+const ELECTRONICS_CARD_H = 557;
+const ELECTRONICS_BUY_CTA_LEFT_REF = ELECTRONICS_CARD_LEFT_REF + 80; // centered in visible (clipped) portion
+const DELIVERY_BUY_CTA_LEFT_REF = DELIVERY_CARD_LEFT_REF + 76; // (403−250)/2
 
 /**
  * Left product card — sofa promo with stacked-card depth effect.
@@ -189,50 +193,30 @@ function ElectronicsCard({ copy }: { copy: HeroBannerCopy }) {
 
   return (
     <>
-      {/* Pre-masked dark card background */}
-      <div className="absolute" style={{ left: bx(1312), top: y(52), width: bx(402), height: by(556) }}>
-        <Image src={ASSETS.rightCardBg} alt="" fill className="object-cover rounded-[36px]" unoptimized />
+      {/* Full card — BANNER3 1 pre-rendered image (Figma 305:2154): 516×557 */}
+      <div className="absolute overflow-hidden rounded-[36px]" style={{ left: bx(ELECTRONICS_CARD_LEFT_REF), top: y(55), width: bx(ELECTRONICS_CARD_W), height: by(ELECTRONICS_CARD_H) }}>
+        <Image
+          src={ASSETS.banner3}
+          alt={copy.smartphones}
+          fill
+          className="object-cover object-center"
+          unoptimized
+        />
       </div>
 
-      {/* Discount badge — inside the card, top-left */}
-      <p
-        className="absolute font-black whitespace-nowrap text-[#facc15] antialiased"
-        style={{ left: bx(1350), top: y(137), fontSize: bx(78), lineHeight: `${by(63)}px` }}
-      >
-        80%
-      </p>
-
-      {/* Product image */}
-      <div
-        className="absolute"
-        style={{ left: bx(1412), top: y(96), width: bx(389), height: by(366) }}
-      >
-        <Image src={ASSETS.sofa} alt={copy.smartphones} fill className="object-cover" unoptimized />
+      {/* Arrow/link icon — top-right corner of card */}
+      <div className="absolute" style={{ left: bx(ELECTRONICS_CARD_LEFT_REF + 430), top: y(53), width: bx(86), height: by(86) }}>
+        <Image src={ASSETS.linkIcon2} alt="" fill className="object-contain" unoptimized />
       </div>
 
-      {/* Sub-headline */}
-      <div
-        className={`${montserratArm.className} absolute font-black whitespace-nowrap antialiased`}
-        style={{ left: bx(1350), top: y(378), fontSize: bx(28), lineHeight: `${by(33)}px` }}
-      >
-        <p className="text-[#facc15]">{copy.newLabel}</p>
-        <p className="text-white">{copy.generation}</p>
-        <p className="text-white">{copy.smartphones}</p>
-      </div>
-
-      {/* White "More" CTA */}
+      {/* White "More" CTA — centered horizontally in card */}
       <Link
         href="/products"
         className={`${montserratArm.className} absolute flex items-center justify-center rounded-[60px] bg-white text-[16px] font-bold text-black antialiased`}
-        style={{ left: bx(1394), top: y(502), height: by(56), width: bx(250) }}
+        style={{ left: bx(ELECTRONICS_BUY_CTA_LEFT_REF), top: y(502), height: by(56), width: bx(250) }}
       >
         {copy.more}
       </Link>
-
-      {/* Arrow/link icon — right edge aligned to card (1312+402) */}
-      <div className="absolute" style={{ left: bx(1628), top: y(53), width: bx(86), height: by(86) }}>
-        <Image src={ASSETS.linkIcon2} alt="" fill className="object-contain" unoptimized />
-      </div>
     </>
   );
 }
