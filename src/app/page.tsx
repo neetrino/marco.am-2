@@ -1,4 +1,5 @@
 import { HeroCarousel } from '../components/HeroCarousel';
+import { HomeMobileMessageCta } from '../components/home/HomeMobileMessageCta';
 import { HomeReelsSection } from '../components/home/HomeReelsSection';
 
 import { FeaturesSection } from '../components/FeaturesSection';
@@ -12,6 +13,8 @@ export default async function HomePage() {
       <HeroCarousel />
 
       <HomeReelsSection />
+
+      <HomeMobileMessageCta />
 
       <HomeSpecialOffersSection />
 
