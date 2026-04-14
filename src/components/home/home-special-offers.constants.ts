@@ -8,6 +8,29 @@ export const SPECIAL_OFFERS_CARD_GAP_PX = 24;
 /** Product cards visible at once in the rail (lg+), aligned with Figma strip. */
 export const SPECIAL_OFFERS_VISIBLE_COLUMNS = 4;
 
+/**
+ * Mobile (`max-md`): 2×2 grid per horizontal slide — four product cards per page.
+ */
+export const SPECIAL_OFFERS_MOBILE_GRID_PAGE_SIZE = 4;
+
+/** Dots under the rail — three segments (same pattern as REELS). */
+export const SPECIAL_OFFERS_MOBILE_PAGINATION_PAGE_COUNT = 3;
+
+/** Horizontal gap between the two columns in the mobile 2×2 grid (tighter than rail for wider tiles). */
+export const SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX = 12;
+
+/** Vertical gap between the two rows in the mobile grid (px). */
+export const SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX = 36;
+
+/**
+ * Bottom padding inside the horizontal scroller on mobile 2×2 slides — reserves space for the
+ * floating cart below the card shell so the strip does not gain a vertical scroll (`overflow-y`).
+ */
+export const SPECIAL_OFFERS_MOBILE_GRID_SCROLLER_PADDING_BOTTOM_PX = 32;
+
+/** Horizontal scroller bottom padding on `md+` (former `pb-1`). */
+export const SPECIAL_OFFERS_SCROLLER_PADDING_BOTTOM_DESKTOP_PX = 4;
+
 /** Portion of scroller width to move per arrow tap. */
 export const SPECIAL_OFFERS_SCROLL_FRACTION = 0.85;
 
@@ -76,6 +99,16 @@ export const SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX = 96;
 export const SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT = 24;
 
 /**
+ * Mobile (`max-md`): centered bottom notch — white “tab” (see reference `.card::after`).
+ */
+export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_WIDTH_PX = 88;
+
+export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_HEIGHT_PX = 44;
+
+/** Top radii of the notch (half-circle cap). */
+export const SPECIAL_OFFERS_CARD_MOBILE_NOTCH_TOP_RADIUS_PX = 44;
+
+/**
  * Corner mask fill — must match `HomeSpecialOffersSection` surface (`bg-white`).
  */
 export const SPECIAL_OFFERS_CARD_CORNER_MASK_BG = '#ffffff';
@@ -95,6 +128,9 @@ export const SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX = 5;
 
 /** Floating cart — inset from card inner right (shifted toward the edge). */
 export const SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX = 4;
+
+/** Mobile: cart centered on the notch — protrudes below the shell (reference `.card__button`). */
+export const SPECIAL_OFFERS_CART_BUTTON_MOBILE_BOTTOM_PX = -22;
 
 /** Floating add-to-cart circle (edge length). */
 export const SPECIAL_OFFERS_CART_BUTTON_SIZE_PX = 48;
@@ -245,6 +281,9 @@ export const SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX = 32;
 export const SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX = 8;
 export const SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX = 10;
 export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX = 20;
+
+/** Extra space above dot row on `max-md` (2×2 grid + floating cart needs more air). */
+export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 55;
 
 /**
  * Brand line — Tailwind text classes (Figma reference).

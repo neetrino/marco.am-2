@@ -7,10 +7,17 @@ import {
   SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
   SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT,
   SPECIAL_OFFERS_CARD_HEIGHT_PX,
+  SPECIAL_OFFERS_CARD_MOBILE_NOTCH_HEIGHT_PX,
+  SPECIAL_OFFERS_CARD_MOBILE_NOTCH_TOP_RADIUS_PX,
+  SPECIAL_OFFERS_CARD_MOBILE_NOTCH_WIDTH_PX,
   SPECIAL_OFFERS_CARD_MAX_WIDTH_PX,
   SPECIAL_OFFERS_CARD_PADDING_TOP_PX,
   SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+  SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX,
+  SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX,
+  SPECIAL_OFFERS_CART_BUTTON_MOBILE_BOTTOM_PX,
   SPECIAL_OFFERS_PRICE_BLOCK_LIFT_FROM_BOTTOM_PX,
+  SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX,
 } from './home-special-offers.constants';
 import {
   SpecialOfferActionsStack,
@@ -31,12 +38,19 @@ export type { SpecialOfferProduct };
 
 interface SpecialOfferCardProps {
   product: SpecialOfferProduct;
+  /**
+   * `mobileGrid` — 2×2 home strip: card fills the grid cell (no 252px cap).
+   */
+  layout?: 'default' | 'mobileGrid';
 }
 
 /**
  * Figma «Special offers» product tile — warranty pill, side actions, yellow cart.
  */
-export function SpecialOfferCard({ product }: SpecialOfferCardProps) {
+export function SpecialOfferCard({
+  product,
+  layout = 'default',
+}: SpecialOfferCardProps) {
   const {
     t,
     currency,
@@ -66,10 +80,20 @@ export function SpecialOfferCard({ product }: SpecialOfferCardProps) {
 
   const cornerTranslate = `${SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT}%`;
 
+  const shellMaxWidthStyle =
+    layout === 'mobileGrid'
+      ? {}
+      : { maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX };
+
   return (
     <div
       className="relative z-10 mx-auto min-w-0 w-full max-w-full hover:z-30 focus-within:z-30"
-      style={{ maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX }}
+      style={{
+        ...shellMaxWidthStyle,
+        ['--so-cart-bottom-mobile' as string]: `${SPECIAL_OFFERS_CART_BUTTON_MOBILE_BOTTOM_PX}px`,
+        ['--so-cart-bottom-desktop' as string]: `${SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX}px`,
+        ['--so-cart-right-desktop' as string]: `${SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX}px`,
+      }}
     >
       <article
         className="relative flex min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden"
@@ -77,16 +101,28 @@ export function SpecialOfferCard({ product }: SpecialOfferCardProps) {
           backgroundColor: SPECIAL_OFFERS_CARD_BG,
           height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
           borderRadius: SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+          ['--special-offers-price-pad-end' as string]: `${SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX}px`,
         }}
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute bottom-0 right-0 z-0 rounded-full"
+          className="pointer-events-none absolute bottom-0 right-0 z-0 max-md:hidden rounded-full"
           style={{
             width: SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
             height: SPECIAL_OFFERS_CARD_CORNER_MASK_SIZE_PX,
             backgroundColor: SPECIAL_OFFERS_CARD_CORNER_MASK_BG,
             transform: `translate(${cornerTranslate}, ${cornerTranslate})`,
+          }}
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute bottom-0 left-1/2 z-0 md:hidden max-w-full -translate-x-1/2"
+          style={{
+            width: `min(100%, ${SPECIAL_OFFERS_CARD_MOBILE_NOTCH_WIDTH_PX}px)`,
+            height: SPECIAL_OFFERS_CARD_MOBILE_NOTCH_HEIGHT_PX,
+            backgroundColor: SPECIAL_OFFERS_CARD_CORNER_MASK_BG,
+            borderTopLeftRadius: SPECIAL_OFFERS_CARD_MOBILE_NOTCH_TOP_RADIUS_PX,
+            borderTopRightRadius: SPECIAL_OFFERS_CARD_MOBILE_NOTCH_TOP_RADIUS_PX,
           }}
         />
         <div
@@ -124,16 +160,16 @@ export function SpecialOfferCard({ product }: SpecialOfferCardProps) {
               />
             </div>
           </div>
-
-          <SpecialOfferCartFloatingButton
-            inStock={product.inStock}
-            isAddingToCart={isAddingToCart}
-            addToCartAria={t('common.ariaLabels.addToCart')}
-            outOfStockAria={t('common.ariaLabels.outOfStock')}
-            onAddToCart={handleCart}
-          />
         </div>
       </article>
+
+      <SpecialOfferCartFloatingButton
+        inStock={product.inStock}
+        isAddingToCart={isAddingToCart}
+        addToCartAria={t('common.ariaLabels.addToCart')}
+        outOfStockAria={t('common.ariaLabels.outOfStock')}
+        onAddToCart={handleCart}
+      />
 
       <SpecialOfferActionsStack
         showDiscountPill={showDiscountPill}

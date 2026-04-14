@@ -9,14 +9,11 @@ import {
   SpecialOfferCartFigmaIcon,
 } from './SpecialOfferCartFigmaArt';
 import {
-  SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX,
-  SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX,
   SPECIAL_OFFERS_CART_BUTTON_SIZE_PX,
   SPECIAL_OFFERS_CART_BUTTON_SPINNER_PX,
   SPECIAL_OFFERS_OLD_PRICE_FONT_SIZE_PX,
   SPECIAL_OFFERS_PRICE_FONT_SIZE_PX,
   SPECIAL_OFFERS_PRICE_LINE_HEIGHT_PX,
-  SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX,
 } from './home-special-offers.constants';
 
 interface SpecialOfferCardPricingProps {
@@ -31,10 +28,7 @@ export function SpecialOfferCardPricing({
   currency,
 }: SpecialOfferCardPricingProps) {
   return (
-    <div
-      className="min-w-0"
-      style={{ paddingRight: SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX }}
-    >
+    <div className="min-w-0 max-md:pr-0 md:[padding-right:var(--special-offers-price-pad-end)]">
       <p
         className="font-black text-[#181111]"
         style={{
@@ -75,13 +69,7 @@ export function SpecialOfferCartFloatingButton({
   onAddToCart,
 }: SpecialOfferCartFloatingButtonProps) {
   return (
-    <div
-      className="pointer-events-none absolute z-30"
-      style={{
-        right: SPECIAL_OFFERS_CART_BUTTON_INSET_RIGHT_PX,
-        bottom: SPECIAL_OFFERS_CART_BUTTON_INSET_BOTTOM_PX,
-      }}
-    >
+    <div className="pointer-events-none absolute max-md:z-50 max-md:bottom-[var(--so-cart-bottom-mobile)] max-md:left-1/2 max-md:right-auto max-md:-translate-x-1/2 md:z-30 md:bottom-[var(--so-cart-bottom-desktop)] md:left-auto md:right-[var(--so-cart-right-desktop)] md:translate-x-0">
       <div className="pointer-events-auto">
         <button
           type="button"

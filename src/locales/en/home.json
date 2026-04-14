@@ -61,6 +61,7 @@
     "pagination_aria": "Special offers carousel pages",
     "page_first_aria": "Go to first page of offers",
     "page_second_aria": "Go to second page of offers",
+    "page_third_aria": "Go to third page of offers",
     "cta": "See more",
     "error_loading": "Could not load offers",
     "try_again": "Try again",

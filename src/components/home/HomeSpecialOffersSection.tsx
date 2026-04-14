@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 
+import { chunkArray } from '../../lib/chunk-array';
 import { apiClient } from '../../lib/api-client';
 import { getStoredLanguage, type LanguageCode } from '../../lib/language';
 import { t } from '../../lib/i18n';
@@ -26,6 +27,7 @@ import {
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
+  SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
   SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP_MOBILE,
@@ -34,7 +36,14 @@ import {
   SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_WIDTH_PERCENT,
   SPECIAL_OFFERS_TITLE_LETTER_SPACING_PX,
   SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX,
+  SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX,
+  SPECIAL_OFFERS_MOBILE_GRID_PAGE_SIZE,
+  SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX,
+  SPECIAL_OFFERS_MOBILE_GRID_SCROLLER_PADDING_BOTTOM_PX,
+  SPECIAL_OFFERS_MOBILE_PAGINATION_PAGE_COUNT,
+  SPECIAL_OFFERS_SCROLLER_PADDING_BOTTOM_DESKTOP_PX,
 } from './home-special-offers.constants';
+import { useIsMaxMd } from './use-is-max-md';
 import { useSpecialOffersCarousel } from './useSpecialOffersCarousel';
 
 const montserratSpecial = Montserrat({
@@ -44,7 +53,7 @@ const montserratSpecial = Montserrat({
 });
 
 const SECTION_CONTAINER_CLASS =
-  'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
+  'w-full max-w-7xl mx-auto px-4 max-md:px-2 sm:px-6 lg:px-8';
 
 /** Pill: default white + gray border; hover marco-yellow — same as REELS. */
 const SPECIAL_OFFERS_NAV_BUTTON_CLASS =
@@ -54,9 +63,16 @@ const SPECIAL_OFFERS_NAV_BUTTON_CLASS =
 const SPECIAL_OFFERS_NAV_ICON_CLASS =
   'h-3 w-3 shrink-0 text-marco-black max-md:h-5 max-md:w-5';
 
-const SPECIAL_OFFERS_CARD_SLOT_MOBILE_CLASS = 'shrink-0 snap-start min-w-0';
+/** Sub-lg (`railSlotWidthPx === null`), non-mobile-grid: one tile width per slide (`md`–`lg`). */
+const SPECIAL_OFFERS_RAIL_SUB_LG_LINEAR_CLASS = `shrink-0 snap-start min-w-0 flex-[0_0_min(100%,${SPECIAL_OFFERS_CARD_MAX_WIDTH_PX}px)] max-w-[min(100%,${SPECIAL_OFFERS_CARD_MAX_WIDTH_PX}px)]`;
 
-const PRODUCTS_LIMIT = 8;
+const PRODUCTS_LIMIT = 12;
+
+const PAGINATION_ARIA_KEYS = [
+  'page_first_aria',
+  'page_second_aria',
+  'page_third_aria',
+] as const;
 
 interface ProductsResponse {
   data: SpecialOfferProduct[];
@@ -74,8 +90,18 @@ export function HomeSpecialOffersSection() {
 
   const isRailVisible = !error && (loading || products.length > 0);
 
+  const isMaxMd = useIsMaxMd();
+  const paginationPageCount = isMaxMd
+    ? SPECIAL_OFFERS_MOBILE_PAGINATION_PAGE_COUNT
+    : 2;
+
   const { scrollerRef, railSlotWidthPx, activePage, scrollPrev, scrollNext, scrollToPage } =
-    useSpecialOffersCarousel({ isRailVisible });
+    useSpecialOffersCarousel({ isRailVisible, paginationPageCount });
+
+  const productChunks = useMemo(
+    () => chunkArray(products, SPECIAL_OFFERS_MOBILE_GRID_PAGE_SIZE),
+    [products],
+  );
 
   useEffect(() => {
     const updateLanguage = () => {
@@ -126,14 +152,11 @@ export function HomeSpecialOffersSection() {
   const railSlotClassName =
     railSlotWidthPx != null
       ? 'shrink-0 snap-start min-w-0'
-      : SPECIAL_OFFERS_CARD_SLOT_MOBILE_CLASS;
+      : SPECIAL_OFFERS_RAIL_SUB_LG_LINEAR_CLASS;
   const railSlotStyle =
     railSlotWidthPx != null
       ? { width: railSlotWidthPx, flexShrink: 0 as const }
-      : {
-          width: `min(100%, ${SPECIAL_OFFERS_CARD_MAX_WIDTH_PX}px)`,
-          flexShrink: 0 as const,
-        };
+      : undefined;
 
   return (
     <section
@@ -251,14 +274,38 @@ export function HomeSpecialOffersSection() {
           <>
             <div
               ref={scrollerRef}
-              className="flex min-w-0 flex-row flex-nowrap gap-4 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="flex min-w-0 flex-row flex-nowrap gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={{
                 gap: `${SPECIAL_OFFERS_CARD_GAP_PX}px`,
                 scrollSnapType: 'x mandatory',
+                paddingBottom: isMaxMd
+                  ? SPECIAL_OFFERS_MOBILE_GRID_SCROLLER_PADDING_BOTTOM_PX
+                  : SPECIAL_OFFERS_SCROLLER_PADDING_BOTTOM_DESKTOP_PX,
               }}
             >
-              {loading
-                ? Array.from({ length: 4 }).map((_, i) => (
+              {loading ? (
+                isMaxMd ? (
+                  <div
+                    className="grid min-h-0 min-w-full shrink-0 snap-start grid-cols-2"
+                    style={{
+                      columnGap: SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX,
+                      rowGap: SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX,
+                    }}
+                  >
+                    {Array.from({ length: SPECIAL_OFFERS_MOBILE_GRID_PAGE_SIZE }).map((_, i) => (
+                      <div key={i} className="flex min-w-0">
+                        <div
+                          className="h-full w-full min-w-0 animate-pulse bg-gray-200"
+                          style={{
+                            height: SPECIAL_OFFERS_CARD_HEIGHT_PX,
+                            borderRadius: SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  Array.from({ length: 4 }).map((_, i) => (
                     <div key={i} className={railSlotClassName} style={railSlotStyle}>
                       <div
                         className="mx-auto w-full max-w-full animate-pulse bg-gray-200"
@@ -270,11 +317,31 @@ export function HomeSpecialOffersSection() {
                       />
                     </div>
                   ))
-                : products.map((product) => (
-                    <div key={product.id} className={railSlotClassName} style={railSlotStyle}>
-                      <SpecialOfferCard product={product} />
-                    </div>
-                  ))}
+                )
+              ) : isMaxMd ? (
+                productChunks.map((chunk, pageIndex) => (
+                  <div
+                    key={`page-${pageIndex}`}
+                    className="grid min-h-0 min-w-full shrink-0 snap-start grid-cols-2"
+                    style={{
+                      columnGap: SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX,
+                      rowGap: SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX,
+                    }}
+                  >
+                    {chunk.map((product) => (
+                      <div key={product.id} className="min-w-0">
+                        <SpecialOfferCard layout="mobileGrid" product={product} />
+                      </div>
+                    ))}
+                  </div>
+                ))
+              ) : (
+                products.map((product) => (
+                  <div key={product.id} className={railSlotClassName} style={railSlotStyle}>
+                    <SpecialOfferCard product={product} />
+                  </div>
+                ))
+              )}
             </div>
 
             {!loading && products.length > 0 ? (
@@ -282,38 +349,30 @@ export function HomeSpecialOffersSection() {
                 <div
                   className="flex flex-row items-center justify-center gap-2.5"
                   style={{
-                    marginTop: `${SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX}px`,
+                    marginTop: `${isMaxMd ? SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX : SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX}px`,
                     gap: `${SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX}px`,
                   }}
                   role="tablist"
                   aria-label={tr('home.special_offers.pagination_aria')}
                 >
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={activePage === 0}
-                    onClick={() => {
-                      scrollToPage(0);
-                    }}
-                    className={`rounded-full transition-colors ${
-                      activePage === 0 ? 'bg-marco-black' : 'bg-gray-300'
-                    }`}
-                    style={paginationDotStyle}
-                    aria-label={tr('home.special_offers.page_first_aria')}
-                  />
-                  <button
-                    type="button"
-                    role="tab"
-                    aria-selected={activePage === 1}
-                    onClick={() => {
-                      scrollToPage(1);
-                    }}
-                    className={`rounded-full transition-colors ${
-                      activePage === 1 ? 'bg-marco-black' : 'bg-gray-300'
-                    }`}
-                    style={paginationDotStyle}
-                    aria-label={tr('home.special_offers.page_second_aria')}
-                  />
+                  {Array.from({ length: paginationPageCount }, (_, dotIndex) => (
+                    <button
+                      key={`special-offers-pagination-${dotIndex}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={activePage === dotIndex}
+                      onClick={() => {
+                        scrollToPage(dotIndex);
+                      }}
+                      className={`rounded-full transition-colors ${
+                        activePage === dotIndex ? 'bg-marco-black' : 'bg-gray-300'
+                      }`}
+                      style={paginationDotStyle}
+                      aria-label={tr(
+                        `home.special_offers.${PAGINATION_ARIA_KEYS[dotIndex]}`,
+                      )}
+                    />
+                  ))}
                 </div>
 
                 <div className="mt-8 flex justify-center">

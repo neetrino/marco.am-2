@@ -3,26 +3,32 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { SPECIAL_OFFERS_SCROLL_FRACTION } from './home-special-offers.constants';
 import { useSpecialOffersRailSlotWidth } from './useSpecialOffersRailSlotWidth';
 
-function getActivePageIndex(el: HTMLDivElement): 0 | 1 {
+function getActivePageIndex(el: HTMLDivElement, pageCount: number): number {
   const maxScroll = el.scrollWidth - el.clientWidth;
   if (maxScroll <= 0) {
     return 0;
   }
-  return el.scrollLeft / maxScroll < 0.5 ? 0 : 1;
+  const ratio = el.scrollLeft / maxScroll;
+  if (pageCount <= 1) {
+    return 0;
+  }
+  return Math.min(pageCount - 1, Math.floor(ratio * pageCount));
 }
 
 export interface UseSpecialOffersCarouselOptions {
   /** When false, scroller is unmounted — clear measured slot width. */
   isRailVisible: boolean;
+  /** Pagination dots / scroll segments (2 on `md+`, 3 on `max-md`). */
+  paginationPageCount: number;
 }
 
 /**
- * Horizontal special-offers strip: arrow scroll, two-step pagination, exact 4-up width (lg+).
+ * Horizontal special-offers strip: arrow scroll, pagination synced to scroll segments.
  */
 export function useSpecialOffersCarousel(options: UseSpecialOffersCarouselOptions) {
-  const { isRailVisible } = options;
+  const { isRailVisible, paginationPageCount } = options;
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [activePage, setActivePage] = useState<0 | 1>(0);
+  const [activePage, setActivePage] = useState(0);
   const railSlotWidthPx = useSpecialOffersRailSlotWidth(scrollerRef, isRailVisible);
 
   const syncActivePage = useCallback(() => {
@@ -30,8 +36,8 @@ export function useSpecialOffersCarousel(options: UseSpecialOffersCarouselOption
     if (!el) {
       return;
     }
-    setActivePage(getActivePageIndex(el));
-  }, []);
+    setActivePage(getActivePageIndex(el, paginationPageCount));
+  }, [paginationPageCount]);
 
   useEffect(() => {
     if (!isRailVisible) {
@@ -62,15 +68,24 @@ export function useSpecialOffersCarousel(options: UseSpecialOffersCarouselOption
     el.scrollBy({ left: delta, behavior: 'smooth' });
   }, []);
 
-  const scrollToPage = useCallback((page: 0 | 1) => {
-    const el = scrollerRef.current;
-    if (!el) {
-      return;
-    }
-    const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
-    const left = page === 0 ? 0 : maxScroll;
-    el.scrollTo({ left, behavior: 'smooth' });
-  }, []);
+  const scrollToPage = useCallback(
+    (page: number) => {
+      const el = scrollerRef.current;
+      if (!el) {
+        return;
+      }
+      const maxPage = paginationPageCount - 1;
+      const clamped = Math.max(0, Math.min(maxPage, page));
+      const maxScroll = Math.max(0, el.scrollWidth - el.clientWidth);
+      if (maxPage <= 0) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+        return;
+      }
+      const left = (maxScroll * clamped) / maxPage;
+      el.scrollTo({ left, behavior: 'smooth' });
+    },
+    [paginationPageCount],
+  );
 
   return {
     scrollerRef,
