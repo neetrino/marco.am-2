@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useCallback, useRef } from 'react';
 
 import { t } from '../lib/i18n';
 import type { LanguageCode } from '../lib/language';
@@ -18,6 +19,12 @@ import {
   SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
   SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX,
 } from './home/home-special-offers.constants';
+import {
+  HOME_BRANDS_AFTER_CTA_MARGIN_TOP_PX,
+  HOME_BRANDS_RAIL_SCROLL_PX,
+  HOME_BRANDS_TITLE_TO_RAIL_GAP_PX,
+} from './home/home-brands.constants';
+import { HomeBrandsHeading } from './home/HomeBrandsHeading';
 import type { SpecialOfferProduct } from './home/special-offer-product.types';
 
 const FEATURED_OFFERS_GRID_CLASS =
@@ -69,6 +76,15 @@ export function FeaturedProductsStrip({
   onRetryFetch,
 }: FeaturedProductsStripProps) {
   const ctaHref = `/products?filter=${encodeURIComponent(FILTER_BY_TAB[activeTab])}`;
+  const brandsRailRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollBrandsRail = useCallback((direction: -1 | 1) => {
+    const el = brandsRailRef.current;
+    if (!el) {
+      return;
+    }
+    el.scrollBy({ left: direction * HOME_BRANDS_RAIL_SCROLL_PX, behavior: 'smooth' });
+  }, []);
 
   if (loading) {
     return (
@@ -139,6 +155,24 @@ export function FeaturedProductsStrip({
         <Link href={ctaHref} className={SPECIAL_OFFERS_CTA_LINK_CLASS}>
           {t(language, 'home.special_offers.cta')}
         </Link>
+      </div>
+
+      <div
+        className="w-full"
+        style={{ marginTop: `${HOME_BRANDS_AFTER_CTA_MARGIN_TOP_PX}px` }}
+      >
+        <HomeBrandsHeading
+          language={language}
+          onPrev={() => scrollBrandsRail(-1)}
+          onNext={() => scrollBrandsRail(1)}
+        />
+        <div
+          ref={brandsRailRef}
+          id="home-brands-rail"
+          className="flex w-full flex-nowrap gap-4 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ marginTop: `${HOME_BRANDS_TITLE_TO_RAIL_GAP_PX}px` }}
+          aria-label={t(language, 'home.brands.rail_aria')}
+        />
       </div>
     </>
   );

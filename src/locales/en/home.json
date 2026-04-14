@@ -84,6 +84,12 @@
     "errorLoading": "Failed to load products",
     "tryAgain": "Try Again",
     "noProducts": "No products in this category."
+  },
+  "brands": {
+    "title": "BRANDS",
+    "carousel_prev_aria": "Scroll brands left",
+    "carousel_next_aria": "Scroll brands right",
+    "rail_aria": "Brands"
   }
 }
 

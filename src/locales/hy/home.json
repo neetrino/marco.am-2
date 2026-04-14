@@ -84,6 +84,12 @@
     "errorLoading": "Չհաջողվեց բեռնել ապրանքները",
     "tryAgain": "Փորձել կրկին",
     "noProducts": "Այս կատեգորիայում ապրանքներ չկան:"
+  },
+  "brands": {
+    "title": "ԲՐԵՆԴՆԵՐ",
+    "carousel_prev_aria": "Տեղափոխել ձախ",
+    "carousel_next_aria": "Տեղափոխել աջ",
+    "rail_aria": "Բրենդների տող"
   }
 }
 

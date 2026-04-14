@@ -84,6 +84,12 @@
     "errorLoading": "Не удалось загрузить товары",
     "tryAgain": "Попробовать снова",
     "noProducts": "В этой категории нет товаров."
+  },
+  "brands": {
+    "title": "БРЕНДЫ",
+    "carousel_prev_aria": "Прокрутить влево",
+    "carousel_next_aria": "Прокрутить вправо",
+    "rail_aria": "Бренды"
   }
 }
 
