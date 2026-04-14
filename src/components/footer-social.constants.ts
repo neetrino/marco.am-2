@@ -66,5 +66,7 @@ export const FOOTER_CONTACT_PHONE_ICON_SRC = '/icons/footer-social/contact-phone
 export const FOOTER_CONTACT_MAIL_ICON_SRC = '/icons/footer-social/contact-mail.svg';
 
 /** Contact column icons — compact (12px / 11px height). */
-export const FOOTER_CONTACT_PHONE_ICON_CLASS = 'mt-0.5 h-3 w-auto shrink-0';
-export const FOOTER_CONTACT_MAIL_ICON_CLASS = 'mt-0.5 h-[11px] w-auto shrink-0';
+export const FOOTER_CONTACT_PHONE_ICON_CLASS =
+  'mt-0.5 h-3 w-auto shrink-0 translate-y-[2px]';
+export const FOOTER_CONTACT_MAIL_ICON_CLASS =
+  'mt-0.5 h-[11px] w-auto shrink-0 translate-y-[3px]';

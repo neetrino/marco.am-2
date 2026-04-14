@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { MapPin } from 'lucide-react';
 
 import { useTranslation } from '../lib/i18n-client';
 import {
@@ -64,7 +65,14 @@ function FooterContactsColumn() {
       >
         {t('common.footer.marco.headings.contacts')}
       </p>
-      <p className={`text-sm leading-relaxed ${FOOTER_MUTED_TEXT_CLASS}`}>{t('contact.address')}</p>
+      <div className="flex items-start gap-3">
+        <MapPin
+          className="mt-0 h-4 w-4 shrink-0 -translate-x-px translate-y-[4px] self-start text-marco-yellow"
+          strokeWidth={2}
+          aria-hidden
+        />
+        <p className={`text-sm leading-relaxed ${FOOTER_MUTED_TEXT_CLASS}`}>{t('contact.address')}</p>
+      </div>
       <div className="flex items-start gap-3">
         <img
           src={FOOTER_CONTACT_PHONE_ICON_SRC}
