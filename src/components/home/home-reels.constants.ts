@@ -97,15 +97,20 @@ export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX = 24;
 export const REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX = 44;
 export const REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX = 34;
 
-/** Space between the reel rail and dot pagination. */
-export const REELS_RAIL_TO_PAGINATION_GAP_PX = 20;
+/** Space between the reel rail and dot pagination (`max-md`). */
+export const REELS_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 20;
+/** `md+` — slightly more air above the two dots. */
+export const REELS_RAIL_TO_PAGINATION_GAP_DESKTOP_PX = 25;
 
-/** Dot pagination — scroll range split into this many segments (synced with `useHomeReelsCarousel`). */
-export const REELS_PAGINATION_PAGE_COUNT = 3;
+/** Mobile: three scroll segments (three tiles per view). */
+export const REELS_PAGINATION_PAGE_COUNT_MOBILE = 3;
+/** Desktop: two segments (wider rail, fewer scroll stops). */
+export const REELS_PAGINATION_PAGE_COUNT_DESKTOP = 2;
 
 /** Dot pagination affordance. */
 export const REELS_PAGINATION_DOT_SIZE_PX = 8;
-export const REELS_PAGINATION_DOT_GAP_PX = 6;
+export const REELS_PAGINATION_DOT_GAP_MOBILE_PX = 6;
+export const REELS_PAGINATION_DOT_GAP_DESKTOP_PX = 10;
 
 /** Default destination for reel tiles until category slugs are wired. */
 export const REELS_ITEM_HREF = '/products' as const;

@@ -23,10 +23,13 @@ import {
   REELS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
   REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX,
   REELS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
-  REELS_RAIL_TO_PAGINATION_GAP_PX,
-  REELS_PAGINATION_DOT_GAP_PX,
+  REELS_RAIL_TO_PAGINATION_GAP_DESKTOP_PX,
+  REELS_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
+  REELS_PAGINATION_DOT_GAP_DESKTOP_PX,
+  REELS_PAGINATION_DOT_GAP_MOBILE_PX,
   REELS_PAGINATION_DOT_SIZE_PX,
-  REELS_PAGINATION_PAGE_COUNT,
+  REELS_PAGINATION_PAGE_COUNT_DESKTOP,
+  REELS_PAGINATION_PAGE_COUNT_MOBILE,
   REELS_TITLE_FONT_SIZE_CLAMP,
   REELS_TITLE_FONT_SIZE_CLAMP_MOBILE,
   REELS_TITLE_LETTER_SPACING_PX,
@@ -40,6 +43,7 @@ import {
   REELS_TITLE_BAR_EXTEND_RIGHT_PX,
 } from './home-reels.constants';
 import { useHomeReelsCarousel } from './useHomeReelsCarousel';
+import { useIsMaxMd } from './use-is-max-md';
 
 const montserratReels = Montserrat({
   subsets: ['latin'],
@@ -112,8 +116,18 @@ const REELS_NAV_ICON_CLASS =
  */
 export function HomeReelsSection() {
   const { t } = useTranslation();
+  const isMaxMd = useIsMaxMd();
+  const reelsPageCount = isMaxMd
+    ? REELS_PAGINATION_PAGE_COUNT_MOBILE
+    : REELS_PAGINATION_PAGE_COUNT_DESKTOP;
+  const reelsDotGapPx = isMaxMd
+    ? REELS_PAGINATION_DOT_GAP_MOBILE_PX
+    : REELS_PAGINATION_DOT_GAP_DESKTOP_PX;
+  const reelsRailToPaginationGapPx = isMaxMd
+    ? REELS_RAIL_TO_PAGINATION_GAP_MOBILE_PX
+    : REELS_RAIL_TO_PAGINATION_GAP_DESKTOP_PX;
   const { scrollerRef, scrollPrev, scrollNext, activePage, scrollToPage } =
-    useHomeReelsCarousel();
+    useHomeReelsCarousel({ pageCount: reelsPageCount });
 
   const fullTitle = t('home.reels_title');
 
@@ -245,13 +259,13 @@ export function HomeReelsSection() {
         <div
           className="flex flex-row items-center justify-center"
           style={{
-            marginTop: `${REELS_RAIL_TO_PAGINATION_GAP_PX}px`,
-            gap: `${REELS_PAGINATION_DOT_GAP_PX}px`,
+            marginTop: `${reelsRailToPaginationGapPx}px`,
+            gap: `${reelsDotGapPx}px`,
           }}
           role="group"
           aria-label={t('home.reels_pagination_aria')}
         >
-          {Array.from({ length: REELS_PAGINATION_PAGE_COUNT }, (_, page) => (
+          {Array.from({ length: reelsPageCount }, (_, page) => (
             <button
               key={page}
               type="button"

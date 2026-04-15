@@ -319,21 +319,27 @@ export const SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX = 32;
 
 /** Dot pagination below the rail. */
 export const SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX = 8;
-export const SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX = 6;
+/** Dot row — `max-md` (tighter). */
+export const SPECIAL_OFFERS_PAGINATION_DOT_GAP_MOBILE_PX = 6;
+/** Dot row — `md+` (slightly wider spacing between dots). */
+export const SPECIAL_OFFERS_PAGINATION_DOT_GAP_DESKTOP_PX = 10;
 export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX = 42;
 
 /** Extra space above dot row on `max-md` (2×2 grid + floating cart needs more air). */
 export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 58;
 
-/** Space between dot row and «Տեսնել ավելին» CTA (px) — shared with featured strip. */
-export const SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX = 30;
+/** Space between dot row and «Տեսնել ավելին» CTA — `max-md`. */
+export const SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_MOBILE_PX = 30;
+/** `md+` — tighter stack under decorative / pagination dots. */
+export const SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_DESKTOP_PX = 20;
 
 /**
- * «Հատուկ առաջարկներ» section only — tighter rail → dots → CTA stack than featured strip.
+ * «Հատուկ առաջարկներ» section — rail → dots → CTA (`md+`: more air under the card rail).
  */
-export const SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_PX = 18;
+export const SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_DESKTOP_PX = 42;
 export const SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 24;
-export const SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_PX = 24;
+export const SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_DESKTOP_PX = 20;
+export const SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_MOBILE_PX = 24;
 
 /**
  * Shared «See more» pill — slightly smaller than legacy min-w-[200px] px-10 py-4 text-base.

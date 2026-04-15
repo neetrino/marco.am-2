@@ -8,8 +8,8 @@ export const FEATURED_SECTION_PADDING_TOP_CLASS = 'pt-6 sm:pt-8';
 /** Space below featured section (above footer). */
 export const FEATURED_SECTION_PADDING_BOTTOM_CLASS = 'pb-[31px]';
 
-/** Vertical breathing room around app + gradient/secondary banners (below grid, above section end). */
-export const FEATURED_HOME_BANNERS_BLOCK_PADDING_Y_CLASS = 'pt-8 pb-8 md:pt-10 md:pb-10';
+/** Vertical breathing room around app + gradient banners (`md+` top nudged for tighter gap after brands). */
+export const FEATURED_HOME_BANNERS_BLOCK_PADDING_Y_CLASS = 'pt-8 pb-8 md:pt-8 md:pb-10';
 
 /** Title — slightly smaller than original Figma 54px cap. */
 export const FEATURED_PRODUCTS_TITLE_FONT_SIZE_CLAMP = 'clamp(22px, 3.6vw, 40px)';
@@ -46,6 +46,12 @@ export const FEATURED_PRODUCTS_VISIBLE_COUNT = 8;
  * Tailwind classes — paired with horizontal gaps in `FeaturedProductsStrip`.
  */
 export const FEATURED_PRODUCTS_GRID_GAP_Y_CLASS = 'gap-y-8 md:gap-y-10';
+
+/**
+ * «Նորույթներ» `max-md` only — extra grid → dots / dots → first CTA (desktop: `SPECIAL_OFFERS_RAIL_TO_PAGINATION_*` / `SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_DESKTOP_PX`).
+ */
+export const FEATURED_PRODUCTS_GRID_TO_DOTS_GAP_MOBILE_PX = 72;
+export const FEATURED_PRODUCTS_DOTS_TO_CTA_GAP_MOBILE_PX = 42;
 
 /**
  * Decorative dots above CTA (visual match to «Հատուկ առաջարկներ»; grid is not paginated).

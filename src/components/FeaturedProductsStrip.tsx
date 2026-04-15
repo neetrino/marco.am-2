@@ -6,9 +6,11 @@ import { useCallback, useRef } from 'react';
 import { t } from '../lib/i18n';
 import type { LanguageCode } from '../lib/language';
 import {
+  FEATURED_PRODUCTS_DOTS_TO_CTA_GAP_MOBILE_PX,
   FEATURED_PRODUCTS_FOOTER_DOT_COUNT_DESKTOP,
   FEATURED_PRODUCTS_FOOTER_DOT_COUNT_MOBILE,
   FEATURED_PRODUCTS_GRID_GAP_Y_CLASS,
+  FEATURED_PRODUCTS_GRID_TO_DOTS_GAP_MOBILE_PX,
   FEATURED_PRODUCTS_VISIBLE_COUNT,
 } from './featured-products-tabs.constants';
 import { SpecialOfferCard } from './home/SpecialOfferCard';
@@ -16,15 +18,17 @@ import {
   SPECIAL_OFFERS_CARD_HEIGHT_PX,
   SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
   SPECIAL_OFFERS_CTA_LINK_CLASS,
-  SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX,
+  SPECIAL_OFFERS_PAGINATION_DOT_GAP_DESKTOP_PX,
+  SPECIAL_OFFERS_PAGINATION_DOT_GAP_MOBILE_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
-  SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX,
-  SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
+  SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_DESKTOP_PX,
+  SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_MOBILE_PX,
   SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX,
 } from './home/home-special-offers.constants';
 import {
   HOME_BRANDS_AFTER_CTA_MARGIN_TOP_PX,
-  HOME_BRANDS_BLOCK_PADDING_BOTTOM_PX,
+  HOME_BRANDS_BLOCK_PADDING_BOTTOM_DESKTOP_PX,
+  HOME_BRANDS_BLOCK_PADDING_BOTTOM_MOBILE_PX,
   HOME_BRANDS_GRID_TO_DOTS_GAP_MOBILE_PX,
   HOME_BRANDS_GRID_TO_DOTS_GAP_PX,
   HOME_BRANDS_RAIL_SCROLL_PX,
@@ -84,6 +88,19 @@ export function FeaturedProductsStrip({
     ? FEATURED_PRODUCTS_FOOTER_DOT_COUNT_MOBILE
     : FEATURED_PRODUCTS_FOOTER_DOT_COUNT_DESKTOP;
 
+  const featuredGridToDotsGapPx = isMaxMd
+    ? FEATURED_PRODUCTS_GRID_TO_DOTS_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX;
+  const featuredDotsToCtaGapPx = isMaxMd
+    ? FEATURED_PRODUCTS_DOTS_TO_CTA_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_DESKTOP_PX;
+  const sharedDotsToCtaGapPx = isMaxMd
+    ? SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_DESKTOP_PX;
+  const paginationDotGapPx = isMaxMd
+    ? SPECIAL_OFFERS_PAGINATION_DOT_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_PAGINATION_DOT_GAP_DESKTOP_PX;
+
   const scrollBrandsRail = useCallback((direction: -1 | 1) => {
     const el = brandsRailRef.current;
     if (!el) {
@@ -140,8 +157,8 @@ export function FeaturedProductsStrip({
       <div
         className="flex flex-row items-center justify-center"
         style={{
-          marginTop: `${isMaxMd ? SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX : SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX}px`,
-          gap: `${SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX}px`,
+          marginTop: `${featuredGridToDotsGapPx}px`,
+          gap: `${paginationDotGapPx}px`,
         }}
         aria-hidden
       >
@@ -156,7 +173,7 @@ export function FeaturedProductsStrip({
 
       <div
         className="flex justify-center"
-        style={{ marginTop: SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX }}
+        style={{ marginTop: featuredDotsToCtaGapPx }}
       >
         <Link href={ctaHref} className={SPECIAL_OFFERS_CTA_LINK_CLASS}>
           {t(language, 'home.special_offers.cta')}
@@ -167,7 +184,7 @@ export function FeaturedProductsStrip({
         className="w-full"
         style={{
           marginTop: `${HOME_BRANDS_AFTER_CTA_MARGIN_TOP_PX}px`,
-          paddingBottom: `${HOME_BRANDS_BLOCK_PADDING_BOTTOM_PX}px`,
+          paddingBottom: `${isMaxMd ? HOME_BRANDS_BLOCK_PADDING_BOTTOM_MOBILE_PX : HOME_BRANDS_BLOCK_PADDING_BOTTOM_DESKTOP_PX}px`,
         }}
       >
         <HomeBrandsHeading
@@ -189,7 +206,7 @@ export function FeaturedProductsStrip({
           className="flex flex-row items-center justify-center"
           style={{
             marginTop: `${isMaxMd ? HOME_BRANDS_GRID_TO_DOTS_GAP_MOBILE_PX : HOME_BRANDS_GRID_TO_DOTS_GAP_PX}px`,
-            gap: `${SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX}px`,
+            gap: `${paginationDotGapPx}px`,
           }}
           aria-hidden
         >
@@ -204,7 +221,7 @@ export function FeaturedProductsStrip({
 
         <div
           className="flex justify-center"
-          style={{ marginTop: SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX }}
+          style={{ marginTop: sharedDotsToCtaGapPx }}
         >
           <Link href="/products" className={SPECIAL_OFFERS_CTA_LINK_CLASS}>
             {t(language, 'home.special_offers.cta')}

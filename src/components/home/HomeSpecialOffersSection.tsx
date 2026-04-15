@@ -25,7 +25,8 @@ import {
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_HEIGHT_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
-  SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX,
+  SPECIAL_OFFERS_PAGINATION_DOT_GAP_DESKTOP_PX,
+  SPECIAL_OFFERS_PAGINATION_DOT_GAP_MOBILE_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP_MOBILE,
@@ -35,9 +36,10 @@ import {
   SPECIAL_OFFERS_TITLE_LETTER_SPACING_PX,
   SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX,
   SPECIAL_OFFERS_TITLE_INSET_LEFT_PX,
-  SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_PX,
+  SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_DESKTOP_PX,
+  SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_MOBILE_PX,
+  SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_DESKTOP_PX,
   SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
-  SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_PX,
   SPECIAL_OFFERS_CTA_LINK_CLASS,
   SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX,
   SPECIAL_OFFERS_MOBILE_GRID_PAGE_SIZE,
@@ -151,6 +153,17 @@ export function HomeSpecialOffersSection() {
     width: SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
     height: SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
   } as const;
+
+  const paginationDotGapPx = isMaxMd
+    ? SPECIAL_OFFERS_PAGINATION_DOT_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_PAGINATION_DOT_GAP_DESKTOP_PX;
+
+  const sectionRailToPaginationGapPx = isMaxMd
+    ? SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_DESKTOP_PX;
+  const sectionPaginationToCtaGapPx = isMaxMd
+    ? SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_MOBILE_PX
+    : SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_DESKTOP_PX;
 
   const railSlotClassName =
     railSlotWidthPx != null
@@ -355,8 +368,8 @@ export function HomeSpecialOffersSection() {
                 <div
                   className="flex flex-row items-center justify-center"
                   style={{
-                    marginTop: `${isMaxMd ? SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX : SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_PX}px`,
-                    gap: `${SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX}px`,
+                    marginTop: `${sectionRailToPaginationGapPx}px`,
+                    gap: `${paginationDotGapPx}px`,
                   }}
                   role="tablist"
                   aria-label={tr('home.special_offers.pagination_aria')}
@@ -383,7 +396,7 @@ export function HomeSpecialOffersSection() {
 
                 <div
                   className="flex justify-center"
-                  style={{ marginTop: SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_PX }}
+                  style={{ marginTop: sectionPaginationToCtaGapPx }}
                 >
                   <Link
                     href="/products?filter=featured"
