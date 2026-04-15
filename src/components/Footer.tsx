@@ -12,6 +12,8 @@ import {
   FOOTER_BRAND_LOGO_BOX_CLASS,
   FOOTER_BRAND_LOGO_SHIFT_CLASS,
   FOOTER_COMPANY_LINKS,
+  FOOTER_GRID_COMPANY_SUPPORT_WRAPPER_CLASS,
+  FOOTER_GRID_CONTACTS_WRAPPER_CLASS,
   FOOTER_HEADING_TEXT_CLASS,
   FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS,
   FOOTER_NAV_COLUMN_HEADING_LIST_GAP_CLASS,
@@ -47,7 +49,9 @@ function FooterNavColumn({
   const { t } = useTranslation();
 
   return (
-    <div className={`flex flex-col ${FOOTER_NAV_COLUMN_HEADING_LIST_GAP_CLASS}`}>
+    <div
+      className={`inline-flex max-w-full flex-col ${FOOTER_NAV_COLUMN_HEADING_LIST_GAP_CLASS}`}
+    >
       <p
         className={`text-xs font-bold uppercase ${FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS} ${FOOTER_NAV_COLUMN_HEADING_TRACK_CLASS} ${FOOTER_HEADING_TEXT_CLASS}`}
       >
@@ -72,7 +76,7 @@ function FooterContactsColumn() {
   const telHref = `tel:${phoneRaw.replace(/\s/g, '')}`;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="inline-flex max-w-full flex-col gap-4">
       <p
         className={`text-xs font-bold uppercase tracking-[0.05em] ${FOOTER_HEADING_TEXT_CLASS}`}
       >
@@ -178,15 +182,21 @@ export function Footer() {
             </p>
           </div>
 
-          <FooterNavColumn
-            titleKey="common.footer.marco.headings.company"
-            items={FOOTER_COMPANY_LINKS}
-          />
-          <FooterNavColumn
-            titleKey="common.footer.marco.headings.support"
-            items={FOOTER_SUPPORT_LINKS}
-          />
-          <FooterContactsColumn />
+          <div className={FOOTER_GRID_COMPANY_SUPPORT_WRAPPER_CLASS}>
+            <FooterNavColumn
+              titleKey="common.footer.marco.headings.company"
+              items={FOOTER_COMPANY_LINKS}
+            />
+          </div>
+          <div className={FOOTER_GRID_COMPANY_SUPPORT_WRAPPER_CLASS}>
+            <FooterNavColumn
+              titleKey="common.footer.marco.headings.support"
+              items={FOOTER_SUPPORT_LINKS}
+            />
+          </div>
+          <div className={FOOTER_GRID_CONTACTS_WRAPPER_CLASS}>
+            <FooterContactsColumn />
+          </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-8 border-t border-black/10 pt-8 lg:flex-row lg:items-center lg:justify-between lg:gap-3 xl:gap-5">

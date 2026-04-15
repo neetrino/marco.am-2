@@ -32,6 +32,16 @@ export const FOOTER_NAV_COLUMN_LINK_LEADING_CLASS = 'leading-tight';
 export const NEETRINO_STUDIO_HREF = 'https://neetrino.com/';
 
 /**
+ * Company / Support grid cells only: flush right on `lg+`, nudged left vs the strip edge (tune `-translate-x-*`).
+ */
+export const FOOTER_GRID_COMPANY_SUPPORT_WRAPPER_CLASS =
+  'lg:flex lg:w-full lg:justify-end lg:-translate-x-[49px]';
+
+/** Contacts column: push block to the right edge of the grid cell on `lg+`. */
+export const FOOTER_GRID_CONTACTS_WRAPPER_CLASS =
+  'lg:flex lg:w-full lg:justify-end';
+
+/**
  * Brand logo frame — larger than legacy 91×81; same ~91:81 aspect.
  * Blurb overlays the lower area via {@link FOOTER_BRAND_DESCRIPTION_OVERLAP_CLASS} (logo position unchanged).
  */
