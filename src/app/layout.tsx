@@ -32,7 +32,7 @@ export default async function RootLayout({
       <body className={`${inter.className} bg-white text-gray-900 antialiased min-h-full`}>
         <Suspense fallback={null}>
           <ClientProviders>
-            <div className="flex min-h-screen flex-col pb-16 lg:pb-0">
+            <div className="flex min-h-screen flex-col pb-24 lg:pb-0">
               <Header initialLanguage={initialLanguage} />
               <Breadcrumb />
               <main className="flex-1 w-full">
