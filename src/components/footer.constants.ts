@@ -16,6 +16,19 @@ export const FOOTER_HEADING_TEXT_CLASS = 'text-[#181111]';
  */
 export const FOOTER_NAV_COLUMN_HEADING_TRACK_CLASS = 'tracking-normal';
 
+/**
+ * Tighter word spacing in Company / Support link labels (Armenian multi-word lines).
+ */
+export const FOOTER_NAV_COLUMN_LINK_WORD_SPACING_CLASS = '[word-spacing:-0.06em]';
+
+/** Compact vertical rhythm: heading → list and between list rows (was gap-3 / gap-2). */
+export const FOOTER_NAV_COLUMN_HEADING_LIST_GAP_CLASS = 'gap-2';
+export const FOOTER_NAV_COLUMN_LIST_ITEM_GAP_CLASS = 'gap-1';
+
+/** Tighter line-height for Company / Support heading + links (shorter column). */
+export const FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS = 'leading-tight';
+export const FOOTER_NAV_COLUMN_LINK_LEADING_CLASS = 'leading-tight';
+
 export const NEETRINO_STUDIO_HREF = 'https://neetrino.com/';
 
 /**
@@ -37,12 +50,12 @@ export const FOOTER_BRAND_LOGO_SHIFT_CLASS =
 export const FOOTER_BRAND_COLUMN_GAP_CLASS = 'gap-0';
 
 /**
- * Brand tagline: anchored to the bottom of the logo frame (`bottom-0`), above the mark (`z-10`).
+ * Brand tagline: anchored above the bottom of the logo column (`bottom-[21px]`).
  * `whitespace-pre` — only `\n` from locale line breaks (no extra wraps like `pre-line`).
  * `overflow-x-auto` — on very narrow columns, horizontal scroll instead of breaking lines.
  */
 export const FOOTER_BRAND_DESCRIPTION_OVERLAP_CLASS =
-  'absolute bottom-0 left-0 z-10 max-w-full overflow-x-auto whitespace-pre';
+  'absolute bottom-[21px] left-0 z-10 max-w-full overflow-x-auto whitespace-pre';
 
 /** Smaller than `text-xs` so the blurb stays subtle over the logo. */
 export const FOOTER_BRAND_DESCRIPTION_TEXT_CLASS =

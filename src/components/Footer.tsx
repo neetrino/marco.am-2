@@ -13,7 +13,12 @@ import {
   FOOTER_BRAND_LOGO_SHIFT_CLASS,
   FOOTER_COMPANY_LINKS,
   FOOTER_HEADING_TEXT_CLASS,
+  FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS,
+  FOOTER_NAV_COLUMN_HEADING_LIST_GAP_CLASS,
   FOOTER_NAV_COLUMN_HEADING_TRACK_CLASS,
+  FOOTER_NAV_COLUMN_LINK_LEADING_CLASS,
+  FOOTER_NAV_COLUMN_LINK_WORD_SPACING_CLASS,
+  FOOTER_NAV_COLUMN_LIST_ITEM_GAP_CLASS,
   FOOTER_MUTED_TEXT_CLASS,
   FOOTER_SUPPORT_LINKS,
   FOOTER_SURFACE_CLASS,
@@ -30,6 +35,8 @@ import { FooterSocialLinks } from './FooterSocialLinks';
 
 const FOOTER_LINK_CLASS = `${FOOTER_MUTED_TEXT_CLASS} text-xs transition-colors hover:text-marco-black`;
 
+const FOOTER_NAV_COLUMN_LINK_CLASS = `${FOOTER_LINK_CLASS} ${FOOTER_NAV_COLUMN_LINK_WORD_SPACING_CLASS} ${FOOTER_NAV_COLUMN_LINK_LEADING_CLASS}`;
+
 function FooterNavColumn({
   titleKey,
   items,
@@ -40,16 +47,16 @@ function FooterNavColumn({
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className={`flex flex-col ${FOOTER_NAV_COLUMN_HEADING_LIST_GAP_CLASS}`}>
       <p
-        className={`text-xs font-bold uppercase ${FOOTER_NAV_COLUMN_HEADING_TRACK_CLASS} ${FOOTER_HEADING_TEXT_CLASS}`}
+        className={`text-xs font-bold uppercase ${FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS} ${FOOTER_NAV_COLUMN_HEADING_TRACK_CLASS} ${FOOTER_HEADING_TEXT_CLASS}`}
       >
         {t(titleKey)}
       </p>
-      <ul className="flex flex-col gap-2">
+      <ul className={`flex flex-col ${FOOTER_NAV_COLUMN_LIST_ITEM_GAP_CLASS}`}>
         {items.map((item) => (
           <li key={`${item.href}-${item.labelKey}`}>
-            <Link href={item.href} className={FOOTER_LINK_CLASS}>
+            <Link href={item.href} className={FOOTER_NAV_COLUMN_LINK_CLASS}>
               {t(item.labelKey)}
             </Link>
           </li>
