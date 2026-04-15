@@ -325,8 +325,21 @@ export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX = 42;
 /** Extra space above dot row on `max-md` (2×2 grid + floating cart needs more air). */
 export const SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 58;
 
-/** Space between dot row and «Տեսնել ավելին» CTA (px). */
+/** Space between dot row and «Տեսնել ավելին» CTA (px) — shared with featured strip. */
 export const SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX = 30;
+
+/**
+ * «Հատուկ առաջարկներ» section only — tighter rail → dots → CTA stack than featured strip.
+ */
+export const SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_PX = 18;
+export const SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX = 24;
+export const SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_PX = 24;
+
+/**
+ * Shared «See more» pill — slightly smaller than legacy min-w-[200px] px-10 py-4 text-base.
+ */
+export const SPECIAL_OFFERS_CTA_LINK_CLASS =
+  'inline-flex min-w-[176px] items-center justify-center rounded-full bg-marco-black px-8 py-3 text-sm font-bold text-white transition-transform hover:-translate-y-0.5';
 
 /**
  * Brand line — Tailwind text classes (Figma reference).

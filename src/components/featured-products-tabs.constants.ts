@@ -50,4 +50,7 @@ export const FEATURED_PRODUCTS_GRID_GAP_Y_CLASS = 'gap-y-8 md:gap-y-10';
 /**
  * Decorative dots above CTA (visual match to «Հատուկ առաջարկներ»; grid is not paginated).
  */
-export const FEATURED_PRODUCTS_FOOTER_DOT_COUNT = 2;
+export const FEATURED_PRODUCTS_FOOTER_DOT_COUNT_DESKTOP = 2;
+
+/** Mobile: three dots above «Տեսնել ավելին». */
+export const FEATURED_PRODUCTS_FOOTER_DOT_COUNT_MOBILE = 3;

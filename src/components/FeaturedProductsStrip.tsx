@@ -6,7 +6,8 @@ import { useCallback, useRef } from 'react';
 import { t } from '../lib/i18n';
 import type { LanguageCode } from '../lib/language';
 import {
-  FEATURED_PRODUCTS_FOOTER_DOT_COUNT,
+  FEATURED_PRODUCTS_FOOTER_DOT_COUNT_DESKTOP,
+  FEATURED_PRODUCTS_FOOTER_DOT_COUNT_MOBILE,
   FEATURED_PRODUCTS_GRID_GAP_Y_CLASS,
   FEATURED_PRODUCTS_VISIBLE_COUNT,
 } from './featured-products-tabs.constants';
@@ -14,6 +15,7 @@ import { SpecialOfferCard } from './home/SpecialOfferCard';
 import {
   SPECIAL_OFFERS_CARD_HEIGHT_PX,
   SPECIAL_OFFERS_CARD_SHELL_RADIUS_PX,
+  SPECIAL_OFFERS_CTA_LINK_CLASS,
   SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
   SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX,
@@ -43,9 +45,6 @@ const featuredFooterDotStyle = {
   width: SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
   height: SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
 } as const;
-
-const SPECIAL_OFFERS_CTA_LINK_CLASS =
-  'inline-flex min-w-[200px] items-center justify-center rounded-full bg-marco-black px-10 py-4 text-base font-bold text-white transition-transform hover:-translate-y-0.5';
 
 type FilterType = 'new' | 'featured' | 'bestseller';
 
@@ -81,6 +80,9 @@ export function FeaturedProductsStrip({
 }: FeaturedProductsStripProps) {
   const ctaHref = `/products?filter=${encodeURIComponent(FILTER_BY_TAB[activeTab])}`;
   const brandsRailRef = useRef<HTMLDivElement | null>(null);
+  const footerDotCount = isMaxMd
+    ? FEATURED_PRODUCTS_FOOTER_DOT_COUNT_MOBILE
+    : FEATURED_PRODUCTS_FOOTER_DOT_COUNT_DESKTOP;
 
   const scrollBrandsRail = useCallback((direction: -1 | 1) => {
     const el = brandsRailRef.current;
@@ -143,7 +145,7 @@ export function FeaturedProductsStrip({
         }}
         aria-hidden
       >
-        {Array.from({ length: FEATURED_PRODUCTS_FOOTER_DOT_COUNT }, (_, i) => (
+        {Array.from({ length: footerDotCount }, (_, i) => (
           <span
             key={`featured-footer-dot-${i}`}
             className={i === 0 ? 'rounded-full bg-marco-black' : 'rounded-full bg-gray-300'}
@@ -191,7 +193,7 @@ export function FeaturedProductsStrip({
           }}
           aria-hidden
         >
-          {Array.from({ length: FEATURED_PRODUCTS_FOOTER_DOT_COUNT }, (_, i) => (
+          {Array.from({ length: footerDotCount }, (_, i) => (
             <span
               key={`brands-footer-dot-${i}`}
               className={i === 0 ? 'rounded-full bg-marco-black' : 'rounded-full bg-gray-300'}

@@ -27,8 +27,6 @@ import {
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX,
   SPECIAL_OFFERS_PAGINATION_DOT_SIZE_PX,
-  SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
-  SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP,
   SPECIAL_OFFERS_TITLE_FONT_SIZE_CLAMP_MOBILE,
   SPECIAL_OFFERS_TITLE_HIGHLIGHT_UNDERLINE_GAP_PX,
@@ -37,7 +35,10 @@ import {
   SPECIAL_OFFERS_TITLE_LETTER_SPACING_PX,
   SPECIAL_OFFERS_TITLE_TO_RAIL_GAP_PX,
   SPECIAL_OFFERS_TITLE_INSET_LEFT_PX,
-  SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX,
+  SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_PX,
+  SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX,
+  SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_PX,
+  SPECIAL_OFFERS_CTA_LINK_CLASS,
   SPECIAL_OFFERS_MOBILE_GRID_COLUMN_GAP_PX,
   SPECIAL_OFFERS_MOBILE_GRID_PAGE_SIZE,
   SPECIAL_OFFERS_MOBILE_GRID_ROW_GAP_PX,
@@ -354,7 +355,7 @@ export function HomeSpecialOffersSection() {
                 <div
                   className="flex flex-row items-center justify-center gap-2.5"
                   style={{
-                    marginTop: `${isMaxMd ? SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_MOBILE_PX : SPECIAL_OFFERS_RAIL_TO_PAGINATION_GAP_PX}px`,
+                    marginTop: `${isMaxMd ? SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_MOBILE_PX : SPECIAL_OFFERS_SECTION_RAIL_TO_PAGINATION_GAP_PX}px`,
                     gap: `${SPECIAL_OFFERS_PAGINATION_DOT_GAP_PX}px`,
                   }}
                   role="tablist"
@@ -382,11 +383,11 @@ export function HomeSpecialOffersSection() {
 
                 <div
                   className="flex justify-center"
-                  style={{ marginTop: SPECIAL_OFFERS_PAGINATION_TO_CTA_GAP_PX }}
+                  style={{ marginTop: SPECIAL_OFFERS_SECTION_PAGINATION_TO_CTA_GAP_PX }}
                 >
                   <Link
                     href="/products?filter=featured"
-                    className="inline-flex min-w-[200px] items-center justify-center rounded-full bg-marco-black px-10 py-4 text-base font-bold text-white transition-transform hover:-translate-y-0.5"
+                    className={SPECIAL_OFFERS_CTA_LINK_CLASS}
                   >
                     {tr('home.special_offers.cta')}
                   </Link>
