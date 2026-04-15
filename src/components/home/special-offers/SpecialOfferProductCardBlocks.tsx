@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { MouseEvent } from 'react';
-import { CompareIcon } from '@/components/icons/CompareIcon';
 import { ProductImagePlaceholder } from '@/components/ProductImagePlaceholder';
 import { ProductLabels } from '@/components/ProductLabels';
 import type { SpecialOfferProduct } from './SpecialOfferProductCardTypes';
@@ -12,6 +11,9 @@ const STAR_FILL_CLASS = 'text-[#ffca03]';
 
 /** Figma export — thin outline heart (black on transparent); inverted on black button. */
 const SPECIAL_OFFER_WISHLIST_OUTLINE_SRC = '/images/special-offers/wishlist-heart-outline.png' as const;
+
+/** Figma export — full black disc + white exchange/compare paths (use as entire control, no extra bg). */
+const SPECIAL_OFFER_COMPARE_CIRCLE_SRC = '/images/special-offers/compare-exchange-circle.png' as const;
 
 /** Figma 101:3500 — exact vector path (asset was mis-saved as .png; inline SVG avoids MIME mismatch) */
 function SpecialOfferAddToCartGlyph({ className }: { className?: string }) {
@@ -76,6 +78,20 @@ function WishlistGlyph({ filled, size }: { filled: boolean; size: number }) {
   );
 }
 
+/** Raster includes black disc + white paths — no extra `bg-black` on the button. */
+function CompareCircleGlyph() {
+  return (
+    <Image
+      src={SPECIAL_OFFER_COMPARE_CIRCLE_SRC}
+      alt=""
+      width={80}
+      height={80}
+      className="pointer-events-none h-9 w-9 shrink-0 rounded-full object-contain md:h-10 md:w-10"
+      aria-hidden
+    />
+  );
+}
+
 export function SpecialOfferWarrantyBadge({ line1, line2 }: { line1: string; line2: string }) {
   return (
     <div className="pointer-events-none absolute left-3 top-3 z-20 rounded-2xl bg-[#1e1e1e] px-2 py-2 text-center leading-[15px] md:left-4 md:top-4">
@@ -114,11 +130,13 @@ export function SpecialOfferSideActions({
       <button
         type="button"
         onClick={onCompare}
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-sm transition-opacity hover:opacity-90 md:size-10"
+        className={`flex size-9 shrink-0 items-center justify-center overflow-visible rounded-full p-0 shadow-sm transition-opacity hover:opacity-90 md:size-10 ${
+          isInCompare ? 'ring-2 ring-[#ffca03] ring-offset-2 ring-offset-[#f6f6f6]' : ''
+        }`}
         title={isInCompare ? t('common.messages.removedFromCompare') : t('common.messages.addedToCompare')}
         aria-label={isInCompare ? t('common.ariaLabels.removeFromCompare') : t('common.ariaLabels.addToCompare')}
       >
-        <CompareIcon isActive={isInCompare} size={18} className="text-white" />
+        <CompareCircleGlyph />
       </button>
       {product.discountPercent != null && product.discountPercent > 0 ? (
         <div className="rounded-full bg-[#ffca03] px-2 py-1">
