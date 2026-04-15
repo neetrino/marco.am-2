@@ -24,6 +24,9 @@ import {
   HERO_MOBILE_FLOOR_SHADOW_LEFT_FRAC,
   HERO_MOBILE_FLOOR_SHADOW_TOP_FRAC,
   HERO_MOBILE_FLOOR_SHADOW_WIDTH_FRAC,
+  HERO_MOBILE_SLATE_LABEL_FONT_SIZE_PX,
+  HERO_MOBILE_SLATE_LABEL_LINE_HEIGHT_PX,
+  HERO_MOBILE_SLATE_LABEL_MAX_WIDTH_PX,
   HERO_PROMO_CHAIR_IMAGE_NATURAL_HEIGHT_PX,
   HERO_PROMO_CHAIR_IMAGE_NATURAL_WIDTH_PX,
   HERO_PROMO_CHAIR_IMAGE_SRC,
@@ -63,8 +66,6 @@ import {
   HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_X_PX,
   HOME_MOBILE_BANNER_SHOWCASE_IMAGE_PATH,
   HOME_MOBILE_BANNER_SHOWCASE_IMAGE_SIZES,
-  HOME_MOBILE_BANNER_SHOWCASE_LABEL_FONT_SIZE_PX,
-  HOME_MOBILE_BANNER_SHOWCASE_LABEL_LINE_HEIGHT_PX,
   HOME_MOBILE_BANNER_SHOWCASE_OVERLAY_OPACITY,
   HOME_MOBILE_BANNER_SHOWCASE_RADIUS_PX,
   HOME_MOBILE_BANNER_SHOWCASE_SURFACE_HEX,
@@ -159,9 +160,11 @@ const showcaseCtaIconFrameStyle: CSSProperties = {
   marginLeft: -HOME_BANNERS_CTA_ICON_PULL_LEFT_PX,
 };
 
+/** Matches `HomePromoMobileHeroSlateLabel` typography (Figma 314:2399). */
 const showcaseLabelStyle: CSSProperties = {
-  fontSize: `${HOME_MOBILE_BANNER_SHOWCASE_LABEL_FONT_SIZE_PX}px`,
-  lineHeight: `${HOME_MOBILE_BANNER_SHOWCASE_LABEL_LINE_HEIGHT_PX}px`,
+  fontSize: HERO_MOBILE_SLATE_LABEL_FONT_SIZE_PX,
+  lineHeight: `${HERO_MOBILE_SLATE_LABEL_LINE_HEIGHT_PX}px`,
+  maxWidth: `${HERO_MOBILE_SLATE_LABEL_MAX_WIDTH_PX}px`,
 };
 
 const showcaseBleedPaddingStyle: CSSProperties = {
@@ -284,7 +287,7 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
               </span>
             </Link>
             <div
-              className={`${montserratShowcaseLabel.className} shrink-0 text-right text-white`}
+              className={`${montserratShowcaseLabel.className} flex shrink-0 flex-col justify-center leading-[0] not-italic text-right text-white`}
               style={showcaseLabelStyle}
             >
               <p className="mb-0">{t(language, 'home.promo_mobile_slate_label_line1')}</p>
