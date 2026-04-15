@@ -8,10 +8,7 @@ import { t } from '@/lib/i18n';
 import { logger } from '@/lib/utils/logger';
 import { useTranslation } from '@/lib/i18n-client';
 import { montserratArm } from '@/fonts/montserrat-arm';
-import {
-  SPECIAL_OFFERS_CARDS_PER_PAGE,
-  SPECIAL_OFFERS_PRODUCTS_LIMIT,
-} from '@/constants/specialOffersSection';
+import { SPECIAL_OFFERS_CARDS_PER_PAGE, SPECIAL_OFFERS_PRODUCTS_LIMIT } from '@/constants/specialOffersSection';
 import { SpecialOfferProductCard, type SpecialOfferProduct } from './special-offers/SpecialOfferProductCard';
 
 interface ProductsResponse {
@@ -147,9 +144,12 @@ export function HomeSpecialOffersSection() {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="flex flex-col items-center gap-6 md:flex-row md:flex-wrap md:justify-center md:gap-x-[106px] md:gap-y-8">
           {Array.from({ length: SPECIAL_OFFERS_CARDS_PER_PAGE }).map((_, i) => (
-            <div key={i} className="h-[420px] animate-pulse rounded-[32px] bg-gray-100 md:h-[486px]" />
+            <div
+              key={i}
+              className="h-[420px] w-full max-w-[306px] animate-pulse rounded-[32px] bg-gray-100 md:h-[486px] md:w-[306px] md:shrink-0"
+            />
           ))}
         </div>
       ) : error ? (
@@ -165,7 +165,7 @@ export function HomeSpecialOffersSection() {
         </div>
       ) : products.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 xl:gap-7">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:flex-wrap md:justify-center md:gap-x-[106px] md:gap-y-8">
             {pageProducts.map((product) => (
               <SpecialOfferProductCard key={product.id} product={product} />
             ))}
