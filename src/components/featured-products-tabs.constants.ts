@@ -2,8 +2,10 @@
  * Featured products strip — Figma «ՆՈՐՈՒՅԹՆԵՐ» header (node 101:2818): Montserrat title + yellow bar + round nav.
  */
 
-/** Section top padding — larger pushes the «Նորություններ» block slightly lower on the page. */
-export const FEATURED_SECTION_PADDING_TOP_CLASS = 'pt-6 sm:pt-8';
+/**
+ * Section top padding — larger `max-md` value adds space after «Հատուկ առաջարկներ» on mobile.
+ */
+export const FEATURED_SECTION_PADDING_TOP_CLASS = 'pt-12 md:pt-8';
 
 /** Space below featured section (above footer). */
 export const FEATURED_SECTION_PADDING_BOTTOM_CLASS = 'pb-[31px]';

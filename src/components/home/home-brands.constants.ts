@@ -17,12 +17,12 @@ export const HOME_BRANDS_BLOCK_PADDING_BOTTOM_DESKTOP_PX = 58;
 export const HOME_BRANDS_RAIL_SCROLL_PX = 280;
 
 /**
- * `max-md` — brand logo rail → decorative dots (tighter so dots + CTA sit higher; was 80).
+ * `max-md` — brand logo rail → decorative dots.
  */
-export const HOME_BRANDS_GRID_TO_DOTS_GAP_MOBILE_PX = 36;
+export const HOME_BRANDS_GRID_TO_DOTS_GAP_MOBILE_PX = 44;
 
 /** `max-md` — dots → «Տեսնել ավելին» under the brands block. */
-export const HOME_BRANDS_DOTS_TO_CTA_GAP_MOBILE_PX = 24;
+export const HOME_BRANDS_DOTS_TO_CTA_GAP_MOBILE_PX = 22;
 
 /** `md+` — distance from logo rail to dots + CTA (smaller = block sits higher). */
 export const HOME_BRANDS_GRID_TO_DOTS_GAP_PX = 48;
