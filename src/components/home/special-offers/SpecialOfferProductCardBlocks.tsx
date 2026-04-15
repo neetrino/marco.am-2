@@ -108,6 +108,7 @@ export function SpecialOfferSideActions({
   onWishlist,
   onCompare,
   t,
+  stackOrder = 'wishlist-first',
 }: {
   product: SpecialOfferProduct;
   isInWishlist: boolean;
@@ -115,34 +116,52 @@ export function SpecialOfferSideActions({
   onWishlist: (e: MouseEvent) => void;
   onCompare: (e: MouseEvent) => void;
   t: (key: string) => string;
+  /** Figma NEWS (751:1935): compare → wishlist → discount */
+  stackOrder?: 'wishlist-first' | 'compare-first';
 }) {
+  const wishlistBtn = (
+    <button
+      key="wishlist"
+      type="button"
+      onClick={onWishlist}
+      className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-sm transition-opacity hover:opacity-90 md:size-10"
+      title={isInWishlist ? t('common.messages.removedFromWishlist') : t('common.messages.addedToWishlist')}
+      aria-label={isInWishlist ? t('common.ariaLabels.removeFromWishlist') : t('common.ariaLabels.addToWishlist')}
+    >
+      <WishlistGlyph filled={isInWishlist} size={18} />
+    </button>
+  );
+
+  const compareBtn = (
+    <button
+      key="compare"
+      type="button"
+      onClick={onCompare}
+      className={`flex size-9 shrink-0 items-center justify-center overflow-visible rounded-full p-0 shadow-sm transition-opacity hover:opacity-90 md:size-10 ${
+        isInCompare ? 'ring-2 ring-[#ffca03] ring-offset-2 ring-offset-[#f6f6f6]' : ''
+      }`}
+      title={isInCompare ? t('common.messages.removedFromCompare') : t('common.messages.addedToCompare')}
+      aria-label={isInCompare ? t('common.ariaLabels.removeFromCompare') : t('common.ariaLabels.addToCompare')}
+    >
+      <CompareCircleGlyph />
+    </button>
+  );
+
+  const discountPill =
+    product.discountPercent != null && product.discountPercent > 0 ? (
+      <div key="discount" className="rounded-full bg-[#ffca03] px-2 py-1">
+        <span className="text-[10px] font-bold text-white">-{product.discountPercent}%</span>
+      </div>
+    ) : null;
+
+  const ordered =
+    stackOrder === 'compare-first'
+      ? [compareBtn, wishlistBtn, discountPill].filter(Boolean)
+      : [wishlistBtn, compareBtn, discountPill].filter(Boolean);
+
   return (
     <div className="absolute right-2 top-3 z-20 flex flex-col items-end gap-1.5 md:right-3 md:top-4 md:gap-2">
-      <button
-        type="button"
-        onClick={onWishlist}
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-sm transition-opacity hover:opacity-90 md:size-10"
-        title={isInWishlist ? t('common.messages.removedFromWishlist') : t('common.messages.addedToWishlist')}
-        aria-label={isInWishlist ? t('common.ariaLabels.removeFromWishlist') : t('common.ariaLabels.addToWishlist')}
-      >
-        <WishlistGlyph filled={isInWishlist} size={18} />
-      </button>
-      <button
-        type="button"
-        onClick={onCompare}
-        className={`flex size-9 shrink-0 items-center justify-center overflow-visible rounded-full p-0 shadow-sm transition-opacity hover:opacity-90 md:size-10 ${
-          isInCompare ? 'ring-2 ring-[#ffca03] ring-offset-2 ring-offset-[#f6f6f6]' : ''
-        }`}
-        title={isInCompare ? t('common.messages.removedFromCompare') : t('common.messages.addedToCompare')}
-        aria-label={isInCompare ? t('common.ariaLabels.removeFromCompare') : t('common.ariaLabels.addToCompare')}
-      >
-        <CompareCircleGlyph />
-      </button>
-      {product.discountPercent != null && product.discountPercent > 0 ? (
-        <div className="rounded-full bg-[#ffca03] px-2 py-1">
-          <span className="text-[10px] font-bold text-white">-{product.discountPercent}%</span>
-        </div>
-      ) : null}
+      {ordered}
     </div>
   );
 }

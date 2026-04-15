@@ -12,23 +12,54 @@ import {
   StarRow,
 } from './SpecialOfferProductCardBlocks';
 import type { SpecialOfferProduct } from './SpecialOfferProductCardTypes';
+import { useSpecialOfferCardLogic, type CardLogic } from './useSpecialOfferCardLogic';
+import { brandAccentClass } from './brandAccentClass';
 
 export type { SpecialOfferProduct };
-import { useSpecialOfferCardLogic, type CardLogic } from './useSpecialOfferCardLogic';
 
 interface SpecialOfferProductCardProps {
   product: SpecialOfferProduct;
+  /** Figma NEWS (751:1935) — compare on top */
+  sideActionStack?: 'wishlist-first' | 'compare-first';
+  /** NEWS: brand + color dots on one row */
+  contentLayout?: 'default' | 'news';
+  showWarrantyBadge?: boolean;
 }
 
 /**
- * Home «Special offers» strip — Figma node 214:1058 (card chrome: #f6f6f6, 32px radius, side actions).
+ * Home «Special offers» / «New arrivals» — Figma card chrome (#f6f6f6, 32px radius, side actions).
  */
-export function SpecialOfferProductCard({ product }: SpecialOfferProductCardProps) {
+export function SpecialOfferProductCard({
+  product,
+  sideActionStack = 'wishlist-first',
+  contentLayout = 'default',
+  showWarrantyBadge = true,
+}: SpecialOfferProductCardProps) {
   const logic = useSpecialOfferCardLogic(product);
-  return <SpecialOfferProductCardView product={product} logic={logic} />;
+  return (
+    <SpecialOfferProductCardView
+      product={product}
+      logic={logic}
+      sideActionStack={sideActionStack}
+      contentLayout={contentLayout}
+      showWarrantyBadge={showWarrantyBadge}
+    />
+  );
 }
 
-function SpecialOfferProductCardView({ product, logic }: { product: SpecialOfferProduct; logic: CardLogic }) {
+function SpecialOfferProductCardView({
+  product,
+  logic,
+  sideActionStack,
+  contentLayout,
+  showWarrantyBadge,
+}: {
+  product: SpecialOfferProduct;
+  logic: CardLogic;
+  sideActionStack: 'wishlist-first' | 'compare-first';
+  contentLayout: 'default' | 'news';
+  showWarrantyBadge: boolean;
+}) {
   const {
     currency,
     showPlaceholder,
@@ -43,11 +74,15 @@ function SpecialOfferProductCardView({ product, logic }: { product: SpecialOffer
     t,
   } = logic;
 
+  const brandClass = brandAccentClass(product.brand?.name);
+
   return (
     <article
       className={`${montserratArm.className} special-offer-card-cutout relative mx-auto flex h-full w-full max-w-[306px] min-h-[420px] flex-col overflow-visible rounded-[32px] bg-[#f6f6f6] shadow-[0_2px_12px_rgba(0,0,0,0.06)] md:mx-0 md:w-[306px] md:max-w-none md:min-h-[486px] md:shrink-0`}
     >
-      <SpecialOfferWarrantyBadge line1={t('home.special_offers_warranty_line1')} line2={t('home.special_offers_warranty_line2')} />
+      {showWarrantyBadge ? (
+        <SpecialOfferWarrantyBadge line1={t('home.special_offers_warranty_line1')} line2={t('home.special_offers_warranty_line2')} />
+      ) : null}
       <SpecialOfferSideActions
         product={product}
         isInWishlist={isInWishlist}
@@ -55,24 +90,49 @@ function SpecialOfferProductCardView({ product, logic }: { product: SpecialOffer
         onWishlist={handleWishlist}
         onCompare={handleCompare}
         t={t}
+        stackOrder={sideActionStack}
       />
       <SpecialOfferMedia product={product} showPlaceholder={showPlaceholder} onImageError={() => setImageError(true)} />
       <div className="relative z-[2] flex flex-1 flex-col px-[6%] pb-20 pt-3 md:pt-4">
-        {product.brand?.name ? (
-          <p className="text-[11px] font-black uppercase tracking-[0.6px] text-[#0f0f0f] md:text-xs">
-            {product.brand.name}
-          </p>
-        ) : null}
-        <Link href={`/products/${product.slug}`} className="mt-2 block">
-          <h3 className="line-clamp-2 text-left text-[13px] font-bold leading-5 text-[#181111] md:text-sm md:leading-5">
-            {product.title}
-          </h3>
-        </Link>
-        {product.colors && product.colors.length > 0 ? (
-          <div className="mt-2">
-            <ProductColors colors={product.colors} isCompact maxVisible={4} />
-          </div>
-        ) : null}
+        {contentLayout === 'news' ? (
+          <>
+            <div className="flex min-h-[1.25rem] items-center justify-between gap-2">
+              {product.brand?.name ? (
+                <p className={`text-[11px] font-black uppercase tracking-[0.6px] md:text-xs ${brandClass}`}>
+                  {product.brand.name}
+                </p>
+              ) : (
+                <span />
+              )}
+              {product.colors && product.colors.length > 0 ? (
+                <ProductColors colors={product.colors} isCompact maxVisible={4} />
+              ) : null}
+            </div>
+            <Link href={`/products/${product.slug}`} className="mt-2 block">
+              <h3 className="line-clamp-2 text-left text-[13px] font-bold leading-5 text-[#181111] md:text-sm md:leading-5">
+                {product.title}
+              </h3>
+            </Link>
+          </>
+        ) : (
+          <>
+            {product.brand?.name ? (
+              <p className={`text-[11px] font-black uppercase tracking-[0.6px] md:text-xs ${brandClass}`}>
+                {product.brand.name}
+              </p>
+            ) : null}
+            <Link href={`/products/${product.slug}`} className="mt-2 block">
+              <h3 className="line-clamp-2 text-left text-[13px] font-bold leading-5 text-[#181111] md:text-sm md:leading-5">
+                {product.title}
+              </h3>
+            </Link>
+            {product.colors && product.colors.length > 0 ? (
+              <div className="mt-2">
+                <ProductColors colors={product.colors} isCompact maxVisible={4} />
+              </div>
+            ) : null}
+          </>
+        )}
         <div className="mt-3 flex items-center gap-1">
           <StarRow />
         </div>
