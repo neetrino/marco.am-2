@@ -1,5 +1,6 @@
 import { getErrorMessage } from "@/lib/types/errors";
 import { db } from "@white-shop/db";
+import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
 import * as bcrypt from "bcryptjs";
 import type { UpdateProfileRequest } from "@/lib/schemas/user-profile.schema";
 import { applyUserProfileUpdate } from "@/lib/services/user-profile-update";
@@ -197,6 +198,7 @@ class UsersService {
       currency: order.currency,
       itemsCount: order.items.length,
       createdAt: order.createdAt.toISOString(),
+      links: buildCustomerOrderLinks(order.number),
     }));
 
     return {

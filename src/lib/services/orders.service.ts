@@ -7,6 +7,7 @@ import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
 import { normalizeShippingMethod } from "../constants/shipping-method";
 import { buildOrderAddressJson } from "./orders-checkout-address";
+import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
 
 const MAX_ORDER_NOTES_LENGTH = 2000;
 
@@ -511,7 +512,6 @@ class OrdersService {
         where: { userId },
         include: {
           items: { select: { id: true } },
-          payments: { select: { id: true } },
         },
         orderBy: { createdAt: "desc" },
         skip,
@@ -547,8 +547,9 @@ class OrdersService {
         shippingAmount: order.shippingAmount,
         taxAmount: order.taxAmount,
         currency: order.currency,
-        createdAt: order.createdAt,
+        createdAt: order.createdAt.toISOString(),
         itemsCount: order.items.length,
+        links: buildCustomerOrderLinks(order.number),
       })),
       meta: {
         total,
@@ -632,6 +633,7 @@ class OrdersService {
       status: order.status,
       paymentStatus: order.paymentStatus,
       fulfillmentStatus: order.fulfillmentStatus,
+      links: buildCustomerOrderLinks(order.number),
       items: order.items.map((item: OrderItemWithVariant) => {
         const variantOptions = item.variant?.options?.map((opt) => {
           // Debug logging for each option

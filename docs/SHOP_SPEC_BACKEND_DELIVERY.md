@@ -30,7 +30,7 @@
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `85%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
-| 7    | Օգտատիրոջ հաշիվ (Account)        | `98%`           |
+| 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
 | 8    | Admin — catalog & promos         | `42%`           |
 | 9    | Admin — orders                   | `88%`           |
 | 10   | Admin — analytics                | `75%`           |
@@ -168,19 +168,21 @@
 
 ## Փուլ 7 — Account (հաճախորդի պրոֆիլ)
 
-**Փուլի առաջընթաց.** `98%`
+**Փուլի առաջընթաց.** `100%`
 
 
 | ID  | Առաջադրանք (backend)                                                             | Կատարման % | Կարգավիճակ |
 | --- | -------------------------------------------------------------------------------- | ---------- | ---------- |
 | 7.1 | Registration / Login — email **կամ** phone, verification flow (եթե պահանջվում է) | 100        | ✅         |
-| 7.2 | Order history — կարգավիճակ, reorder entry point-ի տվյալներ                       | 90         | 🔄         |
+| 7.2 | Order history — կարգավիճակ, reorder entry point-ի տվյալներ                       | 100        | ✅         |
 | 7.3 | Reorder — նախորդ պատվերից զամբյուղի prefill / նոր պատվեր                         | 100        | ✅         |
 | 7.4 | Address management — shipping հասցեների CRUD                                     | 100        | ✅         |
 | 7.5 | Personal data — edit profile, password/security                                  | 100        | ✅         |
 
 
 *Նշումներ.* 7.3 — `POST /api/v1/orders/{number}/reorder` (JWT) — պատվերի տողերը ավելացվում են զամբյուղում (`cartService.addItem`), հասանելիության սահմաններով (published, stock); պատասխանում `added` / `skipped` + թարմ `cart` (ինչպես `GET /api/v1/cart`)։
+
+**7.2 ✅ ավարտված (2026-04-16).** `GET /api/v1/orders` (JWT) — պատմության ցուցակ՝ `status`, `paymentStatus`, `fulfillmentStatus`, գումարներ, `itemsCount`, `createdAt` (ISO8601), և **`links`**՝ `{ self: { method: GET, href }, reorder: { method: POST, href } }` (href-երը `/api/v1/orders/<number>` և `/api/v1/orders/<number>/reorder`)։ Նույն **`links`** դաշտը ավելացված է `GET /api/v1/orders/[number]` պատասխանին և `GET /api/v1/users/dashboard`-ի `recentOrders` տողերին։ OpenAPI՝ `OrderListResponse` / `CustomerOrderLinks` (`docs/openapi/shop-api.yaml`)։
 
 **7.3 ✅ ավարտված (2026-04-16).** `POST /api/v1/orders/[number]/reorder` — նախորդ պատվերի `OrderItem` տողերից զամբյուղի լցում (`src/lib/services/cart-reorder.service.ts` → `cartService.addItem`). Չլրացված տողերը `skipped`-ում են `no_variant` | `variant_not_found` | `unpublished` | `out_of_stock` պատճառներով։ Դատարկ պատվերի դեպքում `400`։
 
