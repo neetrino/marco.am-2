@@ -61,5 +61,11 @@ export const HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_BOTTOM_PX = 20;
 
 export const HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_TOP_PX = 8;
 
+/**
+ * Armenian (`hy`): shift the yellow CTA slightly left and down in the bottom bar (mobile showcase).
+ */
+export const HOME_MOBILE_BANNER_SHOWCASE_CTA_HY_NUDGE_X_PX = -8;
+export const HOME_MOBILE_BANNER_SHOWCASE_CTA_HY_NUDGE_Y_PX = 6;
+
 export const HOME_MOBILE_BANNER_SHOWCASE_IMAGE_SIZES =
   '(max-width: 768px) 85vw, 402px' as const;

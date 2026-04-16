@@ -61,6 +61,8 @@ import {
   HOME_MOBILE_BANNER_SHOWCASE_CHAIR_NUDGE_DOWN_PX,
   HOME_MOBILE_BANNER_SHOWCASE_CHAIR_SCALE_MULTIPLIER,
   HOME_MOBILE_BANNER_SHOWCASE_CHAIR_WIDTH_FRAC,
+  HOME_MOBILE_BANNER_SHOWCASE_CTA_HY_NUDGE_X_PX,
+  HOME_MOBILE_BANNER_SHOWCASE_CTA_HY_NUDGE_Y_PX,
   HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_BOTTOM_PX,
   HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_TOP_PX,
   HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_X_PX,
@@ -282,6 +284,11 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
                   : isEnglish
                     ? `${HOME_BANNERS_CTA_LABEL_LINE_HEIGHT_PX + 1}px`
                     : `${HOME_BANNERS_CTA_LABEL_LINE_HEIGHT_PX}px`,
+                ...(isArmenian
+                  ? {
+                      transform: `translate(${HOME_MOBILE_BANNER_SHOWCASE_CTA_HY_NUDGE_X_PX}px, ${HOME_MOBILE_BANNER_SHOWCASE_CTA_HY_NUDGE_Y_PX}px)`,
+                    }
+                  : {}),
               }}
               aria-label={ctaAria}
             >
