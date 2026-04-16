@@ -181,6 +181,7 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
   const regionAria = t(language, 'home.promo_featured_title');
   const isRussian = language === 'ru';
   const isArmenian = language === 'hy';
+  const isEnglish = language === 'en';
 
   const showcaseOuterStyle: CSSProperties = {
     width: '100%',
@@ -269,8 +270,18 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
               className={`${montserratShowcaseCta.className} group pointer-events-auto flex min-w-0 shrink-0 items-center bg-marco-yellow font-bold text-marco-black transition hover:-translate-y-0.5 hover:bg-red-700 hover:text-white active:translate-y-px`}
               style={{
                 ...showcaseCtaLinkStyle,
-                fontSize: isRussian ? 12 : isArmenian ? 15 : HOME_BANNERS_CTA_LABEL_FONT_SIZE_PX,
-                lineHeight: isRussian ? '16px' : `${HOME_BANNERS_CTA_LABEL_LINE_HEIGHT_PX}px`,
+                fontSize: isRussian
+                  ? 12
+                  : isArmenian
+                    ? 15
+                    : isEnglish
+                      ? HOME_BANNERS_CTA_LABEL_FONT_SIZE_PX + 1
+                      : HOME_BANNERS_CTA_LABEL_FONT_SIZE_PX,
+                lineHeight: isRussian
+                  ? '16px'
+                  : isEnglish
+                    ? `${HOME_BANNERS_CTA_LABEL_LINE_HEIGHT_PX + 1}px`
+                    : `${HOME_BANNERS_CTA_LABEL_LINE_HEIGHT_PX}px`,
               }}
               aria-label={ctaAria}
             >
@@ -284,7 +295,13 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
               </span>
               <span
                 className="flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition group-hover:bg-white group-hover:text-red-700"
-                style={isRussian ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(-6px)' } : showcaseCtaIconFrameStyle}
+                style={
+                  isRussian
+                    ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(-6px)' }
+                    : isEnglish
+                      ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(4px)' }
+                      : showcaseCtaIconFrameStyle
+                }
                 aria-hidden
               >
                 <ArrowUpRight
