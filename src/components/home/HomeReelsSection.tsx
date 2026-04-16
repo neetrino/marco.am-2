@@ -100,17 +100,15 @@ export function HomeReelsSection() {
                 aria-label={captions[i]}
                 className={`${montserratArm.className} group flex w-[120px] shrink-0 flex-col items-center gap-3 text-left sm:w-[130px] md:w-[145px]`}
               >
-                <div className="relative h-[120px] w-[120px] max-w-[min(145px,85vw)] rounded-full bg-[#f0f0f0] p-[11px] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)] ring-2 ring-white transition-transform group-hover:scale-[1.02] md:h-[145px] md:w-[145px]">
-                  <div className="relative h-full w-full overflow-hidden rounded-full">
-                    <Image
-                      src={src}
-                      alt=""
-                      fill
-                      className="object-cover"
-                      sizes="145px"
-                      unoptimized
-                    />
-                  </div>
+                <div className="relative h-[120px] w-[120px] overflow-hidden rounded-full transition-transform group-hover:scale-[1.02] md:h-[145px] md:w-[145px]">
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="145px"
+                    unoptimized
+                  />
                 </div>
                 <span className="max-w-[160px] text-center text-sm font-normal leading-7 text-[#050401] md:text-[18px]">
                   {captions[i]}
