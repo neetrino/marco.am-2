@@ -19,8 +19,11 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
   const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   
-  const { reviews, loading, setReviews } = useReviews(productId, productSlug);
-  
+  const { reviews, aggregate, loading, loadReviews } = useReviews(
+    productId,
+    productSlug
+  );
+
   const {
     showForm,
     setShowForm,
@@ -30,6 +33,9 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
     setHoveredRating,
     comment,
     setComment,
+    policyAccepted,
+    setPolicyAccepted,
+    resetReviewPolicy,
     submitting,
     editingReviewId,
     handleEditReview,
@@ -40,7 +46,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
     productId,
     productSlug,
     reviews,
-    setReviews,
+    onReviewUpdated: () => loadReviews(),
   });
 
   // Get user's review if exists (reserved for future UI)
@@ -55,6 +61,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
       alert(t('common.reviews.loginRequired'));
       return;
     }
+    resetReviewPolicy();
     setShowForm(true);
   };
 
@@ -70,7 +77,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
         </h2>
 
         {/* Rating Summary */}
-        <ReviewSummary reviews={reviews} />
+        <ReviewSummary reviews={reviews} aggregate={aggregate} />
 
         {/* Write Review Button */}
         {!showForm && (
@@ -91,6 +98,8 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
             comment={comment}
             submitting={submitting}
             editingReviewId={editingReviewId}
+            policyAccepted={policyAccepted}
+            onPolicyChange={setPolicyAccepted}
             onRatingChange={setRating}
             onHover={setHoveredRating}
             onCommentChange={setComment}
@@ -99,6 +108,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
               setShowForm(false);
               setRating(0);
               setComment('');
+              resetReviewPolicy();
             }}
           />
         )}

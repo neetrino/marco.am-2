@@ -12,8 +12,8 @@ interface UseReviewFormProps {
   productId?: string;
   productSlug?: string;
   reviews: Review[];
-  setReviews: (reviews: Review[] | ((prev: Review[]) => Review[])) => void;
-  onReviewUpdated?: () => void;
+  /** Refetch reviews + aggregate from the server (preferred after create/update). */
+  onReviewUpdated?: () => void | Promise<void>;
 }
 
 /**
@@ -23,7 +23,6 @@ export function useReviewForm({
   productId,
   productSlug,
   reviews,
-  setReviews,
   onReviewUpdated,
 }: UseReviewFormProps) {
   const { isLoggedIn, user } = useAuth();
@@ -34,6 +33,11 @@ export function useReviewForm({
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [policyAccepted, setPolicyAccepted] = useState(false);
+
+  const resetReviewPolicy = () => {
+    setPolicyAccepted(false);
+  };
 
   const handleEditReview = (review: Review) => {
     setEditingReviewId(review.id);
@@ -46,6 +50,7 @@ export function useReviewForm({
     setEditingReviewId(null);
     setRating(0);
     setComment('');
+    setPolicyAccepted(false);
     setShowForm(false);
   };
 
@@ -67,6 +72,11 @@ export function useReviewForm({
       return;
     }
 
+    if (!policyAccepted) {
+      alert(t('common.reviews.policyRequired'));
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -82,24 +92,23 @@ export function useReviewForm({
       const newReview = await apiClient.post<Review>(`/api/v1/products/${identifier}/reviews`, {
         rating,
         comment: comment.trim(),
+        policyAccepted: true,
       });
 
       logger.devLog('✅ [PRODUCT REVIEWS] Review submitted successfully:', newReview.id);
 
-      // Add new review to the list
-      setReviews([newReview, ...reviews]);
       setRating(0);
       setComment('');
+      setPolicyAccepted(false);
       setShowForm(false);
-      
-      // Dispatch event to update rating on product page
+
+      await onReviewUpdated?.();
+
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('review-updated'));
       }
-      
-      onReviewUpdated?.();
     } catch (error: unknown) {
-      console.error('❌ [PRODUCT REVIEWS] Error submitting review:', error);
+      logger.devLog('❌ [PRODUCT REVIEWS] Error submitting review:', error);
       
       const err = error as { status?: number };
       
@@ -117,20 +126,14 @@ export function useReviewForm({
           const existingReview = await apiClient.get<Review>(`/api/v1/products/${identifier}/reviews?my=true`);
           
           if (existingReview) {
-            // Add to reviews list if not already there
-            const reviewExists = reviews.some(r => r.id === existingReview.id);
-            if (!reviewExists) {
-              setReviews([existingReview, ...reviews]);
-            }
-            
-            // Show in edit mode
+            await onReviewUpdated?.();
             handleEditReview(existingReview);
             alert(t('common.reviews.alreadyReviewed') || 'You have already reviewed this product. You can update your review below.');
           } else {
             alert(t('common.reviews.alreadyReviewed') || 'You have already reviewed this product');
           }
         } catch (loadError: unknown) {
-          console.error('❌ [PRODUCT REVIEWS] Error loading existing review:', loadError);
+          logger.devLog('❌ [PRODUCT REVIEWS] Error loading existing review:', loadError);
           // Fallback to checking local reviews
           const userReview = user ? reviews.find(r => r.userId === user.id) : null;
           if (userReview) {
@@ -142,6 +145,8 @@ export function useReviewForm({
         }
       } else if (err.status === 401) {
         alert(t('common.reviews.loginRequired'));
+      } else if (err.status === 403) {
+        alert(t('common.reviews.purchaseRequired'));
       } else {
         alert(t('common.reviews.submitError'));
       }
@@ -172,28 +177,25 @@ export function useReviewForm({
     try {
       logger.devLog('📝 [PRODUCT REVIEWS] Updating review:', { reviewId: editingReviewId, rating, commentLength: comment.length });
       
-      const updatedReview = await apiClient.put<Review>(`/api/v1/reviews/${editingReviewId}`, {
+      await apiClient.put<Review>(`/api/v1/reviews/${editingReviewId}`, {
         rating,
         comment: comment.trim(),
       });
 
-      logger.devLog('✅ [PRODUCT REVIEWS] Review updated successfully:', updatedReview.id);
+      logger.devLog('✅ [PRODUCT REVIEWS] Review updated successfully:', editingReviewId);
 
-      // Update review in the list
-      setReviews(reviews.map(r => r.id === editingReviewId ? updatedReview : r));
       setRating(0);
       setComment('');
       setEditingReviewId(null);
       setShowForm(false);
-      
-      // Dispatch event to update rating on product page
+
+      await onReviewUpdated?.();
+
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('review-updated'));
       }
-      
-      onReviewUpdated?.();
     } catch (error: unknown) {
-      console.error('❌ [PRODUCT REVIEWS] Error updating review:', error);
+      logger.devLog('❌ [PRODUCT REVIEWS] Error updating review:', error);
       
       const err = error as { status?: number };
       
@@ -219,6 +221,9 @@ export function useReviewForm({
     setHoveredRating,
     comment,
     setComment,
+    policyAccepted,
+    setPolicyAccepted,
+    resetReviewPolicy,
     submitting,
     editingReviewId,
     handleEditReview,

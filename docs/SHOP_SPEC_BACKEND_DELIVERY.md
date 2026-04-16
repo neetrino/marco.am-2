@@ -27,7 +27,7 @@
 | 1    | Infra & API կոնտրակտ             | `100%`          |
 | 2    | Գլխավոր էջ (Home) — տվյալներ     | `41%`           |
 | 3    | Shop (PLP) — կատալոգ API         | `82%`           |
-| 4    | Ապրանքի էջ (PDP) — մանրամասն API | `84%`           |
+| 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `70%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `82%`           |
@@ -104,7 +104,7 @@
 
 ## Փուլ 4 — Product (PDP)
 
-**Փուլի առաջընթաց.** `84%`
+**Փուլի առաջընթաց.** `85%`
 
 
 | ID  | Առաջադրանք (backend)                                                                | Կատարման % | Կարգավիճակ |
@@ -116,10 +116,12 @@
 | 4.5 | Quantity + Add to cart — զամբյուղի API (կլիենտ state-ի հետ համաձայնեցված)           | 90         | 🔄         |
 | 4.6 | Պահեստի կարգավիճակ — in stock / out of stock                                        | 90         | 🔄         |
 | 4.7 | Related products — recommendation rule (կատեգորիա/բրենդ/այլ)                        | 55         | 🔄         |
-| 4.8 | Reviews — rating aggregate, ցուցակ, review submit (policy + auth, եթե պահանջվում է) | 90         | 🔄         |
+| 4.8 | Reviews — rating aggregate, ցուցակ, review submit (policy + auth, եթե պահանջվում է) | 100        | ✅         |
 
 
 *Նշումներ.* 4.7 — առաջարկը հիմնականում կլիենտում է (`/api/v1/products` + category, առանց առանձին recommendation endpoint-ի)։
+
+**4.8 ✅ ավարտված (2026-04-16).** `GET /api/v1/products/[slug]/reviews` — վերադարձնում է `{ reviews, aggregate }` (միջին գնահատական, քանակ, աստղերի բաշխում) + հրապարակված կարծիքների ցուցակ։ `POST` — JWT, `policyAccepted: true` (UI-ում checkbox + `/terms` հղում), մարմնում `rating` + `comment`։ Պրոդում կամընտիր `REVIEW_REQUIRE_PURCHASE=true` — կարծիք միայն այն օգտատիրոջ համար, ում մոտ կա չչեղարկված պատվեր ապրանքով (variant → product)։ `reviews.service.ts`, PDP `ProductReviews` / `ReviewSummary` / `useReviews`։
 
 ---
 

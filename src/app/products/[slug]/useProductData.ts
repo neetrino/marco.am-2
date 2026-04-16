@@ -15,6 +15,7 @@ import {
   cleanImageUrls,
 } from '../../../lib/utils/image-utils';
 import { logger } from "@/lib/utils/logger";
+import type { ProductReviewsListResponse } from "@/lib/types/product-reviews";
 
 interface UseProductDataProps {
   params: Promise<{ slug?: string }>;
@@ -257,17 +258,16 @@ export function useProductData({
 
     const loadReviews = async () => {
       try {
-        const data = await apiClient.get<Array<{ rating: number }>>(
+        const data = await apiClient.get<ProductReviewsListResponse>(
           `/api/v1/products/${slug}/reviews`
         );
-        setReviews(data || []);
+        setReviews(data.reviews ?? []);
       } catch (_error: unknown) {
-        // If 404, product might not have reviews yet - that's okay
         setReviews([]);
       }
     };
 
-    loadReviews();
+    void loadReviews();
 
     // Listen for review updates
     const handleReviewUpdate = () => {
