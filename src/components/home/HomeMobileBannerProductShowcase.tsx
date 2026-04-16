@@ -48,12 +48,9 @@ import {
 } from './home-banners-cta.constants';
 import { HOME_APP_BANNER_INNER_CLASS } from './home-app-banner.constants';
 import {
-  HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_X_PX,
-  HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_Y_PX,
-  HOME_MOBILE_BANNER_SHOWCASE_BG_SIZE_HEIGHT_PERCENT,
-  HOME_MOBILE_BANNER_SHOWCASE_BG_SIZE_WIDTH_PERCENT,
+  HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_X_PERCENT,
+  HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_Y_PERCENT,
   HOME_MOBILE_BANNER_SHOWCASE_CARD_HEIGHT_PX,
-  HOME_MOBILE_BANNER_SHOWCASE_CARD_MAX_WIDTH_PX,
   HOME_MOBILE_BANNER_SHOWCASE_CARD_WIDTH_PX,
   HOME_MOBILE_BANNER_SHOWCASE_CHAIR_BLEED_TOP_MAX_PX,
   HOME_MOBILE_BANNER_SHOWCASE_CHAIR_BLEED_TOP_MIN_PX,
@@ -124,8 +121,9 @@ function buildShowcaseCardBackgroundStyle(): CSSProperties {
     borderRadius: `${HOME_MOBILE_BANNER_SHOWCASE_RADIUS_PX}px`,
     backgroundColor: HOME_MOBILE_BANNER_SHOWCASE_SURFACE_HEX,
     backgroundImage: `linear-gradient(0deg, ${overlay} 0%, ${overlay} 100%), url(${HOME_MOBILE_BANNER_SHOWCASE_IMAGE_PATH})`,
-    backgroundPosition: `0 0, ${HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_X_PX}px ${HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_Y_PX}px`,
-    backgroundSize: `auto, ${HOME_MOBILE_BANNER_SHOWCASE_BG_SIZE_WIDTH_PERCENT}% ${HOME_MOBILE_BANNER_SHOWCASE_BG_SIZE_HEIGHT_PERCENT}%`,
+    /** Photo: `cover` avoids slate base showing as a stripe; % position nudges crop toward Figma 314:2480. */
+    backgroundPosition: `0 0, ${HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_X_PERCENT}% ${HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_Y_PERCENT}%`,
+    backgroundSize: `100% 100%, cover`,
     backgroundRepeat: 'no-repeat, no-repeat',
   };
 }
@@ -194,7 +192,6 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
 
   const showcaseOuterStyle: CSSProperties = {
     width: '100%',
-    maxWidth: `${HOME_MOBILE_BANNER_SHOWCASE_CARD_MAX_WIDTH_PX}px`,
   };
 
   return (

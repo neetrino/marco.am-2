@@ -46,10 +46,14 @@ export const HOME_GRADIENT_BANNER_RADIUS_PX = 16;
 /** Overlay opacity so the photo stays visible under the slate tint (solid #2F4B5D would hide it). */
 export const HOME_GRADIENT_BANNER_OVERLAY_OPACITY = 0.58;
 
-export const HOME_GRADIENT_BANNER_BG_POSITION_X_PX = -64.382;
+/**
+ * Photo fill — Figma 101:4135 (`kam-idris`); explicit % size in file vs `cover` in CSS — reference only.
+ * Runtime uses `background-size: cover` on the image layer to avoid edge bands.
+ */
+export const HOME_GRADIENT_BANNER_BG_SIZE_WIDTH_PERCENT = 120.46;
 
-export const HOME_GRADIENT_BANNER_BG_POSITION_Y_PX = -178.168;
+export const HOME_GRADIENT_BANNER_BG_SIZE_HEIGHT_PERCENT = 160.88;
 
-export const HOME_GRADIENT_BANNER_BG_SIZE_WIDTH_PERCENT = 120.455;
+export const HOME_GRADIENT_BANNER_BG_POSITION_X_PERCENT = -11.5;
 
-export const HOME_GRADIENT_BANNER_BG_SIZE_HEIGHT_PERCENT = 160.875;
+export const HOME_GRADIENT_BANNER_BG_POSITION_Y_PERCENT = -48.15;

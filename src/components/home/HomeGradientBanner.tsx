@@ -6,10 +6,8 @@ import type { LanguageCode } from '../../lib/language';
 import { HOME_APP_BANNER_INNER_CLASS } from './home-app-banner.constants';
 import {
   HOME_GRADIENT_BANNER_ASPECT_RATIO,
-  HOME_GRADIENT_BANNER_BG_POSITION_X_PX,
-  HOME_GRADIENT_BANNER_BG_POSITION_Y_PX,
-  HOME_GRADIENT_BANNER_BG_SIZE_HEIGHT_PERCENT,
-  HOME_GRADIENT_BANNER_BG_SIZE_WIDTH_PERCENT,
+  HOME_GRADIENT_BANNER_BG_POSITION_X_PERCENT,
+  HOME_GRADIENT_BANNER_BG_POSITION_Y_PERCENT,
   HOME_GRADIENT_BANNER_CTA_ROW_OFFSET_X_PX,
   HOME_GRADIENT_BANNER_CTA_ROW_OFFSET_Y_PX,
   HOME_GRADIENT_BANNER_HEADLINE_COLOR_HEX,
@@ -50,8 +48,9 @@ function buildBannerSurfaceStyle(): CSSProperties {
     borderRadius: `${HOME_GRADIENT_BANNER_RADIUS_PX}px`,
     backgroundColor: HOME_GRADIENT_BANNER_SURFACE_BASE_HEX,
     backgroundImage: `linear-gradient(0deg, ${overlay} 0%, ${overlay} 100%), url(${HOME_GRADIENT_BANNER_IMAGE_PATH})`,
-    backgroundPosition: `0 0, ${HOME_GRADIENT_BANNER_BG_POSITION_X_PX}px ${HOME_GRADIENT_BANNER_BG_POSITION_Y_PX}px`,
-    backgroundSize: `auto, ${HOME_GRADIENT_BANNER_BG_SIZE_WIDTH_PERCENT}% ${HOME_GRADIENT_BANNER_BG_SIZE_HEIGHT_PERCENT}%`,
+    /** Photo: `cover` removes edge bands; % position approximates Figma 101:4135 framing. */
+    backgroundPosition: `0 0, ${HOME_GRADIENT_BANNER_BG_POSITION_X_PERCENT}% ${HOME_GRADIENT_BANNER_BG_POSITION_Y_PERCENT}%`,
+    backgroundSize: `100% 100%, cover`,
     backgroundRepeat: 'no-repeat, no-repeat',
   };
 }
@@ -63,7 +62,7 @@ const headlineStyle = {
 } as const;
 
 /**
- * Gradient banner (Figma 101:4129/4145) + pale panel (307:2232) in one row on large screens.
+ * Gradient banner (Figma 101:4129/4145; photo fill 101:4135) + pale panel (307:2232) on large screens.
  */
 export function HomeGradientBanner({ language }: HomeGradientBannerProps) {
   const headline = t(language, 'home.gradient_banner.headline');
