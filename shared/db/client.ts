@@ -48,29 +48,58 @@ function resolveDatabaseUrlWithClientEncoding(): string {
   return withEncoding;
 }
 
-const resolvedDatabaseUrl = resolveDatabaseUrlWithClientEncoding();
-process.env.DATABASE_URL = resolvedDatabaseUrl;
-
-if (
-  globalForPrisma.prisma &&
-  globalForPrisma.prismaResolvedDatabaseUrl !== resolvedDatabaseUrl
-) {
-  void globalForPrisma.prisma.$disconnect().catch(() => undefined);
-  globalForPrisma.prisma = undefined;
-}
-
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient(resolvedDatabaseUrl: string): PrismaClient {
+  return new PrismaClient({
     datasources: {
       db: { url: resolvedDatabaseUrl },
     },
     log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
     errorFormat: "pretty",
   });
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
-  globalForPrisma.prismaResolvedDatabaseUrl = resolvedDatabaseUrl;
 }
 
+let productionPrisma: PrismaClient | undefined;
+
+function getPrismaClient(): PrismaClient {
+  const resolvedDatabaseUrl = resolveDatabaseUrlWithClientEncoding();
+  process.env.DATABASE_URL = resolvedDatabaseUrl;
+
+  if (process.env.NODE_ENV !== "production") {
+    if (
+      globalForPrisma.prisma &&
+      globalForPrisma.prismaResolvedDatabaseUrl !== resolvedDatabaseUrl
+    ) {
+      void globalForPrisma.prisma.$disconnect().catch(() => undefined);
+      globalForPrisma.prisma = undefined;
+    }
+    if (globalForPrisma.prisma) {
+      return globalForPrisma.prisma;
+    }
+    const client = createPrismaClient(resolvedDatabaseUrl);
+    globalForPrisma.prisma = client;
+    globalForPrisma.prismaResolvedDatabaseUrl = resolvedDatabaseUrl;
+    return client;
+  }
+
+  if (productionPrisma) {
+    return productionPrisma;
+  }
+  productionPrisma = createPrismaClient(resolvedDatabaseUrl);
+  return productionPrisma;
+}
+
+/**
+ * Lazy proxy so importing `@white-shop/db` does not validate `DATABASE_URL` or construct
+ * `PrismaClient` at module load. `next build` loads API routes without secrets; real use
+ * initializes the client on first access.
+ */
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const instance = getPrismaClient();
+    const value = Reflect.get(instance, prop, instance);
+    if (typeof value === "function") {
+      return value.bind(instance);
+    }
+    return value;
+  },
+});
