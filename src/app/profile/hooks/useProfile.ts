@@ -37,7 +37,6 @@ export function useProfile() {
       setProfile(data);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      console.error('Error loading profile:', err);
       setError(errorMessage || t('profile.personal.failedToLoad'));
     } finally {
       setLoading(false);

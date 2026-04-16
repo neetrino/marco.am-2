@@ -30,7 +30,7 @@
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `85%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
-| 7    | Օգտատիրոջ հաշիվ (Account)        | `82%`           |
+| 7    | Օգտատիրոջ հաշիվ (Account)        | `85%`           |
 | 8    | Admin — catalog & promos         | `42%`           |
 | 9    | Admin — orders                   | `88%`           |
 | 10   | Admin — analytics                | `75%`           |
@@ -168,7 +168,7 @@
 
 ## Փուլ 7 — Account (հաճախորդի պրոֆիլ)
 
-**Փուլի առաջընթաց.** `82%`
+**Փուլի առաջընթաց.** `85%`
 
 
 | ID  | Առաջադրանք (backend)                                                             | Կատարման % | Կարգավիճակ |
@@ -177,10 +177,12 @@
 | 7.2 | Order history — կարգավիճակ, reorder entry point-ի տվյալներ                       | 90         | 🔄         |
 | 7.3 | Reorder — նախորդ պատվերից զամբյուղի prefill / նոր պատվեր                         | 75         | 🔄         |
 | 7.4 | Address management — shipping հասցեների CRUD                                     | 90         | 🔄         |
-| 7.5 | Personal data — edit profile, password/security                                  | 85         | 🔄         |
+| 7.5 | Personal data — edit profile, password/security                                  | 100        | ✅         |
 
 
 *Նշումներ.* 7.1 — գրանցում email կամ phone-ով կա; verification (SMS/email) flow չի երևում։ 7.3 — առանձին reorder endpoint չկա, կլիենտը օգտագործում է զամբյուղի API-ները։
+
+**7.5 ✅ ավարտված (2026-04-16).** Անձնական տվյալներ՝ `GET`/`PUT /api/v1/users/profile` — Zod վալիդացիա, `firstName`/`lastName`/`email`/`phone`/`locale` թարմացում (email lowercase), առնվազն մեկ `email` կամ `phone`, միակության ստուգում + `P2002` → 409, email/phone փոփոխության դեպքում `emailVerified`/`phoneVerified` → `false`։ Պատասխանը նույն ձևաչափն է, ինչ `GET`-ը (ներառյալ `addresses`, `roles`)։ Գաղտնաբառ՝ `PUT /api/v1/users/password` (`currentPassword`, `newPassword`) — `usersService.changePassword`։ Կոդ՝ `src/lib/schemas/user-profile.schema.ts`, `src/lib/services/user-profile-update.ts`, `src/app/api/v1/users/profile/route.ts`, `src/app/api/v1/users/password/route.ts`, storefront `/profile` (`usePersonalInfo`, `usePassword`)։
 
 ---
 

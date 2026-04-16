@@ -1,6 +1,9 @@
 import { getErrorMessage } from "@/lib/types/errors";
 import { db } from "@white-shop/db";
 import * as bcrypt from "bcryptjs";
+import type { UpdateProfileRequest } from "@/lib/schemas/user-profile.schema";
+import { applyUserProfileUpdate } from "@/lib/services/user-profile-update";
+import { logger } from "@/lib/utils/logger";
 
 class UsersService {
   /**
@@ -42,34 +45,11 @@ class UsersService {
   }
 
   /**
-   * Update user profile
+   * Update user profile (name, contact, locale). Returns same shape as {@link getProfile}.
    */
-  async updateProfile(userId: string, data: any) {
-    const user = await db.user.update({
-      where: { id: userId },
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        locale: data.locale,
-      },
-      select: {
-        id: true,
-        email: true,
-        phone: true,
-        firstName: true,
-        lastName: true,
-        locale: true,
-      },
-    });
-
-    return {
-      id: user.id,
-      email: user.email,
-      phone: user.phone,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      locale: user.locale,
-    };
+  async updateProfile(userId: string, data: UpdateProfileRequest) {
+    await applyUserProfileUpdate(userId, data);
+    return this.getProfile(userId);
   }
 
   /**
@@ -133,9 +113,7 @@ class UsersService {
         };
       }
     } catch (bcryptError: unknown) {
-      // Handle bcrypt errors
-      console.error("❌ [USERS SERVICE] bcrypt.compare error:", {
-        error: bcryptError,
+      logger.error("UsersService changePassword: bcrypt.compare failed", {
         message: getErrorMessage(bcryptError),
         userId,
         hasOldPassword: !!oldPassword,
@@ -159,8 +137,7 @@ class UsersService {
 
       return { success: true };
     } catch (hashError: unknown) {
-      console.error("❌ [USERS SERVICE] bcrypt.hash error:", {
-        error: hashError,
+      logger.error("UsersService changePassword: bcrypt.hash failed", {
         message: getErrorMessage(hashError),
         userId,
       });
