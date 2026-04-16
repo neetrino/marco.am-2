@@ -112,9 +112,6 @@ export const REELS_PAGINATION_DOT_SIZE_PX = 8;
 export const REELS_PAGINATION_DOT_GAP_MOBILE_PX = 6;
 export const REELS_PAGINATION_DOT_GAP_DESKTOP_PX = 10;
 
-/** Default destination for reel tiles until category slugs are wired. */
-export const REELS_ITEM_HREF = '/products' as const;
-
 export const REELS_ITEMS = [
   {
     imageSrc: '/images/home/reels/reel-1.png',

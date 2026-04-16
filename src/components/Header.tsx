@@ -31,7 +31,6 @@ import {
   HEADER_FIGMA_PILL_RADIUS_CLASS,
   HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS,
   HEADER_TOOLBAR_ICON_CLUSTER_CLASS,
-  HEADER_REELS_EXTERNAL_HREF,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
   HEADER_SEARCH_BAR_INNER_CLASS,
   HEADER_SEARCH_ICON_TEXT_GAP_CLASS,
@@ -40,6 +39,7 @@ import {
   HEADER_SEARCH_SUBMIT_WIDTH_CLASS,
   HEADER_TOOLBAR_ICON_BUTTON_CLASS,
 } from './header/header.constants';
+import { REELS_PAGE_PATH } from '../lib/reels/reels-url';
 import { CompareIcon } from './icons/CompareIcon';
 import { CartIcon } from './icons/CartIcon';
 import { MobileNavCartLinearIcon } from './mobile-bottom-nav-icons';
@@ -55,7 +55,7 @@ const primaryNavLinks: PrimaryNavLink[] = [
   { href: '/products', translationKey: 'common.navigation.shop' },
   { href: '/products', translationKey: 'common.navigation.brands' },
   { href: '/contact', translationKey: 'common.navigation.contact' },
-  { href: HEADER_REELS_EXTERNAL_HREF, translationKey: 'common.navigation.reels', external: true },
+  { href: REELS_PAGE_PATH, translationKey: 'common.navigation.reels' },
 ];
 
 interface Category {

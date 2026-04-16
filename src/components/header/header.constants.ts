@@ -1,6 +1,3 @@
-/** Default external target for “Reels” nav until CMS/social URLs are wired */
-export const HEADER_REELS_EXTERNAL_HREF = 'https://www.instagram.com/reels/';
-
 /**
  * Shared width + horizontal padding for both header rows — `.marco-header-container` in `globals.css`.
  * Wide desktop (1367px+): same `max-w-7xl` column as hero (no extra 1920px / 135px inset).

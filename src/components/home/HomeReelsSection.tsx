@@ -11,7 +11,6 @@ import {
   REELS_MOBILE_CIRCLE_SIZE_PX,
   REELS_MOBILE_TILE_BASIS_CSS,
   REELS_ITEMS,
-  REELS_ITEM_HREF,
   REELS_LABEL_FONT_SIZE_PX,
   REELS_LABEL_LINE_HEIGHT_PX,
   REELS_TITLE_INSET_LEFT_PX,
@@ -45,6 +44,7 @@ import {
 import { HOME_PAGE_SECTION_SHELL_CLASS } from './home-page-section-shell.constants';
 import { useHomeReelsCarousel } from './useHomeReelsCarousel';
 import { useIsMaxMd } from './use-is-max-md';
+import { getReelsItemHref } from '../../lib/reels/reels-url';
 
 const montserratReels = Montserrat({
   subsets: ['latin'],
@@ -211,13 +211,13 @@ export function HomeReelsSection() {
             ['--reels-mobile-tile-basis' as string]: REELS_MOBILE_TILE_BASIS_CSS,
           }}
         >
-          {REELS_ITEMS.map((item) => {
+          {REELS_ITEMS.map((item, index) => {
             const label = t(`home.${item.labelKey}`);
             const twoWordParts = getReelLabelTwoWordParts(label);
             return (
               <Link
                 key={item.labelKey}
-                href={REELS_ITEM_HREF}
+                href={getReelsItemHref(index)}
                 title={label}
                 className="flex max-md:min-w-0 max-md:flex-[0_0_var(--reels-mobile-tile-basis)] shrink-0 snap-start flex-col items-center gap-2.5 text-center md:min-w-[148px]"
               >
