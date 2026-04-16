@@ -15,15 +15,14 @@ import {
   HOME_GRADIENT_BANNER_SURFACE_BASE_HEX,
   HOME_GRADIENT_BANNER_HEADLINE_LINE_HEIGHT_RATIO,
   HOME_GRADIENT_BANNER_IMAGE_PATH,
-  HOME_GRADIENT_BANNER_MAX_WIDTH_PX,
   HOME_GRADIENT_BANNER_OFFSET_LEFT_PX,
   HOME_GRADIENT_BANNER_OVERLAY_OPACITY,
   HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX,
   HOME_GRADIENT_BANNER_RADIUS_PX,
 } from './home-gradient-banner.constants';
 import {
-  HOME_BANNERS_LG_GRID_COLS_CLASS,
   HOME_BANNERS_ROW_GAP_PX,
+  HOME_BANNERS_TWO_COL_GRID_CLASS,
 } from './home-secondary-banner.constants';
 import { HomeSecondaryBanner } from './HomeSecondaryBanner';
 import { HomeGradientBannerCta } from './HomeGradientBannerCta';
@@ -42,7 +41,6 @@ function buildBannerSurfaceStyle(): CSSProperties {
   const overlay = `rgba(47 75 93 / ${HOME_GRADIENT_BANNER_OVERLAY_OPACITY})`;
   return {
     width: '100%',
-    maxWidth: `${HOME_GRADIENT_BANNER_MAX_WIDTH_PX}px`,
     marginLeft: `${HOME_GRADIENT_BANNER_OFFSET_LEFT_PX}px`,
     aspectRatio: HOME_GRADIENT_BANNER_ASPECT_RATIO,
     borderRadius: `${HOME_GRADIENT_BANNER_RADIUS_PX}px`,
@@ -73,12 +71,12 @@ export function HomeGradientBanner({ language }: HomeGradientBannerProps) {
       style={{ marginTop: `${HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX}px` }}
     >
       <div
-        className={`${HOME_APP_BANNER_INNER_CLASS} grid w-full grid-cols-1 ${HOME_BANNERS_LG_GRID_COLS_CLASS} lg:items-stretch`}
+        className={`${HOME_APP_BANNER_INNER_CLASS} grid w-full grid-cols-1 ${HOME_BANNERS_TWO_COL_GRID_CLASS} md:items-stretch`}
         style={{ gap: `${HOME_BANNERS_ROW_GAP_PX}px` }}
       >
         <div className="min-w-0">
           <div
-            className={`relative overflow-hidden ${montserratBanner.className}`}
+            className={`relative w-full max-w-[min(100%,460px)] overflow-hidden md:max-w-[min(100%,320px)] lg:max-w-[min(100%,460px)] ${montserratBanner.className}`}
             style={buildBannerSurfaceStyle()}
             role="region"
             aria-label={t(language, 'home.gradient_banner.aria')}

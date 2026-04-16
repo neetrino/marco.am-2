@@ -7,6 +7,9 @@ export const HOME_GRADIENT_BANNER_IMAGE_PATH = '/assets/home/home-gradient-banne
 /** First banner — between compact 420 and legacy 560. */
 export const HOME_GRADIENT_BANNER_MAX_WIDTH_PX = 460;
 
+/** Two-column row (`md`–`lg`): gradient stays narrower so the secondary panel is larger on iPad. */
+export const HOME_GRADIENT_BANNER_MAX_WIDTH_TABLET_PX = 320;
+
 /** Align with `HomeAppBanner` — same inner container, flush start (no extra nudge). */
 export const HOME_GRADIENT_BANNER_OFFSET_LEFT_PX = 0;
 

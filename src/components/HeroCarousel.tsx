@@ -21,10 +21,10 @@ import { HomePromoMobileHeroSlateLabel } from './home/HomePromoMobileHeroSlateLa
 import { HomePromoMobileHeroSlatePanel } from './home/HomePromoMobileHeroSlatePanel';
 import { HomePromoYellowHeadline } from './home/HomePromoYellowHeadline';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
+import { HOME_PAGE_SECTION_SHELL_CLASS } from './home/home-page-section-shell.constants';
 
-/** Same shell as home sections (`TopCategories`, `FeaturesSection`): bounded width + shared horizontal padding. */
-const HERO_PAGE_CONTAINER_CLASS =
-  'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 lg:pt-[65px]';
+/** Same shell as other home sections; horizontal gutters: see `HOME_PAGE_SECTION_SHELL_CLASS`. */
+const HERO_PAGE_CONTAINER_CLASS = `${HOME_PAGE_SECTION_SHELL_CLASS} pt-8 sm:pt-16 lg:pt-[65px]`;
 
 const heroDesktopCompositionStyle: CSSProperties = {
   width: HERO_DESKTOP_COMPOSITION_WIDTH_PX,

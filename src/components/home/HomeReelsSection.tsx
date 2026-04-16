@@ -42,6 +42,7 @@ import {
   REELS_TITLE_BAR_EXTEND_LEFT_PX,
   REELS_TITLE_BAR_EXTEND_RIGHT_PX,
 } from './home-reels.constants';
+import { HOME_PAGE_SECTION_SHELL_CLASS } from './home-page-section-shell.constants';
 import { useHomeReelsCarousel } from './useHomeReelsCarousel';
 import { useIsMaxMd } from './use-is-max-md';
 
@@ -91,8 +92,7 @@ const reelsLabelStyle = {
   lineHeight: `${REELS_LABEL_LINE_HEIGHT_PX}px`,
 } as const;
 
-const SECTION_CONTAINER_CLASS =
-  'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
+const SECTION_CONTAINER_CLASS = HOME_PAGE_SECTION_SHELL_CLASS;
 
 /** Mobile: shift REELS heading + yellow bar only; rail and pagination are not translated. */
 const REELS_MOBILE_TITLE_NUDGE_CLASS =

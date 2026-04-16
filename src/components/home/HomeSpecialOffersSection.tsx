@@ -48,6 +48,7 @@ import {
   SPECIAL_OFFERS_MOBILE_PAGINATION_PAGE_COUNT,
   SPECIAL_OFFERS_SCROLLER_PADDING_BOTTOM_DESKTOP_PX,
 } from './home-special-offers.constants';
+import { HOME_PAGE_SECTION_SHELL_TIGHT_MOBILE_CLASS } from './home-page-section-shell.constants';
 import { useIsMaxMd } from './use-is-max-md';
 import { useSpecialOffersCarousel } from './useSpecialOffersCarousel';
 
@@ -57,8 +58,7 @@ const montserratSpecial = Montserrat({
   display: 'swap',
 });
 
-const SECTION_CONTAINER_CLASS =
-  'w-full max-w-7xl mx-auto px-4 max-md:px-2 sm:px-6 lg:px-8';
+const SECTION_CONTAINER_CLASS = HOME_PAGE_SECTION_SHELL_TIGHT_MOBILE_CLASS;
 
 /** Pill: default white + gray border; hover marco-yellow — same as REELS. */
 const SPECIAL_OFFERS_NAV_BUTTON_CLASS =

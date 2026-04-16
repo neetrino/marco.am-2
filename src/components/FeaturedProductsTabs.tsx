@@ -31,6 +31,7 @@ import {
   SPECIAL_OFFERS_CAROUSEL_NAV_BUTTON_WIDTH_PX,
   SPECIAL_OFFERS_CAROUSEL_NAV_INSET_RIGHT_PX,
 } from './home/home-special-offers.constants';
+import { HOME_PAGE_SECTION_SHELL_CLASS } from './home/home-page-section-shell.constants';
 import {
   REELS_CAROUSEL_NAV_BUTTON_HEIGHT_MOBILE_PX,
   REELS_CAROUSEL_NAV_BUTTON_WIDTH_MOBILE_PX,
@@ -191,7 +192,7 @@ export function FeaturedProductsTabs() {
       style={featuredTitleCssVars}
       aria-labelledby="home-featured-products-heading"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={HOME_PAGE_SECTION_SHELL_CLASS}>
         <div
           className="flex flex-row flex-wrap items-end justify-between gap-4"
           style={{ marginBottom: `${FEATURED_PRODUCTS_TITLE_TO_GRID_GAP_PX}px` }}

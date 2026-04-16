@@ -44,7 +44,7 @@ export function HomeSecondaryBanner({ language }: HomeSecondaryBannerProps) {
 
   return (
     <div
-      className={`relative flex h-full w-full min-h-0 ${HOME_SECONDARY_BANNER_STACK_ASPECT_CLASS} flex-col overflow-hidden lg:aspect-auto ${montserratSecondaryHeadline.className}`}
+      className={`relative flex h-full w-full min-h-0 ${HOME_SECONDARY_BANNER_STACK_ASPECT_CLASS} flex-col overflow-hidden md:aspect-auto ${montserratSecondaryHeadline.className}`}
       style={buildSurfaceStyle()}
       role="region"
       aria-label={t(language, 'home.secondary_banner.aria')}

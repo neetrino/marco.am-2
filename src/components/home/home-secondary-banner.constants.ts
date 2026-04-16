@@ -10,14 +10,15 @@ export const HOME_SECONDARY_BANNER_RADIUS_PX = 16;
 export const HOME_BANNERS_ROW_GAP_PX = 16;
 
 /**
- * lg: first column capped (narrow gradient), second `1fr` — wider/longer pale panel.
- * Must match `HOME_GRADIENT_BANNER_MAX_WIDTH_PX` (460).
+ * md–lg: narrow first column (320px) so the secondary banner is wider on iPad.
+ * lg+: `460px` + `1fr` (Figma). Values align with `HOME_GRADIENT_BANNER_MAX_WIDTH_*` in
+ * `home-gradient-banner.constants.ts`. Below md, `grid-cols-1` stacks.
  */
-export const HOME_BANNERS_LG_GRID_COLS_CLASS =
-  'lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]';
+export const HOME_BANNERS_TWO_COL_GRID_CLASS =
+  'md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,460px)_minmax(0,1fr)]';
 
-/** Stacked layout — smaller than Figma 945×370; nudged up vs 800×320. */
-export const HOME_SECONDARY_BANNER_STACK_ASPECT_CLASS = 'max-lg:aspect-[820/328]';
+/** Stacked layout — only when single column (`max-md`); beside gradient from `md+`. */
+export const HOME_SECONDARY_BANNER_STACK_ASPECT_CLASS = 'max-md:aspect-[820/328]';
 
 /** Figma 307:2237 — «BANNER», scaled with banner row. */
 export const HOME_SECONDARY_BANNER_HEADLINE_FONT_SIZE_CLAMP =

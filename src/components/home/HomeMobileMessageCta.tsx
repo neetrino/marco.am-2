@@ -10,9 +10,9 @@ import {
   HOME_MOBILE_MESSAGE_CTA_ICON_SRC,
   HOME_MOBILE_MESSAGE_CTA_OUTER_PX,
 } from './home-mobile-message-cta.constants';
+import { HOME_PAGE_SECTION_SHELL_CLASS } from './home-page-section-shell.constants';
 
-const SECTION_CONTAINER_CLASS =
-  'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
+const SECTION_CONTAINER_CLASS = HOME_PAGE_SECTION_SHELL_CLASS;
 
 const LINK_FOCUS_CLASS =
   'rounded-full -translate-x-[4px] bg-transparent transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-black';

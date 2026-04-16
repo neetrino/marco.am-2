@@ -7,7 +7,17 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     'shared/ui/**/*.{js,ts,jsx,tsx}',
   ],
+  /**
+   * `lg` at 1200px — Z Fold unfolded (~884px CSS) stays below `lg`; iPad at 1024–1199 matches that band (`md` / `max-lg`), not desktop `lg` yet.
+   */
   theme: {
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1200px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         primary: '#000000',

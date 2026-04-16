@@ -27,6 +27,7 @@ import {
   FOOTER_NAV_COLUMN_LIST_ITEM_GAP_CLASS,
   FOOTER_MUTED_TEXT_CLASS,
   FOOTER_SUPPORT_LINKS,
+  FOOTER_INNER_CONTAINER_CLASS,
   FOOTER_SURFACE_CLASS,
   NEETRINO_STUDIO_HREF,
 } from './footer.constants';
@@ -164,7 +165,7 @@ export function Footer() {
 
   return (
     <footer className={`${FOOTER_SURFACE_CLASS} border-t border-black/5`}>
-      <div className="mx-auto max-w-7xl px-4 pb-10 pt-8 sm:px-6 lg:px-8">
+      <div className={`${FOOTER_INNER_CONTAINER_CLASS} pb-10 pt-8`}>
         <div className={FOOTER_MAIN_GRID_CLASS}>
           <div
             className={`relative flex max-w-sm flex-col ${FOOTER_BRAND_COLUMN_GAP_CLASS}`}
