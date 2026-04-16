@@ -49,6 +49,11 @@ const montserratCta = Montserrat({
 
 type HomePromoStackedProductCardProps = {
   ariaLabel: string;
+  /**
+   * When true, use a single desktop-sized max width — parent hero applies uniform `zoom`
+   * so responsive steps are not needed.
+   */
+  compositionMode?: boolean;
 };
 
 type StackLayerProps = {
@@ -238,7 +243,10 @@ function BlueStackLayerWithCta({ ctaAriaLabel }: BlueStackLayerWithCtaProps) {
 }
 
 /** Figma 101:4019–101:4026 — stacked rectangles + floor group (ellipse + handle) + chair */
-export function HomePromoStackedProductCard({ ariaLabel }: HomePromoStackedProductCardProps) {
+export function HomePromoStackedProductCard({
+  ariaLabel,
+  compositionMode = false,
+}: HomePromoStackedProductCardProps) {
   const aspectStyle: CSSProperties = {
     aspectRatio: `${HERO_PROMO_STACK_CONTAINER_ASPECT_W} / ${HERO_PROMO_STACK_CONTAINER_ASPECT_H}`,
   };
@@ -261,11 +269,12 @@ export function HomePromoStackedProductCard({ ariaLabel }: HomePromoStackedProdu
     transform: `translateY(${HERO_PROMO_STACK_CARD_TRANSLATE_Y_PX}px)`,
   };
 
+  const maxWidthClass = compositionMode
+    ? 'max-w-[472px]'
+    : 'max-w-[164px] sm:max-w-[206px] md:max-w-[min(274px,100%)] lg:max-w-[min(342px,100%)] xl:max-w-[472px]';
+
   return (
-    <div
-      className="relative block w-full max-w-[164px] sm:max-w-[206px] md:max-w-[min(274px,100%)] lg:max-w-[min(342px,100%)] xl:max-w-[472px]"
-      style={cardRootStyle}
-    >
+    <div className={`relative block w-full ${maxWidthClass}`} style={cardRootStyle}>
       <div className="relative w-full overflow-visible" style={aspectStyle}>
         <StackLayer color={HERO_PROMO_STACK_LAYER_WHITE} layerStyle={HERO_PROMO_STACK_WHITE_STYLE} zIndex={0} />
         <StackLayer color={HERO_PROMO_STACK_LAYER_GRAY} layerStyle={HERO_PROMO_STACK_GRAY_STYLE} zIndex={1} />

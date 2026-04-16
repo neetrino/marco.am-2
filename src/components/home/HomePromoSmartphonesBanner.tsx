@@ -73,11 +73,11 @@ export function HomePromoSmartphonesBanner({ layout = 'row' }: HomePromoSmartpho
           transform: `translate(${HERO_FREE_DELIVERY_TILE_TRANSLATE_X_PX}px, ${HERO_FREE_DELIVERY_TILE_TRANSLATE_Y_PX}px)`,
         };
 
+  const widthClassName =
+    layout === 'corner' ? 'w-[368px]' : HERO_PROMO_SMARTPHONES_TILE_ROW_WIDTH_CLASSNAME;
+
   return (
-    <div
-      className={`relative isolate shrink-0 bg-transparent ${HERO_PROMO_SMARTPHONES_TILE_ROW_WIDTH_CLASSNAME}`}
-      style={rootStyle}
-    >
+    <div className={`relative isolate shrink-0 bg-transparent ${widthClassName}`} style={rootStyle}>
       <div className={`relative isolate w-full overflow-hidden ${HERO_SIDE_PROMO_TILE_ASPECT_CLASSNAME}`}>
         <Image
           src={HERO_PROMO_SMARTPHONES_BANNER_IMAGE_SRC}

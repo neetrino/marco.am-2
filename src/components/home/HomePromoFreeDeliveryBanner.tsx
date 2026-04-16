@@ -74,12 +74,21 @@ const freeDeliveryCtaButtonStyle: CSSProperties = {
  * Free delivery promo tile — beside `HomePromoStackedProductCard`.
  * Shape: Figma `101:4037` mask + full-bleed delivery banner raster + Figma `305:2110` CTA.
  */
-export function HomePromoFreeDeliveryBanner() {
+type HomePromoFreeDeliveryBannerProps = {
+  /**
+   * When true, tile width matches desktop Figma (`287px`); parent hero applies uniform `zoom`.
+   */
+  compositionMode?: boolean;
+};
+
+export function HomePromoFreeDeliveryBanner({ compositionMode = false }: HomePromoFreeDeliveryBannerProps) {
   const { t } = useTranslation();
 
   return (
     <div
-      className={`relative isolate shrink-0 bg-transparent ${HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME}`}
+      className={`relative isolate shrink-0 bg-transparent ${
+        compositionMode ? 'w-[287px]' : HERO_SIDE_PROMO_TILE_WIDTH_CLASSNAME
+      }`}
       style={{
         marginLeft: -HERO_FREE_DELIVERY_TILE_ROW_NUDGE_LEFT_PX,
         transform: `translate(${HERO_FREE_DELIVERY_TILE_TRANSLATE_X_PX}px, ${HERO_FREE_DELIVERY_TILE_TRANSLATE_Y_PX}px)`,

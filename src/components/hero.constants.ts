@@ -394,3 +394,9 @@ export const HERO_CHAT_PILL_MIN_HEIGHT_PX = 40;
 export const HERO_CHAT_PILL_MAX_WIDTH_PX = 236;
 export const HERO_CHAT_PILL_BORDER_RADIUS_PX = 48;
 export const HERO_CHAT_PILL_BOX_SHADOW = '0 4px 24px rgba(150, 150, 150, 0.28)' as const;
+
+/**
+ * Desktop hero composition width (Figma / `max-w-7xl`). Entire md+ promo block is laid out in
+ * this width and scaled with one `zoom` so inner cards stay pixel-locked like 100% desktop.
+ */
+export const HERO_DESKTOP_COMPOSITION_WIDTH_PX = 1280;

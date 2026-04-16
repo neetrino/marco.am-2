@@ -1,12 +1,14 @@
 'use client';
 
 import {
+  HERO_DESKTOP_COMPOSITION_WIDTH_PX,
   HERO_PROMO_DESKTOP_FREE_DELIVERY_BANNER_TRANSLATE_Y_PX,
   HERO_PROMO_DESKTOP_SOFA_CARD_EXTRA_TRANSLATE_Y_PX,
   HERO_PROMO_DESKTOP_SOFA_ROW_TRANSLATE_Y_PX,
   HERO_PROMO_SMARTPHONES_CORNER_NUDGE_X_PX,
   HERO_PROMO_SMARTPHONES_CORNER_NUDGE_Y_PX,
 } from './hero.constants';
+import type { CSSProperties } from 'react';
 import { useTranslation } from '../lib/i18n-client';
 import { HomePromoFreeDeliveryBanner } from './home/HomePromoFreeDeliveryBanner';
 import { HomePromoSmartphonesBanner } from './home/HomePromoSmartphonesBanner';
@@ -23,6 +25,11 @@ import { HeroCarouselSlides } from './HeroCarouselSlides';
 /** Same shell as home sections (`TopCategories`, `FeaturesSection`): bounded width + shared horizontal padding. */
 const HERO_PAGE_CONTAINER_CLASS =
   'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-16 lg:pt-[65px]';
+
+const heroDesktopCompositionStyle: CSSProperties = {
+  width: HERO_DESKTOP_COMPOSITION_WIDTH_PX,
+  zoom: `min(1, calc(100cqw / ${HERO_DESKTOP_COMPOSITION_WIDTH_PX}px))`,
+};
 
 export function HeroCarousel() {
   const { t } = useTranslation();
@@ -43,8 +50,11 @@ export function HeroCarousel() {
             />
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-0 z-[15] hidden min-w-0 flex-col md:flex">
-          <div className="pointer-events-auto relative flex h-full min-h-0 min-w-0 flex-col justify-start gap-6 px-4 pb-6 pt-9 sm:px-5 sm:pb-6 md:px-7 md:pb-9 lg:gap-7 lg:px-9 lg:pb-11">
+        <div className="pointer-events-none absolute inset-0 z-[15] hidden min-w-0 flex-col items-center justify-start overflow-hidden md:flex [container-type:inline-size]">
+          <div
+            className="pointer-events-auto flex max-w-none shrink-0 origin-top flex-col justify-start gap-7 px-9 pb-11 pt-9"
+            style={heroDesktopCompositionStyle}
+          >
             <div className="pointer-events-none relative z-20 flex min-w-0 flex-row flex-wrap items-start justify-between gap-x-4 gap-y-4">
               <div className="min-w-0 max-w-full flex-[1_1_min(580px,100%)] [&_p]:mb-0">
                 <HomePromoYellowHeadline
@@ -61,7 +71,7 @@ export function HeroCarousel() {
                 <HomePromoSmartphonesBanner layout="corner" />
               </div>
             </div>
-            <div className="relative z-[5] flex w-full min-w-0 flex-row flex-wrap items-end justify-start gap-4 md:gap-6 lg:gap-8">
+            <div className="relative z-[5] flex w-full min-w-0 flex-row flex-wrap items-end justify-start gap-8">
               <div
                 className="shrink-0"
                 style={{
@@ -70,6 +80,7 @@ export function HeroCarousel() {
               >
                 <HomePromoStackedProductCard
                   ariaLabel={`${t('home.promo_featured_title')}. ${t('home.promo_featured_subtitle')}`}
+                  compositionMode
                 />
               </div>
               <div
@@ -78,7 +89,7 @@ export function HeroCarousel() {
                   transform: `translateY(${HERO_PROMO_DESKTOP_FREE_DELIVERY_BANNER_TRANSLATE_Y_PX}px)`,
                 }}
               >
-                <HomePromoFreeDeliveryBanner />
+                <HomePromoFreeDeliveryBanner compositionMode />
               </div>
             </div>
           </div>
