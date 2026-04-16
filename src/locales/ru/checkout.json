@@ -17,7 +17,8 @@
     "cardNumber": "Номер карты",
     "expiryDate": "Срок действия",
     "cvv": "CVV",
-    "cardHolderName": "Имя держателя карты"
+    "cardHolderName": "Имя держателя карты",
+    "notes": "Комментарий к заказу (необязательно)"
   },
   "placeholders": {
     "phone": "+374XXXXXXXX",
@@ -27,7 +28,8 @@
     "cardNumber": "1234 5678 9012 3456",
     "expiryDate": "ММ/ГГ",
     "cvv": "123",
-    "cardHolderName": "Иван Иванов"
+    "cardHolderName": "Иван Иванов",
+    "notes": "Указания к доставке или другие комментарии"
   },
   "shipping": {
     "storePickup": "Самовывоз",
@@ -94,7 +96,8 @@
     "fillShippingAddress": "Пожалуйста, заполните все поля адреса доставки",
     "cartEmpty": "Корзина пуста",
     "failedToLoadCart": "Не удалось загрузить корзину",
-    "failedToCreateOrder": "Не удалось создать заказ. Пожалуйста, попробуйте снова."
+    "failedToCreateOrder": "Не удалось создать заказ. Пожалуйста, попробуйте снова.",
+    "notesTooLong": "Комментарий не должен превышать 2000 символов"
   }
 }
 

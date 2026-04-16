@@ -17,7 +17,8 @@
     "cardNumber": "Քարտի համար",
     "expiryDate": "Վավերականության ժամկետ",
     "cvv": "CVV",
-    "cardHolderName": "Քարտի տիրոջ անուն"
+    "cardHolderName": "Քարտի տիրոջ անուն",
+    "notes": "Նշումներ (ըստ ցանկության)"
   },
   "placeholders": {
     "phone": "+374XXXXXXXX",
@@ -27,7 +28,8 @@
     "cardNumber": "1234 5678 9012 3456",
     "expiryDate": "ԱԱ/ՏՏ",
     "cvv": "123",
-    "cardHolderName": "Արամ Պետրոսյան"
+    "cardHolderName": "Արամ Պետրոսյան",
+    "notes": "Առաքման հրահանգներ կամ այլ մեկնաբանություն"
   },
   "shipping": {
     "storePickup": "Խանութից վերցնել",
@@ -94,7 +96,8 @@
     "fillShippingAddress": "Խնդրում ենք լրացնել բոլոր առաքման հասցեի դաշտերը",
     "cartEmpty": "Զամբյուղը դատարկ է",
     "failedToLoadCart": "Չհաջողվեց բեռնել զամբյուղը",
-    "failedToCreateOrder": "Չհաջողվեց ստեղծել պատվերը: Խնդրում ենք կրկին փորձել:"
+    "failedToCreateOrder": "Չհաջողվեց ստեղծել պատվերը: Խնդրում ենք կրկին փորձել:",
+    "notesTooLong": "Նշումները չպետք է գերազանցեն 2000 նիշը"
   }
 }
 

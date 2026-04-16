@@ -40,6 +40,7 @@ export function useCheckout() {
       lastName: '',
       email: '',
       phone: '',
+      notes: '',
       shippingMethod: 'pickup',
       paymentMethod: 'cash_on_delivery',
       shippingAddress: '',

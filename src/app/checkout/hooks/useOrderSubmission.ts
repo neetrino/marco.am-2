@@ -51,6 +51,7 @@ export function useOrderSubmission({
 
       const shippingAmount = data.shippingMethod === 'delivery' && deliveryPrice !== null ? deliveryPrice : 0;
 
+      const trimmedNotes = data.notes.trim();
       const response = await apiClient.post<{
         order: {
           id: string;
@@ -73,6 +74,7 @@ export function useOrderSubmission({
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
+        ...(trimmedNotes ? { notes: trimmedNotes } : {}),
         shippingMethod: data.shippingMethod,
         ...(shippingAddress ? { shippingAddress } : {}),
         shippingAmount: shippingAmount,

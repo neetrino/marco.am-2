@@ -3,6 +3,8 @@ export type CheckoutFormData = {
   lastName: string;
   email: string;
   phone: string;
+  /** Optional order notes (delivery instructions, etc.) */
+  notes: string;
   shippingMethod: 'pickup' | 'delivery';
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingAddress?: string;

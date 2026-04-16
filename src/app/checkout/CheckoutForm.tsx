@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Input } from '@shop/ui';
+import { Card, Input, Textarea } from '@shop/ui';
 import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutFormData } from './types';
@@ -78,6 +78,14 @@ export function CheckoutForm({
               disabled={isSubmitting}
             />
           </div>
+          <Textarea
+            label={t('checkout.form.notes')}
+            placeholder={t('checkout.placeholders.notes')}
+            {...register('notes')}
+            error={errors.notes?.message}
+            disabled={isSubmitting}
+            rows={4}
+          />
         </div>
       </Card>
 

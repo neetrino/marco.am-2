@@ -28,7 +28,7 @@
 | 2    | Գլխավոր էջ (Home) — տվյալներ     | `41%`           |
 | 3    | Shop (PLP) — կատալոգ API         | `82%`           |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
-| 5    | Checkout — պատվեր                | `70%`           |
+| 5    | Checkout — պատվեր                | `73%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `82%`           |
 | 8    | Admin — catalog & promos         | `42%`           |
@@ -127,12 +127,12 @@
 
 ## Փուլ 5 — Checkout
 
-**Փուլի առաջընթաց.** `70%`
+**Փուլի առաջընթաց.** `73%`
 
 
 | ID  | Առաջադրանք (backend)                                                             | Կատարման % | Կարգավիճակ |
 | --- | -------------------------------------------------------------------------------- | ---------- | ---------- |
-| 5.1 | Պատվերի սևագիր / validate — անուն, ազգանուն, հեռախոս, email, հասցե, նշումներ     | 80         | 🔄         |
+| 5.1 | Պատվերի սևագիր / validate — անուն, ազգանուն, հեռախոս, email, հասցե, նշումներ     | 100        | ✅         |
 | 5.2 | Delivery method — ինտեգրացիայի hint (օր. Yandex delivery) + admin business rules | 30         | ⬜          |
 | 5.3 | Delivery cost և order total — դինամիկ վերահաշվարկ API                            | 85         | 🔄         |
 | 5.4 | Payment method ընտրություն — card vs cash, order payload                         | 75         | 🔄         |
@@ -142,6 +142,8 @@
 
 
 *Նշումներ.* `orders.service` checkout-ում գները վերցվում են DB-ից (ոչ թե client snapshot)։ Զեղչը checkout-ում `TODO` է։ Email/SMS հաստատում backend-ում չի երևում։
+
+**5.1 ✅ ավարտված (2026-04-16).** Storefront `CheckoutForm` — անուն/ազգանուն, հեռախոս, email, առաքման հասցե (փողոց + քաղաք, երբ `delivery`), նշումներ (`notes`, մինչև 2000 նիշ)։ `POST /api/v1/orders/checkout` մարմնում `firstName`/`lastName`/`notes` + `shippingAddress`։ Սերվեր՝ `Order.notes`, հասցեի JSON (`buildOrderAddressJson` — `firstName`/`lastName`/`addressLine1`/`city`)։
 
 ---
 

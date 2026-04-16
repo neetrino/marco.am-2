@@ -5,6 +5,9 @@ import type { CheckoutData } from "../types/checkout";
 import { logger } from "../utils/logger";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
+import { buildOrderAddressJson } from "./orders-checkout-address";
+
+const MAX_ORDER_NOTES_LENGTH = 2000;
 
 const orderNumberId = customAlphabet("0123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 10);
 
@@ -61,6 +64,9 @@ class OrdersService {
         items: guestItems,
         email,
         phone,
+        firstName,
+        lastName,
+        notes: rawNotes,
         shippingMethod = 'pickup',
         shippingAddress,
         paymentMethod = 'idram',
@@ -76,6 +82,15 @@ class OrdersService {
           detail: "Email and phone are required",
         };
       }
+
+      const notesTrimmed = typeof rawNotes === "string" ? rawNotes.trim() : "";
+      const orderNotes =
+        notesTrimmed.length > 0
+          ? notesTrimmed.slice(0, MAX_ORDER_NOTES_LENGTH)
+          : null;
+
+      const { shippingAddress: shippingAddressJson, billingAddress: billingAddressJson } =
+        buildOrderAddressJson(shippingMethod, shippingAddress, firstName, lastName);
 
       // Get cart items - either from user cart or guest items
       let cartItems: Array<{
@@ -319,8 +334,9 @@ class OrdersService {
             customerPhone: phone,
             customerLocale: 'en', // TODO: Get from request
             shippingMethod,
-            shippingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
-            billingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
+            shippingAddress: shippingAddressJson,
+            billingAddress: billingAddressJson,
+            notes: orderNotes,
             items: {
               create: cartItems.map((item) => ({
                 variantId: item.variantId,
