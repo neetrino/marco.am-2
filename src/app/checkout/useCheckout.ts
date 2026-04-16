@@ -7,7 +7,7 @@ import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { usePaymentMethods } from './utils/payment-methods';
 import { useCheckoutSchema } from './utils/validation-schema';
-import { useDeliveryPrice } from './hooks/useDeliveryPrice';
+import { useCheckoutTotals } from './hooks/useCheckoutTotals';
 import { useCart } from './hooks/useCart';
 import { useUserProfile } from './hooks/useUserProfile';
 import { useOrderSubmission } from './hooks/useOrderSubmission';
@@ -57,21 +57,25 @@ export function useCheckout() {
   const shippingMethod = watch('shippingMethod');
   const shippingCity = watch('shippingCity');
 
-  const { deliveryPrice, loadingDeliveryPrice } = useDeliveryPrice(shippingMethod, shippingCity);
   const { cart, loading, fetchCart } = useCart(isLoggedIn);
+  const { checkoutTotals, loadingCheckoutTotals } = useCheckoutTotals(
+    cart,
+    isLoggedIn,
+    shippingMethod,
+    shippingCity
+  );
   useUserProfile(isLoggedIn, isLoading, setValue);
 
   const { submitOrder } = useOrderSubmission({
     cart,
     isLoggedIn,
-    deliveryPrice,
+    checkoutTotals,
     setError,
   });
 
   const { orderSummary } = useOrderSummary({
     cart,
-    shippingMethod,
-    deliveryPrice,
+    checkoutTotals,
     currency,
   });
 
@@ -153,8 +157,8 @@ export function useCheckout() {
     setShowShippingModal,
     showCardModal,
     setShowCardModal,
-    deliveryPrice,
-    loadingDeliveryPrice,
+    checkoutTotals,
+    loadingCheckoutTotals,
     // Form
     register,
     handleSubmit,

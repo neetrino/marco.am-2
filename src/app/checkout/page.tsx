@@ -24,8 +24,7 @@ export default function CheckoutPage() {
     setShowShippingModal,
     showCardModal,
     setShowCardModal,
-    deliveryPrice,
-    loadingDeliveryPrice,
+    loadingCheckoutTotals,
     register,
     handleSubmit,
     errors,
@@ -99,8 +98,7 @@ export default function CheckoutPage() {
             currency={currency}
             shippingMethod={shippingMethod}
             shippingCity={shippingCity}
-            loadingDeliveryPrice={loadingDeliveryPrice}
-            deliveryPrice={deliveryPrice}
+            loadingCheckoutTotals={loadingCheckoutTotals}
             error={error}
             isSubmitting={isSubmitting}
             onPlaceOrder={(e) => {
@@ -130,8 +128,7 @@ export default function CheckoutPage() {
         cart={cart}
         orderSummary={orderSummary}
         currency={currency}
-        loadingDeliveryPrice={loadingDeliveryPrice}
-        deliveryPrice={deliveryPrice}
+        loadingCheckoutTotals={loadingCheckoutTotals}
         logoErrors={logoErrors}
         setLogoErrors={setLogoErrors}
         isLoggedIn={isLoggedIn}

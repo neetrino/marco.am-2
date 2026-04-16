@@ -28,8 +28,7 @@ interface CardDetailsModalProps {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
   logoErrors: Record<string, boolean>;
   setLogoErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   isLoggedIn: boolean;
@@ -51,8 +50,7 @@ export function CardDetailsModal({
   cart,
   orderSummary,
   currency,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
   logoErrors,
   setLogoErrors,
   isLoggedIn,
@@ -150,8 +148,7 @@ export function CardDetailsModal({
             currency={currency}
             shippingMethod={shippingMethod}
             shippingCity={shippingCity}
-            loadingDeliveryPrice={loadingDeliveryPrice}
-            deliveryPrice={deliveryPrice}
+            loadingCheckoutTotals={loadingCheckoutTotals}
           />
         </div>
 

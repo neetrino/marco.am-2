@@ -2,19 +2,20 @@ import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { clearGuestCart } from '../checkoutUtils';
+import type { CheckoutTotalsResponse } from '../../../lib/types/checkout-totals';
 import type { CheckoutFormData, Cart, CartItem } from '../types';
 
 interface UseOrderSubmissionProps {
   cart: Cart | null;
   isLoggedIn: boolean;
-  deliveryPrice: number | null;
+  checkoutTotals: CheckoutTotalsResponse | null;
   setError: (error: string | null) => void;
 }
 
 export function useOrderSubmission({
   cart,
   isLoggedIn,
-  deliveryPrice,
+  checkoutTotals,
   setError,
 }: UseOrderSubmissionProps) {
   const router = useRouter();
@@ -49,7 +50,10 @@ export function useOrderSubmission({
           }
         : undefined;
 
-      const shippingAmount = data.shippingMethod === 'courier' && deliveryPrice !== null ? deliveryPrice : 0;
+      const shippingAmount =
+        data.shippingMethod === 'courier' && checkoutTotals
+          ? checkoutTotals.shippingAmount
+          : 0;
 
       const trimmedNotes = data.notes.trim();
       const response = await apiClient.post<{

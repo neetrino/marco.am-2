@@ -3,7 +3,7 @@
 import { Card, Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
 import { formatPriceInCurrency } from '../../lib/currency';
-import type { ShippingMethodId } from '../../lib/constants/shipping-method';
+import { isCourierShipping, type ShippingMethodId } from '../../lib/constants/shipping-method';
 import type { Cart } from './types';
 
 interface OrderSummaryProps {
@@ -17,8 +17,7 @@ interface OrderSummaryProps {
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   shippingMethod: ShippingMethodId;
   shippingCity: string | undefined;
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
   error: string | null;
   isSubmitting: boolean;
   onPlaceOrder: (e?: React.FormEvent) => void;
@@ -30,8 +29,7 @@ export function OrderSummary({
   currency,
   shippingMethod,
   shippingCity,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
   error,
   isSubmitting,
   onPlaceOrder,
@@ -50,13 +48,14 @@ export function OrderSummary({
           <div className="flex justify-between text-gray-600">
             <span>{t('checkout.summary.shipping')}</span>
             <span>
-              {shippingMethod === 'pickup' 
+              {shippingMethod === 'pickup'
                 ? t('checkout.shipping.freePickup')
-                : loadingDeliveryPrice
-                  ? t('checkout.shipping.loading')
-                  : deliveryPrice !== null
-                    ? formatPriceInCurrency(orderSummary.shippingDisplay, currency) + (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.courier')})`)
-                    : t('checkout.shipping.enterCity')}
+                : isCourierShipping(shippingMethod) && !shippingCity?.trim()
+                  ? t('checkout.shipping.enterCity')
+                  : loadingCheckoutTotals
+                    ? t('checkout.shipping.loading')
+                    : formatPriceInCurrency(orderSummary.shippingDisplay, currency) +
+                      (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.courier')})`)}
             </span>
           </div>
           <div className="flex justify-between text-gray-600">

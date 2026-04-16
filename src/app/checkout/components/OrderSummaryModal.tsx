@@ -2,7 +2,7 @@
 
 import { useTranslation } from '../../../lib/i18n-client';
 import { formatPriceInCurrency } from '../../../lib/currency';
-import type { ShippingMethodId } from '../../../lib/constants/shipping-method';
+import { isCourierShipping, type ShippingMethodId } from '../../../lib/constants/shipping-method';
 import { Cart } from '../types';
 
 interface OrderSummaryModalProps {
@@ -16,8 +16,7 @@ interface OrderSummaryModalProps {
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   shippingMethod: ShippingMethodId;
   shippingCity?: string;
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
 }
 
 export function OrderSummaryModal({
@@ -26,8 +25,7 @@ export function OrderSummaryModal({
   currency,
   shippingMethod,
   shippingCity,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
 }: OrderSummaryModalProps) {
   const { t } = useTranslation();
 
@@ -35,14 +33,15 @@ export function OrderSummaryModal({
     return null;
   }
 
-  const shippingDisplay = shippingMethod === 'pickup' 
-    ? t('checkout.shipping.freePickup')
-    : loadingDeliveryPrice
-      ? t('checkout.shipping.loading')
-      : deliveryPrice !== null
-        ? formatPriceInCurrency(orderSummary.shippingDisplay, currency) + 
-          (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.courier')})`)
-        : t('checkout.shipping.enterCity');
+  const shippingDisplay =
+    shippingMethod === 'pickup'
+      ? t('checkout.shipping.freePickup')
+      : isCourierShipping(shippingMethod) && !shippingCity?.trim()
+        ? t('checkout.shipping.enterCity')
+        : loadingCheckoutTotals
+          ? t('checkout.shipping.loading')
+          : formatPriceInCurrency(orderSummary.shippingDisplay, currency) +
+            (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.courier')})`);
 
   return (
     <div className="bg-gray-50 rounded-lg p-4 space-y-2">

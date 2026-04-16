@@ -28,8 +28,7 @@ interface ShippingAddressModalProps {
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   shippingCity?: string;
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
   onSubmit: (data: CheckoutFormData) => void;
 }
 
@@ -47,8 +46,7 @@ export function ShippingAddressModal({
   orderSummary,
   currency,
   shippingCity,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
   onSubmit,
 }: ShippingAddressModalProps) {
   const { t } = useTranslation();
@@ -165,8 +163,7 @@ export function ShippingAddressModal({
               currency={currency}
               shippingMethod={shippingMethod}
               shippingCity={shippingCity}
-              loadingDeliveryPrice={loadingDeliveryPrice}
-              deliveryPrice={deliveryPrice}
+              loadingCheckoutTotals={loadingCheckoutTotals}
             />
           </>
         ) : (
@@ -206,8 +203,7 @@ export function ShippingAddressModal({
               currency={currency}
               shippingMethod={shippingMethod}
               shippingCity={shippingCity}
-              loadingDeliveryPrice={loadingDeliveryPrice}
-              deliveryPrice={deliveryPrice}
+              loadingCheckoutTotals={loadingCheckoutTotals}
             />
           </div>
         )}
