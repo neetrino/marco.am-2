@@ -28,8 +28,8 @@ export const contactFormBodySchema = z.object({
     .trim()
     .min(1, "message is required")
     .max(CONTACT_FORM_MESSAGE_MAX),
-  /** Honeypot — must stay empty (hidden field; bots often fill it). */
-  website: z.string().optional(),
+  /** Honeypot — must stay empty. Named `hp` (not `website`) to avoid browser/password-manager autofill. */
+  hp: z.string().optional(),
   /** Cloudflare Turnstile token — required when `TURNSTILE_SECRET_KEY` is set. */
   turnstileToken: z.string().optional(),
 });

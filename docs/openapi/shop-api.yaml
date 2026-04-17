@@ -683,9 +683,9 @@ components:
         message:
           type: string
           maxLength: 5000
-        website:
+        hp:
           type: string
-          description: Honeypot field — must be empty.
+          description: Honeypot field — must be empty (avoid naming `website`; browsers may autofill).
         turnstileToken:
           type: string
           description: Cloudflare Turnstile token; required when `TURNSTILE_SECRET_KEY` is set.

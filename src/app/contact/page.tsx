@@ -4,7 +4,7 @@ import { Button, Input } from '@shop/ui';
 import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
-import { apiClient } from '../../lib/api-client';
+import { apiClient, getApiOrErrorMessage } from '../../lib/api-client';
 import { getErrorMessage } from '@/lib/types/errors';
 import { logger } from '@/lib/utils/logger';
 import {
@@ -43,8 +43,8 @@ export default function ContactPage() {
     email: '',
     subject: '',
     message: '',
-    /** Honeypot — must stay empty; sent as `website` for bots that fill hidden fields. */
-    website: '',
+    /** Honeypot — must stay empty; field name `hp` avoids autofill on `website`. */
+    hp: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export default function ContactPage() {
         email: formData.email.trim(),
         subject: formData.subject.trim(),
         message: formData.message.trim(),
-        website: formData.website,
+        hp: formData.hp,
       };
       if (turnstileToken?.trim()) {
         body.turnstileToken = turnstileToken.trim();
@@ -80,7 +80,7 @@ export default function ContactPage() {
         email: '',
         subject: '',
         message: '',
-        website: '',
+        hp: '',
       });
       setTurnstileToken(null);
       setTurnstileMountKey((k) => k + 1);
@@ -90,7 +90,12 @@ export default function ContactPage() {
       logger.error('Contact form submission failed', {
         message: error instanceof Error ? error.message : getErrorMessage(error),
       });
-      alert(t('contact.form.submitError') || 'Սխալ: ' + (getErrorMessage(error) || 'Չհաջողվեց ուղարկել հաղորդագրությունը'));
+      alert(
+        getApiOrErrorMessage(
+          error,
+          t('contact.form.submitError') || 'Failed to send message'
+        )
+      );
     } finally {
       setSubmitting(false);
     }
@@ -164,12 +169,12 @@ export default function ContactPage() {
                 aria-hidden="true"
               >
                 <input
-                  id="contact-website-honeypot"
-                  name="website"
+                  id="contact-hp-honeypot"
+                  name="hp"
                   type="text"
                   tabIndex={-1}
                   autoComplete="off"
-                  value={formData.website}
+                  value={formData.hp}
                   onChange={handleChange}
                 />
               </div>

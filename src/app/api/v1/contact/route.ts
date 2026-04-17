@@ -37,9 +37,8 @@ export async function POST(req: NextRequest) {
       return validationProblem(req, detail);
     }
 
-    const { website, turnstileToken, name, email, subject, message } =
-      parsed.data;
-    if (website?.trim()) {
+    const { hp, turnstileToken, name, email, subject, message } = parsed.data;
+    if (hp?.trim()) {
       logger.warn("Contact form honeypot triggered");
       return validationProblem(req, "Request could not be processed");
     }
