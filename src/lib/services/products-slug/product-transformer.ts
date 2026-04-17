@@ -51,6 +51,8 @@ type ProductDiscountBadge = {
   label: string;
 };
 
+type StockStatus = "in_stock" | "out_of_stock";
+
 type RawProductMediaItem = {
   url?: string;
   src?: string;
@@ -380,6 +382,37 @@ function buildDiscountBadge(discountPercent: number | null): ProductDiscountBadg
   };
 }
 
+function toStockStatus(stock: number): StockStatus {
+  return stock > 0 ? "in_stock" : "out_of_stock";
+}
+
+function resolveProductStockSummary(variants: ProductVariantWithOptions[]): {
+  inStock: boolean;
+  stockStatus: StockStatus;
+  stockQuantity: number;
+} {
+  if (variants.length === 0) {
+    return {
+      inStock: false,
+      stockStatus: "out_of_stock",
+      stockQuantity: 0,
+    };
+  }
+
+  const stockQuantity = variants.reduce((sum, variant) => {
+    const currentStock = Number.isFinite(variant.stock) ? Math.max(0, variant.stock) : 0;
+    return sum + currentStock;
+  }, 0);
+
+  const inStock = variants.some((variant) => variant.stock > 0);
+
+  return {
+    inStock,
+    stockStatus: inStock ? "in_stock" : "out_of_stock",
+    stockQuantity,
+  };
+}
+
 function buildVariantPricing(
   originalPrice: number,
   compareAtPrice: number | null,
@@ -445,6 +478,8 @@ function transformVariants(
         globalDiscount: globalDiscount > 0 ? globalDiscount : null,
         productDiscount: productDiscount > 0 ? productDiscount : null,
         stock: variant.stock,
+        inStock: variant.stock > 0,
+        stockStatus: toStockStatus(variant.stock),
         imageUrl: variantImageUrl,
         options: Array.isArray(variant.options) ? variant.options.map((opt: ProductVariantWithOptions['options'][number]) => {
           // Support both new format (AttributeValue) and old format (attributeKey/value)
@@ -645,6 +680,7 @@ export async function transformProduct(
       )
     : [];
   const primaryVariant = transformedVariants[0] ?? null;
+  const productStockSummary = resolveProductStockSummary(Array.isArray(product.variants) ? product.variants : []);
 
   return {
     id: product.id,
@@ -675,6 +711,9 @@ export async function transformProduct(
     currentPrice: primaryVariant?.currentPrice ?? null,
     oldPrice: primaryVariant?.oldPrice ?? null,
     discountBadge: primaryVariant?.discountBadge ?? null,
+    inStock: productStockSummary.inStock,
+    stockStatus: productStockSummary.stockStatus,
+    stockQuantity: productStockSummary.stockQuantity,
     pricing: {
       currentPrice: primaryVariant?.currentPrice ?? null,
       oldPrice: primaryVariant?.oldPrice ?? null,

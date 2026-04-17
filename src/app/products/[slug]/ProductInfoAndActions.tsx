@@ -132,6 +132,13 @@ export function ProductInfoAndActions({
               </p>
             )}
           </div>
+          <p
+            className={`mt-3 inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+              isOutOfStock ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'
+            }`}
+          >
+            {isOutOfStock ? t(language, 'common.stock.outOfStock') : t(language, 'common.stock.inStock')}
+          </p>
         </div>
         <div className="text-gray-600 mb-8 prose prose-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || '') }} />
 

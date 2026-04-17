@@ -38,6 +38,8 @@ export interface ProductVariant {
   productDiscount?: number | null;
   globalDiscount?: number | null;
   imageUrl?: string;
+  inStock?: boolean;
+  stockStatus?: 'in_stock' | 'out_of_stock';
 }
 
 export interface ProductLabel {
@@ -124,6 +126,9 @@ export interface Product {
   productAttributes?: ProductAttribute[];
   productDiscount?: number | null;
   globalDiscount?: number | null;
+  inStock?: boolean;
+  stockStatus?: 'in_stock' | 'out_of_stock';
+  stockQuantity?: number;
 }
 
 // Reserved routes that should not be treated as product slugs

@@ -27,7 +27,7 @@
 | 1    | Infra & API կոնտրակտ             | `100%`          |
 | 2    | Գլխավոր էջ (Home) — տվյալներ     | `100%`          |
 | 3    | Shop (PLP) — կատալոգ API         | `100%`          |
-| 4    | Ապրանքի էջ (PDP) — մանրամասն API | `92%`           |
+| 4    | Ապրանքի էջ (PDP) — մանրամասն API | `94%`           |
 | 5    | Checkout — պատվեր                | `89%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
@@ -126,7 +126,7 @@
 
 ## Փուլ 4 — Product (PDP)
 
-**Փուլի առաջընթաց.** `93%`
+**Փուլի առաջընթաց.** `94%`
 
 
 | ID  | Առաջադրանք (backend)                                                                | Կատարման % | Կարգավիճակ |
@@ -136,7 +136,7 @@
 | 4.3 | Technical specifications table — structured attributes                              | 100        | ✅          |
 | 4.4 | Գնային դաշտեր — current price, old price, discount badge inputs                     | 100        | ✅          |
 | 4.5 | Quantity + Add to cart — զամբյուղի API (կլիենտ state-ի հետ համաձայնեցված)           | 100        | ✅          |
-| 4.6 | Պահեստի կարգավիճակ — in stock / out of stock                                        | 90         | 🔄         |
+| 4.6 | Պահեստի կարգավիճակ — in stock / out of stock                                        | 100        | ✅          |
 | 4.7 | Related products — recommendation rule (կատեգորիա/բրենդ/այլ)                        | 55         | 🔄         |
 | 4.8 | Reviews — rating aggregate, ցուցակ, review submit (policy + auth, եթե պահանջվում է) | 100        | ✅          |
 
@@ -152,6 +152,8 @@
 **4.4 ✅ ավարտված (2026-04-17).** `GET /api/v1/products/[slug]?lang=<locale>` PDP պատասխանում գնի դաշտերը ստանդարտացվել են՝ ինչպես top-level, այնպես էլ variant մակարդակով․ ավելացվել են `currentPrice`, `oldPrice`, `discountBadge` (`{ type: "percentage", value, label }`) և `pricing` summary բլոկը։ `oldPrice`-ը վերադարձվում է միայն այն դեպքում, երբ այն իրականում մեծ է `currentPrice`-ից, իսկ `discountBadge`-ը հաշվարկվում է product/category/brand/global discount-ից կամ fallback՝ `compareAtPrice` տարբերությունից։ Գոյություն ունեցող `price` / `originalPrice` / `compareAtPrice` դաշտերը պահպանվել են backward-compatible։
 
 **4.5 ✅ ավարտված (2026-04-17).** `POST /api/v1/cart/items`-ում ավելացվել է `quantity`-ի խիստ validation (`positive integer`) և պահեստի սահմանափակման վերահսկում՝ ընդհանուր cart քանակի հաշվարկով (`existing + requested <= stock`)։ PDP (`src/app/products/[slug]/page.tsx`) add-to-cart հոսքը հիմա ուղարկում է ընտրված `quantity`-ը և `cart-updated` custom event-ով վերադարձնում է state-sync տվյալներ (`optimisticAdd` / `cartSummary`)՝ Header badge/total-ը անմիջապես համաժամեցնելու համար թե՛ login, թե՛ guest դեպքերում։ Guest cart-ում նույնպես ավելացվել է նույն variant-ի `stock`-ի գերազանցման պաշտպանություն և local summary հաշվարկ (`itemsCount`, `total`)։
+
+**4.6 ✅ ավարտված (2026-04-17).** `GET /api/v1/products/[slug]?lang=<locale>` PDP պատասխանում ավելացվել է հստակ պահեստային կարգավիճակի մոդել՝ product մակարդակով `inStock`, `stockStatus` (`in_stock`/`out_of_stock`) և `stockQuantity` (բոլոր variant-ների դրական stock-ի գումար), իսկ variant մակարդակով՝ `inStock` + `stockStatus` դաշտեր։ Storefront PDP-ում (`ProductInfoAndActions`) հիմա ցուցադրվում է տեսանելի badge՝ `In stock` կամ `Out of stock` (լեզվային թարգմանություններով `common.stock.*`)՝ ընտրված variant-ի հասանելիության հիման վրա։
 
 **4.8 ✅ ավարտված (2026-04-16).** `GET /api/v1/products/[slug]/reviews` — վերադարձնում է `{ reviews, aggregate }` (միջին գնահատական, քանակ, աստղերի բաշխում) + հրապարակված կարծիքների ցուցակ։ `POST` — JWT, `policyAccepted: true` (UI-ում checkbox + `/terms` հղում), մարմնում `rating` + `comment`։ Պրոդում կամընտիր `REVIEW_REQUIRE_PURCHASE=true` — կարծիք միայն այն օգտատիրոջ համար, ում մոտ կա չչեղարկված պատվեր ապրանքով (variant → product)։ `reviews.service.ts`, PDP `ProductReviews` / `ReviewSummary` / `useReviews`։
 
