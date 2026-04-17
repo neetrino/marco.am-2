@@ -10,6 +10,7 @@ import { Breadcrumb } from '../components/Breadcrumb';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { MOBILE_NAV_LAYOUT_PADDING_BOTTOM } from '../components/mobile-bottom-nav.constants';
 import { LANGUAGE_PREFERENCE_KEY, parseLanguageFromServer } from '../lib/language';
+import { siteFooterService } from '../lib/services/site-footer.service';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,8 @@ export default async function RootLayout({
   const initialLanguage = parseLanguageFromServer(
     cookieStore.get(LANGUAGE_PREFERENCE_KEY)?.value,
   );
+  const footerLocale = initialLanguage ?? 'en';
+  const initialFooter = await siteFooterService.getPublicPayload(footerLocale);
 
   return (
     <html lang="en" className="h-full">
@@ -47,7 +50,7 @@ export default async function RootLayout({
                 {children}
               </main>
               <div className="hidden md:block">
-                <Footer />
+                <Footer initialFooter={initialFooter} />
               </div>
               <MobileBottomNav />
             </div>

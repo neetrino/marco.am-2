@@ -660,6 +660,87 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /api/v1/home/footer:
+    get:
+      tags: [Home]
+      summary: Site footer (locale-resolved contact, social URLs, optional map embed, nav + legal links)
+      operationId: getHomeFooter
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: |
+            Column titles, contact fields, optional HTTPS map iframe URL (allowed hosts only),
+            active navigation links, and active social links with HTTPS profile URLs.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteFooterPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/home-footer:
+    get:
+      tags: [Home]
+      summary: Full site footer document (all locales) for admin
+      operationId: getSupersudoHomeFooter
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = homeSiteFooter`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteFooterStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Home]
+      summary: Replace site footer document (validated)
+      operationId: putSupersudoHomeFooter
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteFooterStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteFooterStorageDocument"
+        "400":
+          description: Validation error (including invalid map embed when enabled).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/contact:
     post:
       tags: [Site]
@@ -1203,6 +1284,205 @@ components:
           maxItems: 24
           items:
             $ref: "#/components/schemas/CustomerReviewsStorageItem"
+
+    SiteFooterLocaleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 800
+        hy:
+          type: string
+          maxLength: 800
+        ru:
+          type: string
+          maxLength: 800
+
+    SiteFooterSocialPlatform:
+      type: string
+      enum: [instagram, facebook, telegram, whatsapp, viber]
+
+    SiteFooterPublicNavLink:
+      type: object
+      required: [id, label, href, sortOrder]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        href:
+          type: string
+        sortOrder:
+          type: integer
+
+    SiteFooterPublicSocialLink:
+      type: object
+      required: [id, platform, href, sortOrder]
+      properties:
+        id:
+          type: string
+        platform:
+          $ref: "#/components/schemas/SiteFooterSocialPlatform"
+        href:
+          type: string
+          description: HTTPS profile/channel URL
+        sortOrder:
+          type: integer
+
+    SiteFooterPublicResponse:
+      type: object
+      required:
+        - companyColumnTitle
+        - supportColumnTitle
+        - contactsColumnTitle
+        - contact
+        - mapEmbed
+        - companyLinks
+        - supportLinks
+        - legalLinks
+        - socialLinks
+      properties:
+        companyColumnTitle:
+          type: string
+        supportColumnTitle:
+          type: string
+        contactsColumnTitle:
+          type: string
+        contact:
+          type: object
+          required: [address, phoneDisplay, phoneTel, email]
+          properties:
+            address:
+              type: string
+            phoneDisplay:
+              type: string
+            phoneTel:
+              type: string
+            email:
+              type: string
+              format: email
+        mapEmbed:
+          type: object
+          required: [enabled, iframeSrc]
+          properties:
+            enabled:
+              type: boolean
+            iframeSrc:
+              type: string
+              nullable: true
+        companyLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicNavLink"
+        supportLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicNavLink"
+        legalLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicNavLink"
+        socialLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicSocialLink"
+
+    SiteFooterNavLinkStorage:
+      type: object
+      required: [id, label, href, active, sortOrder]
+      properties:
+        id:
+          type: string
+        label:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        href:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    SiteFooterSocialLinkStorage:
+      type: object
+      required: [id, platform, active, sortOrder]
+      properties:
+        id:
+          type: string
+        platform:
+          $ref: "#/components/schemas/SiteFooterSocialPlatform"
+        href:
+          type: string
+          description: Required when active — HTTPS URL
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    SiteFooterStorageDocument:
+      type: object
+      required:
+        - version
+        - companyColumnTitle
+        - supportColumnTitle
+        - contactsColumnTitle
+        - contact
+        - mapEmbed
+        - companyLinks
+        - supportLinks
+        - legalLinks
+        - socialLinks
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        companyColumnTitle:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        supportColumnTitle:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        contactsColumnTitle:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        contact:
+          type: object
+          required: [address, phoneDisplay, phoneTel, email]
+          properties:
+            address:
+              $ref: "#/components/schemas/SiteFooterLocaleTriple"
+            phoneDisplay:
+              $ref: "#/components/schemas/SiteFooterLocaleTriple"
+            phoneTel:
+              type: string
+            email:
+              type: string
+              format: email
+        mapEmbed:
+          type: object
+          required: [enabled]
+          properties:
+            enabled:
+              type: boolean
+            iframeSrc:
+              type: string
+        companyLinks:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SiteFooterNavLinkStorage"
+        supportLinks:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SiteFooterNavLinkStorage"
+        legalLinks:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SiteFooterNavLinkStorage"
+        socialLinks:
+          type: array
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/SiteFooterSocialLinkStorage"
 
     LoginRequest:
       type: object

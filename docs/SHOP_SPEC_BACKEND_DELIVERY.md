@@ -3,7 +3,7 @@
 > Աղբյուր. `[shop-marco-code-plan.md](./shop-marco-code-plan.md)` (functional spec) — **backend** շերտին և API/CMS պահանջվող կետերը։  
 > Ճարտարապետության ամփոփում. `[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)`
 
-**Վերջին թարմացում.** 2026-04-17
+**Վերջին թարմացում.** 2026-04-17 (փուլ 2 — footer/CMS)
 
 **Արվածության գնահատում.** Կոդբազայի աուդիտ (`shared/db/prisma/schema.prisma`, `src/app/api/`**, `src/lib/services/`**) — տոկոսները արտահայտում են **ընթացիկ repo-ում իմպլեմենտացիայի** համապատասխանությունը spec-ի backend պահանջին (ոչ թե դիզայն/QA փուլը)։
 
@@ -25,7 +25,7 @@
 | Փուլ | Անվանում                         | Փուլի առաջընթաց |
 | ---- | -------------------------------- | --------------- |
 | 1    | Infra & API կոնտրակտ             | `100%`          |
-| 2    | Գլխավոր էջ (Home) — տվյալներ     | `88%`           |
+| 2    | Գլխավոր էջ (Home) — տվյալներ     | `100%`          |
 | 3    | Shop (PLP) — կատալոգ API         | `82%`           |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `89%`           |
@@ -38,7 +38,7 @@
 | 12   | Site-wide & i18n (API)           | `62%`           |
 
 
-**Ընդհանուր նախագծի առաջընթաց (backend).** `~66%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
+**Ընդհանուր նախագծի առաջընթաց (backend).** `~67%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
 
 ---
 
@@ -61,7 +61,7 @@
 
 ## Փուլ 2 — Գլխավոր էջ (Home)
 
-**Փուլի առաջընթաց.** `88%`
+**Փուլի առաջընթաց.** `100%`
 
 
 | ID  | Առաջադրանք (backend)                                                                                                   | Կատարման % | Կարգավիճակ |
@@ -72,7 +72,7 @@
 | 2.4 | «Why choose us» — 3–4 առավելություն (warranty, fast delivery, installment, original products) — CMS կամ structured API | 100        | ✅          |
 | 2.5 | Հաճախորդների կարծիքների carousel — rating, տեքստ, լուսանկարներ (եթե կան)                                               | 100        | ✅          |
 | 2.6 | Brand partners — բրենդների մետատվյալներ + լոգո asset URL                                                               | 100        | ✅          |
-| 2.7 | Footer — կոնտակտ, սոց հղումներ, քարտեզ embed, legal/quick links (կոնֆիգ/CMS endpoint)                                  | 5          | ⬜          |
+| 2.7 | Footer — կոնտակտ, սոց հղումներ, քարտեզ embed, legal/quick links (կոնֆիգ/CMS endpoint)                                  | 100        | ✅          |
 | 2.8 | Reels section (home) — կարճ ցուցակ / նախադիտում կամ deep link դեպի Reels էջ (տես Փուլ 11)                              | 100        | ✅          |
 
 
@@ -91,6 +91,8 @@
 **2.5 ✅ ավարտված (2026-04-17).** Պահեստ՝ `settings.key = homeCustomerReviews` (JSON, Zod `homeCustomerReviewsStorageSchema`) — բաժնի վերնագիր AM/RU/EN, մինչև 24 կարծիք՝ `id`, `rating` (1–5), `text`/`authorName` երեք լեզվով, `photoUrls` (մինչև 6 URL), `active`, `sortOrder`։ Լռելյայն օրինակներ DB գրառում չեն պահանջում (կոդի default)։ Հանրային՝ `GET /api/v1/home/customer-reviews?locale=en|hy|ru` — մեկ լեզվով վերնագիր + ակտիվ կարծիքները կարգով։ Admin՝ `GET`/`PUT /api/v1/supersudo/home-customer-reviews` (JWT admin)։ Storefront՝ `HomeCustomerReviewsSection` — հորիզոնական snap carousel (սլայդեր/սքրոլ), աստղեր, տեքստ, լուսանկարների ցանց եթե `photoUrls` դատարկ չեն։ OpenAPI՝ `CustomerReviewsPublicResponse` / `CustomerReviewsStorageDocument`։
 
 **2.8 ✅ ավարտված (2026-04-16).** Storefront՝ `HomeReelsSection` (գլխավոր) + ներքին `/reels` էջ vertical snap ֆիդ (պաստեր նկարներ, deep link `/reels?i=<index>` home-ի յուրաքանչյուր tile-ից), header-ի «Reels» հղումը՝ `/reels` (ոչ արտաքին URL)։ Սերվերային reels մոդել/API չի ավելացվել — տես Փուլ 11։
+
+**2.7 ✅ ավարտված (2026-04-17).** Պահեստ՝ `settings.key = homeSiteFooter` (JSON, Zod `siteFooterStorageSchema`) — սյունակների վերնագիր AM/RU/EN, կոնտակտ (`address` / `phoneDisplay` երեք լեզվով, `phoneTel`, `email`), `mapEmbed` (`enabled` + կամընտիր `iframeSrc` — միայն HTTPS թույլատրված հոսթեր՝ Google Maps / OpenStreetMap embed), `companyLinks` / `supportLinks` / `legalLinks` (href՝ ներքին path կամ http(s)), `socialLinks` (platform preset + HTTPS `href` ակտիվ տողերի համար)։ Հանրային՝ `GET /api/v1/home/footer?locale=en|hy|ru` — մեկ լեզվով լուծված copy + ակտիվ հղումներ + քարտեզի `iframeSrc` կամ `null` եթե անջատված է/URL անվավեր է։ Admin՝ `GET`/`PUT /api/v1/supersudo/home-footer` (JWT admin)։ Storefront՝ `Footer` + `footer-marco-blocks` — SSR `siteFooterService.getPublicPayload` (`layout.tsx`) + client refetch լեզվի փոփոխման ժամանակ; սոց ցանցը՝ `FooterSocialLinks` (`apiLinks`), քարտեզ՝ `FooterMapEmbed`, legal՝ `FooterLegalLinks`։ OpenAPI՝ `SiteFooterPublicResponse` / `SiteFooterStorageDocument`։
 
 ---
 
