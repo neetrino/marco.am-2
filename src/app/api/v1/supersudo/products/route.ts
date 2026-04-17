@@ -15,6 +15,7 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
     limit: number;
     search?: string;
     categories?: string[];
+    brand?: string[];
     sku?: string;
     minPrice?: number;
     maxPrice?: number;
@@ -104,6 +105,8 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
   // Обработка categories
   const categoryParam = searchParams.get("category");
   const categories = categoryParam ? categoryParam.split(',').filter(Boolean) : undefined;
+  const brandParam = searchParams.get("brand");
+  const brand = brandParam ? brandParam.split(",").filter(Boolean) : undefined;
 
   return {
     filters: {
@@ -111,6 +114,7 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
       limit,
       search: searchParams.get("search")?.trim() || undefined,
       categories,
+      brand,
       sku: searchParams.get("sku")?.trim() || undefined,
       minPrice,
       maxPrice,

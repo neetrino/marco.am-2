@@ -31,7 +31,7 @@
 | 5    | Checkout — պատվեր                | `100%`          |
 | 6    | Վճարման եղանակներ                | `100%`          |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
-| 8    | Admin — catalog & promos         | `42%`           |
+| 8    | Admin — catalog & promos         | `45%`           |
 | 9    | Admin — orders                   | `98%`           |
 | 10   | Admin — analytics                | `95%`           |
 | 11   | Reels                            | `0%`            |
@@ -242,12 +242,12 @@
 
 ## Փուլ 8 — Admin: catalog & promos
 
-**Փուլի առաջընթաց.** `42%`
+**Փուլի առաջընթաց.** `45%`
 
 
 | ID  | Առաջադրանք (backend)                                                                                                  | Կատարման % | Կարգավիճակ |
 | --- | --------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- |
-| 8.1 | Product CRUD — images, specs, pricing, stock, brand, categories                                                       | 90         | 🔄         |
+| 8.1 | Product CRUD — images, specs, pricing, stock, brand, categories                                                       | 100        | ✅          |
 | 8.2 | Product class — Retail / Wholesale դաշտ SKU/ապրանքի վրա                                                               | 0          | ⬜          |
 | 8.3 | Delivery rules — Retail-only → Yandex delivery; Wholesale կամ mixed cart → free delivery (**սերվերային enforcement**) | 25         | ⬜          |
 | 8.4 | Promo codes և discounts — rules, limits, date ranges                                                                  | 30         | ⬜          |
@@ -256,6 +256,8 @@
 
 
 *Նշումներ.* 8.2/8.3 — սխեմայում և կոդում retail/wholesale և mixed-cart կանոններ չեն գտնվել։ 8.4 — կան global/category/brand զեղչերի կարգավորումներ; checkout-ում coupon-ը `TODO` է, `couponCode` դաշտը ամբողջությամբ չի կապված։
+
+**8.1 ✅ ավարտված (2026-04-17).** Admin product CRUD-ի catalog endpoint-ը (`GET /api/v1/supersudo/products`) ամբողջացվել է պահանջվող դաշտերի filtering-ի համար՝ ավելացվել է `brand` (multi-value) ֆիլտրը, ակտիվացվել է `minPrice`/`maxPrice` price range filtering-ը variant գնի հիմքով, իսկ կոմբինացված search+category հարցումներում fixed է boolean լոգիկան (`AND` semantics՝ նախկին սխալ լայն `OR`-ի փոխարեն)։ Արդյունքում admin catalog-ը կայուն է `images/specs/pricing/stock/brand/categories` կառավարման հոսքի համար՝ create/update/delete-ի կողքին։
 
 ---
 
