@@ -129,8 +129,6 @@ export default function CheckoutPage() {
         orderSummary={orderSummary}
         currency={currency}
         loadingCheckoutTotals={loadingCheckoutTotals}
-        logoErrors={logoErrors}
-        setLogoErrors={setLogoErrors}
         isLoggedIn={isLoggedIn}
         onSubmit={onSubmit}
       />

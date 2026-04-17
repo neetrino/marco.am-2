@@ -28,7 +28,7 @@
 | 2    | Գլխավոր էջ (Home) — տվյալներ     | `41%`           |
 | 3    | Shop (PLP) — կատալոգ API         | `82%`           |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
-| 5    | Checkout — պատվեր                | `85%`           |
+| 5    | Checkout — պատվեր                | `89%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
 | 8    | Admin — catalog & promos         | `42%`           |
@@ -127,7 +127,7 @@
 
 ## Փուլ 5 — Checkout
 
-**Փուլի առաջընթաց.** `85%`
+**Փուլի առաջընթաց.** `89%`
 
 
 | ID  | Առաջադրանք (backend)                                                             | Կատարման % | Կարգավիճակ |
@@ -135,7 +135,7 @@
 | 5.1 | Պատվերի սևագիր / validate — անուն, ազգանուն, հեռախոս, email, հասցե, նշումներ     | 100        | ✅         |
 | 5.2 | Delivery method — ինտեգրացիայի hint (օր. Yandex delivery) + admin business rules | 100        | ✅         |
 | 5.3 | Delivery cost և order total — դինամիկ վերահաշվարկ API                            | 100        | ✅         |
-| 5.4 | Payment method ընտրություն — card vs cash, order payload                         | 75         | 🔄         |
+| 5.4 | Payment method ընտրություն — card vs cash, order payload                         | 100        | ✅         |
 | 5.5 | Order confirmation — order ID, summary (email/SMS — եթե scope-ում է)             | 60         | 🔄         |
 | 5.6 | Validation և error handling — client + server միասնական մոդել                    | 75         | 🔄         |
 | 5.7 | Սերվերային գնային վերահսկում — զամբյուղի հետ համաձայնեցում                       | 85         | 🔄         |
@@ -148,6 +148,8 @@
 **5.2 ✅ ավարտված (2026-04-16).** Առաքման եղանակի ընտրություն checkout-ում՝ **`pickup`** (խանութից վերցնել) կամ **`courier`** (կուրիերով առաքում) — `CheckoutForm` radio, `shippingMethod` դաշտը API payload-ում։ Հին արժեք **`delivery`** սերվերում նորմալացվում է `courier`-ի (`normalizeShippingMethod` — `src/lib/constants/shipping-method.ts`)։ `courier`-ի դեպքում պահանջվում են հասցե + քաղաք, առաքման արժեքը հաշվարկվում է սերվերում `adminDeliveryService.getDeliveryPrice`-ով (քաղաք, երկիր) — նախադիտում storefront-ում `GET /api/v1/delivery/price`։ Թարգմանություններ՝ `checkout.shipping.courier` / `courierDescription` (hint՝ admin կանոններ / գործընկեր կուրիեր, ոչ թե լիարժեք Yandex API ինտեգրացիա)։
 
 **5.3 ✅ ավարտված (2026-04-16).** **`POST /api/v1/checkout/totals`** — դինամիկ ենթագումար + առաքում + հարկ (0) + ընդհանուր **AMD**-ով (նույն բանաձևը, ինչ `POST /api/v1/orders/checkout` գնահատում է)։ Մարմին՝ `shippingMethod`, `country`/`city` (courier-ի համար), `cartId` (JWT-ով միացնելիս) կամ `items[]` (հյուր)։ Իրականացում՝ `checkoutTotalsService` (`cartService.getCart` զեղչերով միացնելիս, հյուր՝ variant-ի DB գին) + `adminDeliveryService.getDeliveryPrice`։ Storefront՝ `useCheckoutTotals` (debounce) + ամփոփման UI-ը ցուցադրում է արդյունքը; fallback՝ `useOrderSummary`-ում զամբյուղի AMD-ում ենթագումար, եթե POST-ը դեռ չի կանչվել։
+
+**5.4 ✅ ավարտված (2026-04-17).** Վճարման եղանակի ընտրություն checkout-ում՝ **`card`** (բանկային քարտ, առցանց) կամ **`cash`** (կանխիկ) — `CheckoutForm` radio, `paymentMethod` դաշտը `POST /api/v1/orders/checkout` մարմնում։ Սերվեր՝ `resolveCheckoutPaymentMethod` / `normalizeCheckoutPaymentMethod` (`src/lib/constants/checkout-payment-method.ts`) — հին արժեքներ **`idram`** / **`arca`** → `card`, **`cash_on_delivery`** → `cash`; դատարկ/բացակայող → `cash`։ `Payment` գրառումը պահում է `provider`/`method` = canonical արժեքը; `nextAction`՝ `card` → `redirect_to_payment`, `cash` → `view_order`։ Vitest՝ `checkout-payment-method.test.ts`։
 
 ---
 

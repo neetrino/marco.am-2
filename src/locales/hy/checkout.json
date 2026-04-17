@@ -43,6 +43,10 @@
     "enterCity": "Մուտքագրել քաղաք"
   },
   "payment": {
+    "card": "Բանկային քարտ",
+    "cardDescription": "Վճարեք առցանց քարտով (կվերահղվեք, երբ վճարումը միացված լինի)",
+    "cash": "Կանխիկ",
+    "cashDescription": "Վճարեք կանխիկ, երբ ստանաք կամ վերցնեք պատվերը",
     "cashOnDelivery": "Կանխիկ առաքման ժամանակ",
     "cashOnDeliveryDescription": "Վճարեք կանխիկ, երբ ստանաք ձեր պատվերը",
     "idram": "Idram",
@@ -70,6 +74,7 @@
     "completeOrder": "Ավարտել ձեր պատվերը",
     "confirmOrder": "Հաստատել պատվերը",
     "cardDetails": "{method} քարտի տվյալներ",
+    "cardDetailsHeading": "Քարտով վճարում",
     "closeModal": "Փակել պատուհանը"
   },
   "messages": {

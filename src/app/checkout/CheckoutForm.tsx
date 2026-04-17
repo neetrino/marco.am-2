@@ -3,6 +3,7 @@
 import { Card, Input, Textarea } from '@shop/ui';
 import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../lib/i18n-client';
+import type { CheckoutPaymentMethodId } from '../../lib/constants/checkout-payment-method';
 import type { ShippingMethodId } from '../../lib/constants/shipping-method';
 import { CheckoutFormData } from './types';
 
@@ -12,9 +13,9 @@ interface CheckoutFormProps {
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
   shippingMethod: ShippingMethodId;
-  paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
+  paymentMethod: CheckoutPaymentMethodId;
   paymentMethods: Array<{
-    id: 'idram' | 'arca' | 'cash_on_delivery';
+    id: CheckoutPaymentMethodId;
     name: string;
     description: string;
     logo: string | null;
@@ -218,7 +219,9 @@ export function CheckoutForm({
                 {...register('paymentMethod')}
                 value={method.id}
                 checked={paymentMethod === method.id}
-                onChange={(e) => setValue('paymentMethod', e.target.value as 'idram' | 'arca' | 'cash_on_delivery')}
+                onChange={(e) =>
+                  setValue('paymentMethod', e.target.value as CheckoutPaymentMethodId)
+                }
                 className="mr-4"
                 disabled={isSubmitting}
               />

@@ -43,6 +43,10 @@
     "enterCity": "Введите город"
   },
   "payment": {
+    "card": "Банковская карта",
+    "cardDescription": "Оплата онлайн картой (перенаправление при подключении платежа)",
+    "cash": "Наличные",
+    "cashDescription": "Оплатите наличными при получении или самовывозе заказа",
     "cashOnDelivery": "Наложенный платеж",
     "cashOnDeliveryDescription": "Оплатите наличными при получении заказа",
     "idram": "Idram",
@@ -70,6 +74,7 @@
     "completeOrder": "Завершите ваш заказ",
     "confirmOrder": "Подтвердить заказ",
     "cardDetails": "Данные карты {method}",
+    "cardDetailsHeading": "Оплата картой",
     "closeModal": "Закрыть окно"
   },
   "messages": {

@@ -5,6 +5,7 @@ import type { CheckoutData } from "../types/checkout";
 import { logger } from "../utils/logger";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
+import { resolveCheckoutPaymentMethod } from "../constants/checkout-payment-method";
 import { normalizeShippingMethod } from "../constants/shipping-method";
 import { buildOrderAddressJson } from "./orders-checkout-address";
 import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
@@ -71,9 +72,10 @@ class OrdersService {
         notes: rawNotes,
         shippingMethod: rawShippingMethod = 'pickup',
         shippingAddress,
-        paymentMethod = 'idram',
+        paymentMethod: rawPaymentMethod,
       } = data;
       const shippingMethod = normalizeShippingMethod(rawShippingMethod);
+      const paymentMethod = resolveCheckoutPaymentMethod(rawPaymentMethod);
       // shippingAmount is ignored — computed server-side from shippingMethod and address
 
       // Validate required fields
@@ -455,9 +457,8 @@ class OrdersService {
           paymentUrl: null, // TODO: Generate payment URL for Idram/ArCa
           expiresAt: null, // TODO: Set expiration if needed
         },
-        nextAction: paymentMethod === 'idram' || paymentMethod === 'arca' 
-          ? 'redirect_to_payment' 
-          : 'view_order',
+        nextAction:
+          paymentMethod === 'card' ? 'redirect_to_payment' : 'view_order',
       };
     } catch (error: unknown) {
       // Type guard for custom error

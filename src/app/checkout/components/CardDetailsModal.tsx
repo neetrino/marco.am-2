@@ -17,7 +17,6 @@ interface CardDetailsModalProps {
   handleSubmit: UseFormHandleSubmit<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
-  paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingMethod: ShippingMethodId;
   shippingCity?: string;
   cart: Cart | null;
@@ -29,8 +28,6 @@ interface CardDetailsModalProps {
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   loadingCheckoutTotals: boolean;
-  logoErrors: Record<string, boolean>;
-  setLogoErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   isLoggedIn: boolean;
   onShowShippingModal: () => void;
   onSubmit: (data: CheckoutFormData) => void;
@@ -44,15 +41,12 @@ export function CardDetailsModal({
   handleSubmit,
   errors,
   isSubmitting,
-  paymentMethod,
   shippingMethod,
   shippingCity,
   cart,
   orderSummary,
   currency,
   loadingCheckoutTotals,
-  logoErrors,
-  setLogoErrors,
   isLoggedIn,
   onShowShippingModal,
   onSubmit,
@@ -73,26 +67,18 @@ export function CardDetailsModal({
     }
   };
 
-  const handleLogoError = () => {
-    setLogoErrors((prev) => ({ ...prev, [paymentMethod]: true }));
-  };
-
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div 
-        className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
+      <div
+        className="z-[10000] bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
-        style={{ zIndex: 10000 }}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
-            {t('checkout.modals.cardDetails').replace(
-              '{method}',
-              paymentMethod === 'arca' ? t('checkout.payment.arca') : t('checkout.payment.idram')
-            )}
+            {t('checkout.modals.cardDetailsHeading')}
           </h2>
           <button
             onClick={onClose}
@@ -107,15 +93,10 @@ export function CardDetailsModal({
 
         <div className="space-y-4 mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <PaymentMethodLogo
-              paymentMethod={paymentMethod}
-              logoErrors={logoErrors}
-              onError={handleLogoError}
-              size="medium"
-            />
+            <PaymentMethodLogo size="medium" />
             <div>
               <div className="font-semibold text-gray-900">
-                {paymentMethod === 'arca' ? t('checkout.payment.arca') : t('checkout.payment.idram')} {t('checkout.payment.paymentDetails')}
+                {t('checkout.payment.card')} — {t('checkout.payment.paymentDetails')}
               </div>
               <div className="text-sm text-gray-600">{t('checkout.payment.enterCardDetails')}</div>
             </div>

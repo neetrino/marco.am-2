@@ -43,6 +43,10 @@
     "enterCity": "Enter City"
   },
   "payment": {
+    "card": "Bank card",
+    "cardDescription": "Pay online by card (you will be redirected when payment is enabled)",
+    "cash": "Cash",
+    "cashDescription": "Pay cash when you receive or pick up your order",
     "cashOnDelivery": "Cash on Delivery",
     "cashOnDeliveryDescription": "Pay cash when you receive your order",
     "idram": "Idram",
@@ -70,6 +74,7 @@
     "completeOrder": "Complete Your Order",
     "confirmOrder": "Confirm Order",
     "cardDetails": "{method} Card Details",
+    "cardDetailsHeading": "Card payment",
     "closeModal": "Close Window"
   },
   "messages": {

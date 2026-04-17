@@ -43,7 +43,7 @@ export function useCheckout() {
       phone: '',
       notes: '',
       shippingMethod: 'pickup',
-      paymentMethod: 'cash_on_delivery',
+      paymentMethod: 'cash',
       shippingAddress: '',
       shippingCity: '',
       cardNumber: '',
@@ -127,7 +127,7 @@ export function useCheckout() {
       }
     }
     
-    if (paymentMethod === 'arca' || paymentMethod === 'idram') {
+    if (paymentMethod === 'card') {
       setShowCardModal(true);
       return;
     }

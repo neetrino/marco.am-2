@@ -6,6 +6,7 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { ContactInformation } from './ContactInformation';
 import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
+import type { CheckoutPaymentMethodId } from '../../../lib/constants/checkout-payment-method';
 import type { ShippingMethodId } from '../../../lib/constants/shipping-method';
 import { CheckoutFormData, Cart } from '../types';
 
@@ -18,7 +19,7 @@ interface ShippingAddressModalProps {
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
   shippingMethod: ShippingMethodId;
-  paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
+  paymentMethod: CheckoutPaymentMethodId;
   cart: Cart | null;
   orderSummary: {
     subtotalDisplay: number;
@@ -134,11 +135,10 @@ export function ShippingAddressModal({
               </div>
             )}
 
-            {(paymentMethod === 'arca' || paymentMethod === 'idram') && (
+            {paymentMethod === 'card' && (
               <div className="space-y-4 mb-6 mt-6">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} (
-                  {paymentMethod === 'idram' ? t('checkout.payment.idram') : t('checkout.payment.arca')})
+                  {t('checkout.payment.paymentDetails')} ({t('checkout.payment.card')})
                 </h3>
                 <CardInputFields
                   register={register}
@@ -149,10 +149,10 @@ export function ShippingAddressModal({
               </div>
             )}
 
-            {paymentMethod === 'cash_on_delivery' && (
+            {paymentMethod === 'cash' && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 mt-6">
                 <p className="text-sm text-green-800">
-                  <strong>{t('checkout.payment.cashOnDelivery')}:</strong> {t('checkout.messages.cashOnDeliveryInfo')}
+                  <strong>{t('checkout.payment.cash')}:</strong> {t('checkout.messages.cashOnDeliveryInfo')}
                 </p>
               </div>
             )}
@@ -174,11 +174,10 @@ export function ShippingAddressModal({
               </p>
             </div>
 
-            {(paymentMethod === 'arca' || paymentMethod === 'idram') && (
+            {paymentMethod === 'card' && (
               <div className="space-y-4 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} (
-                  {paymentMethod === 'idram' ? t('checkout.payment.idram') : t('checkout.payment.arca')})
+                  {t('checkout.payment.paymentDetails')} ({t('checkout.payment.card')})
                 </h3>
                 <CardInputFields
                   register={register}
@@ -189,10 +188,10 @@ export function ShippingAddressModal({
               </div>
             )}
 
-            {paymentMethod === 'cash_on_delivery' && (
+            {paymentMethod === 'cash' && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <p className="text-sm text-green-800">
-                  <strong>{t('checkout.payment.cashOnDelivery')}:</strong> {t('checkout.messages.cashOnDeliveryPickup')}
+                  <strong>{t('checkout.payment.cash')}:</strong> {t('checkout.messages.cashOnDeliveryPickup')}
                 </p>
               </div>
             )}

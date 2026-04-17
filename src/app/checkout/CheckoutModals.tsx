@@ -3,6 +3,7 @@
 import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import { ShippingAddressModal } from './components/ShippingAddressModal';
 import { CardDetailsModal } from './components/CardDetailsModal';
+import type { CheckoutPaymentMethodId } from '../../lib/constants/checkout-payment-method';
 import type { ShippingMethodId } from '../../lib/constants/shipping-method';
 import { CheckoutFormData, Cart } from './types';
 
@@ -17,7 +18,7 @@ interface CheckoutModalsProps {
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
   shippingMethod: ShippingMethodId;
-  paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
+  paymentMethod: CheckoutPaymentMethodId;
   shippingCity: string | undefined;
   cart: Cart | null;
   orderSummary: {
@@ -28,8 +29,6 @@ interface CheckoutModalsProps {
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   loadingCheckoutTotals: boolean;
-  logoErrors: Record<string, boolean>;
-  setLogoErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   isLoggedIn: boolean;
   onSubmit: (data: CheckoutFormData) => void;
 }
@@ -51,8 +50,6 @@ export function CheckoutModals({
   orderSummary,
   currency,
   loadingCheckoutTotals,
-  logoErrors,
-  setLogoErrors,
   isLoggedIn,
   onSubmit,
 }: CheckoutModalsProps) {
@@ -84,15 +81,12 @@ export function CheckoutModals({
         handleSubmit={handleSubmit}
         errors={errors}
         isSubmitting={isSubmitting}
-        paymentMethod={paymentMethod}
         shippingMethod={shippingMethod}
         shippingCity={shippingCity}
         cart={cart}
         orderSummary={orderSummary}
         currency={currency}
         loadingCheckoutTotals={loadingCheckoutTotals}
-        logoErrors={logoErrors}
-        setLogoErrors={setLogoErrors}
         isLoggedIn={isLoggedIn}
         onShowShippingModal={() => setShowShippingModal(true)}
         onSubmit={onSubmit}
