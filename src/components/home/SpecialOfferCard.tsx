@@ -103,7 +103,7 @@ export function SpecialOfferCard({
 
   return (
     <div
-      className="relative z-10 mx-auto min-w-0 w-full max-w-full hover:z-30 focus-within:z-30"
+      className="relative z-10 mx-auto min-w-0 w-full max-w-full font-sans hover:z-30 focus-within:z-30"
       style={{
         ...shellMaxWidthStyle,
         ['--so-cart-bottom-mobile' as string]: `${SPECIAL_OFFERS_CART_BUTTON_MOBILE_BOTTOM_PX}px`,

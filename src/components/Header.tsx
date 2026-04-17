@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect, useRef, Suspense } from 'react';
-import type { FormEvent, ReactNode, CSSProperties } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, Suspense } from 'react';
+import type { FormEvent, ReactNode, CSSProperties, RefObject } from 'react';
 import { getStoredCurrency, setStoredCurrency, type CurrencyCode, formatPrice, initializeCurrencyRates, clearCurrencyRatesCache } from '../lib/currency';
 import { useTranslation } from '../lib/i18n-client';
 import { getStoredLanguage, type LanguageCode } from '../lib/language';
@@ -32,17 +32,19 @@ import {
   HEADER_FIGMA_ROW2_MAIN_GAP_CLASS,
   HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS,
   HEADER_LOCALE_TO_THEME_MARGIN_CLASS,
-  HEADER_FIGMA_PILL_RADIUS_CLASS,
   HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS,
   HEADER_TOOLBAR_ICON_CLUSTER_CLASS,
   HEADER_REELS_EXTERNAL_HREF,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
   HEADER_SEARCH_BAR_INNER_CLASS,
+  HEADER_SEARCH_FORM_RADIUS_CLASS,
   HEADER_SEARCH_ICON_TEXT_GAP_CLASS,
   HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS,
+  HEADER_SEARCH_INPUT_INNER_END_PAD_CLASS,
   HEADER_SEARCH_SUBMIT_CLASS,
   HEADER_SEARCH_SUBMIT_WIDTH_CLASS,
   HEADER_TOOLBAR_ICON_BUTTON_CLASS,
+  HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX,
 } from './header/header.constants';
 import { CompareIcon } from './icons/CompareIcon';
 import { CartIcon } from './icons/CartIcon';
@@ -397,6 +399,91 @@ type HeaderProps = {
   initialLanguage?: LanguageCode;
 };
 
+type DesktopTopRowInnerProps = {
+  innerRef: RefObject<HTMLDivElement>;
+};
+
+/**
+ * Full-width first stripe (logo + primary nav + socials + phone + address). Used for layout and overflow measurement.
+ */
+function DesktopTopRowInner({ innerRef }: DesktopTopRowInnerProps) {
+  const { t } = useTranslation();
+  const phoneDisplay = t('contact.phone');
+  const telHref =
+    phoneDisplay.length > 0 ? `tel:${phoneDisplay.replace(/[^\d+]/gu, '')}` : 'tel:';
+
+  return (
+    <div
+      ref={innerRef}
+      className={`${HEADER_CONTAINER_CLASS} flex w-full min-w-0 flex-nowrap items-center ${HEADER_FIGMA_PADDING_Y_CLASS} ${HEADER_FIGMA_CLUSTER_GAP_CLASS}`}
+    >
+      <div className="flex min-w-0 flex-1 flex-nowrap items-center">
+        <MarcoLogo />
+        <nav
+          className={`flex h-10 shrink-0 flex-nowrap items-center ${HEADER_LOGO_TO_NAV_GAP_CLASS} ${HEADER_FIGMA_NAV_LINK_GAP_CLASS} text-xs font-bold capitalize leading-[18px] text-marco-text`}
+          aria-label="Main"
+        >
+          {primaryNavLinks.map((item) => {
+            const label = t(item.translationKey);
+            if (item.external === true) {
+              return (
+                <a
+                  key={item.translationKey}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-10 shrink-0 items-center whitespace-nowrap transition-opacity hover:opacity-80"
+                >
+                  {label}
+                </a>
+              );
+            }
+            return (
+              <Link
+                key={item.translationKey}
+                href={item.href}
+                className="inline-flex h-10 shrink-0 items-center whitespace-nowrap transition-opacity hover:opacity-80"
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+        <HeaderSocialCircleLinks
+          className={`${HEADER_NAV_TO_SOCIAL_GAP_CLASS} h-10 shrink-0 items-center`}
+        />
+        <div className="ml-4 min-h-0 min-w-0 flex-1" aria-hidden />
+      </div>
+      <div
+        className={`flex h-10 min-w-0 shrink-0 flex-nowrap items-center ${HEADER_FIGMA_CONTACT_CLUSTER_GAP_CLASS}`}
+      >
+        <a
+          href={telHref}
+          className={`flex h-10 shrink-0 items-center ${HEADER_FIGMA_CONTACT_PHONE_ICON_TEXT_GAP_CLASS} text-marco-text transition-opacity hover:opacity-80`}
+        >
+          <Phone className="size-[19px] shrink-0" strokeWidth={1.75} aria-hidden />
+          <span className="inline-flex items-center gap-1">
+            <span className="whitespace-nowrap text-[13px] font-medium leading-[13px]">{phoneDisplay}</span>
+            <ChevronDown className="h-3 w-3 shrink-0 text-marco-text opacity-80" strokeWidth={2.25} aria-hidden />
+          </span>
+        </a>
+        <Link
+          href="/stores"
+          className={`flex h-10 shrink-0 items-center ${HEADER_FIGMA_CONTACT_ADDRESS_ICON_TEXT_GAP_CLASS} text-marco-text transition-opacity hover:opacity-80`}
+        >
+          <MapPin className="size-[19px] shrink-0" strokeWidth={1.75} aria-hidden />
+          <span className="inline-flex items-center gap-1">
+            <span className="whitespace-nowrap text-xs font-medium leading-[13px]">
+              {t('common.navigation.addresses')}
+            </span>
+            <ChevronDown className="h-3 w-3 shrink-0 text-marco-text opacity-80" strokeWidth={2.25} aria-hidden />
+          </span>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export function Header({ initialLanguage }: HeaderProps) {
   const router = useRouter();
   const { isLoggedIn, logout, isAdmin } = useAuth();
@@ -408,6 +495,17 @@ export function Header({ initialLanguage }: HeaderProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProductsMenu, setShowProductsMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [compactPrimaryNav, setCompactPrimaryNav] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return window.innerWidth <= HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX;
+  });
+  const [viewportWidth, setViewportWidth] = useState<number | null>(() =>
+    typeof window !== 'undefined' ? window.innerWidth : null
+  );
+  const desktopTopRowInnerRef = useRef<HTMLDivElement | null>(null);
+  const desktopTopRowMeasureRef = useRef<HTMLDivElement | null>(null);
   const [selectedCurrency, setSelectedCurrency] = useState<CurrencyCode>('AMD');
   const [categories, setCategories] = useState<Category[]>([]);
   const [, setSelectedCategory] = useState<Category | null>(null);
@@ -700,9 +798,50 @@ export function Header({ initialLanguage }: HeaderProps) {
     window.dispatchEvent(new Event('currency-updated'));
   };
 
-  const phoneDisplay = t('contact.phone');
-  const telHref =
-    phoneDisplay.length > 0 ? `tel:${phoneDisplay.replace(/[^\d+]/gu, '')}` : 'tel:';
+  useLayoutEffect(() => {
+    const syncViewport = () => {
+      setViewportWidth(window.innerWidth);
+    };
+    syncViewport();
+    window.addEventListener('resize', syncViewport);
+    return () => {
+      window.removeEventListener('resize', syncViewport);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (viewportWidth === null) {
+      return;
+    }
+
+    const evaluateCompactPrimaryNav = () => {
+      const w = window.innerWidth;
+      if (w <= HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX) {
+        setCompactPrimaryNav(true);
+        return;
+      }
+      const row = desktopTopRowInnerRef.current ?? desktopTopRowMeasureRef.current;
+      if (!row) {
+        setCompactPrimaryNav(false);
+        return;
+      }
+      setCompactPrimaryNav(row.scrollWidth > row.clientWidth + 1);
+    };
+
+    evaluateCompactPrimaryNav();
+
+    window.addEventListener('resize', evaluateCompactPrimaryNav);
+    const observer = new ResizeObserver(evaluateCompactPrimaryNav);
+    const row = desktopTopRowInnerRef.current ?? desktopTopRowMeasureRef.current;
+    if (row) {
+      observer.observe(row);
+    }
+
+    return () => {
+      window.removeEventListener('resize', evaluateCompactPrimaryNav);
+      observer.disconnect();
+    };
+  }, [viewportWidth, compactPrimaryNav]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-marco-border bg-white shadow-sm backdrop-blur-sm">
@@ -713,80 +852,26 @@ export function Header({ initialLanguage }: HeaderProps) {
           categories={categories}
         />
       </Suspense>
-      {/* MARCO — top row (desktop), Figma 111:4293 / nav 111:4294 — same shell as row 2: full-bleed stripe, padding inside `.marco-header-container` */}
-      <div className="hidden w-full border-b border-marco-border bg-white md:block">
-        <div
-          className={`${HEADER_CONTAINER_CLASS} flex w-full min-w-0 flex-nowrap items-center ${HEADER_FIGMA_PADDING_Y_CLASS} ${HEADER_FIGMA_CLUSTER_GAP_CLASS}`}
-        >
-          <div className="flex min-w-0 flex-1 flex-nowrap items-center">
-            <MarcoLogo />
-            <nav
-              className={`hidden h-10 shrink-0 flex-nowrap items-center ${HEADER_LOGO_TO_NAV_GAP_CLASS} ${HEADER_FIGMA_NAV_LINK_GAP_CLASS} text-xs font-bold capitalize leading-[18px] text-marco-text md:flex`}
-              aria-label="Main"
-            >
-              {primaryNavLinks.map((item) => {
-                const label = t(item.translationKey);
-                if (item.external === true) {
-                  return (
-                    <a
-                      key={item.translationKey}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex h-10 shrink-0 items-center whitespace-nowrap transition-opacity hover:opacity-80"
-                    >
-                      {label}
-                    </a>
-                  );
-                }
-                return (
-                  <Link
-                    key={item.translationKey}
-                    href={item.href}
-                    className="inline-flex h-10 shrink-0 items-center whitespace-nowrap transition-opacity hover:opacity-80"
-                  >
-                    {label}
-                  </Link>
-                );
-              })}
-            </nav>
-            <HeaderSocialCircleLinks
-              className={`${HEADER_NAV_TO_SOCIAL_GAP_CLASS} h-10 shrink-0 items-center`}
-            />
-            <div className="ml-4 min-h-0 min-w-0 flex-1" aria-hidden />
-          </div>
-          <div
-            className={`flex h-10 min-w-0 shrink-0 flex-nowrap items-center ${HEADER_FIGMA_CONTACT_CLUSTER_GAP_CLASS}`}
-          >
-            <a
-              href={telHref}
-              className={`flex h-10 shrink-0 items-center ${HEADER_FIGMA_CONTACT_PHONE_ICON_TEXT_GAP_CLASS} text-marco-text transition-opacity hover:opacity-80`}
-            >
-              <Phone className="size-[19px] shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="inline-flex items-center gap-1">
-                <span className="whitespace-nowrap text-[13px] font-medium leading-[13px]">{phoneDisplay}</span>
-                <ChevronDown className="h-3 w-3 shrink-0 text-marco-text opacity-80" strokeWidth={2.25} aria-hidden />
-              </span>
-            </a>
-            <Link
-              href="/stores"
-              className={`flex h-10 shrink-0 items-center ${HEADER_FIGMA_CONTACT_ADDRESS_ICON_TEXT_GAP_CLASS} text-marco-text transition-opacity hover:opacity-80`}
-            >
-              <MapPin className="size-[19px] shrink-0" strokeWidth={1.75} aria-hidden />
-              <span className="inline-flex items-center gap-1">
-                <span className="whitespace-nowrap text-xs font-medium leading-[13px]">
-                  {t('common.navigation.addresses')}
-                </span>
-                <ChevronDown className="h-3 w-3 shrink-0 text-marco-text opacity-80" strokeWidth={2.25} aria-hidden />
-              </span>
-            </Link>
-          </div>
+      {/* MARCO — top row: full desktop stripe, or compact (hamburger) when narrow / primary nav would overflow — row 2 stays `md` desktop layout */}
+      {!compactPrimaryNav && (
+        <div className="w-full border-b border-marco-border bg-white">
+          <DesktopTopRowInner innerRef={desktopTopRowInnerRef} />
         </div>
-      </div>
+      )}
+      {compactPrimaryNav &&
+        viewportWidth !== null &&
+        viewportWidth > HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX && (
+          <div
+            className="pointer-events-none fixed -left-[10000px] top-0 z-[-80] w-screen opacity-0"
+            aria-hidden
+          >
+            <DesktopTopRowInner innerRef={desktopTopRowMeasureRef} />
+          </div>
+        )}
 
-      {/* Mobile — compact top */}
+      {/* Mobile / compact — top (burger + logo + locale); desktop row 2 unchanged below */}
       <div
-        className={`${HEADER_CONTAINER_CLASS} flex items-center justify-between gap-2 border-b border-marco-border py-2 md:hidden`}
+        className={`${HEADER_CONTAINER_CLASS} ${compactPrimaryNav ? 'flex' : 'hidden'} items-center justify-between gap-2 border-b border-marco-border py-2`}
       >
         <button
           type="button"
@@ -830,7 +915,7 @@ export function Header({ initialLanguage }: HeaderProps) {
               aria-expanded={showProductsMenu}
               aria-haspopup="true"
             >
-              <span className="min-w-0 flex-1 text-center whitespace-nowrap">
+              <span className="min-w-0 flex-1 text-center whitespace-nowrap md:max-[1366px]:truncate md:max-[1366px]:text-left md:max-[1366px]:text-[11px]">
                 {t('common.navigation.categories')}
               </span>
               <ChevronDownIcon />
@@ -863,10 +948,10 @@ export function Header({ initialLanguage }: HeaderProps) {
           >
             <form
               onSubmit={handleSearch}
-              className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_FIGMA_PILL_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
+              className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${HEADER_SEARCH_FORM_RADIUS_CLASS} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
             >
               <div
-                className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} pr-2`}
+                className={`flex min-h-0 min-w-0 flex-1 items-center self-stretch ${HEADER_SEARCH_ICON_TEXT_GAP_CLASS} ${HEADER_SEARCH_INPUT_PADDING_LEFT_CLASS} ${HEADER_SEARCH_INPUT_INNER_END_PAD_CLASS}`}
               >
                 <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
                   <SearchIcon />
@@ -917,14 +1002,16 @@ export function Header({ initialLanguage }: HeaderProps) {
           <div
             className={`hidden w-full shrink-0 flex-wrap items-center justify-end md:flex md:w-auto md:flex-nowrap ${HEADER_FIGMA_ROW2_RIGHT_INNER_GAP_CLASS}`}
           >
-            <HeaderLocaleCurrencyPill
-              selectedCurrency={selectedCurrency}
-              onCurrencyChange={handleCurrencyChange}
-              initialLanguage={initialLanguage}
-            />
+            {!compactPrimaryNav && (
+              <HeaderLocaleCurrencyPill
+                selectedCurrency={selectedCurrency}
+                onCurrencyChange={handleCurrencyChange}
+                initialLanguage={initialLanguage}
+              />
+            )}
             <button
               type="button"
-              className={`flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition-opacity hover:opacity-90 ${HEADER_LOCALE_TO_THEME_MARGIN_CLASS} ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
+              className={`flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition-opacity hover:opacity-90 ${!compactPrimaryNav ? HEADER_LOCALE_TO_THEME_MARGIN_CLASS : ''} ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
               aria-label="Theme"
             >
               <Sun className="h-4 w-4" strokeWidth={1.75} aria-hidden />
@@ -1022,7 +1109,7 @@ export function Header({ initialLanguage }: HeaderProps) {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-50 flex md:hidden bg-black/40 backdrop-blur-sm"
+          className={`fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm ${compactPrimaryNav ? '' : 'md:hidden'}`}
           role="dialog"
           aria-modal="true"
           onClick={() => setMobileMenuOpen(false)}

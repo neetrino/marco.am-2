@@ -44,6 +44,12 @@ export const SPECIAL_OFFERS_MOBILE_GRID_SCROLLER_PADDING_BOTTOM_PX = 32;
 /** Horizontal scroller bottom padding on `md+` (former `pb-1`). */
 export const SPECIAL_OFFERS_SCROLLER_PADDING_BOTTOM_DESKTOP_PX = 4;
 
+/**
+ * Horizontal reel scroller — shared by «Հատուկ առաջարկներ» and featured «Նորույթներ» mobile rail.
+ */
+export const SPECIAL_OFFERS_MOBILE_SCROLLER_CLASS =
+  'flex min-w-0 flex-row flex-nowrap overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden';
+
 /** Portion of scroller width to move per arrow tap. */
 export const SPECIAL_OFFERS_SCROLL_FRACTION = 0.85;
 
@@ -305,8 +311,12 @@ export const SPECIAL_OFFERS_STAR_TO_REVIEW_COUNT_GAP_PX = 8;
 /** Review count — Figma `101:3648` uses 14px (Product1). */
 export const SPECIAL_OFFERS_REVIEW_COUNT_FONT_SIZE_PX = 14;
 
-/** Match Tailwind `lg` — fixed four-column rail uses pixel widths from ResizeObserver. */
-export const SPECIAL_OFFERS_RAIL_LG_MIN_WIDTH_PX = 1024;
+/**
+ * Viewport min width at which the rail uses ResizeObserver slot math for exactly
+ * {@link SPECIAL_OFFERS_VISIBLE_COLUMNS} cards (same idea as featured «Նորույթներ» `md:grid-cols-4`).
+ * Below this, cards used fixed max width and iPad showed ~4.5 tiles — align with `md` (768px).
+ */
+export const SPECIAL_OFFERS_RAIL_LG_MIN_WIDTH_PX = 768;
 
 /**
  * Prev/next carousel controls — same compact pill as REELS (ratio ~1.28).
