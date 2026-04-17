@@ -114,8 +114,8 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
     setSortedProducts(sorted);
   }, [products, sortBy]);
 
-  /** Horizontal gap like home featured; larger vertical gap between card rows */
-  const gridGapClass = 'gap-x-3 gap-y-10 md:gap-x-6 md:gap-y-12';
+  /** Tighter on smallest phones; roomier gaps on mobile shop before `md` desktop columns */
+  const gridGapClass = 'gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-12';
 
   // Get grid classes based on view mode
   const getGridClasses = () => {

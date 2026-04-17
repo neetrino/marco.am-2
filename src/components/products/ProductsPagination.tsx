@@ -104,7 +104,7 @@ export function ProductsPagination({
 
   return (
     <nav
-      className="mt-16 flex flex-wrap items-center justify-center gap-[8px] md:mt-24"
+      className="mt-14 flex flex-wrap items-center justify-center gap-[8px] md:mt-24"
       aria-label={t('common.pagination.navAriaLabel')}
     >
       {/* First */}

@@ -204,7 +204,7 @@ export default async function ProductsPage({ searchParams }: any) {
   );
 
   return (
-    <div className="w-full max-w-full pb-24 md:pb-32 lg:pb-40">
+    <div className="w-full max-w-full pb-4 md:pb-32 lg:pb-40">
       <ProductsHeader total={productsData.meta.total} />
 
       <div className={`${PRODUCTS_PAGE_SHELL} flex flex-col lg:flex-row gap-8`}>
@@ -240,7 +240,7 @@ export default async function ProductsPage({ searchParams }: any) {
           </div>
         </aside>
 
-        <div className="flex-1 min-w-0 w-full overflow-x-hidden lg:w-auto py-4">
+        <div className="flex-1 min-w-0 w-full overflow-x-hidden pt-4 pb-2 md:py-4 lg:w-auto">
 
           {normalizedProducts.length > 0 ? (
             <>

@@ -80,6 +80,14 @@ function ProductsViewGridDenseDotsIcon({ className }: { readonly className?: str
 const SORT_TRIGGER_CLASS =
   'flex h-10 min-w-[160px] items-center justify-between gap-2 rounded-full bg-marco-black px-4 text-sm font-normal leading-normal text-white transition-[filter] hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 active:brightness-90';
 
+/** Dropdown aligns to trigger width (`w-full` inside `relative w-max` wrapper) */
+const SORT_DROPDOWN_PANEL_CLASS =
+  'absolute top-full right-0 z-50 mt-2 w-full min-w-0 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg';
+
+/** Each option row matches trigger height (40px) and horizontal padding */
+const SORT_DROPDOWN_ITEM_CLASS =
+  'flex h-10 min-h-10 w-full shrink-0 items-center px-4 text-left text-sm font-normal leading-normal transition-colors';
+
 /**
  * View layout toggles — ref. screenshot: symmetric white pill, thin #dedede border, black icons.
  */
@@ -219,7 +227,7 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
   };
 
   return (
-    <div className="marco-header-container pb-4 pt-[58px]">
+    <div className="marco-header-container pb-2 pt-[58px] sm:pb-4">
       {/* Desktop: All elements in one horizontal line */}
       <div className="hidden sm:flex sm:items-center sm:justify-between sm:gap-4">
         {/* Left side: SHOP wordmark only (Figma) */}
@@ -262,8 +270,8 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
             </button>
           </div>
 
-          {/* Sort dropdown */}
-          <div className="relative" ref={sortDropdownRef}>
+          {/* Sort dropdown — panel width matches trigger; rows h-10 like trigger */}
+          <div className="relative w-max min-w-0" ref={sortDropdownRef}>
             <button
               type="button"
               onClick={() => setShowSortDropdown(!showSortDropdown)}
@@ -290,14 +298,15 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
             </button>
 
             {showSortDropdown && (
-              <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden">
+              <div className={SORT_DROPDOWN_PANEL_CLASS}>
                 {sortOptions.map((option) => (
                   <button
                     key={option.value}
+                    type="button"
                     onClick={() => handleSortChange(option.value)}
-                    className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                    className={`${SORT_DROPDOWN_ITEM_CLASS} ${
                       sortBy === option.value
-                        ? 'bg-gray-100 text-gray-900 font-semibold'
+                        ? 'bg-gray-100 font-semibold text-gray-900'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
@@ -317,13 +326,12 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
           <ProductsShopTitleBlock total={total} />
         </div>
 
-        {/* Bottom: Filters button + View Mode Icons + Sort */}
+        {/* Bottom: Filters + sort — same black sort pill as desktop (no view-mode grid toggles on mobile) */}
         <div className="flex items-center justify-between gap-2">
-          {/* Left: Filters button */}
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event('mobile:filters-toggle'))}
-            className="inline-flex items-center gap-2 border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50 rounded-l-[30px] rounded-r-lg"
+            className="inline-flex shrink-0 items-center gap-2 rounded-[30px] border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
           >
             <svg
               width="18"
@@ -340,68 +348,43 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
             <span>{t('products.header.filters')}</span>
           </button>
 
-          {/* Right: View Mode Icons + Sort */}
-          <div className="flex items-center gap-2">
-            {/* View Mode Icons — Figma 218:2293 shell */}
-            <div className={VIEW_TOGGLE_GROUP_CLASS}>
+          <div className="flex min-w-0 flex-1 items-center justify-end" ref={mobileSortDropdownRef}>
+            <div className="relative w-max max-w-full min-w-0">
               <button
                 type="button"
-                onClick={() => handleViewModeChange('list')}
-                className={viewToggleSegmentClass(viewMode === 'list')}
-                aria-label={t('products.header.viewModes.list')}
-                aria-pressed={viewMode === 'list'}
-              >
-                <ProductsViewListIcon className="h-5 w-5 shrink-0" />
-              </button>
-              <button
-                type="button"
-                onClick={() => handleViewModeChange('grid-2')}
-                className={viewToggleSegmentClass(viewMode === 'grid-2')}
-                aria-label={t('products.header.viewModes.grid2')}
-                aria-pressed={viewMode === 'grid-2'}
-              >
-                <ProductsViewGridMediumDotsIcon className="h-5 w-5 shrink-0" />
-              </button>
-              <button
-                type="button"
-                onClick={() => handleViewModeChange('grid-3')}
-                className={viewToggleSegmentClass(viewMode === 'grid-3')}
-                aria-label={t('products.header.viewModes.grid3')}
-                aria-pressed={viewMode === 'grid-3'}
-              >
-                <ProductsViewGridDenseDotsIcon className="h-5 w-5 shrink-0" />
-              </button>
-            </div>
-
-            {/* Sort icon */}
-            <div className="relative" ref={mobileSortDropdownRef}>
-              <button
                 onClick={() => setShowSortDropdown(!showSortDropdown)}
-                className="flex items-center justify-center w-10 h-10 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors text-gray-700"
-                aria-label={t('products.header.sortProducts')}
+                className={`${SORT_TRIGGER_CLASS} max-w-full`}
+                aria-expanded={showSortDropdown}
               >
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <ProductsSortSlidersIcon className="shrink-0 text-white" />
+                  <span className="truncate">
+                    {sortOptions.find((opt) => opt.value === sortBy)?.label || t('products.header.sort.default')}
+                  </span>
+                </span>
                 <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 20 20"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 12 12"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
+                  className={`shrink-0 text-white transition-transform ${showSortDropdown ? 'rotate-180' : ''}`}
                   aria-hidden
                 >
-                  <path d="M7 8L10 5L13 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                  <path d="M7 12L10 15L13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
 
               {showSortDropdown && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden">
+                <div className={SORT_DROPDOWN_PANEL_CLASS}>
                   {sortOptions.map((option) => (
                     <button
                       key={option.value}
+                      type="button"
                       onClick={() => handleSortChange(option.value)}
-                      className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                      className={`${SORT_DROPDOWN_ITEM_CLASS} ${
                         sortBy === option.value
-                          ? 'bg-gray-100 text-gray-900 font-semibold'
+                          ? 'bg-gray-100 font-semibold text-gray-900'
                           : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
@@ -421,7 +404,7 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
 export function ProductsHeader(props: ProductsHeaderProps) {
   return (
     <Suspense fallback={
-      <div className="marco-header-container pb-4 pt-[58px]">
+      <div className="marco-header-container pb-2 pt-[58px] sm:pb-4">
         <div className="flex justify-end items-center">
           <div
             className="h-10 min-w-[160px] animate-pulse rounded-full bg-marco-black/20"
