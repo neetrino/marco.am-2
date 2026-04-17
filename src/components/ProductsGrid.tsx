@@ -7,6 +7,7 @@ import { ProductCard } from './ProductCard';
 import { SpecialOfferCard } from './home/SpecialOfferCard';
 import type { SpecialOfferProduct } from './home/special-offer-product.types';
 import { useIsMaxMd } from './home/use-is-max-md';
+import { useForcedShopGridColumns } from './useForcedShopGridColumns';
 
 interface Product {
   id: string;
@@ -60,6 +61,7 @@ interface ProductsGridProps {
 export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps) {
   const { t } = useTranslation();
   const isMaxMd = useIsMaxMd();
+  const forcedShopCols = useForcedShopGridColumns();
   /** Same as home featured strip: `default` (fixed card width) on md+, `mobileGrid` on small screens */
   const specialOfferLayout = isMaxMd ? 'mobileGrid' : 'default';
   const [viewMode, setViewMode] = useState<ViewMode>('grid-2');
@@ -117,17 +119,26 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
   /** Tighter on smallest phones; roomier gaps on mobile shop before `md` desktop columns */
   const gridGapClass = 'gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-12';
 
-  // Get grid classes based on view mode
+  /**
+   * Touch iPad / tablet (see `useForcedShopGridColumns`): fixed 2 or 3 columns, no list mode.
+   * Otherwise: user-selected view mode.
+   */
   const getGridClasses = () => {
+    if (forcedShopCols === 2) {
+      return `grid grid-cols-2 ${gridGapClass}`;
+    }
+    if (forcedShopCols === 3) {
+      return `grid grid-cols-3 ${gridGapClass}`;
+    }
     switch (viewMode) {
       case 'list':
         return `grid grid-cols-1 ${gridGapClass}`;
       case 'grid-2':
-        return `grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 ${gridGapClass}`;
+        return `grid grid-cols-2 md:grid-cols-3 ${gridGapClass}`;
       case 'grid-3':
-        return `grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 ${gridGapClass}`;
+        return `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${gridGapClass}`;
       default:
-        return `grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 ${gridGapClass}`;
+        return `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${gridGapClass}`;
     }
   };
 
@@ -139,18 +150,20 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
     );
   }
 
+  const useListLayout = forcedShopCols === null && viewMode === 'list';
+
   return (
     <div className={getGridClasses()}>
       {sortedProducts.map((product) => (
         <div
           key={product.id}
           className={
-            viewMode === 'list'
+            useListLayout
               ? 'min-w-0 w-full'
               : 'flex min-w-0 justify-end pr-2 sm:pr-3 md:pr-4'
           }
         >
-          {viewMode === 'list' ? (
+          {useListLayout ? (
             <ProductCard product={product} viewMode="list" />
           ) : (
             <SpecialOfferCard

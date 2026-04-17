@@ -207,22 +207,25 @@ export default async function ProductsPage({ searchParams }: any) {
     <div className="w-full max-w-full pb-4 md:pb-32 lg:pb-40">
       <ProductsHeader total={productsData.meta.total} />
 
-      <div className={`${PRODUCTS_PAGE_SHELL} flex flex-col lg:flex-row gap-8`}>
+      {/* Sidebar from 744px; narrower on tablet/iPad, full width from xl; drawer on narrow viewports */}
+      <div
+        className={`${PRODUCTS_PAGE_SHELL} flex flex-col min-[744px]:flex-row min-[744px]:gap-5 xl:gap-8`}
+      >
         <ProductsFiltersProvider
           category={params?.category}
           search={params?.search}
           minPrice={params?.minPrice}
           maxPrice={params?.maxPrice}
         >
-        <aside className="hidden shrink-0 bg-white lg:sticky lg:top-4 lg:z-10 lg:self-start lg:block lg:w-[20rem]">
-          <div className="border-r border-solid border-[#e2e8f0] pb-6 pt-6 lg:pl-0 lg:pr-6">
-            <div className="mb-6 flex flex-col gap-1">
+        <aside className="hidden w-[16rem] shrink-0 bg-white min-[744px]:sticky min-[744px]:top-4 min-[744px]:z-10 min-[744px]:self-start min-[744px]:block xl:w-[20rem]">
+          <div className="border-r border-solid border-[#e2e8f0] pb-4 pt-4 min-[744px]:pl-0 min-[744px]:pr-3 xl:pb-6 xl:pt-6 xl:pr-6">
+            <div className="mb-4 flex flex-col gap-1 lg:mb-5 xl:mb-6">
               <h2
-                className={`${productsFiltersSectionFont.className} text-base font-semibold leading-6 tracking-[-0.31px] text-[#0f172b]`}
+                className={`${productsFiltersSectionFont.className} text-sm font-semibold leading-5 tracking-[-0.31px] text-[#0f172b] lg:text-base lg:leading-6`}
               >
                 {t(language, 'products.filters.panelTitle')}
               </h2>
-              <p className="text-sm font-normal leading-5 tracking-[-0.15px] text-[#62748e]">
+              <p className="text-xs font-normal leading-snug tracking-[-0.15px] text-[#62748e] lg:text-sm lg:leading-5">
                 {t(language, 'products.filters.panelSubtitle')}
               </p>
             </div>
@@ -240,7 +243,7 @@ export default async function ProductsPage({ searchParams }: any) {
           </div>
         </aside>
 
-        <div className="flex-1 min-w-0 w-full overflow-x-hidden pt-4 pb-2 md:py-4 lg:w-auto">
+        <div className="flex-1 min-w-0 w-full overflow-x-hidden pt-4 pb-2 min-[744px]:w-auto min-[744px]:py-4">
 
           {normalizedProducts.length > 0 ? (
             <>

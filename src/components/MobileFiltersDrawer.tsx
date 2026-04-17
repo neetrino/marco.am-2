@@ -51,7 +51,7 @@ export function MobileFiltersDrawer({
   }, [openEventName]);
 
   return (
-    <div className="lg:hidden">
+    <div className="min-[744px]:hidden">
       {open && (
         <div
           className="fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm"

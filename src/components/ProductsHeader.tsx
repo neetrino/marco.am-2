@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useTranslation } from '../lib/i18n-client';
+import { useForcedShopGridColumns } from './useForcedShopGridColumns';
 
 /** Figma MARCO 218:2275 — wordmark «ԽԱՆՈՒԹ» (Montserrat Bold) */
 const productsShopTitleFont = Montserrat({
@@ -150,6 +151,7 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
+  const forcedShopGridCols = useForcedShopGridColumns();
   const [viewMode, setViewMode] = useState<ViewMode>('grid-2');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
@@ -237,38 +239,40 @@ function ProductsHeaderContent({ total }: ProductsHeaderProps) {
 
         {/* Right side: View toggles + Sort */}
         <div className="flex items-center gap-4">
-          {/* View Mode Icons: Figma 218:2293 shell + 218:2294 glyphs */}
-          <div className={VIEW_TOGGLE_GROUP_CLASS}>
-            <button
-              type="button"
-              onClick={() => handleViewModeChange('list')}
-              className={viewToggleSegmentClass(viewMode === 'list')}
-              aria-label={t('products.header.viewModes.list')}
-              aria-pressed={viewMode === 'list'}
-            >
-              <ProductsViewListIcon className="h-[22px] w-[22px] shrink-0" />
-            </button>
+          {/* View mode — hidden on touch iPad / tablet when grid is fixed (see useForcedShopGridColumns) */}
+          {forcedShopGridCols === null && (
+            <div className={VIEW_TOGGLE_GROUP_CLASS}>
+              <button
+                type="button"
+                onClick={() => handleViewModeChange('list')}
+                className={viewToggleSegmentClass(viewMode === 'list')}
+                aria-label={t('products.header.viewModes.list')}
+                aria-pressed={viewMode === 'list'}
+              >
+                <ProductsViewListIcon className="h-[22px] w-[22px] shrink-0" />
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleViewModeChange('grid-2')}
-              className={viewToggleSegmentClass(viewMode === 'grid-2')}
-              aria-label={t('products.header.viewModes.grid2')}
-              aria-pressed={viewMode === 'grid-2'}
-            >
-              <ProductsViewGridMediumDotsIcon className="h-[22px] w-[22px] shrink-0" />
-            </button>
+              <button
+                type="button"
+                onClick={() => handleViewModeChange('grid-2')}
+                className={viewToggleSegmentClass(viewMode === 'grid-2')}
+                aria-label={t('products.header.viewModes.grid2')}
+                aria-pressed={viewMode === 'grid-2'}
+              >
+                <ProductsViewGridMediumDotsIcon className="h-[22px] w-[22px] shrink-0" />
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleViewModeChange('grid-3')}
-              className={viewToggleSegmentClass(viewMode === 'grid-3')}
-              aria-label={t('products.header.viewModes.grid3')}
-              aria-pressed={viewMode === 'grid-3'}
-            >
-              <ProductsViewGridDenseDotsIcon className="h-[22px] w-[22px] shrink-0" />
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => handleViewModeChange('grid-3')}
+                className={viewToggleSegmentClass(viewMode === 'grid-3')}
+                aria-label={t('products.header.viewModes.grid3')}
+                aria-pressed={viewMode === 'grid-3'}
+              >
+                <ProductsViewGridDenseDotsIcon className="h-[22px] w-[22px] shrink-0" />
+              </button>
+            </div>
+          )}
 
           {/* Sort dropdown — panel width matches trigger; rows h-10 like trigger */}
           <div className="relative w-max min-w-0" ref={sortDropdownRef}>
