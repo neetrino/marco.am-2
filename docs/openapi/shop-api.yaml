@@ -502,6 +502,85 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /api/v1/home/customer-reviews:
+    get:
+      tags: [Home]
+      summary: Home customer reviews carousel (locale-resolved copy + ratings + optional photos)
+      operationId: getHomeCustomerReviews
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: Section title and active testimonials for the requested locale.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerReviewsPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/home-customer-reviews:
+    get:
+      tags: [Home]
+      summary: Full customer reviews document (all locales) for admin
+      operationId: getSupersudoHomeCustomerReviews
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = homeCustomerReviews`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerReviewsStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Home]
+      summary: Replace customer reviews document (validated)
+      operationId: putSupersudoHomeCustomerReviews
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerReviewsStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerReviewsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/contact:
     post:
       tags: [Site]
@@ -865,6 +944,121 @@ components:
           maxItems: 8
           items:
             $ref: "#/components/schemas/WhyChooseUsStorageItem"
+
+    CustomerReviewsSectionTitleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 200
+        hy:
+          type: string
+          maxLength: 200
+        ru:
+          type: string
+          maxLength: 200
+
+    CustomerReviewsTextTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 2000
+        hy:
+          type: string
+          maxLength: 2000
+        ru:
+          type: string
+          maxLength: 2000
+
+    CustomerReviewsAuthorTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 120
+        hy:
+          type: string
+          maxLength: 120
+        ru:
+          type: string
+          maxLength: 120
+
+    CustomerReviewsPublicItem:
+      type: object
+      required: [id, rating, text, authorName, photoUrls, sortOrder]
+      properties:
+        id:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        text:
+          type: string
+        authorName:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        sortOrder:
+          type: integer
+
+    CustomerReviewsPublicResponse:
+      type: object
+      required: [sectionTitle, items]
+      properties:
+        sectionTitle:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerReviewsPublicItem"
+
+    CustomerReviewsStorageItem:
+      type: object
+      required: [id, rating, text, authorName, photoUrls, active, sortOrder]
+      properties:
+        id:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        text:
+          $ref: "#/components/schemas/CustomerReviewsTextTriple"
+        authorName:
+          $ref: "#/components/schemas/CustomerReviewsAuthorTriple"
+        photoUrls:
+          type: array
+          maxItems: 6
+          items:
+            type: string
+            maxLength: 2048
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    CustomerReviewsStorageDocument:
+      type: object
+      required: [version, sectionTitle, items]
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        sectionTitle:
+          $ref: "#/components/schemas/CustomerReviewsSectionTitleTriple"
+        items:
+          type: array
+          minItems: 0
+          maxItems: 24
+          items:
+            $ref: "#/components/schemas/CustomerReviewsStorageItem"
 
     LoginRequest:
       type: object

@@ -25,7 +25,7 @@
 | Փուլ | Անվանում                         | Փուլի առաջընթաց |
 | ---- | -------------------------------- | --------------- |
 | 1    | Infra & API կոնտրակտ             | `100%`          |
-| 2    | Գլխավոր էջ (Home) — տվյալներ     | `79%`           |
+| 2    | Գլխավոր էջ (Home) — տվյալներ     | `91%`           |
 | 3    | Shop (PLP) — կատալոգ API         | `82%`           |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `89%`           |
@@ -61,7 +61,7 @@
 
 ## Փուլ 2 — Գլխավոր էջ (Home)
 
-**Փուլի առաջընթաց.** `79%`
+**Փուլի առաջընթաց.** `91%`
 
 
 | ID  | Առաջադրանք (backend)                                                                                                   | Կատարման % | Կարգավիճակ |
@@ -70,7 +70,7 @@
 | 2.2 | Featured products — bestsellers կամ curated list, տվյալներ PDP հղման համար                                             | 100        | ✅          |
 | 2.3 | Promotions / special offers բլոկի տվյալներ                                                                             | 100        | ✅          |
 | 2.4 | «Why choose us» — 3–4 առավելություն (warranty, fast delivery, installment, original products) — CMS կամ structured API | 100        | ✅          |
-| 2.5 | Հաճախորդների կարծիքների carousel — rating, տեքստ, լուսանկարներ (եթե կան)                                               | 0          | ⬜          |
+| 2.5 | Հաճախորդների կարծիքների carousel — rating, տեքստ, լուսանկարներ (եթե կան)                                               | 100        | ✅          |
 | 2.6 | Brand partners — բրենդների մետատվյալներ + լոգո asset URL                                                               | 25         | ⬜          |
 | 2.7 | Footer — կոնտակտ, սոց հղումներ, քարտեզ embed, legal/quick links (կոնֆիգ/CMS endpoint)                                  | 5          | ⬜          |
 | 2.8 | Reels section (home) — կարճ ցուցակ / նախադիտում կամ deep link դեպի Reels էջ (տես Փուլ 11)                              | 100        | ✅          |
@@ -85,6 +85,8 @@
 **2.3 ✅ ավարտված (2026-04-16).** `GET /api/v1/products?filter=promotion|special_offer` — տես վերևի *Նշումներ* 2.3 բլոկը; UI՝ `HomeSpecialOffersSection`։
 
 **2.4 ✅ ավարտված (2026-04-17).** Պահեստ՝ `settings.key = homeWhyChooseUs` (JSON, Zod `whyChooseUsStorageSchema`) — բաժնի վերնագիր AM/RU/EN, 1–8 կետ՝ `id`, `title`/`body` երեք լեզվով, `iconKey` (`warranty` \| `fast_delivery` \| `installment` \| `original`), `active`, `sortOrder`։ Հանրային՝ `GET /api/v1/home/why-choose-us?locale=en|hy|ru` — լուծված մեկ լեզվով վերնագիր + ակտիվ կետերը կարգով։ Admin՝ `GET`/`PUT /api/v1/supersudo/why-choose-us` (JWT admin)։ Storefront՝ `HomeWhyChooseUsSection` — SSR cookie լեզվով + client refetch (`/api/v1/home/why-choose-us`)։ OpenAPI՝ `WhyChooseUsPublicResponse` / `WhyChooseUsStorageDocument`։
+
+**2.5 ✅ ավարտված (2026-04-17).** Պահեստ՝ `settings.key = homeCustomerReviews` (JSON, Zod `homeCustomerReviewsStorageSchema`) — բաժնի վերնագիր AM/RU/EN, մինչև 24 կարծիք՝ `id`, `rating` (1–5), `text`/`authorName` երեք լեզվով, `photoUrls` (մինչև 6 URL), `active`, `sortOrder`։ Լռելյայն օրինակներ DB գրառում չեն պահանջում (կոդի default)։ Հանրային՝ `GET /api/v1/home/customer-reviews?locale=en|hy|ru` — մեկ լեզվով վերնագիր + ակտիվ կարծիքները կարգով։ Admin՝ `GET`/`PUT /api/v1/supersudo/home-customer-reviews` (JWT admin)։ Storefront՝ `HomeCustomerReviewsSection` — հորիզոնական snap carousel (սլայդեր/սքրոլ), աստղեր, տեքստ, լուսանկարների ցանց եթե `photoUrls` դատարկ չեն։ OpenAPI՝ `CustomerReviewsPublicResponse` / `CustomerReviewsStorageDocument`։
 
 **2.8 ✅ ավարտված (2026-04-16).** Storefront՝ `HomeReelsSection` (գլխավոր) + ներքին `/reels` էջ vertical snap ֆիդ (պաստեր նկարներ, deep link `/reels?i=<index>` home-ի յուրաքանչյուր tile-ից), header-ի «Reels» հղումը՝ `/reels` (ոչ արտաքին URL)։ Սերվերային reels մոդել/API չի ավելացվել — տես Փուլ 11։
 
