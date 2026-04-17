@@ -9,6 +9,7 @@ import { getOutOfStockLabel } from "./utils";
 import {
   buildTechnicalSpecifications,
   type ProductAttributeForTechnicalSpecification,
+  type ProductVariantForTechnicalSpecification,
 } from "./technical-specifications";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
 
@@ -42,6 +43,12 @@ type ProductGalleryImage = {
   position: number;
   source: "product_media";
   metadata: Record<string, unknown> | null;
+};
+
+type ProductDiscountBadge = {
+  type: "percentage";
+  value: number;
+  label: string;
 };
 
 type RawProductMediaItem = {
@@ -340,6 +347,62 @@ function transformVariantImageUrl(variant: ProductVariantWithOptions): string | 
   return processedUrls.length > 0 ? processedUrls.join(',') : null;
 }
 
+function resolveVariantOldPrice(currentPrice: number, compareAtPrice: number | null): number | null {
+  if (compareAtPrice === null) {
+    return null;
+  }
+
+  return compareAtPrice > currentPrice ? compareAtPrice : null;
+}
+
+function computeDiscountPercentFromPrices(
+  currentPrice: number,
+  oldPrice: number | null
+): number | null {
+  if (!oldPrice || oldPrice <= 0 || oldPrice <= currentPrice) {
+    return null;
+  }
+
+  const rawPercent = ((oldPrice - currentPrice) / oldPrice) * 100;
+  const roundedPercent = Math.round(rawPercent);
+  return roundedPercent > 0 ? roundedPercent : null;
+}
+
+function buildDiscountBadge(discountPercent: number | null): ProductDiscountBadge | null {
+  if (!discountPercent || discountPercent <= 0) {
+    return null;
+  }
+
+  return {
+    type: "percentage",
+    value: discountPercent,
+    label: `-${discountPercent}%`,
+  };
+}
+
+function buildVariantPricing(
+  originalPrice: number,
+  compareAtPrice: number | null,
+  actualDiscount: number
+): {
+  currentPrice: number;
+  oldPrice: number | null;
+  discountPercent: number | null;
+  discountBadge: ProductDiscountBadge | null;
+} {
+  const discountedPrice = actualDiscount > 0 ? originalPrice * (1 - actualDiscount / 100) : originalPrice;
+  const oldPrice = resolveVariantOldPrice(discountedPrice, compareAtPrice);
+  const fallbackDiscountPercent = computeDiscountPercentFromPrices(discountedPrice, oldPrice);
+  const discountPercent = actualDiscount > 0 ? actualDiscount : fallbackDiscountPercent;
+
+  return {
+    currentPrice: discountedPrice,
+    oldPrice,
+    discountPercent,
+    discountBadge: buildDiscountBadge(discountPercent),
+  };
+}
+
 /**
  * Transform product variants
  */
@@ -353,14 +416,12 @@ function transformVariants(
   return variants
     .sort((a: { price: number }, b: { price: number }) => a.price - b.price)
     .map((variant: ProductVariantWithOptions) => {
-      const originalPrice = variant.price;
-      let finalPrice = originalPrice;
-      let discountPrice = null;
-
-      if (actualDiscount > 0 && originalPrice > 0) {
-        discountPrice = originalPrice;
-        finalPrice = originalPrice * (1 - actualDiscount / 100);
-      }
+      const basePrice = variant.price;
+      const compareAtPrice =
+        typeof variant.compareAtPrice === "number" && Number.isFinite(variant.compareAtPrice)
+          ? variant.compareAtPrice
+          : null;
+      const pricing = buildVariantPricing(basePrice, compareAtPrice, actualDiscount);
 
       const variantImageUrl = transformVariantImageUrl(variant);
       
@@ -375,9 +436,12 @@ function transformVariants(
       return {
         id: variant.id,
         sku: variant.sku || "",
-        price: finalPrice,
-        originalPrice: discountPrice || variant.compareAtPrice || null,
-        compareAtPrice: variant.compareAtPrice || null,
+        price: pricing.currentPrice,
+        originalPrice: pricing.oldPrice,
+        currentPrice: pricing.currentPrice,
+        oldPrice: pricing.oldPrice,
+        discountBadge: pricing.discountBadge,
+        compareAtPrice,
         globalDiscount: globalDiscount > 0 ? globalDiscount : null,
         productDiscount: productDiscount > 0 ? productDiscount : null,
         stock: variant.stock,
@@ -563,11 +627,24 @@ export async function transformProduct(
   const productAttributesForTechnicalSpecifications = (
     product as { productAttributes?: ProductAttributeForTechnicalSpecification[] }
   ).productAttributes;
+  const productVariantsForTechnicalSpecifications = (
+    product as { variants?: ProductVariantForTechnicalSpecification[] }
+  ).variants;
   const technicalSpecifications = buildTechnicalSpecifications(
     productAttributesForTechnicalSpecifications,
-    product.variants,
+    productVariantsForTechnicalSpecifications,
     lang
   );
+  const transformedVariants = Array.isArray(product.variants)
+    ? transformVariants(
+        product.variants,
+        actualDiscount,
+        globalDiscount,
+        productDiscount,
+        lang
+      )
+    : [];
+  const primaryVariant = transformedVariants[0] ?? null;
 
   return {
     id: product.id,
@@ -594,13 +671,15 @@ export async function transformProduct(
     media,
     gallery,
     labels: transformLabels(product, lang),
-    variants: Array.isArray(product.variants) ? transformVariants(
-      product.variants,
-      actualDiscount,
-      globalDiscount,
-      productDiscount,
-      lang
-    ) : [],
+    variants: transformedVariants,
+    currentPrice: primaryVariant?.currentPrice ?? null,
+    oldPrice: primaryVariant?.oldPrice ?? null,
+    discountBadge: primaryVariant?.discountBadge ?? null,
+    pricing: {
+      currentPrice: primaryVariant?.currentPrice ?? null,
+      oldPrice: primaryVariant?.oldPrice ?? null,
+      discountBadge: primaryVariant?.discountBadge ?? null,
+    },
     globalDiscount: globalDiscount > 0 ? globalDiscount : null,
     productDiscount: productDiscount > 0 ? productDiscount : null,
     technicalSpecifications,

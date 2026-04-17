@@ -23,6 +23,13 @@ export interface ProductVariant {
   /** Optional display order from API (not always present on type). */
   position?: number;
   price: number;
+  currentPrice?: number;
+  oldPrice?: number | null;
+  discountBadge?: {
+    type: 'percentage';
+    value: number;
+    label: string;
+  } | null;
   originalPrice?: number | null;
   compareAtPrice?: number;
   stock: number;
@@ -88,6 +95,22 @@ export interface Product {
   };
   media: ProductMedia[] | string[];
   variants: ProductVariant[];
+  currentPrice?: number | null;
+  oldPrice?: number | null;
+  discountBadge?: {
+    type: 'percentage';
+    value: number;
+    label: string;
+  } | null;
+  pricing?: {
+    currentPrice: number | null;
+    oldPrice: number | null;
+    discountBadge: {
+      type: 'percentage';
+      value: number;
+      label: string;
+    } | null;
+  };
   labels?: ProductLabel[];
   brand?: {
     id: string;

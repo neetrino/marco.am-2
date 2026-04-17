@@ -16,10 +16,23 @@ export function useProductCalculations({
   selectedColor,
   selectedSize,
 }: UseProductCalculationsProps) {
-  const price = currentVariant?.price || 0;
-  const originalPrice = currentVariant?.originalPrice;
+  const variantCurrentPrice = currentVariant?.currentPrice ?? currentVariant?.price ?? 0;
+  const price = variantCurrentPrice;
+  const originalPrice = currentVariant?.oldPrice ?? currentVariant?.originalPrice;
   const compareAtPrice = currentVariant?.compareAtPrice;
-  const discountPercent = currentVariant?.productDiscount || product?.productDiscount || null;
+  const fallbackOldPrice =
+    originalPrice ??
+    (typeof compareAtPrice === 'number' && compareAtPrice > variantCurrentPrice ? compareAtPrice : null);
+  const inferredDiscountPercent =
+    fallbackOldPrice && fallbackOldPrice > variantCurrentPrice
+      ? Math.round(((fallbackOldPrice - variantCurrentPrice) / fallbackOldPrice) * 100)
+      : null;
+  const discountPercent =
+    currentVariant?.discountBadge?.value ??
+    currentVariant?.productDiscount ??
+    product?.discountBadge?.value ??
+    product?.productDiscount ??
+    inferredDiscountPercent;
   const isOutOfStock = !currentVariant || currentVariant.stock <= 0;
 
   const colorGroups = useMemo(() => {
@@ -83,7 +96,7 @@ export function useProductCalculations({
 
   return {
     price,
-    originalPrice: originalPrice ?? null,
+    originalPrice: fallbackOldPrice ?? null,
     compareAtPrice: compareAtPrice ?? null,
     discountPercent,
     isOutOfStock,
