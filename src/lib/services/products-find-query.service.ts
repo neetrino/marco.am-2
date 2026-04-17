@@ -15,7 +15,7 @@ class ProductsFindQueryService {
     bestsellerProductIds: string[];
     total?: number;
   }> {
-    const { limit = 12, page = 1 } = filters;
+    const { limit = 12, page = 1, sort } = filters;
 
     const { where, bestsellerProductIds } = await buildWhereClause(filters);
 
@@ -27,11 +27,19 @@ class ProductsFindQueryService {
       };
     }
 
+    const requiresSortOverFetch =
+      sort === "price-asc" ||
+      sort === "price-desc" ||
+      sort === "price" ||
+      sort === "popular" ||
+      sort === "bestseller";
+
     const needOverFetch =
       Boolean(filters.category || filters.search) ||
       filters.minPrice != null ||
       filters.maxPrice != null ||
-      Boolean(filters.colors || filters.sizes || filters.brand);
+      Boolean(filters.colors || filters.sizes || filters.brand) ||
+      requiresSortOverFetch;
 
     if (!needOverFetch) {
       const [total, products] = await Promise.all([

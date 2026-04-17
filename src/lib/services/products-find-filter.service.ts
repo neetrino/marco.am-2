@@ -1,4 +1,4 @@
-import { ProductFilters, ProductWithRelations } from "./products-find-query.service";
+import type { ProductFilters, ProductWithRelations } from "./products-find-query/types";
 
 /**
  * Normalize comma-separated filter values and drop placeholders like "undefined" or "null".
@@ -21,6 +21,32 @@ const normalizeFilterList = (
 
   return items;
 };
+
+type SupportedSort = "newest" | "popular" | "price-asc" | "price-desc";
+
+function resolveSort(sort?: string): SupportedSort {
+  switch (sort) {
+    case "price-asc":
+      return "price-asc";
+    case "price-desc":
+    case "price":
+      return "price-desc";
+    case "popular":
+    case "bestseller":
+      return "popular";
+    case "createdAt":
+    case "createdAt-desc":
+    case "newest":
+    default:
+      return "newest";
+  }
+}
+
+function getMinVariantPrice(product: ProductWithRelations): number {
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+  if (variants.length === 0) return Number.POSITIVE_INFINITY;
+  return Math.min(...variants.map((variant: { price: number }) => variant.price));
+}
 
 class ProductsFindFilterService {
   /**
@@ -154,7 +180,8 @@ class ProductsFindFilterService {
     }
 
     // Sort
-    const { filter, sort = "createdAt" } = filters;
+    const { filter } = filters;
+    const sort = resolveSort(filters.sort);
     if (filter === "promotion" || filter === "special_offer") {
       products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
         const aD = a.discountPercent ?? 0;
@@ -170,19 +197,29 @@ class ProductsFindFilterService {
         const bRank = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
         return aRank - bRank;
       });
-    } else if (sort === "price") {
+    } else if (sort === "price-desc" || sort === "price-asc") {
       products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
-        const aVariants = Array.isArray(a.variants) ? a.variants : [];
-        const bVariants = Array.isArray(b.variants) ? b.variants : [];
-        const aPrice = aVariants.length > 0 ? Math.min(...aVariants.map((v: { price: number }) => v.price)) : 0;
-        const bPrice = bVariants.length > 0 ? Math.min(...bVariants.map((v: { price: number }) => v.price)) : 0;
+        const aPrice = getMinVariantPrice(a);
+        const bPrice = getMinVariantPrice(b);
+        if (sort === "price-asc") {
+          return aPrice - bPrice;
+        }
         return bPrice - aPrice;
+      });
+    } else if (sort === "popular" && bestsellerProductIds.length > 0) {
+      const rank = new Map<string, number>();
+      bestsellerProductIds.forEach((id, index) => rank.set(id, index));
+      products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
+        const aRank = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+        const bRank = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+        if (aRank !== bRank) {
+          return aRank - bRank;
+        }
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
     } else {
       products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
-        const aValue = a[sort as keyof typeof a] as Date;
-        const bValue = b[sort as keyof typeof b] as Date;
-        return new Date(bValue).getTime() - new Date(aValue).getTime();
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
     }
 

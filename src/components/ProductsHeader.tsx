@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useTranslation } from '../lib/i18n-client';
 
 type ViewMode = 'list' | 'grid-2' | 'grid-3';
-type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+type SortOption = 'default' | 'price-asc' | 'price-desc' | 'newest' | 'popular';
 
 /** Figma MARCO 101:2802 — size-10, rounded-full, border-gray-200, hover:bg-primary hover:text-white */
 const VIEW_TOGGLE_BASE =
@@ -40,10 +40,10 @@ function ProductsHeaderContent({ total, perPage: _perPage }: ProductsHeaderProps
 
   const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'default', label: t('products.header.sort.default') },
+    { value: 'newest', label: t('products.header.sort.newest') },
+    { value: 'popular', label: t('products.header.sort.popular') },
     { value: 'price-asc', label: t('products.header.sort.priceAsc') },
     { value: 'price-desc', label: t('products.header.sort.priceDesc') },
-    { value: 'name-asc', label: t('products.header.sort.nameAsc') },
-    { value: 'name-desc', label: t('products.header.sort.nameDesc') },
   ];
 
   // Per page: default 12 when not in URL (proper pagination)

@@ -26,7 +26,7 @@
 | ---- | -------------------------------- | --------------- |
 | 1    | Infra & API կոնտրակտ             | `100%`          |
 | 2    | Գլխավոր էջ (Home) — տվյալներ     | `100%`          |
-| 3    | Shop (PLP) — կատալոգ API         | `82%`           |
+| 3    | Shop (PLP) — կատալոգ API         | `87%`           |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `89%`           |
 | 6    | Վճարման եղանակներ                | `50%`           |
@@ -98,13 +98,13 @@
 
 ## Փուլ 3 — Shop (Product listing)
 
-**Փուլի առաջընթաց.** `84%`
+**Փուլի առաջընթաց.** `87%`
 
 
 | ID  | Առաջադրանք (backend)                                                                 | Կատարման % | Կարգավիճակ |
 | --- | ------------------------------------------------------------------------------------ | ---------- | ---------- |
 | 3.1 | Ապրանքների ցուցակ API — նկար, անվանում, հիմնական սպեկներ, գին, բրենդ, warranty badge | 100        | ✅          |
-| 3.2 | Sorting — price ASC/DESC, newest, popular                                            | 85         | 🔄         |
+| 3.2 | Sorting — price ASC/DESC, newest, popular                                            | 100        | ✅          |
 | 3.3 | Filters — brand, price range, category                                               | 85         | 🔄         |
 | 3.4 | Filters — technical specs (faceted կամ step filters, schema-ից դինամիկ)              | 60         | 🔄         |
 | 3.5 | Pagination կամ cursor API — infinite scroll / SEO-ի համար էջավորում                  | 90         | 🔄         |
@@ -113,6 +113,8 @@
 *Նշումներ.* 3.4 — գունային/չափային ֆիլտրեր variant options/ատրիբուտների հիման վրա կան; լիարժեք generic faceted API բոլոր ատրիբուտների համար spec-ի իմաստով մասնակի է։
 
 **3.1 ✅ ավարտված (2026-04-17).** `GET /api/v1/products` պատասխանի յուրաքանչյուր ապրանքի մեջ ավելացվել է `keySpecs` (մինչև 4 հատ հիմնական բնութագիր՝ առաջին հերթին default variant-ի options-ից, fallback՝ product attributes-ից՝ առանց `color`/`size`) և `warrantyBadge` (`{ text, color, position }`), որը լուծվում է ապրանքի label-ներից (`warranty`/`guarantee`/`երաշխ`/`гарант`)։ Գոյություն ունեցող PLP դաշտերը (`image`, `title`, `price`, `brand`, `labels`, `colors` և այլն) պահպանվել են backward-compatible։
+
+**3.2 ✅ ավարտված (2026-04-17).** `GET /api/v1/products`-ում ավելացվել/ստանդարտացվել է `sort`-ի աջակցությունը՝ `price-asc`, `price-desc`, `newest`, `popular` (ալիասներ՝ `price`, `createdAt`, `bestseller`)։ `popular`-ը հաշվարկվում է վաճառքի քանակից (`order_items` → variant → product ranking), `newest`-ը կայունացվել է `createdAt desc` սերվերային կարգով, իսկ գնի դասավորությունը աշխատում է variant-ների նվազագույն գնի հիմքով։ Storefront `/products` էջը հիմա փոխանցում է `sort` query պարամետրը backend։
 
 ---
 

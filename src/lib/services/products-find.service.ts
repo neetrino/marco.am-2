@@ -12,6 +12,7 @@ class ProductsFindService {
       page = 1,
       limit = 12,
       lang = "en",
+      sort,
     } = filters;
 
     // Step 1: Build query and fetch products from database
@@ -35,6 +36,29 @@ class ProductsFindService {
         : filteredProducts.slice(start, start + limit);
 
     // Step 4: Transform products to response format
+    // Price sorting must use transformed final price (discount-aware) to match PLP output.
+    if (
+      totalFromQuery === undefined &&
+      (sort === "price-asc" || sort === "price-desc" || sort === "price")
+    ) {
+      const transformedAll = await productsFindTransformService.transformProducts(filteredProducts, lang);
+      transformedAll.sort((a: { price: number }, b: { price: number }) => {
+        if (sort === "price-asc") {
+          return a.price - b.price;
+        }
+        return b.price - a.price;
+      });
+      return {
+        data: transformedAll.slice(start, start + limit),
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    }
+
     const data = await productsFindTransformService.transformProducts(paginatedProducts, lang);
 
     return {

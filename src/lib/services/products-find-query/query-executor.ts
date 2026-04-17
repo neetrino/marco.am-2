@@ -122,6 +122,7 @@ export async function executeProductQuery(
         ...baseInclude,
         ...getProductAttributesInclude(),
       },
+      orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     });
@@ -178,6 +179,7 @@ async function executeWithoutProductAttributes(
     const products = await db.product.findMany({
       where,
       include: baseInclude,
+      orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     });
@@ -191,6 +193,7 @@ async function executeWithoutProductAttributes(
         const products = await db.product.findMany({
           where,
           include: baseInclude,
+          orderBy: { createdAt: "desc" },
           skip,
           take: limit,
         });
@@ -248,6 +251,7 @@ async function executeWithoutAttributeValue(
         ...baseIncludeWithoutAttributeValue,
         ...getProductAttributesInclude(),
       },
+      orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     });
@@ -259,6 +263,7 @@ async function executeWithoutAttributeValue(
       const products = await db.product.findMany({
         where,
         include: baseIncludeWithoutAttributeValue,
+        orderBy: { createdAt: "desc" },
         skip,
         take: limit,
       });
