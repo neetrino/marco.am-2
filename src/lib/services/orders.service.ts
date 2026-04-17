@@ -503,8 +503,19 @@ class OrdersService {
    * Get user orders list (paginated)
    */
   async list(userId: string, options?: { page?: number; limit?: number }) {
-    const page = Math.max(1, options?.page ?? 1);
-    const limit = Math.min(100, Math.max(1, options?.limit ?? 20));
+    const page =
+      typeof options?.page === "number" &&
+      Number.isFinite(options.page) &&
+      options.page >= 1
+        ? Math.floor(options.page)
+        : 1;
+    const limitRaw =
+      typeof options?.limit === "number" &&
+      Number.isFinite(options.limit) &&
+      options.limit >= 1
+        ? Math.floor(options.limit)
+        : 20;
+    const limit = Math.min(100, Math.max(1, limitRaw));
     const skip = (page - 1) * limit;
 
     const [orders, total] = await Promise.all([
