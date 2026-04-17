@@ -12,6 +12,7 @@ import { ProductsGrid } from '../../components/ProductsGrid';
 import { MobileFiltersDrawer } from '../../components/MobileFiltersDrawer';
 import { ProductsFiltersProvider } from '../../components/ProductsFiltersProvider';
 import { MOBILE_FILTERS_EVENT } from '../../lib/events';
+import { getPublicAppUrl } from '@/lib/config/deployment-env';
 
 const PAGE_CONTAINER = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
 // Container for filters section to align with Header logo (same Y-axis)
@@ -82,11 +83,7 @@ async function getProducts(
 
     const queryString = new URLSearchParams(params).toString();
 
-    // Fallback chain: NEXT_PUBLIC_APP_URL -> VERCEL_URL -> localhost (for local dev)
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
+    const baseUrl = getPublicAppUrl();
     const targetUrl = `${baseUrl}/api/v1/products?${queryString}`;
     const res = await fetch(targetUrl, {
       cache: "no-store"

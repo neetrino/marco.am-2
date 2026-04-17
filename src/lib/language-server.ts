@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import {
-  LANGUAGE_STORAGE_KEY,
+  LANGUAGE_PREFERENCE_KEY,
   type LanguageCode,
   LANGUAGES,
 } from './language';
@@ -10,7 +10,7 @@ import {
  */
 export async function getServerLanguage(): Promise<LanguageCode> {
   const jar = await cookies();
-  const raw = jar.get(LANGUAGE_STORAGE_KEY)?.value;
+  const raw = jar.get(LANGUAGE_PREFERENCE_KEY)?.value;
   if (raw && raw in LANGUAGES) {
     return raw as LanguageCode;
   }

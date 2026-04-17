@@ -12,6 +12,9 @@ export type LanguageCode = keyof typeof LANGUAGES;
 export const LANGUAGE_PREFERENCE_KEY = 'shop_language';
 const LANGUAGE_STORAGE_KEY = LANGUAGE_PREFERENCE_KEY;
 
+/** Default locale for static labels when no user preference is available. */
+export const DEFAULT_LANGUAGE: LanguageCode = 'en';
+
 export function getStoredLanguage(): LanguageCode {
   if (typeof window === 'undefined') return 'en';
   try {

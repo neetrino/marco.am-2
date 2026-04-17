@@ -3,6 +3,7 @@ import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { getErrorLogFields } from "@/lib/types/errors";
 import { authenticateToken } from "@/lib/middleware/auth";
 import { ordersService } from "@/lib/services/orders.service";
+import { logger } from "@/lib/utils/logger";
 
 export async function GET(
   req: NextRequest,
@@ -30,11 +31,10 @@ export async function GET(
     const result = await ordersService.findByNumber(number, user.id);
     return NextResponse.json(result);
   } catch (error: unknown) {
-    console.error("❌ [ORDERS] Get order by number error:", {
+    logger.error("[ORDERS] Get order by number error", {
       orderNumber,
       userId: user?.id,
       ...getErrorLogFields(error),
-      fullError: error,
     });
     return toApiErrorResponse(error, req.url);
   }

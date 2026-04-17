@@ -124,3 +124,18 @@ export function getPrismaErrorCode(error: unknown): string | undefined {
   return undefined;
 }
 
+/**
+ * Safe fields for structured error logging (avoid leaking full stack in prod).
+ */
+export function getErrorLogFields(error: unknown): Record<string, unknown> {
+  const prismaCode = getPrismaErrorCode(error);
+  if (error instanceof Error) {
+    return {
+      errorName: error.name,
+      errorMessage: error.message,
+      ...(prismaCode !== undefined ? { prismaCode } : {}),
+    };
+  }
+  return { error: String(error) };
+}
+
