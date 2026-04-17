@@ -13,9 +13,8 @@ import { MobileFiltersDrawer } from '../../components/MobileFiltersDrawer';
 import { ProductsFiltersProvider } from '../../components/ProductsFiltersProvider';
 import { MOBILE_FILTERS_EVENT } from '../../lib/events';
 
-const PAGE_CONTAINER = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
-// Container for filters section to align with Header logo (same Y-axis)
-// Header logo uses: pl-2 sm:pl-4 md:pl-6 lg:pl-8
+/** Same horizontal rhythm as navbar: `.marco-header-container` (see `globals.css`) */
+const PRODUCTS_PAGE_SHELL = 'marco-header-container';
 
 interface Product {
   id: string;
@@ -198,15 +197,9 @@ export default async function ProductsPage({ searchParams }: any) {
 
   return (
     <div className="w-full overflow-x-hidden max-w-full">
-      {/* Products Header - With Container */}
-      <div className={PAGE_CONTAINER}>
-        <ProductsHeader
-          total={productsData.meta.total}
-          perPage={productsData.meta.limit}
-        />
-      </div>
+      <ProductsHeader total={productsData.meta.total} />
 
-      <div className="max-w-7xl mx-auto pl-2 sm:pl-4 md:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 flex flex-col lg:flex-row gap-8">
+      <div className={`${PRODUCTS_PAGE_SHELL} flex flex-col lg:flex-row gap-8`}>
         <ProductsFiltersProvider
           category={params?.category}
           search={params?.search}

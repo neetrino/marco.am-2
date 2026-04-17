@@ -22,6 +22,7 @@
     }
   },
   "header": {
+    "shopWordmark": "МАГАЗИН",
     "allProducts": "Все товары ({total})",
     "clearFilters": "Очистить фильтры",
     "show": "Показать",

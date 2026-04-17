@@ -6,7 +6,6 @@ import './globals.css';
 import { ClientProviders } from '../components/ClientProviders';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
-import { Breadcrumb } from '../components/Breadcrumb';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { MOBILE_NAV_LAYOUT_PADDING_BOTTOM } from '../components/mobile-bottom-nav.constants';
 import { LANGUAGE_PREFERENCE_KEY, parseLanguageFromServer } from '../lib/language';
@@ -42,7 +41,6 @@ export default async function RootLayout({
               }
             >
               <Header initialLanguage={initialLanguage} />
-              <Breadcrumb />
               <main className="flex-1 w-full">
                 {children}
               </main>
