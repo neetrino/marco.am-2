@@ -3,12 +3,14 @@
  */
 
 import type { ProductData, Variant, ProductLabel } from '../types';
+import type { ProductClass } from '@/lib/constants/product-class';
 
 /** Full add/edit product form state (shared across hooks). */
 export interface AddProductFormState {
   title: string;
   slug: string;
   descriptionHtml: string;
+  productClass: ProductClass;
   brandIds: string[];
   primaryCategoryId: string;
   categoryIds: string[];
@@ -37,6 +39,7 @@ export function buildFormData(
     title: product.title || '',
     slug: product.slug || '',
     descriptionHtml: product.descriptionHtml || '',
+    productClass: product.productClass || 'retail',
     brandIds: brandIds,
     primaryCategoryId: product.primaryCategoryId || '',
     categoryIds: product.categoryIds || [],

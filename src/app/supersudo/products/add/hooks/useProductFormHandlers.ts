@@ -7,6 +7,7 @@ import { useVariantConversionToFormData } from './useVariantConversionToFormData
 import { useVariantValidation } from './useVariantValidation';
 import { processImagesForSubmit } from './useImageProcessingForSubmit';
 import { createAndSubmitPayload } from './useProductPayloadCreation';
+import type { ProductClass } from '@/lib/constants/product-class';
 import { logger } from "@/lib/utils/logger";
 
 interface UseProductFormHandlersProps {
@@ -14,6 +15,7 @@ interface UseProductFormHandlersProps {
     title: string;
     slug: string;
     descriptionHtml: string;
+    productClass: ProductClass;
     brandIds: string[];
     primaryCategoryId: string;
     categoryIds: string[];
@@ -135,6 +137,7 @@ export function useProductFormHandlers({
 
       // Process variants for API
       const variants: any[] = [];
+      const selectedProductClass = formData.productClass || "retail";
       const variantSkuSet = new Set<string>();
 
       if (productType === 'simple') {
@@ -147,6 +150,7 @@ export function useProductFormHandlers({
           price: priceUSD,
           stock: parseInt(simpleProductData.quantity) || 0,
           sku: simpleProductData.sku.trim(),
+          productClass: selectedProductClass,
           published: true,
         };
         if (compareAtPriceUSD) {
@@ -354,6 +358,7 @@ export function useProductFormHandlers({
           skuCounter++;
         }
         variant.sku = finalSku;
+        variant.productClass = variant.productClass || selectedProductClass;
         finalSkuSet.add(finalSku);
       }
 

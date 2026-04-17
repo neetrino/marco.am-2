@@ -1,3 +1,5 @@
+import type { ProductClass } from "@/lib/constants/product-class";
+
 export interface Brand {
   id: string;
   name: string;
@@ -50,6 +52,7 @@ export interface Variant {
   price: string; // Общая цена для всех цветов (fallback, если color-ի price չկа)
   compareAtPrice: string;
   sku: string;
+  productClass?: ProductClass;
   sizes?: string[]; 
   sizeStocks?: Record<string, string>;
   sizeLabels?: Record<string, string>;
@@ -71,6 +74,7 @@ export interface AdminProductVariantRow {
   compareAtPrice?: string | number;
   stock?: string | number;
   sku?: string;
+  productClass?: ProductClass;
   color?: string;
   size?: string;
   imageUrl?: string;
@@ -86,6 +90,7 @@ export interface ProductData {
   subtitle?: string;
   descriptionHtml?: string;
   brandId?: string | null;
+  productClass?: ProductClass;
   primaryCategoryId?: string | null;
   categoryIds?: string[];
   attributeIds?: string[]; // All attribute IDs that this product has

@@ -2,6 +2,7 @@ import { apiClient } from '@/lib/api-client';
 import { getErrorMessage } from '@/lib/types/errors';
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type { ProductLabel, Variant } from '../types';
+import type { ProductClass } from '@/lib/constants/product-class';
 import { logger } from "@/lib/utils/logger";
 
 interface CreateAndSubmitPayloadProps {
@@ -9,6 +10,7 @@ interface CreateAndSubmitPayloadProps {
     title: string;
     slug: string;
     descriptionHtml: string;
+    productClass: ProductClass;
     categoryIds: string[];
     published: boolean;
     featured: boolean;
@@ -48,6 +50,7 @@ export async function createAndSubmitPayload({
       title: formData.title,
       slug: formData.slug,
       descriptionHtml: formData.descriptionHtml || undefined,
+      productClass: formData.productClass,
       brandId: finalBrandIds.length > 0 ? finalBrandIds[0] : undefined,
       primaryCategoryId: finalPrimaryCategoryId || undefined,
       categoryIds: formData.categoryIds.length > 0 ? formData.categoryIds : undefined,

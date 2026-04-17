@@ -1,6 +1,7 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@prisma/client";
 import { logger } from "../../../utils/logger";
+import { resolveProductClass } from "@/lib/constants/product-class";
 import type { UpdateProductData } from "./types";
 import { collectVariantImages, buildProductUpdateData, updateProductTranslation, updateProductLabels, updateProductAttributes } from "./product-updater";
 import { updateOrCreateVariant } from "./variant-updater";
@@ -68,6 +69,7 @@ export async function updateProduct(
         const incomingVariantIds = new Set<string>();
         
         const locale = data.locale || "en";
+        const fallbackProductClass = resolveProductClass(data.productClass ?? existing.productClass);
         
         // Process each variant: update if exists, create if new
         if (data.variants.length > 0) {
@@ -75,6 +77,7 @@ export async function updateProduct(
             const variantId = await updateOrCreateVariant(
               variant,
               productId,
+              fallbackProductClass,
               locale,
               existingVariantIds,
               existingSkuMap,

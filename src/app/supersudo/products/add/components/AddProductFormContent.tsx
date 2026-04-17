@@ -11,6 +11,7 @@ import type {
   GeneratedVariant,
 } from '../types';
 import type { CurrencyCode } from '@/lib/currency';
+import type { ProductClass } from '@/lib/constants/product-class';
 import { BasicInformation } from './BasicInformation';
 import { ProductImages } from './ProductImages';
 import { CategoriesBrands } from './CategoriesBrands';
@@ -26,6 +27,7 @@ interface AddProductFormContentProps {
     title: string;
     slug: string;
     descriptionHtml: string;
+    productClass: ProductClass;
     brandIds: string[];
     categoryIds: string[];
     primaryCategoryId: string;
@@ -96,6 +98,7 @@ interface AddProductFormContentProps {
   onRemoveLabel: (index: number) => void;
   onUpdateLabel: (index: number, field: keyof ProductLabel, value: ProductLabel[keyof ProductLabel]) => void;
   onFeaturedChange: (featured: boolean) => void;
+  onProductClassChange: (productClass: ProductClass) => void;
   onVariantsUpdate: (updater: (prev: Variant[]) => Variant[]) => void;
   onApplyToAllVariants: (field: 'price' | 'compareAtPrice' | 'stock' | 'sku', value: string) => void;
   isClothingCategory: () => boolean;
@@ -161,6 +164,7 @@ export function AddProductFormContent({
   onRemoveLabel,
   onUpdateLabel,
   onFeaturedChange,
+  onProductClassChange,
   onVariantsUpdate,
   onApplyToAllVariants,
   isClothingCategory,
@@ -274,7 +278,12 @@ export function AddProductFormContent({
           onUpdateLabel={onUpdateLabel}
         />
 
-        <Publishing featured={formData.featured} onFeaturedChange={onFeaturedChange} />
+        <Publishing
+          featured={formData.featured}
+          productClass={formData.productClass}
+          onFeaturedChange={onFeaturedChange}
+          onProductClassChange={onProductClassChange}
+        />
 
         <FormActions loading={loading} isEditMode={isEditMode} />
       </form>

@@ -1,3 +1,5 @@
+import type { ProductClass } from "@/lib/constants/product-class";
+
 /**
  * Update product data interface
  */
@@ -7,6 +9,7 @@ export interface UpdateProductData {
   subtitle?: string;
   descriptionHtml?: string;
   brandId?: string;
+  productClass?: ProductClass;
   primaryCategoryId?: string;
   categoryIds?: string[];
   published?: boolean;
@@ -27,6 +30,7 @@ export interface UpdateProductData {
     compareAtPrice?: string | number;
     stock: string | number;
     sku?: string;
+    productClass?: ProductClass;
     color?: string;
     size?: string;
     imageUrl?: string;

@@ -1,7 +1,10 @@
+import type { ProductClass } from "@/lib/constants/product-class";
+
 export interface Product {
   id: string;
   slug: string;
   title: string;
+  productClass?: ProductClass;
   published: boolean;
   featured?: boolean;
   price: number;

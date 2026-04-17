@@ -92,6 +92,7 @@ export async function getProductById(productId: string) {
     subtitle: translation?.subtitle || null,
     descriptionHtml: translation?.descriptionHtml || null,
     brandId: product.brandId || null,
+    productClass: product.productClass || "retail",
     primaryCategoryId: product.primaryCategoryId || null,
     categoryIds: product.categoryIds || [],
     attributeIds: allAttributeIds, // All attribute IDs that this product has

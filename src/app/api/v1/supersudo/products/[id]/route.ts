@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
+import { normalizeProductClass } from "@/lib/constants/product-class";
 import { logger } from "@/lib/utils/logger";
 
 /**
@@ -70,6 +71,40 @@ export async function PUT(
 
     const { id } = await params;
     const body = await req.json();
+
+    if (body.productClass !== undefined && normalizeProductClass(body.productClass) === null) {
+      return NextResponse.json(
+        {
+          type: "https://api.shop.am/problems/validation-error",
+          title: "Validation Error",
+          status: 400,
+          detail: "Field 'productClass' must be one of: retail, wholesale",
+          instance: req.url,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (Array.isArray(body.variants)) {
+      for (const [index, variant] of body.variants.entries()) {
+        const variantClass = typeof variant === "object" && variant !== null
+          ? (variant as { productClass?: unknown }).productClass
+          : undefined;
+        if (variantClass !== undefined && normalizeProductClass(variantClass) === null) {
+          return NextResponse.json(
+            {
+              type: "https://api.shop.am/problems/validation-error",
+              title: "Validation Error",
+              status: 400,
+              detail: `Field 'variants[${index}].productClass' must be one of: retail, wholesale`,
+              instance: req.url,
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     logger.devLog("📤 [ADMIN PRODUCTS] PUT request:", { 
       id, 
       bodyKeys: Object.keys(body),

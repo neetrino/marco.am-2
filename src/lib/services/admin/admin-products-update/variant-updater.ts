@@ -2,6 +2,10 @@ import { Prisma } from "@prisma/client";
 import { logger } from "../../../utils/logger";
 import { processImageUrl, smartSplitUrls } from "../../../utils/image-utils";
 import { processVariantOptions, parseVariantPrices } from "./variant-processor";
+import {
+  resolveProductClass,
+  type ProductClass,
+} from "@/lib/constants/product-class";
 
 /**
  * Find variant by ID or SKU
@@ -87,6 +91,7 @@ async function updateExistingVariant(
     imageUrl?: string;
     published?: boolean;
   },
+  productClass: ProductClass,
   price: number,
   stock: number,
   compareAtPrice: number | undefined,
@@ -105,6 +110,7 @@ async function updateExistingVariant(
     where: { id: variantId },
     data: {
       sku: variant.sku ? variant.sku.trim() : undefined,
+      productClass,
       price,
       compareAtPrice,
       stock: isNaN(stock) ? 0 : stock,
@@ -130,6 +136,7 @@ async function createNewVariant(
     imageUrl?: string;
     published?: boolean;
   },
+  productClass: ProductClass,
   price: number,
   stock: number,
   compareAtPrice: number | undefined,
@@ -162,6 +169,7 @@ async function createNewVariant(
     data: {
       productId,
       sku: variant.sku ? variant.sku.trim() : undefined,
+      productClass,
       price,
       compareAtPrice,
       stock: isNaN(stock) ? 0 : stock,
@@ -185,6 +193,7 @@ export async function updateOrCreateVariant(
   variant: {
     id?: string;
     sku?: string;
+    productClass?: ProductClass;
     price: string | number;
     compareAtPrice?: string | number;
     stock: string | number;
@@ -199,6 +208,7 @@ export async function updateOrCreateVariant(
     size?: string;
   },
   productId: string,
+  fallbackProductClass: ProductClass,
   locale: string,
   existingVariantIds: Set<string>,
   existingSkuMap: Map<string, string>,
@@ -212,6 +222,7 @@ export async function updateOrCreateVariant(
   
   // Convert attributesMap to JSONB format
   const attributesJson = Object.keys(attributesMap).length > 0 ? attributesMap : null;
+  const variantProductClass = resolveProductClass(variant.productClass ?? fallbackProductClass);
 
   // Find variant
   const { variantToUpdate, variantIdToUse } = await findVariant(
@@ -227,6 +238,7 @@ export async function updateOrCreateVariant(
     await updateExistingVariant(
       variantIdToUse,
       variant,
+      variantProductClass,
       price,
       stock,
       compareAtPrice,
@@ -240,6 +252,7 @@ export async function updateOrCreateVariant(
     return await createNewVariant(
       productId,
       variant,
+      variantProductClass,
       price,
       stock,
       compareAtPrice,
