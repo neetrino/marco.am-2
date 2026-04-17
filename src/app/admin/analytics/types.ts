@@ -41,6 +41,24 @@ export interface AnalyticsData {
     count: number;
     revenue: number;
   }>;
+  customerAnalytics: {
+    newVsRepeat: {
+      newCustomers: number;
+      repeatCustomers: number;
+      ordersFromNewCustomers: number;
+      ordersFromRepeatCustomers: number;
+      ordersUnattributed: number;
+    };
+    topCustomersBySpend: Array<{
+      identityType: "user" | "email";
+      userId: string | null;
+      email: string | null;
+      displayName: string;
+      totalSpend: number;
+      orderCount: number;
+      currency: string;
+    }>;
+  };
 }
 
 export interface AdminStatsSummary {

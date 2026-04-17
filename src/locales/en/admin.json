@@ -105,7 +105,20 @@
     "orderStatusCompleted": "Completed",
     "orderStatusCancelled": "Cancelled",
     "orderStatusOther": "Other",
-    "orderStatusTotal": "Total"
+    "orderStatusTotal": "Total",
+    "customerNewVsRepeatTitle": "New vs repeat customers",
+    "customerNewVsRepeatHint": "New: first order ever falls in this period. Repeat: had an order before the period and ordered again within it. Attributed by account, otherwise by checkout email.",
+    "customerNewCustomers": "New customers",
+    "customerRepeatCustomers": "Repeat customers",
+    "customerOrdersFromNew": "Orders from new customers",
+    "customerOrdersFromRepeat": "Orders from repeat customers",
+    "customerUnattributedOrders": "{count} order(s) in this period have no user and no email — excluded from new/repeat.",
+    "topCustomersBySpendTitle": "Top customers by spend",
+    "topCustomersBySpendHint": "Paid orders only in this period (same window as revenue).",
+    "noTopCustomers": "No paid orders in this period.",
+    "topCustomersColumnCustomer": "Customer",
+    "topCustomersColumnSpend": "Spend",
+    "topCustomersColumnOrders": "Orders"
   },
   "attributes": {
     "title": "Attributes",

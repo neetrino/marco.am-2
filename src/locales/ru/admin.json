@@ -105,7 +105,20 @@
     "orderStatusCompleted": "Выполнен",
     "orderStatusCancelled": "Отменён",
     "orderStatusOther": "Прочее",
-    "orderStatusTotal": "Всего"
+    "orderStatusTotal": "Всего",
+    "customerNewVsRepeatTitle": "Новые и повторные клиенты",
+    "customerNewVsRepeatHint": "Новый — первый заказ за всё время попадает в этот период. Повторный — был заказ до периода и снова внутри периода. Учёт по аккаунту, иначе по email из оформления.",
+    "customerNewCustomers": "Новые клиенты",
+    "customerRepeatCustomers": "Повторные клиенты",
+    "customerOrdersFromNew": "Заказы от новых клиентов",
+    "customerOrdersFromRepeat": "Заказы от повторных клиентов",
+    "customerUnattributedOrders": "{count} заказ(ов) в этом периоде без пользователя и email — не учитываются в новые/повторные.",
+    "topCustomersBySpendTitle": "Топ клиентов по тратам",
+    "topCustomersBySpendHint": "Только оплаченные заказы в этом периоде (тот же интервал, что и выручка).",
+    "noTopCustomers": "Нет оплаченных заказов за этот период.",
+    "topCustomersColumnCustomer": "Клиент",
+    "topCustomersColumnSpend": "Сумма",
+    "topCustomersColumnOrders": "Заказов"
   },
   "attributes": {
     "title": "Атрибуты",

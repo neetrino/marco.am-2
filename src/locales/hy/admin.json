@@ -105,7 +105,20 @@
     "orderStatusCompleted": "Ավարտված",
     "orderStatusCancelled": "Չեղարկված",
     "orderStatusOther": "Այլ",
-    "orderStatusTotal": "Ընդամենը"
+    "orderStatusTotal": "Ընդամենը",
+    "customerNewVsRepeatTitle": "Նոր և կրկնվող հաճախորդներ",
+    "customerNewVsRepeatHint": "Նոր՝ առաջին պատվերը այս ժամանակահատվածում է։ Կրկնվող՝ պատվեր էր ավելի վաղ և նորից պատվերել է այս պահին։ Հաշվարկը՝ հաշվի համար, այլապես checkout email-ով։",
+    "customerNewCustomers": "Նոր հաճախորդներ",
+    "customerRepeatCustomers": "Կրկնվող հաճախորդներ",
+    "customerOrdersFromNew": "Պատվերներ նոր հաճախորդներից",
+    "customerOrdersFromRepeat": "Պատվերներ կրկնվող հաճախորդներից",
+    "customerUnattributedOrders": "Այս ժամանակահատվածում {count} պատվեր չունի օգտատեր և email — չեն ներառվում նոր/կրկնվող բաժանումում։",
+    "topCustomersBySpendTitle": "Թոփ հաճախորդներ ծախսով",
+    "topCustomersBySpendHint": "Միայն վճարված պատվերներ այս ժամանակահատվածում (նույն պատուհոնը, ինչ եկամուտը)։",
+    "noTopCustomers": "Այս ժամանակահատվածում վճարված պատվերներ չկան։",
+    "topCustomersColumnCustomer": "Հաճախորդ",
+    "topCustomersColumnSpend": "Ծախս",
+    "topCustomersColumnOrders": "Պատվերներ"
   },
   "attributes": {
     "title": "Ատրիբուտներ",

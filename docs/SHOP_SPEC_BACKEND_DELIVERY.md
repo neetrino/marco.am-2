@@ -33,7 +33,7 @@
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
 | 8    | Admin — catalog & promos         | `42%`           |
 | 9    | Admin — orders                   | `88%`           |
-| 10   | Admin — analytics                | `85%`           |
+| 10   | Admin — analytics                | `95%`           |
 | 11   | Reels                            | `0%`            |
 | 12   | Site-wide & i18n (API)           | `62%`           |
 
@@ -232,7 +232,7 @@
 
 ## Փուլ 10 — Admin: analytics
 
-**Փուլի առաջընթաց.** `85%`
+**Փուլի առաջընթաց.** `95%`
 
 
 | ID   | Առաջադրանք (backend)                                          | Կատարման % | Կարգավիճակ |
@@ -241,17 +241,19 @@
 | 10.2 | Order status breakdown — by status, today / week / month      | 100        | ✅         |
 | 10.3 | Product analytics — top 5 best sellers, least selling         | 100        | ✅         |
 | 10.4 | Stock analytics — low stock, out of stock lists               | 100        | ✅         |
-| 10.5 | Customer analytics — new vs repeat, top customers by spend    | 40         | 🔄         |
+| 10.5 | Customer analytics — new vs repeat, top customers by spend    | 100        | ✅         |
 | 10.6 | Dashboard widgets — today’s sales, monthly sales, top product | 85         | 🔄         |
 
 
-*Նշումներ.* `admin/stats`, `admin/analytics`, `GET .../admin/analytics/order-status-breakdown`, dashboard երթուղիներ; 10.5-ը spec-ի լիությամբ մասնակի է։
+*Նշումներ.* `admin/stats`, `admin/analytics`, `GET .../admin/analytics/order-status-breakdown`, dashboard երթուղիներ։
 
 **10.2 ✅ ավարտված (2026-04-17).** `GET /api/v1/admin/analytics/order-status-breakdown` (JWT + admin) — վերադարձնում է `windows`՝ երեք ժամանակահատված՝ **today** (այս օրը 00:00–23:59:59), **week** (վերջին 7 օրը, ինչպես հիմնական analytics-ի `period=week`), **month** (վերջին 30 օրը) — յուրաքանչյուրում `byStatus`՝ `pending` / `processing` / `completed` / `cancelled` / `other` (ոչ ստանդարտ `status` արժեքներ DB-ում), `totalOrders`, `dateRange` (ISO)։ Հաշվարկը՝ `Order.createdAt`։ Իրականացում՝ `order-status-breakdown.ts`, ամսաթվերի պատուհոն՝ `analytics-date-range.ts`։ Admin Analytics՝ `useAnalytics`-ը զուգահեռ է կանչում analytics-ը և այս endpoint-ը; UI աղյուսակ՝ `OrderStatusBreakdown`։
 
 **10.4 ✅ ավարտված (2026-04-17).** `GET /api/v1/admin/analytics/stock` (JWT + admin) — վերադարձնում է `outOfStock` և `lowStock` ցուցակներ (տողեր՝ variant/product/sku/stock, բրենդի անուն ընտրված `locale`-ով, նկարի URL) և `total` հաշվիչներ pagination-ի (`limit`/`offset`) համար։ «Ցածր պաշար»՝ `1 … threshold−1` հատ պաշար (default `threshold=10`, `src/lib/constants/low-stock-threshold.ts`), «Ավարտված»՝ `stock === 0`։ Միայն **published** variant-ներ, **չջնջված** ապրանքներ։
 
 **10.3 ✅ ավարտված (2026-04-17).** `GET /api/v1/admin/analytics` (նույն JWT + admin, `period` / `startDate` / `endDate`) — պատասխանում **`topProducts`**՝ **թոփ 5** ապրանք **վաճառված քանակով** (բոլոր variant-ների գումար, ապրանքային ագրեգացիա), **`leastSellingProducts`**՝ **թոփ 5 ամենցածր** արտահայտված քանակով՝ **առանց կրկնվելու** `topProducts`-ի հետ (մնացած ապրանքներից)։ Տողերում՝ `productId`, `title`, `sku` (բազմակի variant-ի դեպքում sentinel `Multiple SKUs`), `totalQuantity`, `totalRevenue`, `orderCount`, `image`։ Կոդ՝ `product-sales-analytics.ts`, `PRODUCT_ANALYTICS_RANK_LIMIT` (`product-analytics.ts`), Admin UI՝ `TopProducts` + `LeastSellingProducts`։ Vitest՝ `product-sales-analytics.test.ts`։
+
+**10.5 ✅ ավարտված (2026-04-17).** `GET /api/v1/admin/analytics` պատասխանի մեջ **`customerAnalytics`** — **`newVsRepeat`**՝ նոր հաճախորդներ (առաջին պատվերը երբևէ ընկնում է ընտրած `dateRange`-ում), կրկնվող (պատվեր էր մինչև պատուհանի սկիզբը և նորից պատվերել է պատուհանում), պատվերների քանակներ նոր/կրկնվող բաժանումով, `ordersUnattributed` (առանց `userId` և email), և **`topCustomersBySpend`**՝ մինչև **10** հաճախորդ **վճարված** (`paymentStatus=paid`) պատվերների գումարով ընտրած ժամանակահատվածում (նույն պատուհանը, ինչ KPI եկամուտը)։ Հաճախորդի ինքնություն՝ `userId`, այլապես նորմալացված `customerEmail`։ Կոդ՝ `customer-identity.ts`, `customer-analytics.ts`, `TOP_CUSTOMERS_BY_SPEND_LIMIT`, Admin Analytics UI՝ `CustomerAnalytics`։
 
 ---
 

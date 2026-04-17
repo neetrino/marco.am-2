@@ -15,6 +15,7 @@ import { LeastSellingProducts } from './components/LeastSellingProducts';
 import { TopCategories } from './components/TopCategories';
 import { OrdersByDayChart } from './components/OrdersByDayChart';
 import { OrderStatusBreakdown } from './components/OrderStatusBreakdown';
+import { CustomerAnalytics } from './components/CustomerAnalytics';
 
 export default function AnalyticsPage() {
   const { t } = useTranslation();
@@ -88,6 +89,8 @@ export default function AnalyticsPage() {
                 {orderStatusBreakdown ? (
                   <OrderStatusBreakdown data={orderStatusBreakdown} />
                 ) : null}
+
+                <CustomerAnalytics data={analytics.customerAnalytics} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                   <TopProducts products={analytics.topProducts} />
