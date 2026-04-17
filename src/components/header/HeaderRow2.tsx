@@ -1,9 +1,12 @@
 'use client';
 
 import type { LanguageCode } from '../../lib/language';
+import { Suspense, useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { SearchDropdown } from '../SearchDropdown';
 import { CategoryMenuItem } from './CategoryMenuItem';
 import {
+  HEADER_CATEGORIES_DROPDOWN_PANEL_CLASS,
   HEADER_CONTAINER_CLASS,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
   HEADER_SEARCH_BAR_INNER_CLASS,
@@ -55,6 +58,55 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
     getRootCategories,
   } = data;
 
+  const categoriesTriggerRef = useRef<HTMLButtonElement>(null);
+  const [categoriesDropdownLayout, setCategoriesDropdownLayout] = useState<{
+    bridge: CSSProperties;
+    panel: CSSProperties;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!showProductsMenu) {
+      setCategoriesDropdownLayout(null);
+      return;
+    }
+
+    const gapPx = 8;
+
+    const updateLayout = () => {
+      const el = categoriesTriggerRef.current;
+      if (!el) {
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      const panelWidth = Math.min(426, Math.max(280, window.innerWidth - r.left - 16));
+      setCategoriesDropdownLayout({
+        bridge: {
+          position: 'fixed',
+          top: r.bottom,
+          left: r.left,
+          width: r.width,
+          height: gapPx,
+          zIndex: 69,
+        },
+        panel: {
+          position: 'fixed',
+          top: r.bottom + gapPx,
+          left: r.left,
+          width: panelWidth,
+          zIndex: 70,
+        },
+      });
+    };
+
+    updateLayout();
+    window.addEventListener('scroll', updateLayout, true);
+    window.addEventListener('resize', updateLayout);
+    return () => {
+      window.removeEventListener('scroll', updateLayout, true);
+      window.removeEventListener('resize', updateLayout);
+    };
+  }, [showProductsMenu]);
+
   return (
     <div
       className={`w-full border-b border-marco-border bg-white max-md:border-b-0 ${headerMobileLike ? 'border-b-0' : ''}`}
@@ -83,6 +135,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
               }
             >
               <button
+                ref={categoriesTriggerRef}
                 type="button"
                 onClick={() => setShowProductsMenu((open) => !open)}
                 className={`flex w-full items-center bg-marco-black text-white ${getHeaderCategoryButtonClass(row2TabletLike)} [&_svg]:text-white`}
@@ -100,23 +153,31 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                 </span>
                 <HeaderChevronDownIcon />
               </button>
-              {showProductsMenu && (
+              {showProductsMenu && categoriesDropdownLayout && (
                 <>
-                  <div className="absolute left-0 top-full z-[55] h-2 w-full" aria-hidden />
-                  <div className="absolute left-0 top-full z-[55] pt-2 md:left-0">
-                    <div className="w-64 overflow-visible rounded-xl border border-gray-200/80 bg-white shadow-2xl">
-                      {loadingCategories ? (
-                        <div className="px-4 py-2 text-sm text-gray-500">{t('common.messages.loading')}</div>
-                      ) : (
-                        getRootCategories(categories).map((category) => (
+                  <div
+                    aria-hidden
+                    className="pointer-events-auto"
+                    style={categoriesDropdownLayout.bridge}
+                  />
+                  <div
+                    data-marco-categories-dropdown
+                    className={HEADER_CATEGORIES_DROPDOWN_PANEL_CLASS}
+                    style={categoriesDropdownLayout.panel}
+                  >
+                    {loadingCategories ? (
+                      <div className="px-2 py-1 text-sm text-[#5d7285]">{t('common.messages.loading')}</div>
+                    ) : (
+                      <Suspense fallback={null}>
+                        {getRootCategories(categories).map((category) => (
                           <CategoryMenuItem
                             key={category.id}
                             category={category}
                             onClose={() => setShowProductsMenu(false)}
                           />
-                        ))
-                      )}
-                    </div>
+                        ))}
+                      </Suspense>
+                    )}
                   </div>
                 </>
               )}

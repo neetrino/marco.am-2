@@ -27,14 +27,72 @@ const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
+/** Root categories — slugs align with `src/components/header/categoryNavPresentation.ts` (Figma nav). */
 const CATEGORIES = [
-  { slug: "electronics", title: "Electronics" },
-  { slug: "clothing", title: "Clothing" },
-  { slug: "shoes", title: "Shoes" },
-  { slug: "home", title: "Home & Garden" },
-  { slug: "sports", title: "Sports" },
-  { slug: "books", title: "Books" },
-  { slug: "accessories", title: "Accessories" },
+  {
+    slug: "furniture-hardware",
+    titles: {
+      en: "Furniture manufacturing accessories",
+      hy: "Կահույքի պատրաստման պարագաներ",
+      ru: "Фурнитура и комплектующие для мебели",
+    },
+  },
+  {
+    slug: "furniture",
+    titles: {
+      en: "Furniture",
+      hy: "Կահույք",
+      ru: "Мебель",
+    },
+  },
+  {
+    slug: "large-appliances",
+    titles: {
+      en: "Large home appliances",
+      hy: "Խոշոր կենցաղային տեխնիկա",
+      ru: "Крупная бытовая техника",
+    },
+  },
+  {
+    slug: "kitchen-appliances",
+    titles: {
+      en: "Kitchen appliances",
+      hy: "Խոհանոցային տեխնիկա",
+      ru: "Кухонная техника",
+    },
+  },
+  {
+    slug: "audio-video",
+    titles: {
+      en: "Audio and video systems",
+      hy: "Աուդիո և վիդեո համակարգեր",
+      ru: "Аудио- и видеотехника",
+    },
+  },
+  {
+    slug: "water-dispensers",
+    titles: {
+      en: "Water dispensers",
+      hy: "Ջրի դիսպենսերներ",
+      ru: "Кулеры и диспенсеры воды",
+    },
+  },
+  {
+    slug: "home-appliances",
+    titles: {
+      en: "Home appliances",
+      hy: "Կենցաղային տեխնիկա",
+      ru: "Мелкая бытовая техника",
+    },
+  },
+  {
+    slug: "air-conditioners",
+    titles: {
+      en: "Air conditioners and heaters",
+      hy: "Օդորակիչներ և տաքացուցիչներ",
+      ru: "Кондиционеры и обогреватели",
+    },
+  },
 ];
 
 /** Shop filter brands (Figma / product listing) */
@@ -86,7 +144,7 @@ async function seedAdmin() {
 async function seedCategories() {
   const ids = [];
   for (let i = 0; i < CATEGORIES.length; i++) {
-    const { slug, title } = CATEGORIES[i];
+    const { slug, titles } = CATEGORIES[i];
     const existing = await prisma.category.findFirst({
       where: { translations: { some: { slug, locale: "en" } } },
     });
@@ -100,12 +158,12 @@ async function seedCategories() {
         published: true,
         media: [],
         translations: {
-          create: {
-            locale: "en",
-            title,
+          create: ["en", "hy", "ru"].map((locale) => ({
+            locale,
+            title: titles[locale],
             slug,
             fullPath: slug,
-          },
+          })),
         },
       },
     });

@@ -161,7 +161,7 @@ export function useHeaderData() {
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       const response = await apiClient.get<CategoriesResponse>('/api/v1/categories/tree', {
-        params: { lang: 'en' },
+        params: { lang: getStoredLanguage() },
       });
       setCategories(response.data || []);
     } catch (err: unknown) {
@@ -174,6 +174,14 @@ export function useHeaderData() {
 
   useEffect(() => {
     fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    const onLanguage = () => {
+      fetchCategories();
+    };
+    window.addEventListener('language-updated', onLanguage);
+    return () => window.removeEventListener('language-updated', onLanguage);
   }, [fetchCategories]);
 
   useEffect(() => {
