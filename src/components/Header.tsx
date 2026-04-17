@@ -48,6 +48,8 @@ import {
 } from './header/header.constants';
 import { CompareIcon } from './icons/CompareIcon';
 import { HeaderNavbarCartIcon } from './icons/HeaderNavbarCartIcon';
+import { HeaderNavbarProfileIcon } from './icons/HeaderNavbarProfileIcon';
+import { HeaderNavbarWishlistIcon } from './icons/HeaderNavbarWishlistIcon';
 import { MobileNavCartLinearIcon } from './mobile-bottom-nav-icons';
 
 /** Top row + mobile drawer — MARCO nav (Figma 101:2027) */
@@ -98,42 +100,16 @@ const ArrowRightIcon = () => (
   </svg>
 );
 
-/**
- * Profile icon for logged out state (outline style)
- */
-const ProfileIconOutline = () => (
-  <svg width="19" height="19" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="10" cy="7" r="3.2" stroke="currentColor" strokeWidth="1.8" fill="none" />
-    <path d="M5 17C5 14.5 7.5 12.5 10 12.5C12.5 12.5 15 14.5 15 17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-  </svg>
-);
+/** Source: `Vector.svg` (21×23, stroke 2.4) — compact toolbar (16px tall) */
+const HEADER_PROFILE_ICON_CLASS = 'h-[16px] w-[15px] shrink-0';
 
-/**
- * Profile icon for logged in state (filled style with background)
- */
+const ProfileIconOutline = () => <HeaderNavbarProfileIcon className={HEADER_PROFILE_ICON_CLASS} />;
+
 const ProfileIconFilled = () => (
-  <div className="relative w-[19px] h-[19px] flex items-center justify-center">
-    {/* Background circle */}
-    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full opacity-90 group-hover:opacity-100 transition-opacity duration-200 shadow-md"></div>
-    {/* Filled icon */}
-    <svg 
-      width="19" 
-      height="19" 
-      viewBox="0 0 20 20" 
-      fill="none" 
-      xmlns="http://www.w3.org/2000/svg"
-      className="relative z-10"
-    >
-      <circle cx="10" cy="7" r="3.2" fill="white" />
-      <path d="M5 17C5 14.5 7.5 12.5 10 12.5C12.5 12.5 15 14.5 15 17" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
+  <div className="relative flex h-[16px] w-[16px] items-center justify-center">
+    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 opacity-90 shadow-md transition-opacity duration-200 group-hover:opacity-100" />
+    <HeaderNavbarProfileIcon className={`relative z-10 text-white ${HEADER_PROFILE_ICON_CLASS}`} />
   </div>
-);
-
-const WishlistIcon = () => (
-  <svg width="19" height="19" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 17L8.55 15.7C4.4 12.2 2 10.1 2 7.5C2 5.4 3.4 4 5.5 4C6.8 4 8.1 4.6 9 5.5C9.9 4.6 11.2 4 12.5 4C14.6 4 16 5.4 16 7.5C16 10.1 13.6 12.2 9.45 15.7L10 17Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-  </svg>
 );
 
 /** Search field icon — compact */
@@ -1014,7 +990,7 @@ export function Header({ initialLanguage }: HeaderProps) {
               className={`flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition-opacity hover:opacity-90 ${!compactPrimaryNav ? HEADER_LOCALE_TO_THEME_MARGIN_CLASS : ''} ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
               aria-label="Theme"
             >
-              <Sun className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+              <Sun className="h-6 w-6 shrink-0" strokeWidth={1.65} aria-hidden />
             </button>
             <div className={HEADER_TOOLBAR_ICON_CLUSTER_CLASS}>
               <div className="relative shrink-0" ref={userMenuRef}>
@@ -1085,7 +1061,10 @@ export function Header({ initialLanguage }: HeaderProps) {
                 href="/wishlist"
                 className={`relative flex items-center justify-center text-gray-700 transition-colors duration-150 hover:text-gray-900 ${HEADER_TOOLBAR_ICON_BUTTON_CLASS}`}
               >
-                <BadgeIcon icon={<WishlistIcon />} badge={wishlistCount} />
+                <BadgeIcon
+                  icon={<HeaderNavbarWishlistIcon className="h-[16px] w-[18px] shrink-0" />}
+                  badge={wishlistCount}
+                />
               </Link>
             </div>
 
@@ -1205,7 +1184,7 @@ export function Header({ initialLanguage }: HeaderProps) {
                     className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
                   >
                     <span className="flex items-center gap-2 normal-case font-medium text-gray-700">
-                      <WishlistIcon />
+                      <HeaderNavbarWishlistIcon className="h-[16px] w-[18px] shrink-0" />
                       {t('common.navigation.wishlist')}
                     </span>
                     {wishlistCount > 0 && (
