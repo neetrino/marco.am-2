@@ -61,7 +61,6 @@ export function CheckoutModals({
         isOpen={showShippingModal}
         onClose={() => setShowShippingModal(false)}
         register={register}
-        setValue={setValue}
         handleSubmit={handleSubmit}
         errors={errors}
         isSubmitting={isSubmitting}

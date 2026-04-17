@@ -1,10 +1,9 @@
 'use client';
 
 import { Button, Input } from '@shop/ui';
-import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
+import { UseFormRegister, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../../lib/i18n-client';
 import { ContactInformation } from './ContactInformation';
-import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
 import type { CheckoutPaymentMethodId } from '../../../lib/constants/checkout-payment-method';
 import type { ShippingMethodId } from '../../../lib/constants/shipping-method';
@@ -14,7 +13,6 @@ interface ShippingAddressModalProps {
   isOpen: boolean;
   onClose: () => void;
   register: UseFormRegister<CheckoutFormData>;
-  setValue: UseFormSetValue<CheckoutFormData>;
   handleSubmit: UseFormHandleSubmit<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
@@ -38,7 +36,6 @@ export function ShippingAddressModal({
   isOpen,
   onClose,
   register,
-  setValue,
   handleSubmit,
   errors,
   isSubmitting,
@@ -73,10 +70,9 @@ export function ShippingAddressModal({
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div 
-        className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
+      <div
+        className="z-[10000] bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
-        style={{ zIndex: 10000 }}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -137,20 +133,6 @@ export function ShippingAddressModal({
               </div>
             )}
 
-            {paymentMethod === 'card' && (
-              <div className="space-y-4 mb-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} ({t('checkout.payment.card')})
-                </h3>
-                <CardInputFields
-                  register={register}
-                  setValue={setValue}
-                  errors={errors}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
-            )}
-
             {paymentMethod === 'cash' && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 mt-6">
                 <p className="text-sm text-green-800">
@@ -176,20 +158,6 @@ export function ShippingAddressModal({
                 <strong>{t('checkout.shipping.storePickup')}:</strong> {t('checkout.messages.storePickupInfo')}
               </p>
             </div>
-
-            {paymentMethod === 'card' && (
-              <div className="space-y-4 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} ({t('checkout.payment.card')})
-                </h3>
-                <CardInputFields
-                  register={register}
-                  setValue={setValue}
-                  errors={errors}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
-            )}
 
             {paymentMethod === 'cash' && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
