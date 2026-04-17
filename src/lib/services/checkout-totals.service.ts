@@ -1,21 +1,18 @@
-import { db } from "@white-shop/db";
 import { normalizeShippingMethod } from "../constants/shipping-method";
 import { logger } from "../utils/logger";
 import type { CheckoutTotalsResponse } from "../types/checkout-totals";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { cartService } from "./cart.service";
-
-export type CheckoutTotalsGuestItem = {
-  productId: string;
-  variantId: string;
-  quantity: number;
-};
+import {
+  resolveGuestCheckoutItems,
+  type GuestCheckoutItemInput,
+} from "./checkout-guest-items.service";
 
 export type ComputeCheckoutTotalsInput = {
   userId?: string;
   locale: string;
   cartId?: string;
-  guestItems?: CheckoutTotalsGuestItem[];
+  guestItems?: GuestCheckoutItemInput[];
   shippingMethod: string;
   city?: string;
   country?: string;
@@ -52,7 +49,8 @@ class CheckoutTotalsService {
       }
       subtotal = cart.totals.subtotal;
     } else if (input.guestItems && input.guestItems.length > 0) {
-      subtotal = await this.sumGuestItems(input.guestItems);
+      const guestItems = await resolveGuestCheckoutItems(input.guestItems, input.locale);
+      subtotal = guestItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     } else {
       throw {
         status: 400,
@@ -88,44 +86,6 @@ class CheckoutTotalsService {
       taxAmount,
       total,
     };
-  }
-
-  private async sumGuestItems(items: CheckoutTotalsGuestItem[]): Promise<number> {
-    const variantIds = [...new Set(items.map((i) => i.variantId))];
-    const variants = await db.productVariant.findMany({
-      where: { id: { in: variantIds } },
-      select: {
-        id: true,
-        productId: true,
-        price: true,
-        stock: true,
-        published: true,
-      },
-    });
-    const variantMap = new Map(variants.map((v) => [v.id, v]));
-
-    let sum = 0;
-    for (const line of items) {
-      const variant = variantMap.get(line.variantId);
-      if (!variant || !variant.published || variant.productId !== line.productId) {
-        throw {
-          status: 404,
-          type: "https://api.shop.am/problems/not-found",
-          title: "Product variant not found",
-          detail: `Variant ${line.variantId} not found for product ${line.productId}`,
-        };
-      }
-      if (variant.stock < line.quantity) {
-        throw {
-          status: 422,
-          type: "https://api.shop.am/problems/validation-error",
-          title: "Insufficient stock",
-          detail: `Insufficient stock for variant ${line.variantId}`,
-        };
-      }
-      sum += Number(variant.price) * line.quantity;
-    }
-    return sum;
   }
 }
 

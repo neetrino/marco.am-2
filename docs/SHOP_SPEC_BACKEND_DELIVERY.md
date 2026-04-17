@@ -28,7 +28,7 @@
 | 2    | Գլխավոր էջ (Home) — տվյալներ     | `100%`          |
 | 3    | Shop (PLP) — կատալոգ API         | `100%`          |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `100%`          |
-| 5    | Checkout — պատվեր                | `98%`           |
+| 5    | Checkout — պատվեր                | `100%`          |
 | 6    | Վճարման եղանակներ                | `50%`           |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
 | 8    | Admin — catalog & promos         | `42%`           |
@@ -163,7 +163,7 @@
 
 ## Փուլ 5 — Checkout
 
-**Փուլի առաջընթաց.** `98%`
+**Փուլի առաջընթաց.** `100%`
 
 
 | ID  | Առաջադրանք (backend)                                                             | Կատարման % | Կարգավիճակ |
@@ -174,10 +174,10 @@
 | 5.4 | Payment method ընտրություն — card vs cash, order payload                         | 100        | ✅          |
 | 5.5 | Order confirmation — order ID, summary (email/SMS — եթե scope-ում է)             | 100        | ✅         |
 | 5.6 | Validation և error handling — client + server միասնական մոդել                    | 100        | ✅          |
-| 5.7 | Սերվերային գնային վերահսկում — զամբյուղի հետ համաձայնեցում                       | 85         | 🔄         |
+| 5.7 | Սերվերային գնային վերահսկում — զամբյուղի հետ համաձայնեցում                       | 100        | ✅          |
 
 
-*Նշումներ.* `orders.service` checkout-ում գները վերցվում են DB-ից (ոչ թե client snapshot)։ Զեղչը checkout-ում `TODO` է։ Email/SMS հաստատում backend-ում չի երևում։
+*Նշումներ.* `orders.service` checkout-ում գները վերցվում են DB-ից (ոչ թե client snapshot)։ Զեղչը checkout-ում `TODO` է։ Order confirmation email/SMS result-ը վերադարձվում է `confirmation.notifications` դաշտով։
 
 **5.1 ✅ ավարտված (2026-04-16).** Storefront `CheckoutForm` — անուն/ազգանուն, հեռախոս, email, առաքման հասցե (փողոց + քաղաք, երբ `courier`), նշումներ (`notes`, մինչև 2000 նիշ)։ `POST /api/v1/orders/checkout` մարմնում `firstName`/`lastName`/`notes` + `shippingAddress`։ Սերվեր՝ `Order.notes`, հասցեի JSON (`buildOrderAddressJson` — `firstName`/`lastName`/`addressLine1`/`city`)։
 
@@ -190,6 +190,8 @@
 **5.5 ✅ ավարտված (2026-04-17).** `POST /api/v1/orders/checkout` պատասխանում ավելացվել է `confirmation` բլոկ՝ `orderId`, `orderNumber`, `summary` (`itemsCount`, `subtotal`, `shippingAmount`, `total`, `currency`) և `notifications` (`email`, `sms`) առաքման արդյունքներով (`sent`/`skipped`/`failed` + `detail`)։ Checkout-ից հետո backend-ը փորձում է ուղարկել order confirmation email՝ Resend-ով (երբ `RESEND_API_KEY` + `RESEND_FROM_EMAIL` կան), իսկ SMS channel-ը scope-ից դուրս լինելու պատճառով վերադարձվում է `skipped` (`sms_provider_not_configured`)՝ առանց պատվերի ստեղծումը տապալելու։ Կոդ՝ `src/lib/services/order-confirmation-delivery.service.ts`, ինտեգրում՝ `src/lib/services/orders.service.ts`։
 
 **5.6 ✅ ավարտված (2026-04-17).** Checkout validation/error handling-ը միավորվել է client+server մոդելով․ սերվերը (`src/lib/services/orders-checkout-validation.ts`) վերադարձնում է RFC7807 validation սխալ + `errors[]` (`field`, `code`, `message`) structured դաշտերով (`email`, `phone`, `firstName`, `lastName`, `shippingAddress`, `shippingCity`, `notes`)՝ ներառյալ `notes` երկարության վերահսկում (`<=2000`)։ Storefront submit flow-ը (`src/app/checkout/hooks/useOrderSubmission.ts`) parse է անում այս կառուցվածքը `parseCheckoutSubmissionError`-ով (`src/app/checkout/utils/checkout-api-errors.ts`) և յուրաքանչյուր issue-ը կապում է համապատասխան form field error-ին (`react-hook-form setError`), առանց fragile `message.includes(...)` պայմանների։ Courier հասցեի UI-ն (`CheckoutForm`) հիմա արտացոլում է նույն field-error աղբյուրը։
+
+**5.7 ✅ ավարտված (2026-04-17).** Guest checkout-ի server-side cart reconciliation-ը ուժեղացվել է՝ միասնական resolver-ով (`src/lib/services/checkout-guest-items.service.ts`) թե՛ `POST /api/v1/orders/checkout`, թե՛ `POST /api/v1/checkout/totals` հոսքերի համար։ Payload `items[]`-ում `quantity`-ն հիմա խիստ `positive integer` է, duplicate տողերը նույն `variantId`-ի համար սերվերում գումարվում են մեկ checkout line-ի, հակասող `variantId -> productId` զույգերը մերժվում են (`400`), իսկ չհրապարակված/ջնջված կամ stock-ից դուրս variant-ները վերադարձնում են `404`/`422`։ Այսպիսով subtotal/order total-ը հաշվարկվում է միայն DB գներով և նույնացված cart line-երով (ոչ client snapshot-ով)։
 
 ---
 
