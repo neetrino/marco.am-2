@@ -3,7 +3,6 @@
 import { useTranslation } from '../../../../lib/i18n-client';
 import { Card } from '@shop/ui';
 import { CurrencyCode } from '../../../../lib/currency';
-import { getColorValue } from '../utils/orderUtils';
 import type { OrderDetails } from '../useOrders';
 
 interface OrderDetailsItemsProps {
@@ -17,20 +16,6 @@ export function OrderDetailsItems({
 }: OrderDetailsItemsProps) {
   const { t } = useTranslation();
 
-  const getColorsArray = (colors: unknown): string[] => {
-    if (!colors) return [];
-    if (Array.isArray(colors)) return colors;
-    if (typeof colors === 'string') {
-      try {
-        const parsed = JSON.parse(colors);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  };
-
   if (!Array.isArray(orderDetails.items) || orderDetails.items.length === 0) {
     return (
       <Card className="p-4 md:p-6">
@@ -40,6 +25,8 @@ export function OrderDetailsItems({
     );
   }
 
+  const oc = orderDetails.currency || 'AMD';
+
   return (
     <Card className="p-4 md:p-6">
       <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('admin.orders.orderDetails.items')}</h3>
@@ -47,6 +34,9 @@ export function OrderDetailsItems({
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-3 py-2 text-left font-medium text-gray-500 w-14">
+                {t('admin.orders.orderDetails.thumbnail')}
+              </th>
               <th className="px-3 py-2 text-left font-medium text-gray-500">{t('admin.orders.orderDetails.product')}</th>
               <th className="px-3 py-2 text-left font-medium text-gray-500">{t('admin.orders.orderDetails.sku')}</th>
               <th className="px-3 py-2 text-left font-medium text-gray-500">{t('admin.orders.orderDetails.colorSize')}</th>
@@ -60,6 +50,20 @@ export function OrderDetailsItems({
               const allOptions = item.variantOptions || [];
               return (
                 <tr key={item.id}>
+                  <td className="px-3 py-2 align-top">
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        alt=""
+                        className="w-10 h-10 rounded border border-gray-200 object-cover"
+                        onError={(e) => {
+                          e.currentTarget.classList.add('hidden');
+                        }}
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded border border-dashed border-gray-200 bg-gray-50" />
+                    )}
+                  </td>
                   <td className="px-3 py-2">{item.productTitle}</td>
                   <td className="px-3 py-2 text-gray-500">{item.sku}</td>
                   <td className="px-3 py-2">
@@ -67,12 +71,8 @@ export function OrderDetailsItems({
                       <div className="flex flex-wrap gap-2 items-center">
                         {allOptions.map((opt, optIndex) => {
                           if (!opt.attributeKey || !opt.value) return null;
-                          const attributeKey = opt.attributeKey.toLowerCase().trim();
-                          const isColor = attributeKey === 'color' || attributeKey === 'colour';
                           const displayLabel = opt.label || opt.value;
                           const hasImage = opt.imageUrl && opt.imageUrl.trim() !== '';
-                          const colors = getColorsArray(opt.colors);
-                          const colorHex = colors.length > 0 ? colors[0] : (isColor ? getColorValue(opt.value) : null);
                           return (
                             <div key={optIndex} className="flex items-center gap-1.5">
                               {hasImage ? (
@@ -81,14 +81,8 @@ export function OrderDetailsItems({
                                   alt={displayLabel}
                                   className="w-4 h-4 rounded border border-gray-300 object-cover flex-shrink-0"
                                   onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
+                                    e.currentTarget.classList.add('hidden');
                                   }}
-                                />
-                              ) : isColor && colorHex ? (
-                                <div
-                                  className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0"
-                                  style={{ backgroundColor: colorHex }}
-                                  title={displayLabel}
                                 />
                               ) : null}
                               <span className="text-xs text-gray-700 capitalize">{displayLabel}</span>
@@ -102,10 +96,10 @@ export function OrderDetailsItems({
                   </td>
                   <td className="px-3 py-2 text-right">{item.quantity}</td>
                   <td className="px-3 py-2 text-right">
-                    {formatCurrency(item.unitPrice, orderDetails.currency || 'AMD', 'USD')}
+                    {formatCurrency(item.unitPrice, oc, 'AMD')}
                   </td>
                   <td className="px-3 py-2 text-right">
-                    {formatCurrency(item.total, orderDetails.currency || 'AMD', 'USD')}
+                    {formatCurrency(item.total, oc, 'AMD')}
                   </td>
                 </tr>
               );

@@ -12,7 +12,6 @@ export function OrdersPageContent() {
   const {
     orders,
     loading,
-    currency,
     statusFilter,
     paymentStatusFilter,
     searchQuery,
@@ -104,7 +103,6 @@ export function OrdersPageContent() {
           <OrderDetailsModal
             orderDetails={orderDetails}
             loading={loadingOrderDetails}
-            currency={currency}
             onClose={handleCloseModal}
             formatCurrency={formatCurrency}
           />

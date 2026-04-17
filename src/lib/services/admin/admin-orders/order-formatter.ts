@@ -104,6 +104,8 @@ export function formatOrderItem(item: {
   sku: string | null;
   quantity: number | null;
   total: number | null;
+  price: number | null;
+  imageUrl?: string | null;
   variant?: {
     id: string;
     sku: string | null;
@@ -139,7 +141,12 @@ export function formatOrderItem(item: {
 
   const quantity = item.quantity ?? 0;
   const total = item.total ?? 0;
-  const unitPrice = quantity > 0 ? Number((total / quantity).toFixed(2)) : total;
+  const unitPrice =
+    item.price != null && !Number.isNaN(Number(item.price))
+      ? Number(item.price)
+      : quantity > 0
+        ? Number((total / quantity).toFixed(2))
+        : total;
 
   // Extract variant options (color, size, etc.)
   const variantOptions = variant?.options?.map(formatVariantOption) || [];
@@ -153,6 +160,7 @@ export function formatOrderItem(item: {
     quantity,
     total,
     unitPrice,
+    imageUrl: item.imageUrl?.trim() || undefined,
     variantOptions,
   };
 }
@@ -177,10 +185,12 @@ export function formatOrderForDetail(order: {
   billingAddress: Prisma.JsonValue | null;
   shippingAddress: Prisma.JsonValue | null;
   shippingMethod: string | null;
+  trackingNumber: string | null;
   notes: string | null;
   adminNotes: string | null;
   ipAddress: string | null;
   userAgent: string | null;
+  fulfilledAt: Date | null;
   createdAt: Date;
   updatedAt: Date | null;
   user: {
@@ -197,6 +207,8 @@ export function formatOrderForDetail(order: {
     sku: string | null;
     quantity: number | null;
     total: number | null;
+    price: number | null;
+    imageUrl?: string | null;
     variant?: {
       id: string;
       sku: string | null;
@@ -262,6 +274,7 @@ export function formatOrderForDetail(order: {
     billingAddress: order.billingAddress || null,
     shippingAddress: order.shippingAddress || null,
     shippingMethod: order.shippingMethod || null,
+    trackingNumber: order.trackingNumber?.trim() || null,
     notes: order.notes || null,
     adminNotes: order.adminNotes || null,
     ipAddress: order.ipAddress || null,
@@ -289,6 +302,7 @@ export function formatOrderForDetail(order: {
       : null,
     createdAt: order.createdAt.toISOString(),
     updatedAt: order.updatedAt?.toISOString?.() ?? undefined,
+    fulfilledAt: order.fulfilledAt?.toISOString?.() ?? undefined,
     items: formattedItems,
   };
 }
