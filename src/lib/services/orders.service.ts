@@ -8,9 +8,8 @@ import { extractMediaUrl } from "../utils/extractMediaUrl";
 import { resolveCheckoutPaymentMethod } from "../constants/checkout-payment-method";
 import { normalizeShippingMethod } from "../constants/shipping-method";
 import { buildOrderAddressJson } from "./orders-checkout-address";
+import { validateCheckoutCustomer } from "./orders-checkout-validation";
 import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
-
-const MAX_ORDER_NOTES_LENGTH = 2000;
 
 const orderNumberId = customAlphabet("0123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 10);
 
@@ -65,11 +64,6 @@ class OrdersService {
       const {
         cartId,
         items: guestItems,
-        email,
-        phone,
-        firstName,
-        lastName,
-        notes: rawNotes,
         shippingMethod: rawShippingMethod = 'pickup',
         shippingAddress,
         paymentMethod: rawPaymentMethod,
@@ -78,21 +72,8 @@ class OrdersService {
       const paymentMethod = resolveCheckoutPaymentMethod(rawPaymentMethod);
       // shippingAmount is ignored — computed server-side from shippingMethod and address
 
-      // Validate required fields
-      if (!email || !phone) {
-        throw {
-          status: 400,
-          type: "https://api.shop.am/problems/validation-error",
-          title: "Validation Error",
-          detail: "Email and phone are required",
-        };
-      }
-
-      const notesTrimmed = typeof rawNotes === "string" ? rawNotes.trim() : "";
-      const orderNotes =
-        notesTrimmed.length > 0
-          ? notesTrimmed.slice(0, MAX_ORDER_NOTES_LENGTH)
-          : null;
+      const { email, phone, firstName, lastName, notes: orderNotes } =
+        validateCheckoutCustomer(data, shippingMethod);
 
       const { shippingAddress: shippingAddressJson, billingAddress: billingAddressJson } =
         buildOrderAddressJson(shippingMethod, shippingAddress, firstName, lastName);

@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
+import { getApiOrErrorMessage } from '../../../lib/api-client/types';
 import { useTranslation } from '../../../lib/i18n-client';
 import { clearGuestCart } from '../checkoutUtils';
 import type { CheckoutTotalsResponse } from '../../../lib/types/checkout-totals';
@@ -96,8 +97,9 @@ export function useOrderSubmission({
 
       router.push(`/orders/${response.order.number}`);
     } catch (err: unknown) {
-      const error = err as { message?: string };
-      setError(error.message || t('checkout.errors.failedToCreateOrder'));
+      setError(
+        getApiOrErrorMessage(err, t('checkout.errors.failedToCreateOrder'))
+      );
     }
   };
 
