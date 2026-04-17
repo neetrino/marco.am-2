@@ -211,12 +211,49 @@ async function seedProducts(categoryIds, brandIds) {
   return created;
 }
 
+/** One variant at stock 1 so admin Stock analytics (low stock 1–9) shows a demo row. */
+async function ensureLowStockDemoForAnalytics() {
+  const preferredSlug = "seed-wireless-earbuds-1";
+  const productWithSlug = await prisma.product.findFirst({
+    where: {
+      deletedAt: null,
+      translations: { some: { locale: "en", slug: preferredSlug } },
+    },
+    include: {
+      variants: {
+        where: { published: true },
+        take: 1,
+        orderBy: { position: "asc" },
+      },
+    },
+  });
+
+  const variant =
+    productWithSlug?.variants[0] ??
+    (await prisma.productVariant.findFirst({
+      where: { published: true, product: { deletedAt: null } },
+      orderBy: { updatedAt: "desc" },
+    }));
+
+  if (!variant) {
+    console.log("[Seed] Low-stock demo: no published variant found; skip");
+    return;
+  }
+
+  await prisma.productVariant.update({
+    where: { id: variant.id },
+    data: { stock: 1 },
+  });
+  console.log("[Seed] Low-stock demo: variant", variant.id, "stock=1");
+}
+
 async function main() {
   console.log("=== Seed start ===");
   try {
     const categoryIds = await seedCategories();
     const brandIds = await seedBrands();
     await seedProducts(categoryIds, brandIds);
+    await ensureLowStockDemoForAnalytics();
     try {
       await seedAdmin();
     } catch (adminErr) {
