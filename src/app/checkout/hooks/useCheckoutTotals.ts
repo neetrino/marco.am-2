@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { apiClient } from "../../../lib/api-client";
+import { getClientErrorDetail } from "../../../lib/api-client/types";
 import type { CheckoutTotalsResponse } from "../../../lib/types/checkout-totals";
+import { logger } from "../../../lib/utils/logger";
 import { isCourierShipping, type ShippingMethodId } from "../../../lib/constants/shipping-method";
 import type { Cart, CartItem } from "../types";
 
@@ -22,11 +24,13 @@ export function useCheckoutTotals(
 ) {
   const [totals, setTotals] = useState<CheckoutTotalsResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [staleAfterError, setStaleAfterError] = useState(false);
   const lastGoodRef = useRef<CheckoutTotalsResponse | null>(null);
 
   useEffect(() => {
     if (!cart || cart.items.length === 0) {
       setTotals(null);
+      setStaleAfterError(false);
       lastGoodRef.current = null;
       return;
     }
@@ -54,8 +58,15 @@ export function useCheckoutTotals(
         );
         setTotals(response);
         lastGoodRef.current = response;
-      } catch {
-        setTotals(lastGoodRef.current);
+        setStaleAfterError(false);
+      } catch (err: unknown) {
+        const detail = getClientErrorDetail(err);
+        logger.warn("Checkout totals request failed", {
+          detail: detail ?? String(err),
+        });
+        const previous = lastGoodRef.current;
+        setTotals(previous);
+        setStaleAfterError(previous !== null);
       } finally {
         setLoading(false);
       }
@@ -70,5 +81,6 @@ export function useCheckoutTotals(
   return {
     checkoutTotals: displayTotals,
     loadingCheckoutTotals: loading,
+    checkoutTotalsStale: staleAfterError,
   };
 }

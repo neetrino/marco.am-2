@@ -29,6 +29,7 @@ interface CheckoutModalsProps {
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
   isLoggedIn: boolean;
   onSubmit: (data: CheckoutFormData) => void;
 }
@@ -50,6 +51,7 @@ export function CheckoutModals({
   orderSummary,
   currency,
   loadingCheckoutTotals,
+  checkoutTotalsStale,
   isLoggedIn,
   onSubmit,
 }: CheckoutModalsProps) {
@@ -70,6 +72,7 @@ export function CheckoutModals({
         currency={currency}
         shippingCity={shippingCity}
         loadingCheckoutTotals={loadingCheckoutTotals}
+        checkoutTotalsStale={checkoutTotalsStale}
         onSubmit={onSubmit}
       />
 
@@ -87,6 +90,7 @@ export function CheckoutModals({
         orderSummary={orderSummary}
         currency={currency}
         loadingCheckoutTotals={loadingCheckoutTotals}
+        checkoutTotalsStale={checkoutTotalsStale}
         isLoggedIn={isLoggedIn}
         onShowShippingModal={() => setShowShippingModal(true)}
         onSubmit={onSubmit}

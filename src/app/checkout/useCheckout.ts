@@ -58,7 +58,7 @@ export function useCheckout() {
   const shippingCity = watch('shippingCity');
 
   const { cart, loading, fetchCart } = useCart(isLoggedIn);
-  const { checkoutTotals, loadingCheckoutTotals } = useCheckoutTotals(
+  const { checkoutTotals, loadingCheckoutTotals, checkoutTotalsStale } = useCheckoutTotals(
     cart,
     isLoggedIn,
     shippingMethod,
@@ -159,6 +159,7 @@ export function useCheckout() {
     setShowCardModal,
     checkoutTotals,
     loadingCheckoutTotals,
+    checkoutTotalsStale,
     // Form
     register,
     handleSubmit,

@@ -25,6 +25,7 @@ export default function CheckoutPage() {
     showCardModal,
     setShowCardModal,
     loadingCheckoutTotals,
+    checkoutTotalsStale,
     register,
     handleSubmit,
     errors,
@@ -99,6 +100,7 @@ export default function CheckoutPage() {
             shippingMethod={shippingMethod}
             shippingCity={shippingCity}
             loadingCheckoutTotals={loadingCheckoutTotals}
+            checkoutTotalsStale={checkoutTotalsStale}
             error={error}
             isSubmitting={isSubmitting}
             onPlaceOrder={(e) => {
@@ -129,6 +131,7 @@ export default function CheckoutPage() {
         orderSummary={orderSummary}
         currency={currency}
         loadingCheckoutTotals={loadingCheckoutTotals}
+        checkoutTotalsStale={checkoutTotalsStale}
         isLoggedIn={isLoggedIn}
         onSubmit={onSubmit}
       />

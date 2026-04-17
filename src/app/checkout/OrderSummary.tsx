@@ -18,6 +18,7 @@ interface OrderSummaryProps {
   shippingMethod: ShippingMethodId;
   shippingCity: string | undefined;
   loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
   error: string | null;
   isSubmitting: boolean;
   onPlaceOrder: (e?: React.FormEvent) => void;
@@ -30,6 +31,7 @@ export function OrderSummary({
   shippingMethod,
   shippingCity,
   loadingCheckoutTotals,
+  checkoutTotalsStale,
   error,
   isSubmitting,
   onPlaceOrder,
@@ -40,6 +42,11 @@ export function OrderSummary({
     <div>
       <Card className="p-6 sticky top-4">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
+        {checkoutTotalsStale ? (
+          <p className="mb-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            {t('checkout.messages.totalsStaleWarning')}
+          </p>
+        ) : null}
         <div className="space-y-4 mb-6">
           <div className="flex justify-between text-gray-600">
             <span>{t('checkout.summary.subtotal')}</span>

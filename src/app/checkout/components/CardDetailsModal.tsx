@@ -28,6 +28,7 @@ interface CardDetailsModalProps {
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
   isLoggedIn: boolean;
   onShowShippingModal: () => void;
   onSubmit: (data: CheckoutFormData) => void;
@@ -47,6 +48,7 @@ export function CardDetailsModal({
   orderSummary,
   currency,
   loadingCheckoutTotals,
+  checkoutTotalsStale,
   isLoggedIn,
   onShowShippingModal,
   onSubmit,
@@ -130,6 +132,7 @@ export function CardDetailsModal({
             shippingMethod={shippingMethod}
             shippingCity={shippingCity}
             loadingCheckoutTotals={loadingCheckoutTotals}
+            checkoutTotalsStale={checkoutTotalsStale}
           />
         </div>
 

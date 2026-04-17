@@ -78,6 +78,7 @@
     "closeModal": "Close Window"
   },
   "messages": {
+    "totalsStaleWarning": "Could not refresh totals. Showing last known amounts.",
     "cashOnDeliveryInfo": "Cash on Delivery: You will pay cash when you receive your order. Card details are not required.",
     "cashOnDeliveryPickup": "Cash on Delivery: You will pay cash when you pick up your order. Card details are not required.",
     "storePickupInfo": "Store Pickup: You will pick up your order from our store. Delivery is free."
