@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button, Card } from '@shop/ui';
 import { formatPriceInCurrency, convertPrice, type CurrencyCode } from '../../lib/currency';
-import { getStatusColor, getPaymentStatusColor } from './utils';
+import { getStatusColor, getPaymentStatusColor, getFulfillmentStatusColor } from './utils';
 import type { OrderListItem } from './types';
 
 interface ProfileOrdersProps {
@@ -80,13 +80,19 @@ export function ProfileOrders({
                       {order.status}
                     </span>
                   </div>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-0.5">{t('profile.dashboard.paymentStatus')}</p>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getPaymentStatusColor(order.paymentStatus)}`}>
-                      {order.paymentStatus}
-                    </span>
-                  </div>
-                </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-0.5">{t('profile.dashboard.paymentStatus')}</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getPaymentStatusColor(order.paymentStatus)}`}>
+                          {order.paymentStatus}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-0.5">{t('profile.dashboard.fulfillmentStatus')}</p>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getFulfillmentStatusColor(order.fulfillmentStatus)}`}>
+                          {order.fulfillmentStatus}
+                        </span>
+                      </div>
+                    </div>
                 <p className="text-sm text-gray-600">
                   {order.itemsCount} {order.itemsCount !== 1 ? t('profile.orders.items') : t('profile.orders.item')} • {t('profile.dashboard.placedOn')} {new Date(order.createdAt).toLocaleDateString()}
                 </p>

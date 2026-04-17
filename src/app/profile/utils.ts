@@ -33,6 +33,25 @@ export const getPaymentStatusColor = (status: string) => {
   }
 };
 
+export const getFulfillmentStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'fulfilled':
+    case 'shipped':
+    case 'delivered':
+      return 'bg-green-100 text-green-800';
+    case 'partial':
+    case 'partially_fulfilled':
+      return 'bg-amber-100 text-amber-800';
+    case 'unfulfilled':
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
+
 export const getColorValue = (colorName: string): string => {
   const colorMap: Record<string, string> = {
     'beige': '#F5F5DC',

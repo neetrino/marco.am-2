@@ -1,7 +1,7 @@
 import { Button, Card } from '@shop/ui';
 import { formatPriceInCurrency, convertPrice, type CurrencyCode } from '../../lib/currency';
 import { isCourierShipping } from '../../lib/constants/shipping-method';
-import { getStatusColor, getPaymentStatusColor, getColorValue } from './utils';
+import { getStatusColor, getPaymentStatusColor, getFulfillmentStatusColor, getColorValue } from './utils';
 import type { OrderDetails } from './types';
 
 interface OrderDetailsModalProps {
@@ -110,6 +110,9 @@ export function OrderDetailsModal({
                       </span>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(selectedOrder.paymentStatus)}`}>
                         {t('profile.orderDetails.payment')}: {selectedOrder.paymentStatus}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getFulfillmentStatusColor(selectedOrder.fulfillmentStatus)}`}>
+                        {t('profile.orderDetails.fulfillment')}: {selectedOrder.fulfillmentStatus}
                       </span>
                     </div>
                   </Card>

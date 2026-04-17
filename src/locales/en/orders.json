@@ -28,7 +28,10 @@
   },
   "buttons": {
     "continueShopping": "Continue Shopping",
-    "viewCart": "View Cart"
+    "viewCart": "View Cart",
+    "reorder": "Reorder",
+    "reordering": "Adding to cart…",
+    "reorderFailed": "Could not add items to cart. Please try again."
   },
   "itemDetails": {
     "color": "Color:",

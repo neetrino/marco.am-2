@@ -2,7 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { Button } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
+import { postCustomerReorder } from '@/lib/orders/post-customer-reorder';
+import { logger } from '@/lib/utils/logger';
 import { getStoredCurrency } from '../../../lib/currency';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -26,6 +29,8 @@ export default function OrderPage() {
   const [currency, setCurrency] = useState(getStoredCurrency());
   const [calculatedShipping, setCalculatedShipping] = useState<number | null>(null);
   const [loadingShipping, setLoadingShipping] = useState(false);
+  const [reordering, setReordering] = useState(false);
+  const [reorderError, setReorderError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -65,6 +70,28 @@ export default function OrderPage() {
     }
   }
 
+  async function handleReorder() {
+    if (!order) {
+      return;
+    }
+    setReorderError(null);
+    setReordering(true);
+    try {
+      const result = await postCustomerReorder(order.number, order.links);
+      window.dispatchEvent(new Event('cart-updated'));
+      if (result.added.length > 0) {
+        router.push('/cart');
+      } else {
+        setReorderError(t('orders.buttons.reorderFailed'));
+      }
+    } catch (err: unknown) {
+      logger.error('Order page reorder failed', { error: err });
+      setReorderError(t('orders.buttons.reorderFailed'));
+    } finally {
+      setReordering(false);
+    }
+  }
+
   async function fetchShippingPrice(city: string) {
     if (!city || city.trim().length === 0) {
       setCalculatedShipping(0);
@@ -97,14 +124,24 @@ export default function OrderPage() {
 
   return (
     <div className="page-shell py-12">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          {t('orders.title').replace('{number}', order.number)}
-        </h1>
-        <p className="text-gray-600">
-          {t('orders.placedOn').replace('{date}', new Date(order.createdAt).toLocaleDateString())}
-        </p>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {t('orders.title').replace('{number}', order.number)}
+          </h1>
+          <p className="text-gray-600">
+            {t('orders.placedOn').replace('{date}', new Date(order.createdAt).toLocaleDateString())}
+          </p>
+        </div>
+        <Button type="button" variant="primary" onClick={handleReorder} disabled={reordering}>
+          {reordering ? t('orders.buttons.reordering') : t('orders.buttons.reorder')}
+        </Button>
       </div>
+      {reorderError ? (
+        <p className="text-sm text-red-600 mb-4" role="alert">
+          {reorderError}
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">

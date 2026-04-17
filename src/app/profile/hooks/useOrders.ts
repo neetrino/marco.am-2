@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
+import { postCustomerReorder } from '@/lib/orders/post-customer-reorder';
 import { useTranslation } from '../../../lib/i18n-client';
 import type { OrderDetails, OrderListItem, ProfileTab } from '../types';
 import { logger } from "@/lib/utils/logger";
@@ -70,7 +71,7 @@ export function useOrders({
       setOrdersMeta(response.meta || null);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      console.error('Error loading orders:', err);
+      logger.error('Error loading orders', { error: err });
       onError(errorMessage || t('profile.orders.failedToLoad'));
     } finally {
       setOrdersLoading(false);
@@ -92,7 +93,7 @@ export function useOrders({
       setSelectedOrder(data);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      console.error('Error loading order details:', err);
+      logger.error('Error loading order details', { error: err });
       setOrderDetailsError(errorMessage || t('profile.orderDetails.failedToLoad'));
     } finally {
       setOrderDetailsLoading(false);
@@ -114,45 +115,20 @@ export function useOrders({
 
     setIsReordering(true);
     try {
-      logger.devLog('[Profile][ReOrder] Starting re-order for order:', selectedOrder.number);
-      
-      let addedCount = 0;
-      let skippedCount = 0;
+      logger.devLog('[Profile][ReOrder] POST reorder via API', {
+        orderNumber: selectedOrder.number,
+      });
 
-      for (const item of selectedOrder.items) {
-        try {
-          interface VariantDetails {
-            id: string;
-            productId: string;
-            stock: number;
-            available: boolean;
-          }
-
-          const variantDetails = await apiClient.get<VariantDetails>(`/api/v1/products/variants/${item.variantId}`);
-          
-          if (!variantDetails.available || variantDetails.stock < item.quantity) {
-            console.warn(`[Profile][ReOrder] Item ${item.productTitle} is not available or insufficient stock`);
-            skippedCount++;
-            continue;
-          }
-
-          await apiClient.post('/api/v1/cart/items', {
-            productId: variantDetails.productId,
-            variantId: item.variantId,
-            quantity: item.quantity,
-          });
-          addedCount++;
-          logger.devLog('[Profile][ReOrder] Added item to cart:', item.productTitle);
-        } catch (error: unknown) {
-          console.error('[Profile][ReOrder] Error adding item to cart:', error);
-          skippedCount++;
-        }
-      }
+      const result = await postCustomerReorder(selectedOrder.number, selectedOrder.links);
 
       window.dispatchEvent(new Event('cart-updated'));
-      
+
+      const addedCount = result.added.length;
+      const skippedCount = result.skipped.length;
+
       if (addedCount > 0) {
-        const skippedText = skippedCount > 0 ? `, ${skippedCount} ${t('profile.orderDetails.skipped')}` : '';
+        const skippedText =
+          skippedCount > 0 ? `, ${skippedCount} ${t('profile.orderDetails.skipped')}` : '';
         onSuccess(`${addedCount} ${t('profile.orderDetails.itemsAdded')}${skippedText}`);
         setTimeout(() => {
           router.push('/cart');
@@ -161,7 +137,7 @@ export function useOrders({
         onError(t('profile.orderDetails.failedToAdd'));
       }
     } catch (error: unknown) {
-      console.error('[Profile][ReOrder] Error during re-order:', error);
+      logger.error('[Profile][ReOrder] reorder API failed', { error });
       onError(t('profile.orderDetails.failedToAdd'));
     } finally {
       setIsReordering(false);
