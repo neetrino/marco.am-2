@@ -25,7 +25,13 @@ export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
 
-  const { analytics, orderStatusBreakdown, totalUsers, loading } = useAnalytics({
+  const {
+    analytics,
+    orderStatusBreakdown,
+    orderStatusBreakdownFailed,
+    totalUsers,
+    loading,
+  } = useAnalytics({
     period,
     startDate,
     endDate,
@@ -85,6 +91,14 @@ export default function AnalyticsPage() {
             ) : analytics ? (
               <>
                 <StatsCards analytics={analytics} totalUsers={totalUsers} />
+
+                {orderStatusBreakdownFailed ? (
+                  <Card className="p-4 mb-6 border border-amber-200 bg-amber-50">
+                    <p className="text-sm text-amber-950">
+                      {t('admin.analytics.orderStatusBreakdownLoadFailed')}
+                    </p>
+                  </Card>
+                ) : null}
 
                 {orderStatusBreakdown ? (
                   <OrderStatusBreakdown data={orderStatusBreakdown} />

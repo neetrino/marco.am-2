@@ -15,6 +15,8 @@ interface UseAnalyticsParams {
 interface UseAnalyticsReturn {
   analytics: AnalyticsData | null;
   orderStatusBreakdown: OrderStatusBreakdownData | null;
+  /** True when the main analytics call succeeded but order-status-breakdown failed. */
+  orderStatusBreakdownFailed: boolean;
   totalUsers: number | null;
   loading: boolean;
   error: string | null;
@@ -34,6 +36,8 @@ export function useAnalytics({
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [orderStatusBreakdown, setOrderStatusBreakdown] =
     useState<OrderStatusBreakdownData | null>(null);
+  const [orderStatusBreakdownFailed, setOrderStatusBreakdownFailed] =
+    useState(false);
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +51,7 @@ export function useAnalytics({
       try {
         setLoading(true);
         setError(null);
+        setOrderStatusBreakdownFailed(false);
         const params: Record<string, string> = {
           period,
         };
@@ -74,11 +79,13 @@ export function useAnalytics({
 
         if (breakdownResult.status === 'fulfilled') {
           setOrderStatusBreakdown(breakdownResult.value);
+          setOrderStatusBreakdownFailed(false);
         } else {
           logger.error('Order status breakdown request failed', {
             error: breakdownResult.reason,
           });
           setOrderStatusBreakdown(null);
+          setOrderStatusBreakdownFailed(true);
         }
       } catch (err: unknown) {
         logger.error('Error fetching analytics', { error: err });
@@ -103,6 +110,7 @@ export function useAnalytics({
         
         setError(errorMessage);
         setOrderStatusBreakdown(null);
+        setOrderStatusBreakdownFailed(false);
         alert(`${t('admin.common.error')}: ${errorMessage}`);
       } finally {
         setLoading(false);
@@ -126,7 +134,14 @@ export function useAnalytics({
     fetchAdminStats();
   }, [isLoggedIn, isAdmin, period, startDate, endDate, t]);
 
-  return { analytics, orderStatusBreakdown, totalUsers, loading, error };
+  return {
+    analytics,
+    orderStatusBreakdown,
+    orderStatusBreakdownFailed,
+    totalUsers,
+    loading,
+    error,
+  };
 }
 
 

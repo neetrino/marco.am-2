@@ -106,6 +106,7 @@
     "orderStatusCancelled": "Չեղարկված",
     "orderStatusOther": "Այլ",
     "orderStatusTotal": "Ընդամենը",
+    "orderStatusBreakdownLoadFailed": "Պատվերների կարգավիճակի բաշխումը չբեռնվեց։ Ներքևի մնացած վերլուծությունը ցուցադրվում է։",
     "customerNewVsRepeatTitle": "Նոր և կրկնվող հաճախորդներ",
     "customerNewVsRepeatHint": "Նոր՝ առաջին պատվերը այս ժամանակահատվածում է։ Կրկնվող՝ պատվեր էր ավելի վաղ և նորից պատվերել է այս պահին։ Հաշվարկը՝ հաշվի համար, այլապես checkout email-ով։",
     "customerNewCustomers": "Նոր հաճախորդներ",

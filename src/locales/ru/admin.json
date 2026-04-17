@@ -106,6 +106,7 @@
     "orderStatusCancelled": "Отменён",
     "orderStatusOther": "Прочее",
     "orderStatusTotal": "Всего",
+    "orderStatusBreakdownLoadFailed": "Не удалось загрузить разбивку заказов по статусу. Остальная аналитика ниже отображается.",
     "customerNewVsRepeatTitle": "Новые и повторные клиенты",
     "customerNewVsRepeatHint": "Новый — первый заказ за всё время попадает в этот период. Повторный — был заказ до периода и снова внутри периода. Учёт по аккаунту, иначе по email из оформления.",
     "customerNewCustomers": "Новые клиенты",

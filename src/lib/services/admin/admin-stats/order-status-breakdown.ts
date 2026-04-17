@@ -1,8 +1,6 @@
 import { db } from "@white-shop/db";
+import { isAdminOrderStatus } from "@/lib/constants/admin-order-status";
 import { calculateDateRange } from "./analytics-date-range";
-
-/** Matches admin order update validation (`order-mutations.ts`). */
-const KNOWN_ORDER_STATUSES = ["pending", "processing", "completed", "cancelled"] as const;
 
 export type OrderStatusBreakdownByStatus = {
   pending: number;
@@ -34,7 +32,7 @@ function normalizeByStatus(raw: Record<string, number>): OrderStatusBreakdownByS
   let other = 0;
   const pick = (k: string): number => raw[k] ?? 0;
   for (const [k, v] of Object.entries(raw)) {
-    if (!KNOWN_ORDER_STATUSES.includes(k as (typeof KNOWN_ORDER_STATUSES)[number])) {
+    if (!isAdminOrderStatus(k)) {
       other += v;
     }
   }

@@ -106,6 +106,7 @@
     "orderStatusCancelled": "Cancelled",
     "orderStatusOther": "Other",
     "orderStatusTotal": "Total",
+    "orderStatusBreakdownLoadFailed": "Order status breakdown could not be loaded. Other analytics below are still shown.",
     "customerNewVsRepeatTitle": "New vs repeat customers",
     "customerNewVsRepeatHint": "New: first order ever falls in this period. Repeat: had an order before the period and ordered again within it. Attributed by account, otherwise by checkout email.",
     "customerNewCustomers": "New customers",
