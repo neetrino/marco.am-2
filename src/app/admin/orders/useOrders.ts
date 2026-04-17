@@ -112,9 +112,16 @@ export function useOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState<CurrencyCode>(getStoredCurrency());
-  const [statusFilter, setStatusFilter] = useState('');
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  /** Sync initial filter state from URL so the first fetch matches shared links / refresh. */
+  const [statusFilter, setStatusFilter] = useState(
+    () => searchParams.get('status') || ''
+  );
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState(
+    () => searchParams.get('paymentStatus') || ''
+  );
+  const [searchQuery, setSearchQuery] = useState(
+    () => searchParams.get('search') || ''
+  );
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<OrdersResponse['meta'] | null>(null);
   const [sortBy, setSortBy] = useState<string>('createdAt');
@@ -160,8 +167,8 @@ export function useOrders() {
       logger.devLog('✅ [ADMIN] Orders fetched:', response);
       setOrders(response.data || []);
       setMeta(response.meta || null);
-    } catch (err) {
-      console.error('❌ [ADMIN] Error fetching orders:', err);
+    } catch (err: unknown) {
+      logger.error('Admin orders list fetch failed', { error: err });
     } finally {
       setLoading(false);
     }
@@ -176,7 +183,9 @@ export function useOrders() {
     };
     
     // Initialize currency rates
-    initializeCurrencyRates().catch(console.error);
+    initializeCurrencyRates().catch((err: unknown) => {
+      logger.error('Currency rates initialization failed', { error: err });
+    });
     
     // Load currency on mount
     updateCurrency();
@@ -242,7 +251,7 @@ export function useOrders() {
       const response = await apiClient.get<OrderDetails>(`/api/v1/admin/orders/${orderId}`);
       setOrderDetails(response);
     } catch (err: unknown) {
-      console.error('❌ [ADMIN] Failed to load order details:', err);
+      logger.error('Admin order details fetch failed', { error: err });
       alert(getApiOrErrorMessage(err, t('admin.orders.orderDetails.failedToLoad')));
       setSelectedOrderId(null);
     } finally {
@@ -304,7 +313,7 @@ export function useOrders() {
             logger.devLog('✅ [ADMIN] Order deleted successfully:', id, response);
             return { id, success: true };
           } catch (error: unknown) {
-            console.error('❌ [ADMIN] Failed to delete order:', id, error);
+            logger.error('Admin order delete failed', { orderId: id, error });
             return { id, success: false, error: getErrorMessage(error) || t('admin.common.unknownErrorFallback') };
           }
         })
@@ -330,8 +339,8 @@ export function useOrders() {
       } else {
         alert(t('admin.orders.bulkDeleteFinished').replace('{success}', successful.length.toString()).replace('{total}', ids.length.toString()));
       }
-    } catch (err) {
-      console.error('❌ [ADMIN] Bulk delete orders error:', err);
+    } catch (err: unknown) {
+      logger.error('Admin bulk delete orders failed', { error: err });
       alert(t('admin.orders.failedToDelete'));
     } finally {
       setBulkDeleting(false);
@@ -363,8 +372,8 @@ export function useOrders() {
       // Show success message
       setUpdateMessage({ type: 'success', text: t('admin.orders.statusUpdated') });
       setTimeout(() => setUpdateMessage(null), 3000);
-    } catch (err) {
-      console.error('❌ [ADMIN] Error updating order status:', err);
+    } catch (err: unknown) {
+      logger.error('Admin order status update failed', { error: err });
       setUpdateMessage({ 
         type: 'error', 
         text: t('admin.orders.failedToUpdateStatus')
@@ -405,8 +414,8 @@ export function useOrders() {
       // Show success message
       setUpdateMessage({ type: 'success', text: t('admin.orders.paymentStatusUpdated') });
       setTimeout(() => setUpdateMessage(null), 3000);
-    } catch (err) {
-      console.error('❌ [ADMIN] Error updating order payment status:', err);
+    } catch (err: unknown) {
+      logger.error('Admin order payment status update failed', { error: err });
       setUpdateMessage({ 
         type: 'error', 
         text: t('admin.orders.failedToUpdatePaymentStatus')
