@@ -12,6 +12,7 @@ import { validateCheckoutCustomer } from "./orders-checkout-validation";
 import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
 import type { AdminOrderListStatus } from "../constants/admin-order-list-status";
 import { cartService } from "./cart.service";
+import { deliverOrderConfirmation } from "./order-confirmation-delivery.service";
 
 const orderNumberId = customAlphabet("0123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 10);
 
@@ -443,6 +444,14 @@ class OrdersService {
         { timeout: 10000, maxWait: 5000 }
       );
 
+      const confirmationNotifications = await deliverOrderConfirmation({
+        orderNumber: order.order.number,
+        total: Number(order.order.total),
+        currency: order.order.currency,
+        customerEmail: order.order.customerEmail ?? undefined,
+        customerPhone: order.order.customerPhone ?? undefined,
+      });
+
       // Return order and payment info
       return {
         order: {
@@ -460,6 +469,18 @@ class OrdersService {
         },
         nextAction:
           paymentMethod === 'card' ? 'redirect_to_payment' : 'view_order',
+        confirmation: {
+          orderId: order.order.id,
+          orderNumber: order.order.number,
+          summary: {
+            itemsCount: order.order.items.length,
+            subtotal: Number(order.order.subtotal),
+            shippingAmount: Number(order.order.shippingAmount),
+            total: Number(order.order.total),
+            currency: order.order.currency,
+          },
+          notifications: confirmationNotifications,
+        },
       };
     } catch (error: unknown) {
       // Type guard for custom error
