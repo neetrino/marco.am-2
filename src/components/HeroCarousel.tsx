@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import {
   HERO_DESKTOP_COMPOSITION_WIDTH_PX,
   HERO_PROMO_DESKTOP_FREE_DELIVERY_BANNER_TRANSLATE_Y_PX,
@@ -11,6 +13,7 @@ import {
 } from './hero.constants';
 import type { CSSProperties } from 'react';
 import { useTranslation } from '../lib/i18n-client';
+import type { HomeHeroPublicPayload } from '@/lib/services/home-hero-banner.service';
 import { HomePromoFreeDeliveryBanner } from './home/HomePromoFreeDeliveryBanner';
 import { HomePromoSmartphonesBanner } from './home/HomePromoSmartphonesBanner';
 import { HomePromoStackedProductCard } from './home/HomePromoStackedProductCard';
@@ -32,8 +35,39 @@ const heroDesktopCompositionStyle: CSSProperties = {
   zoom: `min(1, calc(100cqw / ${HERO_DESKTOP_COMPOSITION_WIDTH_PX}px))`,
 };
 
-export function HeroCarousel() {
+export type HeroCarouselProps = {
+  initialHero: HomeHeroPublicPayload;
+};
+
+export function HeroCarousel({ initialHero }: HeroCarouselProps) {
   const { t, lang } = useTranslation();
+  const [hero, setHero] = useState<HomeHeroPublicPayload>(initialHero);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res = await fetch(
+          `/api/v1/home/hero?locale=${encodeURIComponent(lang)}`,
+        );
+        if (!res.ok) return;
+        const data = (await res.json()) as HomeHeroPublicPayload;
+        if (!cancelled) setHero(data);
+      } catch {
+        // Keep SSR / cookie-aligned payload on failure
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
+
+  const primaryCta = hero.ctas[0];
+  const extraCtas = hero.ctas.slice(1);
+  const slateCta =
+    primaryCta !== undefined
+      ? { label: primaryCta.label, href: primaryCta.href }
+      : { label: t('home.promo_featured_cta'), href: '/products' };
 
   const sofaRowTranslateYPx =
     HERO_PROMO_DESKTOP_SOFA_ROW_TRANSLATE_Y_PX +
@@ -43,17 +77,33 @@ export function HeroCarousel() {
   return (
     <div className={HERO_PAGE_CONTAINER_CLASS} id="hero">
       <div className="relative aspect-[141/79] min-h-[260px] w-full min-w-0 overflow-hidden rounded-[32px] bg-marco-yellow box-border sm:min-h-[320px] md:min-h-[380px]">
-        <HeroCarouselSlides />
+        <HeroCarouselSlides
+          imageDesktopUrl={hero.imageDesktopUrl}
+          imageMobileUrl={hero.imageMobileUrl}
+        />
         <HomePromoMobileHeroSlatePanel />
         <HomePromoMobileHeroSlateLabel />
         <HomePromoMobileHeroChair />
-        <HomePromoMobileHeroSlateCta />
+        <HomePromoMobileHeroSlateCta primaryCta={slateCta} />
         <div className="pointer-events-none absolute inset-0 z-[14] flex flex-col md:hidden">
           <div className="box-border w-full min-w-0 max-w-full px-4 pt-8 sm:px-5 sm:pt-9">
             <HomePromoMobileHeroHeadline
-              emphasisText={t('home.promo_banner_headline_emphasis')}
-              accentText={t('home.promo_banner_headline_accent')}
+              emphasisText={hero.headlineEmphasis}
+              accentText={hero.headlineAccent}
             />
+            {extraCtas.length > 0 ? (
+              <div className="pointer-events-auto mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1">
+                {extraCtas.map((c) => (
+                  <Link
+                    key={c.id}
+                    href={c.href}
+                    className="text-xs font-semibold text-marco-black underline decoration-marco-black/40 underline-offset-2 hover:decoration-marco-black"
+                  >
+                    {c.label}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="pointer-events-none absolute inset-0 z-[15] hidden min-w-0 flex-col items-center justify-start overflow-hidden md:flex [container-type:inline-size]">
@@ -64,9 +114,22 @@ export function HeroCarousel() {
             <div className="pointer-events-none relative z-20 flex min-w-0 flex-row flex-wrap items-start justify-between gap-x-4 gap-y-4">
               <div className="min-w-0 max-w-full flex-[1_1_min(580px,100%)] [&_p]:mb-0">
                 <HomePromoYellowHeadline
-                  emphasisText={t('home.promo_banner_headline_emphasis')}
-                  accentText={t('home.promo_banner_headline_accent')}
+                  emphasisText={hero.headlineEmphasis}
+                  accentText={hero.headlineAccent}
                 />
+                {extraCtas.length > 0 ? (
+                  <div className="pointer-events-auto mt-2 flex max-w-[580px] flex-wrap gap-x-4 gap-y-1">
+                    {extraCtas.map((c) => (
+                      <Link
+                        key={c.id}
+                        href={c.href}
+                        className="text-sm font-semibold text-marco-black underline decoration-marco-black/40 underline-offset-2 hover:decoration-marco-black"
+                      >
+                        {c.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
               </div>
               <div
                 className="pointer-events-auto flex min-w-0 shrink-0 flex-row flex-wrap items-start justify-end"

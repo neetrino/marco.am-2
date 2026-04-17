@@ -25,7 +25,7 @@
 | Փուլ | Անվանում                         | Փուլի առաջընթաց |
 | ---- | -------------------------------- | --------------- |
 | 1    | Infra & API կոնտրակտ             | `100%`          |
-| 2    | Գլխավոր էջ (Home) — տվյալներ     | `41%`           |
+| 2    | Գլխավոր էջ (Home) — տվյալներ     | `52%`           |
 | 3    | Shop (PLP) — կատալոգ API         | `82%`           |
 | 4    | Ապրանքի էջ (PDP) — մանրամասն API | `85%`           |
 | 5    | Checkout — պատվեր                | `89%`           |
@@ -38,7 +38,7 @@
 | 12   | Site-wide & i18n (API)           | `62%`           |
 
 
-**Ընդհանուր նախագծի առաջընթաց (backend).** `~65%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
+**Ընդհանուր նախագծի առաջընթաց (backend).** `~66%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
 
 ---
 
@@ -61,12 +61,12 @@
 
 ## Փուլ 2 — Գլխավոր էջ (Home)
 
-**Փուլի առաջընթաց.** `41%`
+**Փուլի առաջընթաց.** `52%`
 
 
 | ID  | Առաջադրանք (backend)                                                                                                   | Կատարման % | Կարգավիճակ |
 | --- | ---------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- |
-| 2.1 | Hero / banner — CMS կամ admin-ից կառավարելի կոնտենտ, CTA (ցուցակ, ակտիվություն, կարգ)                                  | 10         | ⬜          |
+| 2.1 | Hero / banner — CMS կամ admin-ից կառավարելի կոնտենտ, CTA (ցուցակ, ակտիվություն, կարգ)                                  | 100        | ✅          |
 | 2.2 | Featured products — bestsellers կամ curated list, տվյալներ PDP հղման համար                                             | 85         | 🔄         |
 | 2.3 | Promotions / special offers բլոկի տվյալներ                                                                             | 100        | ✅          |
 | 2.4 | «Why choose us» — 3–4 առավելություն (warranty, fast delivery, installment, original products) — CMS կամ structured API | 5          | ⬜          |
@@ -77,6 +77,8 @@
 
 
 *Նշումներ.* 2.2 — `GET /api/v1/products` + `filter=new|bestseller|featured`։ 2.3 — `GET /api/v1/products` + `filter=promotion` կամ `filter=special_offer` — ակցիայի ապրանքներ՝ ապրանքի `discountPercent > 0`, կատեգորիայի/բրենդի զեղչ admin settings-ից (`categoryDiscounts` / `brandDiscounts`), կամ variant-ում `compareAtPrice > price` (SQL DISTINCT `productId`)։ Home «Հատուկ առաջարկներ» բլոկը կարդում է այս ֆիլտրը; CTA՝ `/products?filter=promotion`։ **Ուշադրություն**՝ միայն **global** զեղչը (առանց ապրանք/կատեգորիա/բրենդ/compare-at) այս ցուցակի մեջ չի ներառվում — ամբողջ կատալոգը չլցնելու համար։ Բրենդները DB-ում են, բայց storefront-ի համար հանրային brands API չի երևում (միայն admin)։
+
+**2.1 ✅ ավարտված (2026-04-17).** Պահեստ՝ `settings.key = homeHeroBanner` (JSON, Zod `homeHeroBannerStorageSchema`) — վերնագիր AM/RU/EN, դեսքտոպ/մոբայլ ֆոնի URL (դատարկ = default `/assets/hero/...`), CTA ցուցակ՝ `id`, `label` երեք լեզվով, `href`, `active`, `sortOrder`։ Հանրային՝ `GET /api/v1/home/hero?locale=en|hy|ru` — լուծված մեկ լեզվով headline + պատկերների URL + ակտիվ CTA-ները կարգով։ Admin՝ `GET`/`PUT /api/v1/supersudo/home-hero` (JWT admin)։ Storefront՝ `HeroCarousel` / `HeroCarouselSlides` — SSR cookie `shop_language` + client refetch լեզվի փոփոխման ժամանակ։ Արտաքին պատկերի URL-ի դեպքում `<img>` (առանց `next/image` remote config)։
 
 **2.3 ✅ ավարտված (2026-04-16).** `GET /api/v1/products?filter=promotion|special_offer` — տես վերևի *Նշումներ* 2.3 բլոկը; UI՝ `HomeSpecialOffersSection`։
 

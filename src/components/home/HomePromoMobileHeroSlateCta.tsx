@@ -116,11 +116,16 @@ const slateCtaIconFrameStyleHy: CSSProperties = {
   marginLeft: -HERO_MOBILE_SLATE_CTA_ICON_PULL_LEFT_PX,
 };
 
+type HomePromoMobileHeroSlateCtaProps = {
+  /** Primary hero CTA — from CMS / admin (`GET /api/v1/home/hero`). */
+  primaryCta: { label: string; href: string };
+};
+
 /**
  * Figma 314:2394 — yellow pill + black arrow chip; `z-[12]` under chair (`z-[13]`) so legs overlap CTA.
  */
-export function HomePromoMobileHeroSlateCta() {
-  const { t, lang } = useTranslation();
+export function HomePromoMobileHeroSlateCta({ primaryCta }: HomePromoMobileHeroSlateCtaProps) {
+  const { lang } = useTranslation();
   const isRussian = lang === 'ru';
   const isArmenian = lang === 'hy';
   const isEnglish = lang === 'en';
@@ -152,7 +157,7 @@ export function HomePromoMobileHeroSlateCta() {
         }}
       >
         <Link
-          href="/products"
+          href={primaryCta.href}
           className={`${montserratSlateCta.className} group pointer-events-auto flex w-full max-w-full shrink-0 items-center bg-marco-yellow ${
             isArmenian
               ? 'text-[14px] font-extrabold leading-[20px]'
@@ -163,7 +168,7 @@ export function HomePromoMobileHeroSlateCta() {
                   : 'text-base font-bold leading-6'
           } text-marco-black transition hover:-translate-y-0.5 hover:bg-red-700 hover:text-white active:translate-y-px`}
           style={ctaShellStyle}
-          aria-label={`${t('home.promo_featured_cta')}. ${t('home.promo_featured_title')}`}
+          aria-label={primaryCta.label}
         >
           <span
             className={`whitespace-nowrap text-left ${
@@ -176,7 +181,7 @@ export function HomePromoMobileHeroSlateCta() {
                     : 'min-w-0 shrink'
             }`}
           >
-            {t('home.promo_featured_cta')}
+            {primaryCta.label}
           </span>
           <span
             className="flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition group-hover:bg-white group-hover:text-red-700"
