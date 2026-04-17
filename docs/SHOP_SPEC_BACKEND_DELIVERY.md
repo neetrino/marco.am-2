@@ -98,12 +98,12 @@
 
 ## Փուլ 3 — Shop (Product listing)
 
-**Փուլի առաջընթաց.** `82%`
+**Փուլի առաջընթաց.** `84%`
 
 
 | ID  | Առաջադրանք (backend)                                                                 | Կատարման % | Կարգավիճակ |
 | --- | ------------------------------------------------------------------------------------ | ---------- | ---------- |
-| 3.1 | Ապրանքների ցուցակ API — նկար, անվանում, հիմնական սպեկներ, գին, բրենդ, warranty badge | 90         | 🔄         |
+| 3.1 | Ապրանքների ցուցակ API — նկար, անվանում, հիմնական սպեկներ, գին, բրենդ, warranty badge | 100        | ✅          |
 | 3.2 | Sorting — price ASC/DESC, newest, popular                                            | 85         | 🔄         |
 | 3.3 | Filters — brand, price range, category                                               | 85         | 🔄         |
 | 3.4 | Filters — technical specs (faceted կամ step filters, schema-ից դինամիկ)              | 60         | 🔄         |
@@ -111,6 +111,8 @@
 
 
 *Նշումներ.* 3.4 — գունային/չափային ֆիլտրեր variant options/ատրիբուտների հիման վրա կան; լիարժեք generic faceted API բոլոր ատրիբուտների համար spec-ի իմաստով մասնակի է։
+
+**3.1 ✅ ավարտված (2026-04-17).** `GET /api/v1/products` պատասխանի յուրաքանչյուր ապրանքի մեջ ավելացվել է `keySpecs` (մինչև 4 հատ հիմնական բնութագիր՝ առաջին հերթին default variant-ի options-ից, fallback՝ product attributes-ից՝ առանց `color`/`size`) և `warrantyBadge` (`{ text, color, position }`), որը լուծվում է ապրանքի label-ներից (`warranty`/`guarantee`/`երաշխ`/`гарант`)։ Գոյություն ունեցող PLP դաշտերը (`image`, `title`, `price`, `brand`, `labels`, `colors` և այլն) պահպանվել են backward-compatible։
 
 ---
 

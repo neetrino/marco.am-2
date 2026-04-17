@@ -5,6 +5,149 @@ import { ProductWithRelations } from "./products-find-query.service";
 
 /** Storefront path prefix for product detail (PDP) links in list responses. */
 const PRODUCT_DETAIL_PATH_PREFIX = "/products";
+const SPEC_ATTRIBUTE_EXCLUDE_KEYS = new Set(["color", "size"]);
+const MAX_KEY_SPECS = 4;
+const WARRANTY_LABEL_PATTERN = /(warranty|guarantee|երաշխ|гарант|garanti)/i;
+
+type ProductSpec = {
+  key: string;
+  label: string;
+  value: string;
+};
+
+type ProductListLabel = {
+  id: string;
+  type: string;
+  value: string;
+  position: string;
+  color: string | null;
+};
+
+type WarrantyBadge = {
+  text: string;
+  color: string | null;
+  position: string | null;
+};
+
+function formatSpecLabel(key: string): string {
+  return key
+    .split(/[_-]/g)
+    .filter(Boolean)
+    .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+    .join(" ");
+}
+
+function addSpecIfMissing(specs: ProductSpec[], spec: ProductSpec): void {
+  if (specs.length >= MAX_KEY_SPECS) {
+    return;
+  }
+  const alreadyExists = specs.some((entry) => entry.key === spec.key);
+  if (!alreadyExists) {
+    specs.push(spec);
+  }
+}
+
+function buildKeySpecs(
+  product: ProductWithRelations,
+  variant: ProductWithRelations["variants"][number] | null,
+  lang: string,
+): ProductSpec[] {
+  const specs: ProductSpec[] = [];
+  const options = Array.isArray(variant?.options) ? variant.options : [];
+  options.forEach((option) => {
+    if ("attributeValue" in option && option.attributeValue) {
+      const key = option.attributeValue.attribute?.key;
+      if (!key || SPEC_ATTRIBUTE_EXCLUDE_KEYS.has(key)) {
+        return;
+      }
+      const valueTranslation =
+        option.attributeValue.translations?.find((t) => t.locale === lang) ??
+        option.attributeValue.translations?.[0];
+      const value = (valueTranslation?.label || option.attributeValue.value || "").trim();
+      if (!value) {
+        return;
+      }
+      addSpecIfMissing(specs, {
+        key,
+        label: formatSpecLabel(key),
+        value,
+      });
+      return;
+    }
+
+    const key = typeof option.attributeKey === "string" ? option.attributeKey.trim() : "";
+    if (!key || SPEC_ATTRIBUTE_EXCLUDE_KEYS.has(key)) {
+      return;
+    }
+    const value = typeof option.value === "string" ? option.value.trim() : "";
+    if (!value) {
+      return;
+    }
+    addSpecIfMissing(specs, {
+      key,
+      label: formatSpecLabel(key),
+      value,
+    });
+  });
+
+  if (specs.length >= MAX_KEY_SPECS) {
+    return specs;
+  }
+
+  const productAttributes = Array.isArray(product.productAttributes)
+    ? product.productAttributes
+    : [];
+  productAttributes.forEach((productAttribute) => {
+    const row = productAttribute as NonNullable<ProductWithRelations["productAttributes"]>[number] & {
+      attribute?: {
+        key: string;
+        translations?: Array<{ locale: string; name?: string }>;
+        values?: Array<{
+          value?: string;
+          translations?: Array<{ locale: string; label?: string }>;
+        }>;
+      };
+    };
+    const attribute = row.attribute;
+    const key = attribute?.key;
+    if (!key || SPEC_ATTRIBUTE_EXCLUDE_KEYS.has(key)) {
+      return;
+    }
+    const attrTranslation =
+      attribute.translations?.find((t: { locale: string }) => t.locale === lang) ??
+      attribute.translations?.[0];
+    const firstValue = Array.isArray(attribute.values) ? attribute.values[0] : undefined;
+    if (!firstValue) {
+      return;
+    }
+    const valueTranslation =
+      firstValue.translations?.find((t: { locale: string }) => t.locale === lang) ??
+      firstValue.translations?.[0];
+    const value = (valueTranslation?.label || firstValue.value || "").trim();
+    if (!value) {
+      return;
+    }
+    addSpecIfMissing(specs, {
+      key,
+      label: (attrTranslation?.name || formatSpecLabel(key)).trim(),
+      value,
+    });
+  });
+
+  return specs;
+}
+
+function extractWarrantyBadge(labels: ProductListLabel[]): WarrantyBadge | null {
+  const warrantyLabel = labels.find((label) => WARRANTY_LABEL_PATTERN.test(label.value));
+  if (!warrantyLabel) {
+    return null;
+  }
+  return {
+    text: warrantyLabel.value,
+    color: warrantyLabel.color ?? null,
+    position: warrantyLabel.position ?? null,
+  };
+}
 
 /**
  * Get "Out of Stock" translation for a given language
@@ -221,8 +364,53 @@ class ProductsFindTransformService {
           title: catTranslation?.title || "",
         };
       }) : [];
+      const keySpecs = buildKeySpecs(product, variant, lang);
 
       const slug = translation?.slug || "";
+      const labels: ProductListLabel[] = (() => {
+        // Map existing labels
+        const existingLabels = Array.isArray(product.labels) ? product.labels.map((label: { id: string; type: string; value: string; position: string; color: string | null }) => ({
+          id: label.id,
+          type: label.type,
+          value: label.value,
+          position: label.position,
+          color: label.color,
+        })) : [];
+        
+        // Check if product is out of stock
+        const isOutOfStock = (variant?.stock || 0) <= 0;
+        
+        // If out of stock, add "Out of Stock" label
+        if (isOutOfStock) {
+          // Check if "Out of Stock" label already exists
+          const outOfStockText = getOutOfStockLabel(lang);
+          const hasOutOfStockLabel = existingLabels.some(
+            (label) => label.value.toLowerCase() === outOfStockText.toLowerCase() ||
+                       label.value.toLowerCase().includes('out of stock') ||
+                       label.value.toLowerCase().includes('արտադրված') ||
+                       label.value.toLowerCase().includes('нет в наличии') ||
+                       label.value.toLowerCase().includes('არ არის მარაგში')
+          );
+          
+          if (!hasOutOfStockLabel) {
+            // Check if top-left position is available, otherwise use top-right
+            const topLeftOccupied = existingLabels.some((l) => l.position === 'top-left');
+            const position = topLeftOccupied ? 'top-right' : 'top-left';
+            
+            existingLabels.push({
+              id: `out-of-stock-${product.id}`,
+              type: 'text',
+              value: outOfStockText,
+              position: position as 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+              color: '#6B7280', // Gray color for out of stock
+            });
+            
+          }
+        }
+        
+        return existingLabels;
+      })();
+      const warrantyBadge = extractWarrantyBadge(labels);
       return {
         id: product.id,
         slug,
@@ -257,49 +445,9 @@ class ProductsFindTransformService {
           };
         })(),
         inStock: (variant?.stock || 0) > 0,
-        labels: (() => {
-          // Map existing labels
-          const existingLabels = Array.isArray(product.labels) ? product.labels.map((label: { id: string; type: string; value: string; position: string; color: string | null }) => ({
-            id: label.id,
-            type: label.type,
-            value: label.value,
-            position: label.position,
-            color: label.color,
-          })) : [];
-          
-          // Check if product is out of stock
-          const isOutOfStock = (variant?.stock || 0) <= 0;
-          
-          // If out of stock, add "Out of Stock" label
-          if (isOutOfStock) {
-            // Check if "Out of Stock" label already exists
-            const outOfStockText = getOutOfStockLabel(lang);
-            const hasOutOfStockLabel = existingLabels.some(
-              (label) => label.value.toLowerCase() === outOfStockText.toLowerCase() ||
-                         label.value.toLowerCase().includes('out of stock') ||
-                         label.value.toLowerCase().includes('արտադրված') ||
-                         label.value.toLowerCase().includes('нет в наличии') ||
-                         label.value.toLowerCase().includes('არ არის მარაგში')
-            );
-            
-            if (!hasOutOfStockLabel) {
-              // Check if top-left position is available, otherwise use top-right
-              const topLeftOccupied = existingLabels.some((l) => l.position === 'top-left');
-              const position = topLeftOccupied ? 'top-right' : 'top-left';
-              
-              existingLabels.push({
-                id: `out-of-stock-${product.id}`,
-                type: 'text',
-                value: outOfStockText,
-                position: position as 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
-                color: '#6B7280', // Gray color for out of stock
-              });
-              
-            }
-          }
-          
-          return existingLabels;
-        })(),
+        labels,
+        warrantyBadge,
+        keySpecs,
         colors: availableColors, // Add available colors array
       };
     });
