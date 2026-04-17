@@ -3,6 +3,9 @@ import { processImageUrl } from "../utils/image-utils";
 import { translations } from "../translations";
 import { ProductWithRelations } from "./products-find-query.service";
 
+/** Storefront path prefix for product detail (PDP) links in list responses. */
+const PRODUCT_DETAIL_PATH_PREFIX = "/products";
+
 /**
  * Get "Out of Stock" translation for a given language
  */
@@ -219,9 +222,11 @@ class ProductsFindTransformService {
         };
       }) : [];
 
+      const slug = translation?.slug || "";
       return {
         id: product.id,
-        slug: translation?.slug || "",
+        slug,
+        href: slug ? `${PRODUCT_DETAIL_PATH_PREFIX}/${slug}` : "",
         title: translation?.title || "",
         defaultVariantId: variant?.id ?? null,
         brand: product.brand
