@@ -3,6 +3,7 @@
 import { useTranslation } from '../../../../lib/i18n-client';
 import { convertPrice, CurrencyCode } from '../../../../lib/currency';
 import { getStatusColor, getPaymentStatusColor } from '../utils/orderUtils';
+import { ADMIN_ORDER_STATUS_I18N_KEY } from '../utils/order-status-labels';
 import type { Order } from '../useOrders';
 
 interface OrderRowProps {
@@ -92,10 +93,10 @@ export function OrderRow({
               onChange={(e) => onStatusChange(e.target.value)}
               className={`px-2 py-1 text-xs font-medium rounded-md border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${getStatusColor(order.status)}`}
             >
-              <option value="pending">{t('admin.orders.pending')}</option>
-              <option value="processing">{t('admin.orders.processing')}</option>
-              <option value="completed">{t('admin.orders.completed')}</option>
-              <option value="cancelled">{t('admin.orders.cancelled')}</option>
+              <option value="pending">{t(ADMIN_ORDER_STATUS_I18N_KEY.pending)}</option>
+              <option value="processing">{t(ADMIN_ORDER_STATUS_I18N_KEY.processing)}</option>
+              <option value="completed">{t(ADMIN_ORDER_STATUS_I18N_KEY.completed)}</option>
+              <option value="cancelled">{t(ADMIN_ORDER_STATUS_I18N_KEY.cancelled)}</option>
             </select>
           )}
         </div>

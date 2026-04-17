@@ -1,8 +1,10 @@
 'use client';
 
+import { ADMIN_ORDER_LIST_STATUS_VALUES } from '@/lib/constants/admin-order-list-status';
 import { useTranslation } from '../../../../lib/i18n-client';
 import { Card } from '@shop/ui';
 import type { useOrders } from '../useOrders';
+import { ADMIN_ORDER_STATUS_I18N_KEY } from '../utils/order-status-labels';
 
 interface OrdersFiltersProps {
   statusFilter: string;
@@ -73,17 +75,37 @@ export function OrdersFilters({
   return (
     <Card className="p-4 mb-6">
       <div className="flex gap-4 items-center flex-wrap">
-        <select
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={statusFilter}
-          onChange={(e) => handleStatusChange(e.target.value)}
+        <div
+          className="flex flex-wrap gap-2 items-center"
+          role="group"
+          aria-label={t('admin.orders.orderStatusFilters')}
         >
-          <option value="">{t('admin.orders.allStatuses')}</option>
-          <option value="pending">{t('admin.orders.pending')}</option>
-          <option value="processing">{t('admin.orders.processing')}</option>
-          <option value="completed">{t('admin.orders.completed')}</option>
-          <option value="cancelled">{t('admin.orders.cancelled')}</option>
-        </select>
+          <button
+            type="button"
+            onClick={() => handleStatusChange('')}
+            className={`px-3 py-2 rounded-md text-sm font-medium border transition-colors ${
+              statusFilter === ''
+                ? 'bg-blue-600 text-white border-blue-600'
+                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            {t('admin.orders.allStatuses')}
+          </button>
+          {ADMIN_ORDER_LIST_STATUS_VALUES.map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => handleStatusChange(value)}
+              className={`px-3 py-2 rounded-md text-sm font-medium border transition-colors ${
+                statusFilter === value
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {t(ADMIN_ORDER_STATUS_I18N_KEY[value])}
+            </button>
+          ))}
+        </div>
         <select
           className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={paymentStatusFilter}

@@ -32,7 +32,7 @@
 | 6    | Վճարման եղանակներ                | `50%`           |
 | 7    | Օգտատիրոջ հաշիվ (Account)        | `100%`          |
 | 8    | Admin — catalog & promos         | `42%`           |
-| 9    | Admin — orders                   | `91%`           |
+| 9    | Admin — orders                   | `95%`           |
 | 10   | Admin — analytics                | `95%`           |
 | 11   | Reels                            | `0%`            |
 | 12   | Site-wide & i18n (API)           | `62%`           |
@@ -215,18 +215,20 @@
 
 ## Փուլ 9 — Admin: orders
 
-**Փուլի առաջընթաց.** `91%`
+**Փուլի առաջընթաց.** `95%`
 
 
 | ID  | Առաջադրանք (backend)                                        | Կատարման % | Կարգավիճակ |
 | --- | ----------------------------------------------------------- | ---------- | ---------- |
-| 9.1 | Orders list — filters: New, In process, Delivered, Canceled | 85         | 🔄         |
+| 9.1 | Orders list — filters: New, In process, Delivered, Canceled | 100        | ✅         |
 | 9.2 | Order details — line items, customer, payment, delivery     | 90         | 🔄         |
 | 9.3 | Order status updates — audit trail կամ timestamp            | 100        | ✅         |
 | 9.4 | Admin comment field — internal notes                        | 90         | 🔄         |
 
 
 *Նշումներ.* `OrderEvent` և `adminNotes` դաշտեր կան։
+
+**9.1 ✅ ավարտված (2026-04-17).** Admin պատվերների ցուցակ՝ `GET /api/v1/admin/orders` — query `status`՝ միայն `pending` | `processing` | `completed` | `cancelled` (այլ արժեքները անտեսվում են, վերադարձվում են բոլոր պատվերները)։ UI-ում ֆիլտրերի պիտակներ՝ **New** / **In process** / **Delivered** / **Canceled** (համապատասխանում են նույն DB արժեքներին) + «Բոլոր կարգավիճակները»։ `page`/`limit` անվավեր արժեքների դեպքում fallback `1` / `20`, `limit` առավելագույնը `100`։ Կոդ՝ `src/lib/constants/admin-order-list-status.ts`, `query-builder.ts`, `src/app/api/v1/admin/orders/route.ts`, `OrdersFilters.tsx` / `OrderRow.tsx`։
 
 **9.3 ✅ ավարտված (2026-04-17).** Admin `PUT /api/v1/admin/orders/[id]`-ի ժամանակ կարգավիճակների փոփոխությունները գրանցվում են `order_events`-ում՝ **`changes`** (from/to `status`, `paymentStatus`, `fulfillmentStatus`), `updatedFields`, **`userId`** (ընթացիկ ադմին JWT), ISO **`createdAt`**։ Նույն արժեքի վրա no-op թարմացում event չի ստեղծվում։ `GET /api/v1/admin/orders/[id]` պատասխանում **`auditTrail`**՝ `{ id, type, createdAt, data, actor }` (actor՝ `users`-ից email/անուն)։ Checkout-ի `order_created` event-ը ներառվում է timeline-ում։ Admin UI՝ `OrderDetailsAuditTrail`։ Vitest՝ `audit-trail-lines.test.ts`։
 

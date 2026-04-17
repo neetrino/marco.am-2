@@ -1,7 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
+import { isAdminOrderListStatus } from "@/lib/constants/admin-order-list-status";
 import { adminService } from "@/lib/services/admin.service";
+import { toApiError } from "@/lib/types/errors";
 import { logger } from "@/lib/utils/logger";
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 100;
+
+function parsePage(value: string | null): number {
+  const n = value ? parseInt(value, 10) : NaN;
+  if (!Number.isFinite(n) || n < 1) return DEFAULT_PAGE;
+  return n;
+}
+
+function parseLimit(value: string | null): number {
+  const n = value ? parseInt(value, 10) : NaN;
+  if (!Number.isFinite(n) || n < 1) return DEFAULT_LIMIT;
+  return Math.min(n, MAX_LIMIT);
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,9 +39,11 @@ export async function GET(req: NextRequest) {
 
     // Extract query parameters
     const searchParams = req.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
-    const status = searchParams.get('status') || undefined;
+    const page = parsePage(searchParams.get("page"));
+    const limit = parseLimit(searchParams.get("limit"));
+    const rawStatus = searchParams.get("status");
+    const status =
+      rawStatus && isAdminOrderListStatus(rawStatus) ? rawStatus : undefined;
     const paymentStatus = searchParams.get('paymentStatus') || undefined;
     const search = searchParams.get('search') || undefined;
     const sortBy = searchParams.get('sortBy') || undefined;
@@ -32,7 +52,7 @@ export async function GET(req: NextRequest) {
     const filters = {
       page,
       limit,
-      ...(status && { status }),
+      ...(status ? { status } : {}),
       ...(paymentStatus && { paymentStatus }),
       ...(search && { search }),
       ...(sortBy && { sortBy }),
@@ -42,18 +62,10 @@ export async function GET(req: NextRequest) {
     logger.devLog('📦 [ADMIN ORDERS] GET request with filters:', filters);
     const result = await adminService.getOrders(filters);
     return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("❌ [ADMIN] Error:", error);
-    return NextResponse.json(
-      {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
-        instance: req.url,
-      },
-      { status: error.status || 500 }
-    );
+  } catch (error: unknown) {
+    logger.error("Admin orders list error", { error });
+    const apiError = toApiError(error, req.url);
+    return NextResponse.json(apiError, { status: apiError.status ?? 500 });
   }
 }
 
