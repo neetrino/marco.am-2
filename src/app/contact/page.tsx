@@ -6,6 +6,13 @@ import type { FormEvent, ChangeEvent } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import { apiClient } from '../../lib/api-client';
 import { getErrorMessage } from '@/lib/types/errors';
+import { logger } from '@/lib/utils/logger';
+import {
+  CONTACT_FORM_MESSAGE_MAX,
+  CONTACT_FORM_NAME_MAX,
+  CONTACT_FORM_SUBJECT_MAX,
+} from '@/lib/constants/contact-form';
+import { ContactTurnstileWidget } from './ContactTurnstileWidget';
 
 // Icons
 const PhoneIcon = () => (
@@ -27,6 +34,8 @@ const MapPinIcon = () => (
   </svg>
 );
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
+
 export default function ContactPage() {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -34,34 +43,53 @@ export default function ContactPage() {
     email: '',
     subject: '',
     message: '',
+    /** Honeypot — must stay empty; sent as `website` for bots that fill hidden fields. */
+    website: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileMountKey, setTurnstileMountKey] = useState(0);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (TURNSTILE_SITE_KEY && !turnstileToken?.trim()) {
+      alert(t('contact.form.captchaRequired'));
+      return;
+    }
+
     setSubmitting(true);
-    
+
     try {
-      await apiClient.post('/api/v1/contact', {
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-      }, {
-        skipAuth: true, // Contact form doesn't require authentication
+      const body: Record<string, string> = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+        website: formData.website,
+      };
+      if (turnstileToken?.trim()) {
+        body.turnstileToken = turnstileToken.trim();
+      }
+
+      await apiClient.post('/api/v1/contact', body, {
+        skipAuth: true,
       });
-      
-      // Reset form
+
       setFormData({
         name: '',
         email: '',
         subject: '',
         message: '',
+        website: '',
       });
-      
+      setTurnstileToken(null);
+      setTurnstileMountKey((k) => k + 1);
+
       alert(t('contact.form.submitSuccess') || 'Ձեր հաղորդագրությունը հաջողությամբ ուղարկվեց');
     } catch (error: unknown) {
-      console.error('Error submitting contact form:', error);
+      logger.error('Contact form submission failed', {
+        message: error instanceof Error ? error.message : getErrorMessage(error),
+      });
       alert(t('contact.form.submitError') || 'Սխալ: ' + (getErrorMessage(error) || 'Չհաջողվեց ուղարկել հաղորդագրությունը'));
     } finally {
       setSubmitting(false);
@@ -130,7 +158,21 @@ export default function ContactPage() {
 
           {/* Right Side: Contact Form */}
           <div>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 relative">
+              <div
+                className="absolute -left-[10000px] h-0 w-0 overflow-hidden"
+                aria-hidden="true"
+              >
+                <input
+                  id="contact-website-honeypot"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.website}
+                  onChange={handleChange}
+                />
+              </div>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
                   {t('contact.form.name')}
@@ -140,6 +182,7 @@ export default function ContactPage() {
                   name="name"
                   type="text"
                   required
+                  maxLength={CONTACT_FORM_NAME_MAX}
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full"
@@ -155,6 +198,7 @@ export default function ContactPage() {
                   name="email"
                   type="email"
                   required
+                  maxLength={254}
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full"
@@ -170,6 +214,7 @@ export default function ContactPage() {
                   name="subject"
                   type="text"
                   required
+                  maxLength={CONTACT_FORM_SUBJECT_MAX}
                   value={formData.subject}
                   onChange={handleChange}
                   className="w-full"
@@ -184,12 +229,21 @@ export default function ContactPage() {
                   id="message"
                   name="message"
                   rows={6}
+                  required
+                  maxLength={CONTACT_FORM_MESSAGE_MAX}
                   value={formData.message}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   placeholder={t('contact.form.messagePlaceholder')}
                 />
               </div>
+              {TURNSTILE_SITE_KEY ? (
+                <ContactTurnstileWidget
+                  key={turnstileMountKey}
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onTokenChange={setTurnstileToken}
+                />
+              ) : null}
               <Button
                 type="submit"
                 variant="primary"
