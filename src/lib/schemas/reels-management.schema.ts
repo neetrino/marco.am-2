@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   REEL_MODERATION_STATUSES,
   REEL_SOURCE_TYPES,
+  REELS_LIKES_STORAGE_VERSION,
   REELS_MANAGEMENT_MAX_ITEMS,
   REELS_MANAGEMENT_MODERATION_NOTE_MAX_LENGTH,
   REELS_MANAGEMENT_STORAGE_VERSION,
@@ -98,6 +99,16 @@ export const reelsManagementStorageSchema = z.object({
   items: z.array(reelItemSchema).max(REELS_MANAGEMENT_MAX_ITEMS),
 });
 
+const reelLikesEntrySchema = z.object({
+  reelId: z.string().min(1).max(64),
+  userIds: z.array(z.string().min(1).max(64)),
+});
+
+export const reelsLikesStorageSchema = z.object({
+  version: z.literal(REELS_LIKES_STORAGE_VERSION),
+  items: z.array(reelLikesEntrySchema).max(REELS_MANAGEMENT_MAX_ITEMS),
+});
+
 export const publicReelItemSchema = z.object({
   id: z.string().min(1).max(64),
   title: z.string().max(160),
@@ -112,10 +123,15 @@ export const publicReelItemSchema = z.object({
   videoUrl: urlSchema,
   posterUrl: urlSchema,
   sortOrder: z.number().int().min(0).max(9999),
+  likesCount: z.number().int().min(0),
+  likedByCurrentUser: z.boolean(),
 });
 
 export const reelsPublicPayloadSchema = z.object({
   generatedAt: z.string().datetime({ offset: true }),
+  viewer: z.object({
+    likedReelsCount: z.number().int().min(0),
+  }),
   items: z.array(publicReelItemSchema),
 });
 
@@ -127,6 +143,7 @@ export const reelsModerationPatchSchema = z.object({
 });
 
 export type ReelsManagementStorage = z.infer<typeof reelsManagementStorageSchema>;
+export type ReelsLikesStorage = z.infer<typeof reelsLikesStorageSchema>;
 export type ReelModerationPatch = z.infer<typeof reelsModerationPatchSchema>;
 export type PublicReelItem = z.infer<typeof publicReelItemSchema>;
 export type ReelsPublicPayload = z.infer<typeof reelsPublicPayloadSchema>;

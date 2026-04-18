@@ -120,6 +120,8 @@ function toPublicItems(
       videoUrl: item.videoUrl,
       posterUrl: resolvePublicPoster(item.posterUrl),
       sortOrder: item.sortOrder,
+      likesCount: 0,
+      likedByCurrentUser: false,
     }));
 }
 
@@ -200,6 +202,9 @@ export const reelsManagementService = {
     const storage = await loadStorage();
     return reelsPublicPayloadSchema.parse({
       generatedAt: new Date().toISOString(),
+      viewer: {
+        likedReelsCount: 0,
+      },
       items: toPublicItems(storage, locale),
     });
   },

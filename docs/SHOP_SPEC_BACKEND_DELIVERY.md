@@ -3,7 +3,7 @@
 > Աղբյուր. `[shop-marco-code-plan.md](./shop-marco-code-plan.md)` (functional spec) — **backend** շերտին և API/CMS պահանջվող կետերը։  
 > Ճարտարապետության ամփոփում. `[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)`
 
-**Վերջին թարմացում.** 2026-04-18 (փուլ 11 — reels content source + moderation workflow)
+**Վերջին թարմացում.** 2026-04-18 (փուլ 11 — reels like/unlike + user հաշվարկ)
 
 **Արվածության գնահատում.** Կոդբազայի աուդիտ (`shared/db/prisma/schema.prisma`, `src/app/api/`**, `src/lib/services/`**) — տոկոսները արտահայտում են **ընթացիկ repo-ում իմպլեմենտացիայի** համապատասխանությունը spec-ի backend պահանջին (ոչ թե դիզայն/QA փուլը)։
 
@@ -34,7 +34,7 @@
 | 8    | Admin — catalog & promos         | `100%`          |
 | 9    | Admin — orders                   | `100%`          |
 | 10   | Admin — analytics                | `100%`          |
-| 11   | Reels                            | `67%`           |
+| 11   | Reels                            | `100%`          |
 | 12   | Site-wide & i18n (API)           | `62%`           |
 
 
@@ -329,14 +329,14 @@
 
 ## Փուլ 11 — Reels
 
-**Փուլի առաջընթաց.** `67%`
+**Փուլի առաջընթաց.** `100%`
 
 
 | ID   | Առաջադրանք (backend)                                                | Կատարման % | Կարգավիճակ |
 | ---- | ------------------------------------------------------------------- | ---------- | ---------- |
 | 11.1 | Content source — admin upload vs external URLs, moderation workflow | 100        | ✅          |
 | 11.2 | Vertical feed — մետատվյալներ (URL, poster, order)                   | 100        | ✅          |
-| 11.3 | Like functionality — like/unlike, հաշվարկ օգտատիրոջ համար           | 0          | ⬜          |
+| 11.3 | Like functionality — like/unlike, հաշվարկ օգտատիրոջ համար           | 100        | ✅          |
 
 
 *(Mute/Play/Pause — հիմնականում client; եթե view-ներն են պահանջվում analytics-ի համար, ավելացնել առանձին event API։)*
@@ -351,6 +351,12 @@ Content source policy՝ `sourceType = admin_upload | external_url`․
 Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|approved|rejected`, կամընտիր note), որտեղ finalize-ի դեպքում backend-ը գրանցում է `moderatedAt` + `moderatedBy` (admin user id), իսկ `pending` վերադարձնելիս մաքրում է moderation actor/date դաշտերը։
 
 **11.2 ✅ ավարտված (2026-04-18, updated).** Public feed API՝ `GET /api/v1/reels?locale=en|hy|ru` — վերադարձնում է միայն `active` + `moderation.status=approved` reels-ները, sort-ված feed order-ով, և vertical metadata contract-ը տալիս է canonical դաշտերով (`id`, localized `title`, `url`, `poster`, `order`, `generatedAt`)՝ backward-compatible alias-ներով (`videoUrl`, `posterUrl`, `sortOrder`)։ Feed-ը հիմա օգտագործվում է նաև home reels rail / `/reels` էջում (այլևս ոչ hardcoded list)։
+
+**11.3 ✅ ավարտված (2026-04-18).** Ավելացվել է reels engagement backend-ը settings-backed մոտեցմամբ՝ առանց Prisma migration-ի։
+- Public feed API `GET /api/v1/reels` հիմա վերադարձնում է յուրաքանչյուր reel-ի `likesCount` + `likedByCurrentUser`, ինչպես նաև `viewer.likedReelsCount` (JWT user-ի համար, guest-ի դեպքում `0`)։
+- Like/Unlike contract՝ `POST /api/v1/reels/[id]/like` և `DELETE /api/v1/reels/[id]/like` (JWT required)։ Endpoint-ները idempotent են՝ կրկնակի like/unlike չի կոտրում վիճակը։
+- Like-ը թույլատրվում է միայն public feed-ում հասանելի reel-ների համար (`active` + `approved`)՝ հակառակ դեպքում `404`։
+- Պահպանումը կատարվում է `settings.key = reels_likes`-ում (`versioned` schema), ներառյալ per-reel user ids ցանկերը։
 
 ---
 

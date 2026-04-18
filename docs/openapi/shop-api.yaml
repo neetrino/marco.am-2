@@ -761,13 +761,80 @@ paths:
           description: |
             Feed items sorted by `order` (`sortOrder` alias). Includes canonical metadata fields
             (`url`, `poster`, `order`) and backward-compatible aliases
-            (`videoUrl`, `posterUrl`, `sortOrder`).
+            (`videoUrl`, `posterUrl`, `sortOrder`), plus like counters and viewer-specific
+            like state.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReelsPublicResponse"
         "500":
           description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/reels/{id}/like:
+    post:
+      tags: [Reels]
+      summary: Like one reel for authenticated user
+      operationId: postReelLike
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Reel item identifier from public feed.
+      responses:
+        "200":
+          description: Like state after mutation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelLikeMutationResponse"
+        "401":
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Reel is not available in public feed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    delete:
+      tags: [Reels]
+      summary: Unlike one reel for authenticated user
+      operationId: deleteReelLike
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Reel item identifier from public feed.
+      responses:
+        "200":
+          description: Like state after mutation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelLikeMutationResponse"
+        "401":
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Reel is not available in public feed.
           content:
             application/json:
               schema:
@@ -1698,7 +1765,7 @@ components:
     ReelPublicItem:
       type: object
       required:
-        [id, title, url, poster, order, videoUrl, posterUrl, sortOrder]
+        [id, title, url, poster, order, videoUrl, posterUrl, sortOrder, likesCount, likedByCurrentUser]
       properties:
         id:
           type: string
@@ -1727,18 +1794,48 @@ components:
           minimum: 0
           maximum: 9999
           description: Backward-compatible alias for `order`.
+        likesCount:
+          type: integer
+          minimum: 0
+          description: Total likes for this reel.
+        likedByCurrentUser:
+          type: boolean
+          description: True when current JWT user has liked this reel.
+
+    ReelsViewerState:
+      type: object
+      required: [likedReelsCount]
+      properties:
+        likedReelsCount:
+          type: integer
+          minimum: 0
+          description: Number of reels liked by current JWT user across visible feed.
 
     ReelsPublicResponse:
       type: object
-      required: [generatedAt, items]
+      required: [generatedAt, viewer, items]
       properties:
         generatedAt:
           type: string
           format: date-time
+        viewer:
+          $ref: "#/components/schemas/ReelsViewerState"
         items:
           type: array
           items:
             $ref: "#/components/schemas/ReelPublicItem"
+
+    ReelLikeMutationResponse:
+      type: object
+      required: [reelId, likesCount, likedByCurrentUser]
+      properties:
+        reelId:
+          type: string
+        likesCount:
+          type: integer
+          minimum: 0
+        likedByCurrentUser:
+          type: boolean
 
     ReelModerationPatch:
       type: object
