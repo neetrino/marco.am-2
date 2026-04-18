@@ -242,7 +242,7 @@
 
 ## Փուլ 8 — Admin: catalog & promos
 
-**Փուլի առաջընթաց.** `84%`
+**Փուլի առաջընթաց.** `98%`
 
 
 | ID  | Առաջադրանք (backend)                                                                                                  | Կատարման % | Կարգավիճակ |
@@ -251,7 +251,7 @@
 | 8.2 | Product class — Retail / Wholesale դաշտ SKU/ապրանքի վրա                                                               | 100        | ✅          |
 | 8.3 | Delivery rules — Retail-only → Yandex delivery; Wholesale կամ mixed cart → free delivery (**սերվերային enforcement**) | 100        | ✅          |
 | 8.4 | Promo codes և discounts — rules, limits, date ranges                                                                  | 100        | ✅          |
-| 8.5 | Banner management — slots, scheduling, links                                                                          | 15         | ⬜          |
+| 8.5 | Banner management — slots, scheduling, links                                                                          | 100        | ✅          |
 | 8.6 | Categories management — tree, SEO fields                                                                              | 90         | 🔄         |
 
 
@@ -264,6 +264,8 @@
 **8.3 ✅ ավարտված (2026-04-18).** Delivery rule enforcement-ը միավորված է սերվերային checkout հոսքերում՝ մեկ resolver-ով (`src/lib/services/checkout-delivery-rules.service.ts`)։ Կանոնը կիրառվում է թե՛ preview totals endpoint-ում (`POST /api/v1/checkout/totals`), թե՛ order creation-ում (`POST /api/v1/orders/checkout`)՝ cart line-երի `productClass`-ի հիմքով․ `retail-only` cart → courier delivery արժեքը հաշվարկվում է `adminDeliveryService.getDeliveryPrice`-ով (Yandex-priced flow), իսկ `wholesale-only` կամ `mixed` cart → courier delivery-ը հարկադրաբար `0` է (free delivery)։ Enforcement-ը client payload-ից անկախ է, և order event-ում պահպանվում է `shippingPricingRuleApplied` audit marker (`retail_yandex` / `wholesale_or_mixed_free`)։
 
 **8.4 ✅ ավարտված (2026-04-18).** Ավելացվել է promo engine (`src/lib/services/promo-codes.service.ts`) և Admin API promo code-ների կառավարման համար (`GET`/`PUT /api/v1/supersudo/promo-codes`, `DELETE /api/v1/supersudo/promo-codes/[id]`)՝ settings JSON պահեստով (`promoCodes`)։ Checkout preview/order creation հոսքերում (`POST /api/v1/checkout/totals`, `POST /api/v1/orders/checkout`) coupon code-ը հիմա իրականում կիրառվում է սերվերում՝ rule/limit/date-range validation-ով, discount հաշվարկով (`percentage`/`fixed`, optional cap), scope ստուգմամբ (`all|retail|wholesale`) և usage-limit enforcement-ով (`orders` աղյուսակի `couponCode`)։ Ավելացվել է cart coupon API՝ `PUT`/`DELETE /api/v1/cart/coupon`, ինչպես նաև order schema/migration՝ `Order.couponCode` + `shared/db/prisma/migrations/20260418121000_add_order_coupon_code`։
+
+**8.5 ✅ ավարտված (2026-04-18).** Ավելացվել է admin-managed banner համակարգ settings պահեստով (`settings.key = banners`)՝ slot-aware կոնֆիգուրացիայով, scheduling պատուհաններով և անվտանգ link վալիդացիայով։ Admin API՝ `GET`/`PUT /api/v1/supersudo/banners` (JWT + admin, ամբողջ document read/write)։ Public API՝ `GET /api/v1/banners?slot=<slot>&locale=<en|hy|ru>[&at=<ISO8601>]`՝ վերադարձնում է միայն տվյալ slot-ի `active` և schedule-ում ընկած banner-ները՝ sort order-ով։ Իրականացում՝ `src/lib/constants/banner-management.ts`, `src/lib/schemas/banner-management.schema.ts`, `src/lib/services/banner-management.service.ts`, route-ներ՝ `src/app/api/v1/supersudo/banners/route.ts` և `src/app/api/v1/banners/route.ts`։ Vitest՝ `src/lib/schemas/banner-management.schema.test.ts`։ Admin ինտեգրման payload/API օրինակներ՝ `docs/BANNER_MANAGEMENT_API_EXAMPLES.md`։
 
 ---
 
