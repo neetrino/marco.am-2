@@ -350,7 +350,7 @@ Content source policy՝ `sourceType = admin_upload | external_url`․
 - `admin_upload` → URL-ը պետք է լինի `R2_PUBLIC_URL` հիմքով կամ absolute local path (`/…`)։  
 Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|approved|rejected`, կամընտիր note), որտեղ finalize-ի դեպքում backend-ը գրանցում է `moderatedAt` + `moderatedBy` (admin user id), իսկ `pending` վերադարձնելիս մաքրում է moderation actor/date դաշտերը։
 
-**11.2 ✅ ավարտված (2026-04-18).** Public feed API՝ `GET /api/v1/reels?locale=en|hy|ru` — վերադարձնում է միայն `active` + `moderation.status=approved` reels-ները, sort-ված `sortOrder`-ով՝ feed metadata payload-ով (`id`, localized `title`, `videoUrl`, `posterUrl`, `sortOrder`, `generatedAt`)։ Սա ծածկում է vertical feed-ի backend metadata պահանջը։
+**11.2 ✅ ավարտված (2026-04-18, updated).** Public feed API՝ `GET /api/v1/reels?locale=en|hy|ru` — վերադարձնում է միայն `active` + `moderation.status=approved` reels-ները, sort-ված feed order-ով, և vertical metadata contract-ը տալիս է canonical դաշտերով (`id`, localized `title`, `url`, `poster`, `order`, `generatedAt`)՝ backward-compatible alias-ներով (`videoUrl`, `posterUrl`, `sortOrder`)։ Feed-ը հիմա օգտագործվում է նաև home reels rail / `/reels` էջում (այլևս ոչ hardcoded list)։
 
 ---
 

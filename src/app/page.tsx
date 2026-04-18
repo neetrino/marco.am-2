@@ -10,6 +10,7 @@ import { HomeWhyChooseUsSection } from '../components/home/HomeWhyChooseUsSectio
 import { LANGUAGE_PREFERENCE_KEY, parseLanguageFromServer } from '../lib/language';
 import { homeCustomerReviewsService } from '../lib/services/home-customer-reviews.service';
 import { homeHeroBannerService } from '../lib/services/home-hero-banner.service';
+import { reelsManagementService } from '../lib/services/reels-management.service';
 import { whyChooseUsService } from '../lib/services/why-choose-us.service';
 
 export default async function HomePage() {
@@ -21,12 +22,13 @@ export default async function HomePage() {
   const initialWhyChooseUs = await whyChooseUsService.getPublicPayload(lang);
   const initialCustomerReviews =
     await homeCustomerReviewsService.getPublicPayload(lang);
+  const reelsFeed = await reelsManagementService.getPublicPayload(lang);
 
   return (
     <div className="min-h-screen">
       <HeroCarousel initialHero={initialHero} />
 
-      <HomeReelsSection />
+      <HomeReelsSection items={reelsFeed.items} />
 
       <HomeMobileMessageCta />
 

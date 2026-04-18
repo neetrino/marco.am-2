@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { reelsManagementStorageSchema } from "./reels-management.schema";
+import {
+  reelsManagementStorageSchema,
+  type ReelsManagementStorage,
+} from "./reels-management.schema";
 
-function buildValidPayload() {
+function buildValidPayload(): ReelsManagementStorage {
   return {
     version: 1 as const,
     items: [

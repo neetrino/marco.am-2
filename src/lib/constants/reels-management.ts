@@ -19,3 +19,6 @@ export const REEL_MODERATION_STATUSES = [
   "approved",
   "rejected",
 ] as const;
+
+/** Used when reel poster metadata is missing for the feed card/video placeholder. */
+export const REELS_POSTER_FALLBACK_SRC = "/images/home/reels/reel-1.png" as const;

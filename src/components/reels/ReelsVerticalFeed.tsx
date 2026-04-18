@@ -1,13 +1,12 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useLayoutEffect, useState } from 'react';
 import { ArrowLeft, Heart } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 
 import { useTranslation } from '../../lib/i18n-client';
-import { REELS_ITEMS } from '../home/home-reels.constants';
+import type { PublicReelItem } from '../../lib/schemas/reels-management.schema';
 import { REELS_FEED_SCROLL_CONTAINER_CLASS } from './reels-vertical-feed.constants';
 
 const montserrat = Montserrat({
@@ -18,12 +17,11 @@ const montserrat = Montserrat({
 
 export type ReelsVerticalFeedProps = {
   initialIndex: number;
+  items: PublicReelItem[];
 };
 
-/**
- * Vertical snap-scrolling “reels” feed (poster images until CMS/video URLs exist).
- */
-export function ReelsVerticalFeed({ initialIndex }: ReelsVerticalFeedProps) {
+/** Vertical snap-scrolling reels feed powered by public reels metadata API. */
+export function ReelsVerticalFeed({ initialIndex, items }: ReelsVerticalFeedProps) {
   const { t } = useTranslation();
   const [liked, setLiked] = useState<Record<number, boolean>>({});
 
@@ -59,25 +57,23 @@ export function ReelsVerticalFeed({ initialIndex }: ReelsVerticalFeedProps) {
         role="feed"
         aria-label={t('home.reels_feed_region_aria')}
       >
-        {REELS_ITEMS.map((item, index) => {
-          const label = t(`home.${item.labelKey}`);
+        {items.map((item, index) => {
+          const label = item.title;
           const isLiked = liked[index] === true;
           return (
             <article
               id={`reel-slide-${index}`}
-              key={item.labelKey}
+              key={item.id}
               aria-posinset={index + 1}
-              aria-setsize={REELS_ITEMS.length}
+              aria-setsize={items.length}
               className="relative flex min-h-full shrink-0 snap-start snap-always flex-col"
             >
               <div className="relative min-h-full flex-1 overflow-hidden bg-neutral-900">
-                <Image
-                  src={item.imageSrc}
+                <img
+                  src={item.posterUrl}
                   alt={label}
-                  fill
-                  sizes="100vw"
-                  className="object-cover object-center"
-                  priority={index === initialIndex}
+                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  loading={index === initialIndex ? 'eager' : 'lazy'}
                 />
                 <div
                   className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
@@ -116,6 +112,11 @@ export function ReelsVerticalFeed({ initialIndex }: ReelsVerticalFeedProps) {
           );
         })}
       </div>
+      {items.length === 0 ? (
+        <div className="flex h-[calc(100dvh-5.5rem)] items-center justify-center px-6 text-center text-sm text-white/70">
+          {t('home.reels_feed_hint_screen_reader')}
+        </div>
+      ) : null}
       <p className="sr-only">{t('home.reels_feed_hint_screen_reader')}</p>
     </div>
   );

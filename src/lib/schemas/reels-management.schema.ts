@@ -98,6 +98,27 @@ export const reelsManagementStorageSchema = z.object({
   items: z.array(reelItemSchema).max(REELS_MANAGEMENT_MAX_ITEMS),
 });
 
+export const publicReelItemSchema = z.object({
+  id: z.string().min(1).max(64),
+  title: z.string().max(160),
+  /** Canonical URL fields for vertical feed clients. */
+  url: urlSchema,
+  poster: z.union([urlSchema, z.null()]),
+  order: z.number().int().min(0).max(9999),
+  /**
+   * Backward-compatible aliases kept for existing clients.
+   * New consumers should prefer `url` / `poster` / `order`.
+   */
+  videoUrl: urlSchema,
+  posterUrl: urlSchema,
+  sortOrder: z.number().int().min(0).max(9999),
+});
+
+export const reelsPublicPayloadSchema = z.object({
+  generatedAt: z.string().datetime({ offset: true }),
+  items: z.array(publicReelItemSchema),
+});
+
 export const reelsModerationPatchSchema = z.object({
   status: reelModerationStatusSchema,
   note: z
@@ -107,3 +128,5 @@ export const reelsModerationPatchSchema = z.object({
 
 export type ReelsManagementStorage = z.infer<typeof reelsManagementStorageSchema>;
 export type ReelModerationPatch = z.infer<typeof reelsModerationPatchSchema>;
+export type PublicReelItem = z.infer<typeof publicReelItemSchema>;
+export type ReelsPublicPayload = z.infer<typeof reelsPublicPayloadSchema>;

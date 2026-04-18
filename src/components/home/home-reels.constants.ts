@@ -112,29 +112,3 @@ export const REELS_PAGINATION_DOT_SIZE_PX = 8;
 export const REELS_PAGINATION_DOT_GAP_MOBILE_PX = 6;
 export const REELS_PAGINATION_DOT_GAP_DESKTOP_PX = 10;
 
-export const REELS_ITEMS = [
-  {
-    imageSrc: '/images/home/reels/reel-1.png',
-    labelKey: 'reels_item_washing_machines' as const,
-  },
-  {
-    imageSrc: '/images/home/reels/reel-2.png',
-    labelKey: 'reels_item_vacuum_cleaners' as const,
-  },
-  {
-    imageSrc: '/images/home/reels/reel-3.png',
-    labelKey: 'reels_item_small_appliances' as const,
-  },
-  {
-    imageSrc: '/images/home/reels/reel-4.png',
-    labelKey: 'reels_item_smart_tv' as const,
-  },
-  {
-    imageSrc: '/images/home/reels/reel-5.png',
-    labelKey: 'reels_item_refrigerators' as const,
-  },
-  {
-    imageSrc: '/images/home/reels/reel-6.png',
-    labelKey: 'reels_item_air_conditioners' as const,
-  },
-] as const;

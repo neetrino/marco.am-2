@@ -2,10 +2,14 @@ import { db } from "@white-shop/db";
 
 import {
   REELS_MANAGEMENT_SETTINGS_KEY,
+  REELS_POSTER_FALLBACK_SRC,
   REELS_MANAGEMENT_STORAGE_VERSION,
 } from "@/lib/constants/reels-management";
-import type { ReelModerationPatch } from "@/lib/schemas/reels-management.schema";
 import {
+  type ReelModerationPatch,
+  type PublicReelItem,
+  type ReelsPublicPayload,
+  reelsPublicPayloadSchema,
   reelsManagementStorageSchema,
   type ReelsManagementStorage,
 } from "@/lib/schemas/reels-management.schema";
@@ -13,19 +17,6 @@ import { AppError } from "@/lib/types/errors";
 import { logger } from "@/lib/utils/logger";
 
 type ReelsLocale = "en" | "hy" | "ru";
-
-export type PublicReelItem = {
-  id: string;
-  title: string;
-  videoUrl: string;
-  posterUrl: string | null;
-  sortOrder: number;
-};
-
-export type ReelsPublicPayload = {
-  generatedAt: string;
-  items: PublicReelItem[];
-};
 
 const DEFAULT_STORAGE: ReelsManagementStorage = {
   version: REELS_MANAGEMENT_STORAGE_VERSION,
@@ -64,6 +55,11 @@ function normalizeSettingsAssetUrl(url: string | null): string | null {
   }
   const trimmed = url.trim();
   return trimmed.length === 0 ? null : trimmed;
+}
+
+function resolvePublicPoster(posterUrl: string | null): string {
+  const normalized = normalizeSettingsAssetUrl(posterUrl);
+  return normalized ?? REELS_POSTER_FALLBACK_SRC;
 }
 
 function isAdminAssetUrl(raw: string): boolean {
@@ -118,8 +114,11 @@ function toPublicItems(
     .map((item) => ({
       id: item.id,
       title: item.title[locale].trim(),
+      url: item.videoUrl,
+      poster: normalizeSettingsAssetUrl(item.posterUrl),
+      order: item.sortOrder,
       videoUrl: item.videoUrl,
-      posterUrl: normalizeSettingsAssetUrl(item.posterUrl),
+      posterUrl: resolvePublicPoster(item.posterUrl),
       sortOrder: item.sortOrder,
     }));
 }
@@ -199,9 +198,9 @@ export const reelsManagementService = {
   async getPublicPayload(localeRaw: string | undefined): Promise<ReelsPublicPayload> {
     const locale = normalizeLocale(localeRaw);
     const storage = await loadStorage();
-    return {
+    return reelsPublicPayloadSchema.parse({
       generatedAt: new Date().toISOString(),
       items: toPublicItems(storage, locale),
-    };
+    });
   },
 };

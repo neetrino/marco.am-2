@@ -29,6 +29,8 @@ tags:
     description: Site-wide public endpoints (contact form, etc.).
   - name: Home
     description: Home page structured CMS content (public + supersudo admin).
+  - name: Reels
+    description: Vertical reels feed (public) and admin moderation/config.
 
 paths:
   /api/health:
@@ -736,6 +738,134 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/reels:
+    get:
+      tags: [Reels]
+      summary: Public vertical feed metadata (approved + active reels)
+      operationId: getReelsFeed
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: |
+            Feed items sorted by `order` (`sortOrder` alias). Includes canonical metadata fields
+            (`url`, `poster`, `order`) and backward-compatible aliases
+            (`videoUrl`, `posterUrl`, `sortOrder`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/reels:
+    get:
+      tags: [Reels]
+      summary: Full reels config document for admin
+      operationId: getSupersudoReels
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = reels`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Reels]
+      summary: Replace reels document (validated)
+      operationId: putSupersudoReels
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReelsStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/reels/{id}/moderation:
+    patch:
+      tags: [Reels]
+      summary: Patch moderation status for one reel
+      operationId: patchSupersudoReelModeration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Reel item identifier from `items[].id`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReelModerationPatch"
+      responses:
+        "200":
+          description: Updated full reels storage document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Reel id not found.
           content:
             application/json:
               schema:
@@ -1483,6 +1613,143 @@ components:
           maxItems: 10
           items:
             $ref: "#/components/schemas/SiteFooterSocialLinkStorage"
+
+    ReelsLocaleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 160
+        hy:
+          type: string
+          maxLength: 160
+        ru:
+          type: string
+          maxLength: 160
+
+    ReelSourceType:
+      type: string
+      enum: [admin_upload, external_url]
+
+    ReelModerationStatus:
+      type: string
+      enum: [pending, approved, rejected]
+
+    ReelModerationState:
+      type: object
+      required: [status, moderatedAt, moderatedBy]
+      properties:
+        status:
+          $ref: "#/components/schemas/ReelModerationStatus"
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
+        moderatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        moderatedBy:
+          type: string
+          nullable: true
+
+    ReelStorageItem:
+      type: object
+      required:
+        [id, title, sourceType, videoUrl, posterUrl, active, sortOrder, moderation]
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        title:
+          $ref: "#/components/schemas/ReelsLocaleTriple"
+        sourceType:
+          $ref: "#/components/schemas/ReelSourceType"
+        videoUrl:
+          type: string
+          maxLength: 2048
+        posterUrl:
+          type: string
+          nullable: true
+          maxLength: 2048
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9999
+        moderation:
+          $ref: "#/components/schemas/ReelModerationState"
+
+    ReelsStorageDocument:
+      type: object
+      required: [version, items]
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/ReelStorageItem"
+
+    ReelPublicItem:
+      type: object
+      required:
+        [id, title, url, poster, order, videoUrl, posterUrl, sortOrder]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+          description: Canonical video URL field for vertical feed clients.
+        poster:
+          type: string
+          nullable: true
+          description: Canonical poster URL field (nullable).
+        order:
+          type: integer
+          minimum: 0
+          maximum: 9999
+          description: Canonical sort field for vertical feed clients.
+        videoUrl:
+          type: string
+          description: Backward-compatible alias for `url`.
+        posterUrl:
+          type: string
+          description: Backward-compatible alias for `poster` with fallback applied.
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9999
+          description: Backward-compatible alias for `order`.
+
+    ReelsPublicResponse:
+      type: object
+      required: [generatedAt, items]
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReelPublicItem"
+
+    ReelModerationPatch:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/ReelModerationStatus"
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
 
     LoginRequest:
       type: object
