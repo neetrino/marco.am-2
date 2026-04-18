@@ -3,7 +3,7 @@
 > Աղբյուր. `[shop-marco-code-plan.md](./shop-marco-code-plan.md)` (functional spec) — **backend** շերտին և API/CMS պահանջվող կետերը։  
 > Ճարտարապետության ամփոփում. `[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)`
 
-**Վերջին թարմացում.** 2026-04-18 (փուլ 9 — admin internal order notes)
+**Վերջին թարմացում.** 2026-04-18 (փուլ 11 — reels content source + moderation workflow)
 
 **Արվածության գնահատում.** Կոդբազայի աուդիտ (`shared/db/prisma/schema.prisma`, `src/app/api/`**, `src/lib/services/`**) — տոկոսները արտահայտում են **ընթացիկ repo-ում իմպլեմենտացիայի** համապատասխանությունը spec-ի backend պահանջին (ոչ թե դիզայն/QA փուլը)։
 
@@ -34,11 +34,11 @@
 | 8    | Admin — catalog & promos         | `100%`          |
 | 9    | Admin — orders                   | `100%`          |
 | 10   | Admin — analytics                | `100%`          |
-| 11   | Reels                            | `0%`            |
+| 11   | Reels                            | `67%`           |
 | 12   | Site-wide & i18n (API)           | `62%`           |
 
 
-**Ընդհանուր նախագծի առաջընթաց (backend).** `~70%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
+**Ընդհանուր նախագծի առաջընթաց (backend).** `~76%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
 
 ---
 
@@ -329,19 +329,28 @@
 
 ## Փուլ 11 — Reels
 
-**Փուլի առաջընթաց.** `0%`
+**Փուլի առաջընթաց.** `67%`
 
 
 | ID   | Առաջադրանք (backend)                                                | Կատարման % | Կարգավիճակ |
 | ---- | ------------------------------------------------------------------- | ---------- | ---------- |
-| 11.1 | Content source — admin upload vs external URLs, moderation workflow | 0          | ⬜          |
-| 11.2 | Vertical feed — մետատվյալներ (URL, poster, order)                   | 0          | ⬜          |
+| 11.1 | Content source — admin upload vs external URLs, moderation workflow | 100        | ✅          |
+| 11.2 | Vertical feed — մետատվյալներ (URL, poster, order)                   | 100        | ✅          |
 | 11.3 | Like functionality — like/unlike, հաշվարկ օգտատիրոջ համար           | 0          | ⬜          |
 
 
 *(Mute/Play/Pause — հիմնականում client; եթե view-ներն են պահանջվում analytics-ի համար, ավելացնել առանձին event API։)*
 
-*Նշումներ.* Backend մոդել/API reels-ի համար repo-ում չի երևում (home-ում հավանաբար ստատիկ/կլիենտ)։
+*Նշումներ.* Reels-ը իրականացված է settings-backed admin/public API շերտով (`settings.key = reels`)՝ առանց Prisma schema migration-ի։
+
+**11.1 ✅ ավարտված (2026-04-18).** Ավելացվել է admin-managed reels storage + moderation workflow։  
+Admin full-config API՝ `GET`/`PUT /api/v1/supersudo/reels` (JWT admin, Zod validation)։  
+Content source policy՝ `sourceType = admin_upload | external_url`․
+- `external_url` → միայն HTTPS video URL,
+- `admin_upload` → URL-ը պետք է լինի `R2_PUBLIC_URL` հիմքով կամ absolute local path (`/…`)։  
+Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|approved|rejected`, կամընտիր note), որտեղ finalize-ի դեպքում backend-ը գրանցում է `moderatedAt` + `moderatedBy` (admin user id), իսկ `pending` վերադարձնելիս մաքրում է moderation actor/date դաշտերը։
+
+**11.2 ✅ ավարտված (2026-04-18).** Public feed API՝ `GET /api/v1/reels?locale=en|hy|ru` — վերադարձնում է միայն `active` + `moderation.status=approved` reels-ները, sort-ված `sortOrder`-ով՝ feed metadata payload-ով (`id`, localized `title`, `videoUrl`, `posterUrl`, `sortOrder`, `generatedAt`)։ Սա ծածկում է vertical feed-ի backend metadata պահանջը։
 
 ---
 
