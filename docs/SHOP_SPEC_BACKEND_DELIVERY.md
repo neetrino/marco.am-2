@@ -362,7 +362,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 ## Փուլ 12 — Site-wide & i18n (API)
 
-**Փուլի առաջընթաց.** `72%`
+**Փուլի առաջընթաց.** `80%`
 
 
 | ID   | Առաջադրանք (backend)                                                                                  | Կատարման % | Կարգավիճակ |
@@ -371,7 +371,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 | 12.2 | Wishlist — persist per user/session                                                                   | 100        | ✅          |
 | 12.3 | Compare products — spec diff-ի համար ցուցակ, max N ապրանք                                             | 100        | ✅          |
 | 12.4 | About Us, Contact Us, brand pages — CMS կամ static content API                                        | 100        | ✅          |
-| 12.5 | Legal pages — Privacy, Terms, Refund, Delivery Policy (**per locale**)                                | 15         | ⬜          |
+| 12.5 | Legal pages — Privacy, Terms, Refund, Delivery Policy (**per locale**)                                | 100        | ✅          |
 | 12.6 | Contact form — validation, spam protection                                                            | 100        | ✅          |
 | 12.7 | i18n — AM primary, RU, EN — թարգմանվող էնտիտիների սխեմա, API-ում locale / `Accept-Language`, fallback | 75         | 🔄         |
 | 12.8 | Admin — թարգմանությունների խմբագրում կամ import workflow (եթե պահանջվում է)                           | 70         | 🔄         |
@@ -385,6 +385,8 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 **12.3 ✅ ավարտված (2026-04-18).** Compare-ը տեղափոխվել է ամբողջությամբ server-backed API-ի վրա՝ `GET`/`POST /api/v1/compare`, `DELETE /api/v1/compare/[productId]`, `POST /api/v1/compare/merge` (`user/session` flow)։ DB-ում ավելացվել են `compare_lists` / `compare_items` (migration + Prisma schema), հյուրի համար session cookie/header (`shop_compare_session` / `x-compare-session`)։ API-ն enforce է անում `maxItems=4` սահմանը և վերադարձնում compare payload՝ `items[]` + `specRows[]` (spec diff-ready matrix՝ `valuesByProductId`, `different`)։ Frontend compare էջը, PDP compare toggle-ը և header compare badge-ը հիմա աշխատում են այս API-ով, ներառյալ legacy `shop_compare` localStorage-ից ավտոմատ migration և login-ից հետո guest→user merge։
 
 **12.4 ✅ ավարտված (2026-04-18).** Իրականացվել է site-wide content API (CMS/static document, settings-backed առանց migration)՝ `settings.key = siteContentPages` + Zod schema (`siteContentStorageSchema`)։ Հանրային endpoint-ներ՝ `GET /api/v1/site-content/about`, `GET /api/v1/site-content/contact`, `GET /api/v1/site-content/brands/[slug]` (published brand-only, locale fallback, `?locale=` → `Accept-Language` → `hy`)։ Admin endpoint՝ `GET`/`PUT /api/v1/supersudo/site-content` (JWT admin)։ Brand page response-ը վերադարձնում է localized brand name/description (`brand_translations` fallback) + CTA/href products catalog-ի համար, իսկ Contact map embed-ը պաշտպանված է allowlist-ով (`google.com` / `openstreetmap.org`)։
+
+**12.5 ✅ ավարտված (2026-04-18, updated).** Իրականացվել է legal pages API շերտը settings-backed մոտեցմամբ (`settings.key = siteLegalPages`)՝ per-locale content-ով Privacy / Terms / Refund / Delivery Policy էջերի համար։ Հանրային endpoint՝ `GET /api/v1/site-content/legal/[page]?locale=en|hy|ru` (`page` canonical keys՝ `privacy|terms|refund|delivery-policy`, compatibility aliases՝ `refund-policy|delivery-terms`)՝ locale fallback contract-ով (`?locale` → `Accept-Language` → `hy`) և i18n metadata-ով։ Admin endpoint՝ `GET`/`PUT /api/v1/supersudo/site-content/legal` (JWT admin)՝ ամբողջ legal document-ի խմբագրման համար (all locales)։ Default storage-ը այլևս placeholder չէ՝ ներառում է production-ready legal HTML draft content (HY/RU/EN)։ Validation-ը Zod-ով (`siteLegalPagesStorageSchema`), OpenAPI contract-ը թարմացված է `docs/openapi/shop-api.yaml`-ում։
 
 *Նշումներ.* 12.1 — `/api/search/instant`։ 12.2 — **սերվերային persist**՝ `GET`/`POST /api/v1/wishlist`, `DELETE /api/v1/wishlist/{productId}`, `POST /api/v1/wishlist/merge` (JWT) — DB `wishlists` / `wishlist_items`, հյուրի համար `shop_wishlist_session` cookie կամ `x-wishlist-session` header։ 12.3 — **սերվերային persist + spec diff**՝ `GET`/`POST /api/v1/compare`, `DELETE /api/v1/compare/{productId}`, `POST /api/v1/compare/merge`, DB `compare_lists` / `compare_items`, հյուրի համար `shop_compare_session` cookie կամ `x-compare-session` header։
 

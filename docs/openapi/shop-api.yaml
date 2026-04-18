@@ -1091,6 +1091,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /api/v1/site-content/legal/{page}:
+    get:
+      tags: [Site]
+      summary: Public legal page document by key
+      operationId: getSiteContentLegalPage
+      parameters:
+        - name: page
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/SiteLegalPageKey"
+          description: Legal page key (`privacy`, `terms`, `refund`, `delivery-policy`) or compatibility alias (`refund-policy`, `delivery-terms`).
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hy, ru, en]
+          description: Optional locale override. Fallback uses `Accept-Language`, then `hy`.
+      responses:
+        "200":
+          description: Localized legal page payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentLegalPageResponse"
+        "404":
+          description: Unsupported legal page key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
   /api/v1/site-content/brands/{slug}:
     get:
       tags: [Site]
@@ -1124,6 +1163,58 @@ paths:
                 $ref: "#/components/schemas/ProblemDetails"
         "500":
           description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/site-content/legal:
+    get:
+      tags: [Site]
+      summary: Full legal pages storage document for admin
+      operationId: getSupersudoSiteLegalPages
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Full legal pages document (all locales).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteLegalPagesStorageDocument"
+        "403":
+          description: Admin access required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Site]
+      summary: Replace full legal pages storage document
+      operationId: putSupersudoSiteLegalPages
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteLegalPagesStorageDocument"
+      responses:
+        "200":
+          description: Saved full legal pages document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteLegalPagesStorageDocument"
+        "400":
+          description: Validation failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Admin access required.
           content:
             application/json:
               schema:
@@ -1264,10 +1355,25 @@ components:
       additionalProperties: true
       description: Localized brand-page payload for a published brand slug.
 
+    SiteContentLegalPageResponse:
+      type: object
+      additionalProperties: true
+      description: Localized legal page payload for privacy/terms/refund/delivery-policy.
+
     SiteContentStorageDocument:
       type: object
       additionalProperties: true
       description: Full admin-managed site content document (about, contact, brand pages).
+
+    SiteLegalPagesStorageDocument:
+      type: object
+      additionalProperties: true
+      description: Full admin-managed legal pages document (privacy, terms, refund, delivery policy).
+
+    SiteLegalPageKey:
+      type: string
+      enum: [privacy, terms, refund, delivery-policy, refund-policy, delivery-terms]
+      description: Supported legal page keys and compatibility aliases.
 
     OrderResourceLink:
       type: object
