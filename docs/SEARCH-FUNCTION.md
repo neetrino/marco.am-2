@@ -50,19 +50,24 @@
 
 ## Instant Search (поиск по мере ввода в хедере)
 
-**Сейчас не реализован.** Ниже — спецификация на будущее (как можно сделать, если понадобится).
+**Реализован** через `GET /api/search/instant` с debounce на клиенте (`useInstantSearch`).
 
-### Идея
+### Контракт API
 
-- Поле ввода в хедере → debounce → запрос `GET /api/search/instant?q=...&limit=...` → ответ с массивом товаров.
-- API: Prisma, поиск по названию/описанию (и при необходимости по переводам), без Meilisearch.
+- Query: `q` (обяз.), `lang` (`en|hy|ru`, optional), `limit` (legacy alias для `productLimit`), `productLimit`, `categoryLimit`.
+- Response:
+  - `results[]` — товары (slug/title/price/image/category/href),
+  - `categories[]` — категории (slug/title/fullPath/href),
+  - `suggestions[]` — объединённый список подсказок (`type = product|category`) для быстрого dropdown UX.
+- Поиск делается через Prisma/PostgreSQL без внешнего движка.
 
-### Файлы для реализации
+### Ключевые файлы
 
 | Файл | Назначение |
 |------|------------|
-| `src/hooks/useInstantSearch.ts` | Хук: состояние, debounce, fetch к API, навигация с клавиатуры |
-| `src/app/api/search/instant/route.ts` | API: приём `q`, `limit`, запрос через Prisma, ответ `{ results }` |
+| `src/components/hooks/useInstantSearch.ts` | Хук: состояние, debounce, fetch к API, навигация с клавиатуры |
+| `src/app/api/search/instant/route.ts` | API endpoint: parse query-параметры и вернуть `results + categories + suggestions` |
+| `src/lib/services/instant-search.service.ts` | Бизнес-логика поиска товаров+категорий, сбор `suggestions` |
 | `src/components/SearchDropdown.tsx` | UI выпадающего списка (карточки, лоадер, ссылка «Տեսնել բոլորը» на `/products?search=...`) |
 | Хедер (DesktopHeader / MobileHeader или общий Header) | Инпут + хук + SearchDropdown, Enter → `/products?search=...` |
 
@@ -72,7 +77,7 @@
 - Без кэша ответа, чтобы новые товары из админки сразу отображались.
 - Доступность: `aria-controls`, `aria-expanded`, `role="listbox"`, `role="option"`.
 
-Реализацию можно взять из этого описания, когда решите добавить instant search.
+Категории и suggestions уже доступны в API-контракте для дальнейшего расширения UI (например, смешанный dropdown с товарами и категориями).
 
 ---
 

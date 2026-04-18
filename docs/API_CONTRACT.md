@@ -88,6 +88,26 @@ Pagination and list shapes are defined per endpoint in the OpenAPI file where de
 
 User profile and some services use a **locale** stored on the user (e.g. `hy`, `ru`, `en`). For unauthenticated flows, locale may come from query parameters or cookies depending on the route. Prefer aligning with the storefront’s language cookie / preference where applicable.
 
+## 5.1 Instant search (site-wide suggest API)
+
+`GET /api/search/instant`
+
+Purpose: debounce-friendly header search for products and categories.
+
+Query:
+
+- `q` (required): search term
+- `lang` (optional): `en | hy | ru` (fallback `en`)
+- `limit` (optional): backward-compatible alias for `productLimit`
+- `productLimit` (optional): max products in `results[]`
+- `categoryLimit` (optional): max categories in `categories[]`
+
+Response shape:
+
+- `results[]`: matched products (`id`, `slug`, `title`, `price`, `compareAtPrice`, `image`, `category`, `href`)
+- `categories[]`: matched categories (`id`, `slug`, `title`, `fullPath`, `href`)
+- `suggestions[]`: merged list for autocomplete (`type = product|category`)
+
 ---
 
 ## 6. References

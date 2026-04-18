@@ -10,6 +10,23 @@ export interface InstantSearchResultItem {
   compareAtPrice: number | null;
   image: string | null;
   category: string | null;
+  href?: string;
+}
+
+export interface InstantSearchCategoryItem {
+  id: string;
+  slug: string;
+  title: string;
+  fullPath: string;
+  href: string;
+}
+
+export interface InstantSearchSuggestionItem {
+  id: string;
+  type: 'product' | 'category';
+  title: string;
+  subtitle: string | null;
+  href: string;
 }
 
 export interface UseInstantSearchOptions {
@@ -29,6 +46,8 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<InstantSearchResultItem[]>([]);
+  const [categories, setCategories] = useState<InstantSearchCategoryItem[]>([]);
+  const [suggestions, setSuggestions] = useState<InstantSearchSuggestionItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +60,8 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
     async (searchQuery: string) => {
       if (searchQuery.length < minQueryLength) {
         setResults([]);
+        setCategories([]);
+        setSuggestions([]);
         setError(null);
         return;
       }
@@ -73,11 +94,15 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
 
         const data = await res.json();
         setResults(Array.isArray(data.results) ? data.results : []);
+        setCategories(Array.isArray(data.categories) ? data.categories : []);
+        setSuggestions(Array.isArray(data.suggestions) ? data.suggestions : []);
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
           return;
         }
         setResults([]);
+        setCategories([]);
+        setSuggestions([]);
         setError(err instanceof Error ? err.message : 'Search failed');
       } finally {
         setLoading(false);
@@ -95,6 +120,8 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
 
     if (query.trim().length < minQueryLength) {
       setResults([]);
+      setCategories([]);
+      setSuggestions([]);
       setError(null);
       setSelectedIndex(-1);
       return;
@@ -149,6 +176,8 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
   const clearSearch = useCallback(() => {
     setQuery('');
     setResults([]);
+    setCategories([]);
+    setSuggestions([]);
     setError(null);
     setLoading(false);
     setIsOpen(false);
@@ -166,6 +195,8 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
     query,
     setQuery,
     results,
+    categories,
+    suggestions,
     loading,
     error,
     isOpen,

@@ -3,7 +3,7 @@
 > Աղբյուր. `[shop-marco-code-plan.md](./shop-marco-code-plan.md)` (functional spec) — **backend** շերտին և API/CMS պահանջվող կետերը։  
 > Ճարտարապետության ամփոփում. `[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)`
 
-**Վերջին թարմացում.** 2026-04-18 (փուլ 11 — reels like/unlike + user հաշվարկ)
+**Վերջին թարմացում.** 2026-04-18 (փուլ 12.1 — global instant search API: products + categories + suggestions)
 
 **Արվածության գնահատում.** Կոդբազայի աուդիտ (`shared/db/prisma/schema.prisma`, `src/app/api/`**, `src/lib/services/`**) — տոկոսները արտահայտում են **ընթացիկ repo-ում իմպլեմենտացիայի** համապատասխանությունը spec-ի backend պահանջին (ոչ թե դիզայն/QA փուլը)։
 
@@ -35,7 +35,7 @@
 | 9    | Admin — orders                   | `100%`          |
 | 10   | Admin — analytics                | `100%`          |
 | 11   | Reels                            | `100%`          |
-| 12   | Site-wide & i18n (API)           | `62%`           |
+| 12   | Site-wide & i18n (API)           | `63%`           |
 
 
 **Ընդհանուր նախագծի առաջընթաց (backend).** `~76%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
@@ -362,12 +362,12 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 ## Փուլ 12 — Site-wide & i18n (API)
 
-**Փուլի առաջընթաց.** `58%`
+**Փուլի առաջընթաց.** `63%`
 
 
 | ID   | Առաջադրանք (backend)                                                                                  | Կատարման % | Կարգավիճակ |
 | ---- | ----------------------------------------------------------------------------------------------------- | ---------- | ---------- |
-| 12.1 | Global search — ապրանքներ, կատեգորիաներ; suggest/debounce-ի համար API                                 | 90         | 🔄         |
+| 12.1 | Global search — ապրանքներ, կատեգորիաներ; suggest/debounce-ի համար API                                 | 100        | ✅          |
 | 12.2 | Wishlist — persist per user/session                                                                   | 100        | ✅          |
 | 12.3 | Compare products — spec diff-ի համար ցուցակ, max N ապրանք                                             | 25         | ⬜          |
 | 12.4 | About Us, Contact Us, brand pages — CMS կամ static content API                                        | 15         | ⬜          |
@@ -379,6 +379,8 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 
 **12.2 ✅ ավարտված (2026-04-17).** Wishlist-ը պահվում է PostgreSQL-ում (`wishlists`, `wishlist_items`)։ Մուտք գործած օգտատիրոջ համար՝ `userId` (մեկ ցուցակ)։ Հյուրի համար՝ `sessionToken` + `Set-Cookie: shop_wishlist_session` (կամ `x-wishlist-session`)։ Միայն **published** և չջնջված ապրանքներ։ `POST /api/v1/wishlist/merge` — հյուրի ցուցակը միացնել JWT օգտատիրոջը (կրկնվող productId-ները բաց են թողնվում)։ OpenAPI՝ `docs/openapi/shop-api.yaml`։
+
+**12.1 ✅ ավարտված (2026-04-18).** `GET /api/search/instant` endpoint-ը ամբողջացվել է site-wide suggest/debounce պահանջի համար։ Query contract՝ `q`, `lang`, `limit` (backward-compatible alias), `productLimit`, `categoryLimit`։ Response contract-ը հիմա վերադարձնում է ոչ միայն `results[]` (ապրանքներ), այլ նաև `categories[]` (category matches) և `suggestions[]` (mixed `product|category` hint list)՝ dropdown/autocomplete-ի համար։ Բոլոր URL-ները վերադարձվում են պատրաստ `href`-երով (`/products/<slug>` և `/products?category=<slug>`), իսկ locale fallback-ը նորմալացվում է `en|hy|ru` շրջանակում։ Իրականացում՝ `src/lib/services/instant-search.service.ts`, route՝ `src/app/api/search/instant/route.ts`, unit tests՝ `src/lib/services/instant-search.service.test.ts`։
 
 *Նշումներ.* 12.1 — `/api/search/instant`։ 12.2 — **սերվերային persist**՝ `GET`/`POST /api/v1/wishlist`, `DELETE /api/v1/wishlist/{productId}`, `POST /api/v1/wishlist/merge` (JWT) — DB `wishlists` / `wishlist_items`, հյուրի համար `shop_wishlist_session` cookie կամ `x-wishlist-session` header։ 12.3 — հիմնականում localStorage, ոչ թե սերվերային persist։
 

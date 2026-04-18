@@ -979,6 +979,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
 
+  /api/search/instant:
+    get:
+      tags: [Site]
+      summary: Instant global search suggestions (products + categories)
+      operationId: getInstantSearch
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          description: User query string.
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+          description: Backward-compatible alias for productLimit.
+        - name: productLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 8
+        - name: categoryLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 4
+      responses:
+        "200":
+          description: Instant suggestions payload for debounce/autocomplete UI.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstantSearchResponse"
+        "500":
+          description: Server-side search failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1224,6 +1282,92 @@ components:
         createdAt:
           type: string
           format: date-time
+
+    InstantSearchProductResult:
+      type: object
+      required: [id, slug, title, price, href]
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        price:
+          type: number
+        compareAtPrice:
+          type: number
+          nullable: true
+        image:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        href:
+          type: string
+
+    InstantSearchCategoryResult:
+      type: object
+      required: [id, slug, title, fullPath, href]
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        fullPath:
+          type: string
+        href:
+          type: string
+
+    InstantSearchSuggestion:
+      type: object
+      required: [id, type, title, href]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [product, category]
+        title:
+          type: string
+        subtitle:
+          type: string
+          nullable: true
+        href:
+          type: string
+
+    InstantSearchResponse:
+      type: object
+      required: [query, locale, results, categories, suggestions, meta]
+      properties:
+        query:
+          type: string
+        locale:
+          type: string
+          enum: [en, hy, ru]
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstantSearchProductResult"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstantSearchCategoryResult"
+        suggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstantSearchSuggestion"
+        meta:
+          type: object
+          required: [productLimit, categoryLimit]
+          properties:
+            productLimit:
+              type: integer
+            categoryLimit:
+              type: integer
 
     WhyChooseUsLocaleTriple:
       type: object
