@@ -3,7 +3,7 @@
 > Աղբյուր. `[shop-marco-code-plan.md](./shop-marco-code-plan.md)` (functional spec) — **backend** շերտին և API/CMS պահանջվող կետերը։  
 > Ճարտարապետության ամփոփում. `[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)`
 
-**Վերջին թարմացում.** 2026-04-18 (փուլ 12.3 — compare products API: spec diff + max items)
+**Վերջին թարմացում.** 2026-04-18 (փուլ 12.8 — admin i18n translations export/import workflow)
 
 **Արվածության գնահատում.** Կոդբազայի աուդիտ (`shared/db/prisma/schema.prisma`, `src/app/api/`**, `src/lib/services/`**) — տոկոսները արտահայտում են **ընթացիկ repo-ում իմպլեմենտացիայի** համապատասխանությունը spec-ի backend պահանջին (ոչ թե դիզայն/QA փուլը)։
 
@@ -35,10 +35,10 @@
 | 9    | Admin — orders                   | `100%`          |
 | 10   | Admin — analytics                | `100%`          |
 | 11   | Reels                            | `100%`          |
-| 12   | Site-wide & i18n (API)           | `72%`           |
+| 12   | Site-wide & i18n (API)           | `96%`           |
 
 
-**Ընդհանուր նախագծի առաջընթաց (backend).** `~77%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
+**Ընդհանուր նախագծի առաջընթաց (backend).** `~79%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
 
 ---
 
@@ -362,7 +362,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 ## Փուլ 12 — Site-wide & i18n (API)
 
-**Փուլի առաջընթաց.** `82%`
+**Փուլի առաջընթաց.** `96%`
 
 
 | ID   | Առաջադրանք (backend)                                                                                  | Կատարման % | Կարգավիճակ |
@@ -374,7 +374,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 | 12.5 | Legal pages — Privacy, Terms, Refund, Delivery Policy (**per locale**)                                | 100        | ✅          |
 | 12.6 | Contact form — validation, spam protection                                                            | 100        | ✅          |
 | 12.7 | i18n — AM primary, RU, EN — թարգմանվող էնտիտիների սխեմա, API-ում locale / `Accept-Language`, fallback | 100        | ✅          |
-| 12.8 | Admin — թարգմանությունների խմբագրում կամ import workflow (եթե պահանջվում է)                           | 70         | 🔄         |
+| 12.8 | Admin — թարգմանությունների խմբագրում կամ import workflow (եթե պահանջվում է)                           | 100        | ✅          |
 | 12.9 | SEO structured data — backend-ից անհրաժեշտ մետատվյալներ (ըստ frontend պայմանագրի)                     | 70         | 🔄         |
 
 
@@ -393,6 +393,12 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 **12.6 ✅ ավարտված (2026-04-17).** `POST /api/v1/contact` — **Zod** վալիդացիա (`name`, `email`, `subject`, `message` — երկարության վերին սահմաններ), **honeypot** `hp` դաշտ (ոչ `website` — autofill-ից խուսափելու համար) (ոչ դատարկ՝ `400` ընդհանուր հաղորդագրությամբ, DB գրառում չի կատարվում), **rate limit**՝ մինչև 5 ուղարկում/ժամ IP-ի հիման վրա (`x-forwarded-for` / `x-real-ip`) — **Upstash Ratelimit** (`UPSTASH_REDIS_REST_`*), այլապես **in-memory** fallback (dev/մեկ instance)։ **Cloudflare Turnstile** — կամընտիր՝ երբ `TURNSTILE_SECRET_KEY` է սահմանված, մարմնում պահանջվում է `turnstileToken` (սերվերը verify-ում է `siteverify` API-ով)։ Կոդ՝ `src/lib/schemas/contact-form.schema.ts`, `contact-rate-limit.service.ts`, `contact-turnstile.service.ts`, `src/app/api/v1/contact/route.ts`։
 
 **12.7 ✅ ավարտված (2026-04-18).** API i18n locale resolution-ը միավորվել է մեկ shared utility-ով՝ `src/lib/i18n/api-locale.ts` (`hy` primary, allowed՝ `hy|ru|en`, parsing՝ `?locale`/`?lang` + `Accept-Language`, fallback metadata)։ Թարգմանվող payload schema-ների contract-ը կենտրոնացվել է `src/lib/schemas/locale-map.schema.ts`-ում և կիրառվել `site content`, `legal pages`, `banners`, `reels` storage schema-ների վրա, որպեսզի locale map-երը նույն ձևով validate արվեն (`hy/ru/en` required fields)։ Հանրային endpoint-ները (`/api/search/instant`, `/api/v1/compare`, `/api/v1/reels`, `/api/v1/banners`, `/api/v1/site-content/*`, `/api/v1/site-content/legal/*`) հիմա ունեն համաչափ locale fallback chain՝ `query locale` → `Accept-Language` (կամ authenticated user preferred locale compare flow-ում) → `hy`։ Translation fallback կարգը նաև միատեսակեցվել է (`hy` primary order՝ `hy→ru→en`) compare/search/brand-content mapping շերտերում։
+
+**12.8 ✅ ավարտված (2026-04-18).** Ավելացվել է միասնական admin i18n workflow endpoint՝ `GET`/`PUT /api/v1/supersudo/i18n/translations` (JWT admin), որը լուծում է թե՛ խմբագրման, թե՛ import/export պահանջը։  
+- `GET /api/v1/supersudo/i18n/translations` — վերադարձնում է հասանելի translation scope-ների ցանկը (`entriesCount`-ով)։  
+- `GET /api/v1/supersudo/i18n/translations?scope=<scope>` — export է անում flattened թարգմանությունների ցուցակ (`entries[]`՝ `key`, `hy`, `ru`, `en`)։  
+- `PUT /api/v1/supersudo/i18n/translations` — import/edit flattened payload-ով (`scope`, `entries[]`, `strict`)՝ schema validation + missing key guard-ով։  
+Աջակցվող scope-ներ՝ `home-hero`, `home-why-choose-us`, `home-customer-reviews`, `home-brand-partners`, `home-footer`, `banners`, `reels`, `site-content`, `site-legal-pages`։
 
 ---
 
