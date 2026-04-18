@@ -362,7 +362,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 ## Փուլ 12 — Site-wide & i18n (API)
 
-**Փուլի առաջընթաց.** `80%`
+**Փուլի առաջընթաց.** `82%`
 
 
 | ID   | Առաջադրանք (backend)                                                                                  | Կատարման % | Կարգավիճակ |
@@ -373,7 +373,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 | 12.4 | About Us, Contact Us, brand pages — CMS կամ static content API                                        | 100        | ✅          |
 | 12.5 | Legal pages — Privacy, Terms, Refund, Delivery Policy (**per locale**)                                | 100        | ✅          |
 | 12.6 | Contact form — validation, spam protection                                                            | 100        | ✅          |
-| 12.7 | i18n — AM primary, RU, EN — թարգմանվող էնտիտիների սխեմա, API-ում locale / `Accept-Language`, fallback | 75         | 🔄         |
+| 12.7 | i18n — AM primary, RU, EN — թարգմանվող էնտիտիների սխեմա, API-ում locale / `Accept-Language`, fallback | 100        | ✅          |
 | 12.8 | Admin — թարգմանությունների խմբագրում կամ import workflow (եթե պահանջվում է)                           | 70         | 🔄         |
 | 12.9 | SEO structured data — backend-ից անհրաժեշտ մետատվյալներ (ըստ frontend պայմանագրի)                     | 70         | 🔄         |
 
@@ -391,6 +391,8 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 *Նշումներ.* 12.1 — `/api/search/instant`։ 12.2 — **սերվերային persist**՝ `GET`/`POST /api/v1/wishlist`, `DELETE /api/v1/wishlist/{productId}`, `POST /api/v1/wishlist/merge` (JWT) — DB `wishlists` / `wishlist_items`, հյուրի համար `shop_wishlist_session` cookie կամ `x-wishlist-session` header։ 12.3 — **սերվերային persist + spec diff**՝ `GET`/`POST /api/v1/compare`, `DELETE /api/v1/compare/{productId}`, `POST /api/v1/compare/merge`, DB `compare_lists` / `compare_items`, հյուրի համար `shop_compare_session` cookie կամ `x-compare-session` header։
 
 **12.6 ✅ ավարտված (2026-04-17).** `POST /api/v1/contact` — **Zod** վալիդացիա (`name`, `email`, `subject`, `message` — երկարության վերին սահմաններ), **honeypot** `hp` դաշտ (ոչ `website` — autofill-ից խուսափելու համար) (ոչ դատարկ՝ `400` ընդհանուր հաղորդագրությամբ, DB գրառում չի կատարվում), **rate limit**՝ մինչև 5 ուղարկում/ժամ IP-ի հիման վրա (`x-forwarded-for` / `x-real-ip`) — **Upstash Ratelimit** (`UPSTASH_REDIS_REST_`*), այլապես **in-memory** fallback (dev/մեկ instance)։ **Cloudflare Turnstile** — կամընտիր՝ երբ `TURNSTILE_SECRET_KEY` է սահմանված, մարմնում պահանջվում է `turnstileToken` (սերվերը verify-ում է `siteverify` API-ով)։ Կոդ՝ `src/lib/schemas/contact-form.schema.ts`, `contact-rate-limit.service.ts`, `contact-turnstile.service.ts`, `src/app/api/v1/contact/route.ts`։
+
+**12.7 ✅ ավարտված (2026-04-18).** API i18n locale resolution-ը միավորվել է մեկ shared utility-ով՝ `src/lib/i18n/api-locale.ts` (`hy` primary, allowed՝ `hy|ru|en`, parsing՝ `?locale`/`?lang` + `Accept-Language`, fallback metadata)։ Թարգմանվող payload schema-ների contract-ը կենտրոնացվել է `src/lib/schemas/locale-map.schema.ts`-ում և կիրառվել `site content`, `legal pages`, `banners`, `reels` storage schema-ների վրա, որպեսզի locale map-երը նույն ձևով validate արվեն (`hy/ru/en` required fields)։ Հանրային endpoint-ները (`/api/search/instant`, `/api/v1/compare`, `/api/v1/reels`, `/api/v1/banners`, `/api/v1/site-content/*`, `/api/v1/site-content/legal/*`) հիմա ունեն համաչափ locale fallback chain՝ `query locale` → `Accept-Language` (կամ authenticated user preferred locale compare flow-ում) → `hy`։ Translation fallback կարգը նաև միատեսակեցվել է (`hy` primary order՝ `hy→ru→en`) compare/search/brand-content mapping շերտերում։
 
 ---
 

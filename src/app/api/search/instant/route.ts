@@ -9,7 +9,8 @@ import { logger } from '@/lib/utils/logger';
  * GET /api/search/instant
  * Query params:
  * - q (required)
- * - lang (optional): en | hy | ru, defaults to en
+ * - locale | lang (optional): hy | ru | en
+ * Locale resolution: `?locale=` -> `?lang=` -> `Accept-Language` -> `hy`.
  * - limit (optional): product limit alias for backward compatibility
  * - productLimit (optional): products max count
  * - categoryLimit (optional): categories max count
@@ -17,7 +18,10 @@ import { logger } from '@/lib/utils/logger';
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const params = parseInstantSearchRequest(searchParams);
+    const params = parseInstantSearchRequest({
+      searchParams,
+      acceptLanguageRaw: req.headers.get("accept-language"),
+    });
     const payload = await searchInstant(params);
 
     return NextResponse.json(payload, {

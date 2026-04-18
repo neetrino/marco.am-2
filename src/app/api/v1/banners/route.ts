@@ -14,7 +14,8 @@ function isBannerSlotId(value: string): value is BannerSlotId {
 }
 
 /**
- * GET /api/v1/banners?slot=<slotId>&locale=<en|hy|ru>[&at=<ISO8601>]
+ * GET /api/v1/banners?slot=<slotId>&locale=<hy|ru|en>[&at=<ISO8601>]
+ * Locale resolution: `?locale=` -> `?lang=` -> `Accept-Language` -> `hy`.
  * Public endpoint returning active/scheduled banners for one slot.
  */
 export async function GET(req: NextRequest) {
@@ -33,7 +34,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const locale = req.nextUrl.searchParams.get("locale") ?? "en";
+    const locale =
+      req.nextUrl.searchParams.get("locale") ??
+      req.nextUrl.searchParams.get("lang") ??
+      undefined;
     const atRaw = req.nextUrl.searchParams.get("at");
     let atDate: Date | undefined = undefined;
     if (atRaw !== null) {
@@ -56,6 +60,7 @@ export async function GET(req: NextRequest) {
     const payload = await bannerManagementService.getPublicSlotPayload({
       slot: slotRaw,
       localeRaw: locale,
+      acceptLanguageRaw: req.headers.get("accept-language"),
       now: atDate,
     });
 

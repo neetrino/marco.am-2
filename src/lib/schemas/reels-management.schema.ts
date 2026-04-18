@@ -8,12 +8,9 @@ import {
   REELS_MANAGEMENT_MODERATION_NOTE_MAX_LENGTH,
   REELS_MANAGEMENT_STORAGE_VERSION,
 } from "@/lib/constants/reels-management";
+import { buildLocalizedTextMapSchema } from "@/lib/schemas/locale-map.schema";
 
-const localeLabelSchema = z.object({
-  en: z.string().max(160),
-  hy: z.string().max(160),
-  ru: z.string().max(160),
-});
+const localeLabelSchema = buildLocalizedTextMapSchema({ max: 160 });
 
 const urlSchema = z.string().min(1).max(2048);
 

@@ -22,7 +22,9 @@ export default async function HomePage() {
   const initialWhyChooseUs = await whyChooseUsService.getPublicPayload(lang);
   const initialCustomerReviews =
     await homeCustomerReviewsService.getPublicPayload(lang);
-  const reelsFeed = await reelsManagementService.getPublicPayload(lang);
+  const reelsFeed = await reelsManagementService.getPublicPayload({
+    localeRaw: lang,
+  });
 
   return (
     <div className="min-h-screen">

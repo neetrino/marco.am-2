@@ -13,6 +13,7 @@ import {
   siteContentStorageSchema,
   type SiteContentStorage,
 } from "@/lib/schemas/site-content.schema";
+import { buildApiLocaleFallbackOrder, resolveApiLocale } from "@/lib/i18n/api-locale";
 import { AppError } from "@/lib/types/errors";
 import type { LocaleResolution, SiteAboutPublicPayload, SiteBrandPagePublicPayload, SiteContactPublicPayload } from "@/lib/types/site-content";
 import { logger } from "@/lib/utils/logger";
@@ -21,45 +22,16 @@ type BrandRow = { readonly id: string; readonly slug: string; readonly logoUrl: 
 
 type LocalizedMap = SiteContentStorage["about"]["title"];
 
-function parseAcceptLanguage(acceptLanguageRaw: string | null): SiteLocale | null {
-  if (!acceptLanguageRaw) {
-    return null;
-  }
-  const chunks = acceptLanguageRaw.split(",");
-  for (const chunk of chunks) {
-    const token = chunk.split(";")[0]?.trim().toLowerCase();
-    if (!token) {
-      continue;
-    }
-    if (token.startsWith("hy")) {
-      return "hy";
-    }
-    if (token.startsWith("ru")) {
-      return "ru";
-    }
-    if (token.startsWith("en")) {
-      return "en";
-    }
-  }
-  return null;
-}
-
 function normalizeLocale(localeRaw: string | null, acceptLanguageRaw: string | null): LocaleResolution {
-  if (localeRaw === "hy" || localeRaw === "ru" || localeRaw === "en") {
-    return { requestedLocale: localeRaw, resolvedLocale: localeRaw, fallbackUsed: false };
-  }
-  const headerLocale = parseAcceptLanguage(acceptLanguageRaw);
-  if (headerLocale) {
-    return {
-      requestedLocale: localeRaw,
-      resolvedLocale: headerLocale,
-      fallbackUsed: localeRaw !== null,
-    };
-  }
+  const locale = resolveApiLocale({
+    localeRaw,
+    acceptLanguageRaw,
+    fallbackLocale: "hy",
+  });
   return {
-    requestedLocale: localeRaw,
-    resolvedLocale: "hy",
-    fallbackUsed: localeRaw !== null,
+    requestedLocale: locale.requestedLocale,
+    resolvedLocale: locale.resolvedLocale,
+    fallbackUsed: locale.fallbackUsed,
   };
 }
 
@@ -127,7 +99,7 @@ async function findPublishedBrandBySlug(slug: string): Promise<BrandRow | null> 
 }
 
 function resolveBrandTranslation(brand: BrandRow, locale: SiteLocale): { readonly name: string; readonly description: string | null } {
-  const order: readonly SiteLocale[] = [locale, "hy", "en", "ru"];
+  const order = buildApiLocaleFallbackOrder(locale);
   for (const loc of order) {
     const translation = brand.translations.find((item) => item.locale === loc);
     if (translation?.name.trim()) {

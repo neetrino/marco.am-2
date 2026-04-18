@@ -4,6 +4,7 @@ import {
   BANNER_MANAGEMENT_VERSION,
   BANNER_SLOT_IDS,
 } from "@/lib/constants/banner-management";
+import { buildLocalizedTextMapSchema } from "@/lib/schemas/locale-map.schema";
 
 function isAllowedHref(raw: string): boolean {
   const href = raw.trim();
@@ -22,11 +23,7 @@ function isAllowedHref(raw: string): boolean {
   );
 }
 
-const bannerTitleSchema = z.object({
-  en: z.string().max(200),
-  hy: z.string().max(200),
-  ru: z.string().max(200),
-});
+const bannerTitleSchema = buildLocalizedTextMapSchema({ max: 200 });
 
 const bannerScheduleSchema = z
   .object({

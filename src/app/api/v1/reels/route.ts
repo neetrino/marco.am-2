@@ -8,14 +8,20 @@ import { reelsManagementService } from "@/lib/services/reels-management.service"
 import { logger } from "@/lib/utils/logger";
 
 /**
- * GET /api/v1/reels?locale=<en|hy|ru>
+ * GET /api/v1/reels?locale=<hy|ru|en>
+ * Locale resolution: `?locale=` -> `?lang=` -> `Accept-Language` -> `hy`.
  * Public reels feed payload (approved + active only).
  */
 export async function GET(req: NextRequest) {
   try {
-    const locale = req.nextUrl.searchParams.get("locale") ?? "en";
+    const locale =
+      req.nextUrl.searchParams.get("locale") ??
+      req.nextUrl.searchParams.get("lang");
     const user = await authenticateToken(req);
-    const payload = await reelsManagementService.getPublicPayload(locale);
+    const payload = await reelsManagementService.getPublicPayload({
+      localeRaw: locale ?? undefined,
+      acceptLanguageRaw: req.headers.get("accept-language"),
+    });
     const snapshot = await reelsLikesService.getLikesSnapshot({
       reelIds: payload.items.map((item) => item.id),
       viewerUserId: user?.id,

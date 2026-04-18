@@ -4,11 +4,12 @@ import {
   SITE_LEGAL_PAGE_KEYS,
   SITE_LEGAL_PAGES_STORAGE_VERSION,
 } from "@/lib/constants/site-legal-pages";
+import { buildLocalizedTextMapSchema } from "@/lib/schemas/locale-map.schema";
 
-const localeTripleSchema = z.object({
-  hy: z.string().trim().min(1).max(5000),
-  ru: z.string().trim().min(1).max(5000),
-  en: z.string().trim().min(1).max(5000),
+const localeTripleSchema = buildLocalizedTextMapSchema({
+  max: 5000,
+  min: 1,
+  trim: true,
 });
 
 const legalPageDocumentSchema = z.object({

@@ -1,5 +1,10 @@
 import { Prisma } from '@prisma/client';
 import { db } from '@white-shop/db';
+import {
+  pickLocalizedByApiLocale,
+  resolveApiLocale,
+  type ApiLocale,
+} from '@/lib/i18n/api-locale';
 import { extractMediaUrl } from '@/lib/utils/extractMediaUrl';
 import { processImageUrl } from '@/lib/utils/image-utils';
 
@@ -7,10 +12,6 @@ const DEFAULT_PRODUCT_LIMIT = 8;
 const DEFAULT_CATEGORY_LIMIT = 4;
 const MAX_LIMIT = 20;
 const MIN_LIMIT = 1;
-const SUPPORTED_LOCALES = new Set(['en', 'hy', 'ru']);
-
-type LocalizedRecord = { locale: string };
-
 type ProductSearchRecord = {
   id: string;
   primaryCategoryId: string | null;
@@ -66,7 +67,7 @@ export interface InstantSearchSuggestionItem {
 
 export interface InstantSearchResponse {
   query: string;
-  locale: string;
+  locale: ApiLocale;
   results: InstantSearchProductResult[];
   categories: InstantSearchCategoryResult[];
   suggestions: InstantSearchSuggestionItem[];
@@ -78,21 +79,16 @@ export interface InstantSearchResponse {
 
 export interface InstantSearchRequestParams {
   query: string;
-  locale: string;
+  locale: ApiLocale;
   productLimit: number;
   categoryLimit: number;
 }
 
-function pickTranslation<T extends LocalizedRecord>(items: T[], locale: string): T | undefined {
-  return items.find((item) => item.locale === locale) ?? items[0];
-}
-
-function normalizeLocale(rawLocale: string | null): string {
-  const normalized = rawLocale?.trim().toLowerCase();
-  if (normalized && SUPPORTED_LOCALES.has(normalized)) {
-    return normalized;
-  }
-  return 'en';
+function pickTranslation<T extends { locale: string }>(
+  items: T[],
+  locale: ApiLocale,
+): T | null {
+  return pickLocalizedByApiLocale(items, locale);
 }
 
 function parseLimit(rawLimit: string | null, fallback: number): number {
@@ -159,7 +155,10 @@ function buildCategorySearchWhere(query: string): Prisma.CategoryWhereInput {
   };
 }
 
-function mapProductResult(product: ProductSearchRecord, locale: string): InstantSearchProductResult | null {
+function mapProductResult(
+  product: ProductSearchRecord,
+  locale: ApiLocale,
+): InstantSearchProductResult | null {
   const translation = pickTranslation(product.translations, locale);
   if (!translation) {
     return null;
@@ -193,7 +192,7 @@ function mapProductResult(product: ProductSearchRecord, locale: string): Instant
 
 function mapCategoryResult(
   category: CategorySearchRecord,
-  locale: string
+  locale: ApiLocale
 ): InstantSearchCategoryResult | null {
   const translation = pickTranslation(category.translations, locale);
   if (!translation) {
@@ -223,9 +222,19 @@ function createEmptyResponse(params: InstantSearchRequestParams): InstantSearchR
   };
 }
 
-export function parseInstantSearchRequest(searchParams: URLSearchParams): InstantSearchRequestParams {
+export function parseInstantSearchRequest(args: {
+  searchParams: URLSearchParams;
+  acceptLanguageRaw?: string | null;
+}): InstantSearchRequestParams {
+  const { searchParams } = args;
   const query = searchParams.get('q')?.trim() ?? '';
-  const locale = normalizeLocale(searchParams.get('lang'));
+  const localeResolution = resolveApiLocale({
+    localeRaw: searchParams.get('locale'),
+    langRaw: searchParams.get('lang'),
+    acceptLanguageRaw: args.acceptLanguageRaw,
+    fallbackLocale: 'hy',
+  });
+  const locale = localeResolution.resolvedLocale;
   const explicitLimit = searchParams.get('limit');
   const productLimit = parseLimit(
     searchParams.get('productLimit') ?? explicitLimit,

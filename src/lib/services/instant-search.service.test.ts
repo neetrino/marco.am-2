@@ -14,13 +14,27 @@ describe('instant-search.service', () => {
       categoryLimit: '3',
     });
 
-    const parsed = parseInstantSearchRequest(params);
+    const parsed = parseInstantSearchRequest({ searchParams: params });
     expect(parsed).toEqual({
       query: 'iph',
       locale: 'ru',
       productLimit: 6,
       categoryLimit: 3,
     });
+  });
+
+  it('uses Accept-Language and hy primary fallback', () => {
+    const parsedFromHeader = parseInstantSearchRequest({
+      searchParams: new URLSearchParams({ q: 'tv' }),
+      acceptLanguageRaw: 'ru-RU,ru;q=0.9,en-US;q=0.8',
+    });
+    expect(parsedFromHeader.locale).toBe('ru');
+
+    const parsedDefault = parseInstantSearchRequest({
+      searchParams: new URLSearchParams({ q: 'tv' }),
+      acceptLanguageRaw: 'de-DE,de;q=0.9',
+    });
+    expect(parsedDefault.locale).toBe('hy');
   });
 
   it('returns normalized empty response when query is blank', async () => {

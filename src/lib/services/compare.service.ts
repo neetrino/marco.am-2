@@ -4,6 +4,7 @@ import {
   COMPARE_MAX_ITEMS,
   COMPARE_SESSION_MAX_AGE_SECONDS,
 } from "@/lib/constants/compare-session";
+import { type ApiLocale } from "@/lib/i18n/api-locale";
 import { logger } from "@/lib/utils/logger";
 import {
   buildComparePayload,
@@ -119,7 +120,7 @@ async function addProductToCompareList(
 
 export async function getCompareForUser(
   userId: string,
-  locale: string
+  locale: ApiLocale
 ): Promise<CompareApiPayload> {
   const compareListId = await getOrCreateUserCompareList(userId);
   return buildComparePayload(compareListId, locale);
@@ -128,7 +129,7 @@ export async function getCompareForUser(
 export async function addCompareItemForUser(
   userId: string,
   productId: string,
-  locale: string
+  locale: ApiLocale
 ): Promise<CompareApiPayload> {
   const compareListId = await getOrCreateUserCompareList(userId);
   await addProductToCompareList(compareListId, productId);
@@ -138,7 +139,7 @@ export async function addCompareItemForUser(
 export async function removeCompareItemForUser(
   userId: string,
   productId: string,
-  locale: string
+  locale: ApiLocale
 ): Promise<CompareApiPayload> {
   const compareListId = await getOrCreateUserCompareList(userId);
   await db.compareItem.deleteMany({
@@ -149,7 +150,7 @@ export async function removeCompareItemForUser(
 
 export async function getCompareForGuest(
   sessionToken: string | undefined,
-  locale: string
+  locale: ApiLocale
 ): Promise<{
   payload: CompareApiPayload;
   sessionToken: string;
@@ -164,7 +165,7 @@ export async function getCompareForGuest(
 export async function addCompareItemForGuest(
   sessionToken: string | undefined,
   productId: string,
-  locale: string
+  locale: ApiLocale
 ): Promise<{
   payload: CompareApiPayload;
   sessionToken: string;
@@ -180,7 +181,7 @@ export async function addCompareItemForGuest(
 export async function removeCompareItemForGuest(
   sessionToken: string | undefined,
   productId: string,
-  locale: string
+  locale: ApiLocale
 ): Promise<{
   payload: CompareApiPayload;
   sessionToken: string;

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { db } from "@white-shop/db";
 import { COMPARE_MAX_ITEMS } from "@/lib/constants/compare-session";
+import { pickLocalizedByApiLocale, type ApiLocale } from "@/lib/i18n/api-locale";
 import { extractMediaUrl } from "@/lib/utils/extractMediaUrl";
 import {
   buildTechnicalSpecifications,
@@ -88,25 +89,13 @@ export type CompareApiPayload = {
   specRows: CompareApiSpecRow[];
 };
 
-function pickLocalized<T extends { locale: string }>(
-  items: T[],
-  locale: string
-): T | null {
-  return (
-    items.find((item) => item.locale === locale) ??
-    items.find((item) => item.locale === "en") ??
-    items[0] ??
-    null
-  );
-}
-
 function normalizeComparableValue(value: string | null): string {
   return (value ?? "").trim().toLowerCase();
 }
 
 function mapVariantSpecifications(
   product: CompareProductWithRelations,
-  locale: string
+  locale: ApiLocale
 ): ProductTechnicalSpecification[] {
   const variantForSpecs = product.variants.map((variant) => ({
     options: variant.options.map((option) => ({
@@ -222,7 +211,7 @@ async function fetchCompareProducts(productIds: string[]) {
 
 export async function buildComparePayload(
   compareListId: string,
-  locale: string
+  locale: ApiLocale
 ): Promise<CompareApiPayload> {
   const rows = await db.compareItem.findMany({
     where: { compareListId },
@@ -254,7 +243,7 @@ export async function buildComparePayload(
       return [];
     }
 
-    const translation = pickLocalized(product.translations, locale);
+    const translation = pickLocalizedByApiLocale(product.translations, locale);
     if (!translation) {
       return [];
     }
@@ -266,7 +255,7 @@ export async function buildComparePayload(
       value: spec.value,
     }));
     const brandTranslation = product.brand
-      ? pickLocalized(product.brand.translations, locale)
+      ? pickLocalizedByApiLocale(product.brand.translations, locale)
       : null;
 
     return [

@@ -5,6 +5,7 @@ import {
   readCompareSessionToken,
 } from "@/lib/api/compare-session-cookie";
 import { authenticateToken } from "@/lib/middleware/auth";
+import { resolveApiLocale, type ApiLocale } from "@/lib/i18n/api-locale";
 import { compareAddBodySchema } from "@/lib/schemas/compare-body.schema";
 import {
   addCompareItemForGuest,
@@ -14,29 +15,23 @@ import {
 } from "@/lib/services/compare.service";
 import { logger } from "@/lib/utils/logger";
 
-function resolveApiLocale(req: NextRequest): string {
-  const url = new URL(req.url);
-  const lang = url.searchParams.get("lang")?.trim();
-  if (lang === "hy" || lang === "ru" || lang === "en") {
-    return lang;
-  }
-
-  const acceptLanguage = req.headers
-    .get("accept-language")
-    ?.split(",")[0]
-    ?.trim()
-    .split("-")[0];
-  if (acceptLanguage === "hy" || acceptLanguage === "ru" || acceptLanguage === "en") {
-    return acceptLanguage;
-  }
-
-  return "en";
+function resolveCompareLocale(
+  req: NextRequest,
+  preferredLocaleRaw?: string,
+): ApiLocale {
+  return resolveApiLocale({
+    localeRaw: req.nextUrl.searchParams.get("locale"),
+    langRaw: req.nextUrl.searchParams.get("lang"),
+    preferredLocaleRaw,
+    acceptLanguageRaw: req.headers.get("accept-language"),
+    fallbackLocale: "hy",
+  }).resolvedLocale;
 }
 
 export async function GET(req: NextRequest) {
   try {
     const user = await authenticateToken(req);
-    const locale = user?.locale ?? resolveApiLocale(req);
+    const locale = resolveCompareLocale(req, user?.locale);
 
     if (user) {
       const payload = await getCompareForUser(user.id, locale);
@@ -77,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { productId } = parsed.data;
-    const locale = user?.locale ?? resolveApiLocale(req);
+    const locale = resolveCompareLocale(req, user?.locale);
 
     if (user) {
       const payload = await addCompareItemForUser(user.id, productId, locale);

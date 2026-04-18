@@ -13,21 +13,24 @@ import {
   reelsManagementStorageSchema,
   type ReelsManagementStorage,
 } from "@/lib/schemas/reels-management.schema";
+import { resolveApiLocale, type ApiLocale } from "@/lib/i18n/api-locale";
 import { AppError } from "@/lib/types/errors";
 import { logger } from "@/lib/utils/logger";
-
-type ReelsLocale = "en" | "hy" | "ru";
 
 const DEFAULT_STORAGE: ReelsManagementStorage = {
   version: REELS_MANAGEMENT_STORAGE_VERSION,
   items: [],
 };
 
-function normalizeLocale(raw: string | undefined): ReelsLocale {
-  if (raw === "en" || raw === "hy" || raw === "ru") {
-    return raw;
-  }
-  return "en";
+function normalizeLocale(
+  localeRaw: string | undefined,
+  acceptLanguageRaw: string | null | undefined,
+): ApiLocale {
+  return resolveApiLocale({
+    localeRaw,
+    acceptLanguageRaw,
+    fallbackLocale: "hy",
+  }).resolvedLocale;
 }
 
 function parseStored(raw: unknown): ReelsManagementStorage | null {
@@ -105,7 +108,7 @@ function ensureSourceUrlPolicy(storage: ReelsManagementStorage): void {
 
 function toPublicItems(
   storage: ReelsManagementStorage,
-  locale: ReelsLocale,
+  locale: ApiLocale,
 ): PublicReelItem[] {
   return storage.items
     .filter((item) => item.active)
@@ -197,8 +200,11 @@ export const reelsManagementService = {
     return saveStorage(storage);
   },
 
-  async getPublicPayload(localeRaw: string | undefined): Promise<ReelsPublicPayload> {
-    const locale = normalizeLocale(localeRaw);
+  async getPublicPayload(args: {
+    localeRaw?: string | undefined;
+    acceptLanguageRaw?: string | null;
+  }): Promise<ReelsPublicPayload> {
+    const locale = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
     const storage = await loadStorage();
     return reelsPublicPayloadSchema.parse({
       generatedAt: new Date().toISOString(),

@@ -1,12 +1,9 @@
 import { z } from "zod";
 
 import { SITE_CONTENT_STORAGE_VERSION } from "@/lib/constants/site-content";
+import { buildLocalizedTextMapSchema } from "@/lib/schemas/locale-map.schema";
 
-const localeTripleSchema = z.object({
-  hy: z.string().max(5000),
-  ru: z.string().max(5000),
-  en: z.string().max(5000),
-});
+const localeTripleSchema = buildLocalizedTextMapSchema({ max: 5000 });
 
 const safeHrefSchema = z
   .string()

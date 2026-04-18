@@ -5,18 +5,24 @@ import {
   readCompareSessionToken,
 } from "@/lib/api/compare-session-cookie";
 import { authenticateToken } from "@/lib/middleware/auth";
+import { resolveApiLocale, type ApiLocale } from "@/lib/i18n/api-locale";
 import {
   removeCompareItemForGuest,
   removeCompareItemForUser,
 } from "@/lib/services/compare.service";
 import { logger } from "@/lib/utils/logger";
 
-function resolveApiLocale(req: NextRequest): string {
-  const lang = new URL(req.url).searchParams.get("lang")?.trim();
-  if (lang === "hy" || lang === "ru" || lang === "en") {
-    return lang;
-  }
-  return "en";
+function resolveCompareLocale(
+  req: NextRequest,
+  preferredLocaleRaw?: string,
+): ApiLocale {
+  return resolveApiLocale({
+    localeRaw: req.nextUrl.searchParams.get("locale"),
+    langRaw: req.nextUrl.searchParams.get("lang"),
+    preferredLocaleRaw,
+    acceptLanguageRaw: req.headers.get("accept-language"),
+    fallbackLocale: "hy",
+  }).resolvedLocale;
 }
 
 export async function DELETE(
@@ -26,7 +32,7 @@ export async function DELETE(
   try {
     const user = await authenticateToken(req);
     const { productId } = await params;
-    const locale = user?.locale ?? resolveApiLocale(req);
+    const locale = resolveCompareLocale(req, user?.locale);
 
     if (user) {
       const payload = await removeCompareItemForUser(user.id, productId, locale);

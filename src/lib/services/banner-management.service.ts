@@ -8,9 +8,8 @@ import {
   bannerManagementStorageSchema,
   type BannerManagementStorage,
 } from "@/lib/schemas/banner-management.schema";
+import { resolveApiLocale, type ApiLocale } from "@/lib/i18n/api-locale";
 import { logger } from "@/lib/utils/logger";
-
-type BannerLocale = "en" | "hy" | "ru";
 
 export type PublicBannerItem = {
   id: string;
@@ -36,11 +35,15 @@ const DEFAULT_BANNER_STORAGE: BannerManagementStorage = {
   banners: [],
 };
 
-function normalizeLocale(raw: string | undefined): BannerLocale {
-  if (raw === "en" || raw === "hy" || raw === "ru") {
-    return raw;
-  }
-  return "en";
+function normalizeLocale(
+  localeRaw: string | undefined,
+  acceptLanguageRaw: string | null | undefined,
+): ApiLocale {
+  return resolveApiLocale({
+    localeRaw,
+    acceptLanguageRaw,
+    fallbackLocale: "hy",
+  }).resolvedLocale;
 }
 
 function parseStored(raw: unknown): BannerManagementStorage | null {
@@ -122,10 +125,11 @@ export const bannerManagementService = {
   async getPublicSlotPayload(args: {
     slot: BannerSlotId;
     localeRaw: string | undefined;
+    acceptLanguageRaw?: string | null;
     now?: Date;
   }): Promise<PublicBannersPayload> {
     const storage = await loadStorage();
-    const locale = normalizeLocale(args.localeRaw);
+    const locale = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
     const now = args.now ?? new Date();
     const nowMs = now.getTime();
 

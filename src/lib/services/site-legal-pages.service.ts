@@ -12,6 +12,7 @@ import {
   siteLegalPagesStorageSchema,
   type SiteLegalPagesStorage,
 } from "@/lib/schemas/site-legal-pages.schema";
+import { resolveApiLocale } from "@/lib/i18n/api-locale";
 import type {
   SiteLegalLocaleResolution,
   SiteLegalPagePublicPayload,
@@ -20,52 +21,19 @@ import { logger } from "@/lib/utils/logger";
 
 type LocalizedMap = SiteLegalPagesStorage["pages"]["privacy"]["title"];
 
-function parseAcceptLanguage(acceptLanguageRaw: string | null): SiteLocale | null {
-  if (!acceptLanguageRaw) {
-    return null;
-  }
-  const chunks = acceptLanguageRaw.split(",");
-  for (const chunk of chunks) {
-    const token = chunk.split(";")[0]?.trim().toLowerCase();
-    if (!token) {
-      continue;
-    }
-    if (token.startsWith("hy")) {
-      return "hy";
-    }
-    if (token.startsWith("ru")) {
-      return "ru";
-    }
-    if (token.startsWith("en")) {
-      return "en";
-    }
-  }
-  return null;
-}
-
 function normalizeLocale(
   localeRaw: string | null,
   acceptLanguageRaw: string | null,
 ): SiteLegalLocaleResolution {
-  if (localeRaw === "hy" || localeRaw === "ru" || localeRaw === "en") {
-    return {
-      requestedLocale: localeRaw,
-      resolvedLocale: localeRaw,
-      fallbackUsed: false,
-    };
-  }
-  const headerLocale = parseAcceptLanguage(acceptLanguageRaw);
-  if (headerLocale) {
-    return {
-      requestedLocale: localeRaw,
-      resolvedLocale: headerLocale,
-      fallbackUsed: localeRaw !== null,
-    };
-  }
+  const locale = resolveApiLocale({
+    localeRaw,
+    acceptLanguageRaw,
+    fallbackLocale: "hy",
+  });
   return {
-    requestedLocale: localeRaw,
-    resolvedLocale: "hy",
-    fallbackUsed: localeRaw !== null,
+    requestedLocale: locale.requestedLocale,
+    resolvedLocale: locale.resolvedLocale,
+    fallbackUsed: locale.fallbackUsed,
   };
 }
 

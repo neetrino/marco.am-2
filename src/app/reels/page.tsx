@@ -19,7 +19,9 @@ export default async function ReelsPage({
   const cookieStore = await cookies();
   const locale =
     parseLanguageFromServer(cookieStore.get(LANGUAGE_PREFERENCE_KEY)?.value) ?? 'en';
-  const feed = await reelsManagementService.getPublicPayload(locale);
+  const feed = await reelsManagementService.getPublicPayload({
+    localeRaw: locale,
+  });
 
   const sp = searchParams ? await searchParams : {};
   const rawI = sp.i;
