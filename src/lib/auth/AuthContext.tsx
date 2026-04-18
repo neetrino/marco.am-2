@@ -11,6 +11,10 @@ import {
   mergeGuestWishlistAfterAuth,
   migrateLegacyWishlistFromLocalStorage,
 } from '../wishlist/wishlist-client';
+import {
+  mergeGuestCompareAfterAuth,
+  migrateLegacyCompareFromLocalStorage,
+} from '../compare/compare-client';
 
 /** Session storage keys for OTP step (same-tab only). */
 export const AUTH_VERIFICATION_TOKEN_KEY = 'auth_verification_token';
@@ -103,6 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const lang = getStoredLanguage();
     await migrateLegacyWishlistFromLocalStorage(lang);
     await mergeGuestWishlistAfterAuth();
+    await migrateLegacyCompareFromLocalStorage(lang);
+    await mergeGuestCompareAfterAuth();
   };
 
   const clearVerificationSession = () => {

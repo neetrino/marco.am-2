@@ -2,8 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
+import { getStoredLanguage } from '@/lib/language';
+import {
+  addCompareItemClient,
+  fetchCompareProductIds,
+  removeCompareItemClient,
+} from '@/lib/compare/compare-client';
 
-const COMPARE_KEY = 'shop_compare';
 const MAX_COMPARE_ITEMS = 4;
 
 /**
@@ -16,51 +21,49 @@ export function useCompare(productId: string) {
   const [isInCompare, setIsInCompare] = useState(false);
 
   useEffect(() => {
-    const checkCompare = () => {
-      if (typeof window === 'undefined') return;
+    const checkCompare = async () => {
       try {
-        const stored = localStorage.getItem(COMPARE_KEY);
-        const compare = stored ? JSON.parse(stored) : [];
+        const compare = await fetchCompareProductIds(getStoredLanguage());
         setIsInCompare(compare.includes(productId));
       } catch {
         setIsInCompare(false);
       }
     };
 
-    checkCompare();
+    void checkCompare();
 
-    const handleCompareUpdate = () => checkCompare();
+    const handleCompareUpdate = () => {
+      void checkCompare();
+    };
     window.addEventListener('compare-updated', handleCompareUpdate);
+    window.addEventListener('auth-updated', handleCompareUpdate);
+    window.addEventListener('language-updated', handleCompareUpdate);
 
     return () => {
       window.removeEventListener('compare-updated', handleCompareUpdate);
+      window.removeEventListener('auth-updated', handleCompareUpdate);
+      window.removeEventListener('language-updated', handleCompareUpdate);
     };
   }, [productId]);
 
-  const toggleCompare = () => {
-    if (typeof window === 'undefined') return;
-    
+  const toggleCompare = async () => {
     try {
-      const stored = localStorage.getItem(COMPARE_KEY);
-      const compare: string[] = stored ? JSON.parse(stored) : [];
-      
+      const language = getStoredLanguage();
+      const compare = await fetchCompareProductIds(language);
+
       if (isInCompare) {
-        const updated = compare.filter((id) => id !== productId);
-        localStorage.setItem(COMPARE_KEY, JSON.stringify(updated));
+        await removeCompareItemClient(productId, language);
         setIsInCompare(false);
       } else {
         if (compare.length >= MAX_COMPARE_ITEMS) {
           alert(t('common.alerts.compareMaxReached'));
           return;
         }
-        compare.push(productId);
-        localStorage.setItem(COMPARE_KEY, JSON.stringify(compare));
+        await addCompareItemClient(productId, language);
         setIsInCompare(true);
       }
-      
-      window.dispatchEvent(new Event('compare-updated'));
-    } catch (error) {
-      console.error('Error updating compare:', error);
+    } catch {
+      /* ignore compare toggle errors in card widgets */
     }
   };
 

@@ -11,8 +11,9 @@ import { useInstantSearch } from './hooks/useInstantSearch';
 import { SearchDropdown } from './SearchDropdown';
 import { useAuth } from '../lib/auth/AuthContext';
 import { apiClient } from '../lib/api-client';
-import { CART_KEY, getCompareCount } from '../lib/storageCounts';
+import { CART_KEY } from '../lib/storageCounts';
 import { fetchWishlistItemCount } from '../lib/wishlist/wishlist-client';
+import { fetchCompareItemCount } from '../lib/compare/compare-client';
 import { MapPin, Phone, Sun } from 'lucide-react';
 import { MarcoLogo } from './header/MarcoLogo';
 import { HeaderLocaleCurrencyPill, MobileHeaderLocaleCurrencyButton } from './header/HeaderLocaleCurrencyPill';
@@ -495,7 +496,7 @@ export function Header({ initialLanguage }: HeaderProps) {
     }
   };
 
-  // Load wishlist (API) and compare counts from localStorage
+  // Load wishlist/compare counts from API
   useEffect(() => {
     const refreshWishlistBadge = async () => {
       try {
@@ -506,9 +507,18 @@ export function Header({ initialLanguage }: HeaderProps) {
       }
     };
 
+    const refreshCompareBadge = async () => {
+      try {
+        const n = await fetchCompareItemCount(getStoredLanguage());
+        setCompareCount(n);
+      } catch {
+        setCompareCount(0);
+      }
+    };
+
     const updateCounts = () => {
       void refreshWishlistBadge();
-      setCompareCount(getCompareCount());
+      void refreshCompareBadge();
     };
 
     // Initial load
@@ -520,11 +530,12 @@ export function Header({ initialLanguage }: HeaderProps) {
     };
 
     const handleCompareUpdate = () => {
-      setCompareCount(getCompareCount());
+      void refreshCompareBadge();
     };
 
     const handleLanguageUpdate = () => {
       void refreshWishlistBadge();
+      void refreshCompareBadge();
     };
 
     const handleAuthUpdate = () => {

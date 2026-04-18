@@ -1,5 +1,4 @@
 import type { MouseEvent } from 'react';
-import { COMPARE_KEY } from '../types';
 import { t } from '../../../../lib/i18n';
 import type { LanguageCode } from '../../../../lib/language';
 import { getApiOrErrorMessage } from '../../../../lib/api-client';
@@ -7,6 +6,11 @@ import {
   addWishlistItemClient,
   removeWishlistItemClient,
 } from '@/lib/wishlist/wishlist-client';
+import {
+  addCompareItemClient,
+  fetchCompareProductIds,
+  removeCompareItemClient,
+} from '@/lib/compare/compare-client';
 import { logger } from '@/lib/utils/logger';
 
 interface UseProductActionsProps {
@@ -54,32 +58,29 @@ export function useProductActions({
     }
   };
 
-  const handleCompareToggle = (e: MouseEvent) => {
+  const handleCompareToggle = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!productId || typeof window === 'undefined') return;
 
     try {
-      const stored = localStorage.getItem(COMPARE_KEY);
-      const compare: string[] = stored ? JSON.parse(stored) : [];
+      const compare = await fetchCompareProductIds(language);
 
       if (isInCompare) {
-        localStorage.setItem(COMPARE_KEY, JSON.stringify(compare.filter((id) => id !== productId)));
+        await removeCompareItemClient(productId, language);
         setIsInCompare(false);
         setShowMessage(t(language, 'product.removedFromCompare'));
       } else {
         if (compare.length >= 4) {
           setShowMessage(t(language, 'product.compareListFull'));
         } else {
-          compare.push(productId);
-          localStorage.setItem(COMPARE_KEY, JSON.stringify(compare));
+          await addCompareItemClient(productId, language);
           setIsInCompare(true);
           setShowMessage(t(language, 'product.addedToCompare'));
         }
       }
 
       setTimeout(() => setShowMessage(null), 2000);
-      window.dispatchEvent(new Event('compare-updated'));
     } catch {
       /* ignore */
     }

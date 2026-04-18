@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { COMPARE_KEY } from '../types';
 import { fetchWishlistProductIds } from '@/lib/wishlist/wishlist-client';
 import { getStoredLanguage, type LanguageCode } from '@/lib/language';
+import { fetchCompareProductIds } from '@/lib/compare/compare-client';
 
 interface UseWishlistCompareProps {
   productId: string | null;
@@ -50,21 +50,26 @@ export function useWishlistCompare({ productId }: UseWishlistCompareProps) {
   useEffect(() => {
     if (!productId) return;
 
-    const checkCompare = () => {
-      if (typeof window === 'undefined') return;
+    const checkCompare = async () => {
       try {
-        const stored = localStorage.getItem(COMPARE_KEY);
-        const compare = stored ? JSON.parse(stored) : [];
+        const compare = await fetchCompareProductIds(language);
         setIsInCompare(compare.includes(productId));
       } catch {
         setIsInCompare(false);
       }
     };
 
-    checkCompare();
-    window.addEventListener('compare-updated', checkCompare);
-    return () => window.removeEventListener('compare-updated', checkCompare);
-  }, [productId]);
+    void checkCompare();
+    const onCompare = () => {
+      void checkCompare();
+    };
+    window.addEventListener('compare-updated', onCompare);
+    window.addEventListener('auth-updated', onCompare);
+    return () => {
+      window.removeEventListener('compare-updated', onCompare);
+      window.removeEventListener('auth-updated', onCompare);
+    };
+  }, [language, productId]);
 
   return { isInWishlist, setIsInWishlist, isInCompare, setIsInCompare };
 }

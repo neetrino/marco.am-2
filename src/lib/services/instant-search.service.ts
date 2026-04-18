@@ -246,7 +246,7 @@ export function parseInstantSearchRequest(searchParams: URLSearchParams): Instan
 
 export async function searchInstant(
   params: InstantSearchRequestParams,
-  client: InstantSearchDbClient = db
+  client: InstantSearchDbClient = db as unknown as InstantSearchDbClient
 ): Promise<InstantSearchResponse> {
   if (!params.query) {
     return createEmptyResponse(params);

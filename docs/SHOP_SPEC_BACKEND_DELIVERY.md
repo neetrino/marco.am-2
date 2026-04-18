@@ -3,7 +3,7 @@
 > Աղբյուր. `[shop-marco-code-plan.md](./shop-marco-code-plan.md)` (functional spec) — **backend** շերտին և API/CMS պահանջվող կետերը։  
 > Ճարտարապետության ամփոփում. `[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)`
 
-**Վերջին թարմացում.** 2026-04-18 (փուլ 12.1 — global instant search API: products + categories + suggestions)
+**Վերջին թարմացում.** 2026-04-18 (փուլ 12.3 — compare products API: spec diff + max items)
 
 **Արվածության գնահատում.** Կոդբազայի աուդիտ (`shared/db/prisma/schema.prisma`, `src/app/api/`**, `src/lib/services/`**) — տոկոսները արտահայտում են **ընթացիկ repo-ում իմպլեմենտացիայի** համապատասխանությունը spec-ի backend պահանջին (ոչ թե դիզայն/QA փուլը)։
 
@@ -35,10 +35,10 @@
 | 9    | Admin — orders                   | `100%`          |
 | 10   | Admin — analytics                | `100%`          |
 | 11   | Reels                            | `100%`          |
-| 12   | Site-wide & i18n (API)           | `63%`           |
+| 12   | Site-wide & i18n (API)           | `72%`           |
 
 
-**Ընդհանուր նախագծի առաջընթաց (backend).** `~76%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
+**Ընդհանուր նախագծի առաջընթաց (backend).** `~77%` — *(12 փուլերի միջին տոկոս, մոտավոր)*։
 
 ---
 
@@ -362,14 +362,14 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 ## Փուլ 12 — Site-wide & i18n (API)
 
-**Փուլի առաջընթաց.** `63%`
+**Փուլի առաջընթաց.** `72%`
 
 
 | ID   | Առաջադրանք (backend)                                                                                  | Կատարման % | Կարգավիճակ |
 | ---- | ----------------------------------------------------------------------------------------------------- | ---------- | ---------- |
 | 12.1 | Global search — ապրանքներ, կատեգորիաներ; suggest/debounce-ի համար API                                 | 100        | ✅          |
 | 12.2 | Wishlist — persist per user/session                                                                   | 100        | ✅          |
-| 12.3 | Compare products — spec diff-ի համար ցուցակ, max N ապրանք                                             | 25         | ⬜          |
+| 12.3 | Compare products — spec diff-ի համար ցուցակ, max N ապրանք                                             | 100        | ✅          |
 | 12.4 | About Us, Contact Us, brand pages — CMS կամ static content API                                        | 15         | ⬜          |
 | 12.5 | Legal pages — Privacy, Terms, Refund, Delivery Policy (**per locale**)                                | 15         | ⬜          |
 | 12.6 | Contact form — validation, spam protection                                                            | 100        | ✅          |
@@ -382,7 +382,9 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 **12.1 ✅ ավարտված (2026-04-18).** `GET /api/search/instant` endpoint-ը ամբողջացվել է site-wide suggest/debounce պահանջի համար։ Query contract՝ `q`, `lang`, `limit` (backward-compatible alias), `productLimit`, `categoryLimit`։ Response contract-ը հիմա վերադարձնում է ոչ միայն `results[]` (ապրանքներ), այլ նաև `categories[]` (category matches) և `suggestions[]` (mixed `product|category` hint list)՝ dropdown/autocomplete-ի համար։ Բոլոր URL-ները վերադարձվում են պատրաստ `href`-երով (`/products/<slug>` և `/products?category=<slug>`), իսկ locale fallback-ը նորմալացվում է `en|hy|ru` շրջանակում։ Իրականացում՝ `src/lib/services/instant-search.service.ts`, route՝ `src/app/api/search/instant/route.ts`, unit tests՝ `src/lib/services/instant-search.service.test.ts`։
 
-*Նշումներ.* 12.1 — `/api/search/instant`։ 12.2 — **սերվերային persist**՝ `GET`/`POST /api/v1/wishlist`, `DELETE /api/v1/wishlist/{productId}`, `POST /api/v1/wishlist/merge` (JWT) — DB `wishlists` / `wishlist_items`, հյուրի համար `shop_wishlist_session` cookie կամ `x-wishlist-session` header։ 12.3 — հիմնականում localStorage, ոչ թե սերվերային persist։
+**12.3 ✅ ավարտված (2026-04-18).** Compare-ը տեղափոխվել է ամբողջությամբ server-backed API-ի վրա՝ `GET`/`POST /api/v1/compare`, `DELETE /api/v1/compare/[productId]`, `POST /api/v1/compare/merge` (`user/session` flow)։ DB-ում ավելացվել են `compare_lists` / `compare_items` (migration + Prisma schema), հյուրի համար session cookie/header (`shop_compare_session` / `x-compare-session`)։ API-ն enforce է անում `maxItems=4` սահմանը և վերադարձնում compare payload՝ `items[]` + `specRows[]` (spec diff-ready matrix՝ `valuesByProductId`, `different`)։ Frontend compare էջը, PDP compare toggle-ը և header compare badge-ը հիմա աշխատում են այս API-ով, ներառյալ legacy `shop_compare` localStorage-ից ավտոմատ migration և login-ից հետո guest→user merge։
+
+*Նշումներ.* 12.1 — `/api/search/instant`։ 12.2 — **սերվերային persist**՝ `GET`/`POST /api/v1/wishlist`, `DELETE /api/v1/wishlist/{productId}`, `POST /api/v1/wishlist/merge` (JWT) — DB `wishlists` / `wishlist_items`, հյուրի համար `shop_wishlist_session` cookie կամ `x-wishlist-session` header։ 12.3 — **սերվերային persist + spec diff**՝ `GET`/`POST /api/v1/compare`, `DELETE /api/v1/compare/{productId}`, `POST /api/v1/compare/merge`, DB `compare_lists` / `compare_items`, հյուրի համար `shop_compare_session` cookie կամ `x-compare-session` header։
 
 **12.6 ✅ ավարտված (2026-04-17).** `POST /api/v1/contact` — **Zod** վալիդացիա (`name`, `email`, `subject`, `message` — երկարության վերին սահմաններ), **honeypot** `hp` դաշտ (ոչ `website` — autofill-ից խուսափելու համար) (ոչ դատարկ՝ `400` ընդհանուր հաղորդագրությամբ, DB գրառում չի կատարվում), **rate limit**՝ մինչև 5 ուղարկում/ժամ IP-ի հիման վրա (`x-forwarded-for` / `x-real-ip`) — **Upstash Ratelimit** (`UPSTASH_REDIS_REST_`*), այլապես **in-memory** fallback (dev/մեկ instance)։ **Cloudflare Turnstile** — կամընտիր՝ երբ `TURNSTILE_SECRET_KEY` է սահմանված, մարմնում պահանջվում է `turnstileToken` (սերվերը verify-ում է `siteverify` API-ով)։ Կոդ՝ `src/lib/schemas/contact-form.schema.ts`, `contact-rate-limit.service.ts`, `contact-turnstile.service.ts`, `src/app/api/v1/contact/route.ts`։
 
