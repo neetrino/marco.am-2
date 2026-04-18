@@ -13,6 +13,7 @@ import {
   type SiteLegalPagesStorage,
 } from "@/lib/schemas/site-legal-pages.schema";
 import { resolveApiLocale } from "@/lib/i18n/api-locale";
+import { buildLegalPageSeoMetadata } from "@/lib/seo/structured-data";
 import type {
   SiteLegalLocaleResolution,
   SiteLegalPagePublicPayload,
@@ -81,17 +82,28 @@ export const siteLegalPagesService = {
     const localeResolution = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
     const storage = await loadStorage();
     const page = storage.pages[args.page];
+    const locale = localeResolution.resolvedLocale;
+    const title = pickLocalized(page.title, locale);
+    const summary = pickLocalized(page.summary, locale);
+    const contentHtml = pickLocalized(page.contentHtml, locale);
     return {
       page: args.page,
-      locale: localeResolution.resolvedLocale,
+      locale,
       i18n: {
         ...localeResolution,
         availableLocales: SUPPORTED_SITE_LOCALES,
       },
-      title: pickLocalized(page.title, localeResolution.resolvedLocale),
-      summary: pickLocalized(page.summary, localeResolution.resolvedLocale),
-      contentHtml: pickLocalized(page.contentHtml, localeResolution.resolvedLocale),
+      title,
+      summary,
+      contentHtml,
       lastUpdatedIso: page.lastUpdatedIso,
+      seo: buildLegalPageSeoMetadata({
+        locale,
+        page: args.page,
+        title,
+        summary,
+        lastUpdatedIso: page.lastUpdatedIso,
+      }),
     };
   },
 

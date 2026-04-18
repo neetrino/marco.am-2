@@ -1342,23 +1342,180 @@ components:
 
     SiteContentAboutResponse:
       type: object
-      additionalProperties: true
-      description: Localized About Us page payload with i18n metadata.
+      description: Localized About Us page payload with i18n and SEO metadata.
+      required: [locale, i18n, heroImageUrl, subtitle, title, paragraphs, team, seo]
+      properties:
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        heroImageUrl:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+        paragraphs:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            type: string
+        team:
+          type: object
+          required: [subtitle, title, description]
+          properties:
+            subtitle:
+              type: string
+            title:
+              type: string
+            description:
+              type: string
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
 
     SiteContentContactResponse:
       type: object
-      additionalProperties: true
-      description: Localized Contact Us payload with contact details and map/social config.
+      description: Localized Contact Us payload with contact details, map/social config, and SEO metadata.
+      required:
+        - locale
+        - i18n
+        - phoneDisplay
+        - phoneTel
+        - email
+        - address
+        - workingHours
+        - callToUs
+        - writeToUs
+        - headquarterTitle
+        - socialLinks
+        - mapEmbed
+        - seo
+      properties:
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        phoneDisplay:
+          type: string
+        phoneTel:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+        workingHours:
+          type: object
+          required: [weekdays, saturday]
+          properties:
+            weekdays:
+              type: string
+            saturday:
+              type: string
+        callToUs:
+          type: object
+          required: [title, description]
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+        writeToUs:
+          type: object
+          required: [title, description, emailLabel]
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            emailLabel:
+              type: string
+        headquarterTitle:
+          type: string
+        socialLinks:
+          type: object
+          additionalProperties:
+            type: string
+        mapEmbed:
+          type: object
+          required: [enabled, iframeSrc]
+          properties:
+            enabled:
+              type: boolean
+            iframeSrc:
+              type: string
+              nullable: true
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
 
     SiteContentBrandPageResponse:
       type: object
-      additionalProperties: true
-      description: Localized brand-page payload for a published brand slug.
+      description: Localized brand-page payload for a published brand slug, with SEO metadata.
+      required: [locale, i18n, brand, content, seo]
+      properties:
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        brand:
+          type: object
+          required: [id, slug, name, description, logoUrl]
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            logoUrl:
+              type: string
+              nullable: true
+        content:
+          type: object
+          required: [sectionTitle, descriptionSource, ctaLabel, href]
+          properties:
+            sectionTitle:
+              type: string
+            descriptionSource:
+              type: string
+              enum: [brand_translation, fallback_template]
+            ctaLabel:
+              type: string
+            href:
+              type: string
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
 
     SiteContentLegalPageResponse:
       type: object
-      additionalProperties: true
-      description: Localized legal page payload for privacy/terms/refund/delivery-policy.
+      description: Localized legal page payload for privacy/terms/refund/delivery-policy with SEO metadata.
+      required: [page, locale, i18n, title, summary, contentHtml, lastUpdatedIso, seo]
+      properties:
+        page:
+          type: string
+          enum: [privacy, terms, refund, delivery-policy]
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        title:
+          type: string
+        summary:
+          type: string
+        contentHtml:
+          type: string
+        lastUpdatedIso:
+          type: string
+          format: date-time
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
 
     SiteContentStorageDocument:
       type: object
@@ -1374,6 +1531,170 @@ components:
       type: string
       enum: [privacy, terms, refund, delivery-policy, refund-policy, delivery-terms]
       description: Supported legal page keys and compatibility aliases.
+
+    SiteLocaleResolutionWithAvailable:
+      type: object
+      required: [requestedLocale, resolvedLocale, fallbackUsed, availableLocales]
+      properties:
+        requestedLocale:
+          type: string
+          nullable: true
+        resolvedLocale:
+          type: string
+          enum: [hy, ru, en]
+        fallbackUsed:
+          type: boolean
+        availableLocales:
+          type: array
+          items:
+            type: string
+            enum: [hy, ru, en]
+
+    SitePageSeoRobots:
+      type: object
+      required: [index, follow]
+      properties:
+        index:
+          type: boolean
+        follow:
+          type: boolean
+
+    SitePageStructuredData:
+      oneOf:
+        - $ref: "#/components/schemas/SitePageStructuredDataAbout"
+        - $ref: "#/components/schemas/SitePageStructuredDataContact"
+        - $ref: "#/components/schemas/SitePageStructuredDataCollection"
+        - $ref: "#/components/schemas/SitePageStructuredDataWebPage"
+      discriminator:
+        propertyName: "@type"
+
+    SitePageStructuredDataAbout:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [AboutPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+
+    SitePageStructuredDataContact:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description, contactPoint]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [ContactPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        contactPoint:
+          type: object
+          required: ["@type", telephone, email, contactType, areaServed]
+          properties:
+            "@type":
+              type: string
+              enum: [ContactPoint]
+            telephone:
+              type: string
+            email:
+              type: string
+              format: email
+            contactType:
+              type: string
+              enum: ["customer support"]
+            areaServed:
+              type: string
+              enum: [AM]
+
+    SitePageStructuredDataCollection:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description, mainEntity]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [CollectionPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        mainEntity:
+          type: object
+          required: ["@type", name]
+          properties:
+            "@type":
+              type: string
+              enum: [Brand]
+            name:
+              type: string
+
+    SitePageStructuredDataWebPage:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description, dateModified]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [WebPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        dateModified:
+          type: string
+          format: date-time
+
+    SitePageSeoMetadata:
+      type: object
+      required: [title, description, canonicalPath, canonicalUrl, robots, structuredData]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        canonicalPath:
+          type: string
+        canonicalUrl:
+          type: string
+          format: uri
+        robots:
+          $ref: "#/components/schemas/SitePageSeoRobots"
+        structuredData:
+          $ref: "#/components/schemas/SitePageStructuredData"
 
     OrderResourceLink:
       type: object

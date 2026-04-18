@@ -108,6 +108,18 @@ Response shape:
 - `categories[]`: matched categories (`id`, `slug`, `title`, `fullPath`, `href`)
 - `suggestions[]`: merged list for autocomplete (`type = product|category`)
 
+## 5.2 Site content and legal SEO metadata
+
+`GET /api/v1/site-content/about`, `GET /api/v1/site-content/contact`, `GET /api/v1/site-content/brands/{slug}`, and
+`GET /api/v1/site-content/legal/{page}` now include a normalized `seo` block for frontend metadata/JSON-LD rendering:
+
+- `title`, `description`
+- `canonicalPath`, `canonicalUrl`
+- `robots`: `{ index, follow }`
+- `structuredData`: schema.org typed object (`AboutPage`, `ContactPage`, `CollectionPage`, or `WebPage`)
+
+The backend resolves locale-specific SEO/structured fields using the same locale fallback chain as content payloads.
+
 ---
 
 ## 6. References

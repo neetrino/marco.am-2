@@ -2,6 +2,7 @@ import type {
   SiteLegalPageKey,
   SiteLocale,
 } from "@/lib/constants/site-legal-pages";
+import type { SitePageSeoMetadata } from "@/lib/seo/structured-data";
 
 export type SiteLegalLocaleResolution = {
   readonly requestedLocale: string | null;
@@ -19,4 +20,5 @@ export type SiteLegalPagePublicPayload = {
   readonly summary: string;
   readonly contentHtml: string;
   readonly lastUpdatedIso: string;
+  readonly seo: SitePageSeoMetadata;
 };

@@ -13,6 +13,11 @@ import {
   siteContentStorageSchema,
   type SiteContentStorage,
 } from "@/lib/schemas/site-content.schema";
+import {
+  buildAboutPageSeoMetadata,
+  buildBrandPageSeoMetadata,
+  buildContactPageSeoMetadata,
+} from "@/lib/seo/structured-data";
 import { buildApiLocaleFallbackOrder, resolveApiLocale } from "@/lib/i18n/api-locale";
 import { AppError } from "@/lib/types/errors";
 import type { LocaleResolution, SiteAboutPublicPayload, SiteBrandPagePublicPayload, SiteContactPublicPayload } from "@/lib/types/site-content";
@@ -125,25 +130,32 @@ export const siteContentService = {
   }): Promise<SiteAboutPublicPayload> {
     const localeResolution = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
     const storage = await loadStorage();
+    const locale = localeResolution.resolvedLocale;
+    const subtitle = pickLocalized(storage.about.subtitle, locale);
+    const title = pickLocalized(storage.about.title, locale);
+    const paragraph1 = pickLocalized(storage.about.paragraph1, locale);
     return {
-      locale: localeResolution.resolvedLocale,
+      locale,
       i18n: { ...localeResolution, availableLocales: SUPPORTED_SITE_LOCALES },
       heroImageUrl: storage.about.heroImageUrl,
-      subtitle: pickLocalized(storage.about.subtitle, localeResolution.resolvedLocale),
-      title: pickLocalized(storage.about.title, localeResolution.resolvedLocale),
+      subtitle,
+      title,
       paragraphs: [
-        pickLocalized(storage.about.paragraph1, localeResolution.resolvedLocale),
-        pickLocalized(storage.about.paragraph2, localeResolution.resolvedLocale),
-        pickLocalized(storage.about.paragraph3, localeResolution.resolvedLocale),
+        paragraph1,
+        pickLocalized(storage.about.paragraph2, locale),
+        pickLocalized(storage.about.paragraph3, locale),
       ],
       team: {
-        subtitle: pickLocalized(storage.about.teamSubtitle, localeResolution.resolvedLocale),
-        title: pickLocalized(storage.about.teamTitle, localeResolution.resolvedLocale),
-        description: pickLocalized(
-          storage.about.teamDescription,
-          localeResolution.resolvedLocale,
-        ),
+        subtitle: pickLocalized(storage.about.teamSubtitle, locale),
+        title: pickLocalized(storage.about.teamTitle, locale),
+        description: pickLocalized(storage.about.teamDescription, locale),
       },
+      seo: buildAboutPageSeoMetadata({
+        locale,
+        title,
+        subtitle,
+        paragraph: paragraph1,
+      }),
     };
   },
 
@@ -174,6 +186,13 @@ export const siteContentService = {
       headquarterTitle: pickLocalized(storage.contact.headquarterTitle, locale),
       socialLinks: storage.contact.socialLinks,
       mapEmbed: toPublicMapEmbed(storage.contact.mapEmbed),
+      seo: buildContactPageSeoMetadata({
+        locale,
+        title: pickLocalized(storage.contact.headquarterTitle, locale),
+        description: pickLocalized(storage.contact.callToUs.description, locale),
+        phoneTel: storage.contact.phoneTel,
+        email: storage.contact.email,
+      }),
     };
   },
 
@@ -215,6 +234,12 @@ export const siteContentService = {
         ctaLabel: pickLocalized(storage.brandPages.ctaLabel, localeResolution.resolvedLocale),
         href: resolveBrandCatalogHref(storage, brand.id),
       },
+      seo: buildBrandPageSeoMetadata({
+        locale: localeResolution.resolvedLocale,
+        brandSlug: brand.slug,
+        brandName: translation.name,
+        brandDescription: translation.description ?? fallbackDescription,
+      }),
     };
   },
 

@@ -1,4 +1,5 @@
 import type { SiteLocale } from "@/lib/constants/site-content";
+import type { SitePageSeoMetadata } from "@/lib/seo/structured-data";
 import type { SiteContentStorage } from "@/lib/schemas/site-content.schema";
 
 export type LocaleResolution = {
@@ -19,6 +20,7 @@ export type SiteAboutPublicPayload = {
     readonly title: string;
     readonly description: string;
   };
+  readonly seo: SitePageSeoMetadata;
 };
 
 export type SiteContactPublicPayload = {
@@ -47,6 +49,7 @@ export type SiteContactPublicPayload = {
     readonly enabled: boolean;
     readonly iframeSrc: string | null;
   };
+  readonly seo: SitePageSeoMetadata;
 };
 
 export type SiteBrandPagePublicPayload = {
@@ -65,4 +68,5 @@ export type SiteBrandPagePublicPayload = {
     readonly ctaLabel: string;
     readonly href: string;
   };
+  readonly seo: SitePageSeoMetadata;
 };

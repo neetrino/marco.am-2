@@ -362,7 +362,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 
 ## Փուլ 12 — Site-wide & i18n (API)
 
-**Փուլի առաջընթաց.** `96%`
+**Փուլի առաջընթաց.** `100%`
 
 
 | ID   | Առաջադրանք (backend)                                                                                  | Կատարման % | Կարգավիճակ |
@@ -375,7 +375,7 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 | 12.6 | Contact form — validation, spam protection                                                            | 100        | ✅          |
 | 12.7 | i18n — AM primary, RU, EN — թարգմանվող էնտիտիների սխեմա, API-ում locale / `Accept-Language`, fallback | 100        | ✅          |
 | 12.8 | Admin — թարգմանությունների խմբագրում կամ import workflow (եթե պահանջվում է)                           | 100        | ✅          |
-| 12.9 | SEO structured data — backend-ից անհրաժեշտ մետատվյալներ (ըստ frontend պայմանագրի)                     | 70         | 🔄         |
+| 12.9 | SEO structured data — backend-ից անհրաժեշտ մետատվյալներ (ըստ frontend պայմանագրի)                     | 100        | ✅          |
 
 
 **12.2 ✅ ավարտված (2026-04-17).** Wishlist-ը պահվում է PostgreSQL-ում (`wishlists`, `wishlist_items`)։ Մուտք գործած օգտատիրոջ համար՝ `userId` (մեկ ցուցակ)։ Հյուրի համար՝ `sessionToken` + `Set-Cookie: shop_wishlist_session` (կամ `x-wishlist-session`)։ Միայն **published** և չջնջված ապրանքներ։ `POST /api/v1/wishlist/merge` — հյուրի ցուցակը միացնել JWT օգտատիրոջը (կրկնվող productId-ները բաց են թողնվում)։ OpenAPI՝ `docs/openapi/shop-api.yaml`։
@@ -399,6 +399,8 @@ Moderation workflow՝ `PATCH /api/v1/supersudo/reels/[id]/moderation` (`pending|
 - `GET /api/v1/supersudo/i18n/translations?scope=<scope>` — export է անում flattened թարգմանությունների ցուցակ (`entries[]`՝ `key`, `hy`, `ru`, `en`)։  
 - `PUT /api/v1/supersudo/i18n/translations` — import/edit flattened payload-ով (`scope`, `entries[]`, `strict`)՝ schema validation + missing key guard-ով։  
 Աջակցվող scope-ներ՝ `home-hero`, `home-why-choose-us`, `home-customer-reviews`, `home-brand-partners`, `home-footer`, `banners`, `reels`, `site-content`, `site-legal-pages`։
+
+**12.9 ✅ ավարտված (2026-04-18).** Site-wide SEO structured-data contract-ը ամբողջացվել է public content/legal API payload-ներում՝ frontend contract-ին համապատասխան meta դաշտերով։ `GET /api/v1/site-content/about`, `GET /api/v1/site-content/contact`, `GET /api/v1/site-content/brands/[slug]`, `GET /api/v1/site-content/legal/[page]` endpoint-ները հիմա վերադարձնում են միասնական `seo` բլոկ՝ `title`, `description`, `canonicalPath`, `canonicalUrl`, `robots`, `structuredData` (schema.org typed JSON-LD-ready object՝ `AboutPage`, `ContactPage`, `CollectionPage`, `WebPage`)։ Locale-aware structured data-ն արտադրվում է backend builder-ով (`src/lib/seo/structured-data.ts`)՝ canonical URL-ների հիմքը վերցնելով `NEXT_PUBLIC_APP_URL` / `APP_URL` resolution-ից (`getPublicAppUrl`)։ Contract-ը ֆիքսվել է OpenAPI-ում (`docs/openapi/shop-api.yaml`)՝ explicit schema-ներով (`SitePageSeoMetadata`, `SitePageStructuredData*`)։
 
 ---
 
