@@ -9,6 +9,9 @@ export const HEADER_TABLET_ROW2_MAX_WIDTH_PX = 1366;
  */
 export const HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX = 820;
 
+/** Reels destination used by primary navigation. */
+export const HEADER_REELS_EXTERNAL_HREF = '/reels';
+
 /**
  * Shared width + horizontal padding for both header rows — `.marco-header-container` in `globals.css`.
  * Wide desktop (1367px+): same `max-w-7xl` column as hero (no extra 1920px / 135px inset).

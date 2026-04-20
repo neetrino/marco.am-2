@@ -118,17 +118,21 @@ const slateCtaIconFrameStyleHy: CSSProperties = {
 
 type HomePromoMobileHeroSlateCtaProps = {
   /** Primary hero CTA — from CMS / admin (`GET /api/v1/home/hero`). */
-  primaryCta: { label: string; href: string };
+  primaryCta?: { label?: string; href?: string };
 };
 
 /**
  * Figma 314:2394 — yellow pill + black arrow chip; `z-[12]` under chair (`z-[13]`) so legs overlap CTA.
  */
 export function HomePromoMobileHeroSlateCta({ primaryCta }: HomePromoMobileHeroSlateCtaProps) {
-  const { lang } = useTranslation();
+  const { lang, t } = useTranslation();
   const isRussian = lang === 'ru';
   const isArmenian = lang === 'hy';
   const isEnglish = lang === 'en';
+  const ctaHref = primaryCta?.href?.trim() ? primaryCta.href : '/products';
+  const ctaLabel = primaryCta?.label?.trim()
+    ? primaryCta.label
+    : t('home.banner_shop_now');
 
   const ctaShellStyle = isArmenian
     ? slateCtaLinkStyleHy
@@ -157,7 +161,7 @@ export function HomePromoMobileHeroSlateCta({ primaryCta }: HomePromoMobileHeroS
         }}
       >
         <Link
-          href={primaryCta.href}
+          href={ctaHref}
           className={`${montserratSlateCta.className} group pointer-events-auto flex w-full max-w-full shrink-0 items-center bg-marco-yellow ${
             isArmenian
               ? 'text-[14px] font-extrabold leading-[20px]'
@@ -168,7 +172,7 @@ export function HomePromoMobileHeroSlateCta({ primaryCta }: HomePromoMobileHeroS
                   : 'text-base font-bold leading-6'
           } text-marco-black transition hover:-translate-y-0.5 hover:bg-red-700 hover:text-white active:translate-y-px`}
           style={ctaShellStyle}
-          aria-label={primaryCta.label}
+          aria-label={ctaLabel}
         >
           <span
             className={`whitespace-nowrap text-left ${
@@ -181,7 +185,7 @@ export function HomePromoMobileHeroSlateCta({ primaryCta }: HomePromoMobileHeroS
                     : 'min-w-0 shrink'
             }`}
           >
-            {primaryCta.label}
+            {ctaLabel}
           </span>
           <span
             className="flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition group-hover:bg-white group-hover:text-red-700"

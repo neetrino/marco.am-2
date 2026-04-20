@@ -14,10 +14,10 @@ import type { ProductReviewsAggregate } from '@/lib/types/product-reviews';
 interface ProductReviewsProps {
   productId?: string;
   productSlug?: string;
-  reviews: Review[];
-  aggregate: ProductReviewsAggregate;
-  loading: boolean;
-  loadReviews: () => void | Promise<void>;
+  reviews?: Review[];
+  aggregate?: ProductReviewsAggregate;
+  loading?: boolean;
+  loadReviews?: () => void | Promise<void>;
 }
 
 export function ProductReviews({
@@ -30,6 +30,9 @@ export function ProductReviews({
 }: ProductReviewsProps) {
   const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
+  const safeReviews = reviews ?? [];
+  const isLoading = loading ?? false;
+  const reloadReviews = loadReviews ?? (() => undefined);
 
   const {
     showForm,
@@ -52,16 +55,16 @@ export function ProductReviews({
   } = useReviewForm({
     productId,
     productSlug,
-    reviews,
+    reviews: safeReviews,
     onReviewUpdated: () => {
-      void loadReviews();
+      void reloadReviews();
     },
   });
 
   // Get user's review if exists (reserved for future UI)
-  const _userReview = user ? reviews.find(r => r.userId === user.id) : null;
+  const _userReview = user ? safeReviews.find((r) => r.userId === user.id) : null;
 
-  if (loading) {
+  if (isLoading) {
     return <ProductReviewsLoading />;
   }
 
@@ -86,7 +89,7 @@ export function ProductReviews({
         </h2>
 
         {/* Rating Summary */}
-        <ReviewSummary reviews={reviews} aggregate={aggregate} />
+        <ReviewSummary reviews={safeReviews} aggregate={aggregate} />
 
         {/* Write Review Button */}
         {!showForm && (
@@ -125,7 +128,7 @@ export function ProductReviews({
 
       {/* Reviews List */}
       <ReviewList
-        reviews={reviews}
+        reviews={safeReviews}
         currentUserId={user?.id}
         showForm={showForm}
         onEditReview={handleEditReview}

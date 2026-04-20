@@ -32,6 +32,31 @@ export const FOOTER_NAV_COLUMN_LIST_ITEM_GAP_CLASS = 'gap-1';
 export const FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS = 'leading-tight';
 export const FOOTER_NAV_COLUMN_LINK_LEADING_CLASS = 'leading-tight';
 
+export const FOOTER_COMPANY_LINKS = [
+  { href: '/about', labelKey: 'common.footer.marco.links.companyAbout' },
+  { href: '/stores', labelKey: 'common.footer.marco.links.companyStores' },
+  { href: '/careers', labelKey: 'common.footer.marco.links.companyCareers' },
+  { href: '/news', labelKey: 'common.footer.marco.links.companyNews' },
+  { href: '/contact', labelKey: 'common.footer.marco.links.companyFeedback' },
+] as const;
+
+export const FOOTER_SUPPORT_LINKS = [
+  {
+    href: '/delivery-returns',
+    labelKey: 'common.footer.marco.links.supportDelivery',
+  },
+  {
+    href: '/installment-terms',
+    labelKey: 'common.footer.marco.links.supportInstallment',
+  },
+  {
+    href: '/warranty',
+    labelKey: 'common.footer.marco.links.supportWarranty',
+  },
+  { href: '/faq', labelKey: 'common.footer.marco.links.supportFaq' },
+  { href: '/service-centers', labelKey: 'common.footer.marco.links.supportService' },
+] as const;
+
 export const NEETRINO_STUDIO_HREF = 'https://neetrino.com/';
 
 /**

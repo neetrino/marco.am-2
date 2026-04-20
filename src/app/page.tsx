@@ -9,7 +9,6 @@ import { HomeCustomerReviewsSection } from '../components/home/HomeCustomerRevie
 import { HomeWhyChooseUsSection } from '../components/home/HomeWhyChooseUsSection';
 import { LANGUAGE_PREFERENCE_KEY, parseLanguageFromServer } from '../lib/language';
 import { homeCustomerReviewsService } from '../lib/services/home-customer-reviews.service';
-import { homeHeroBannerService } from '../lib/services/home-hero-banner.service';
 import { reelsManagementService } from '../lib/services/reels-management.service';
 import { whyChooseUsService } from '../lib/services/why-choose-us.service';
 
@@ -18,7 +17,6 @@ export default async function HomePage() {
   const lang =
     parseLanguageFromServer(cookieStore.get(LANGUAGE_PREFERENCE_KEY)?.value) ??
     'en';
-  const initialHero = await homeHeroBannerService.getPublicPayload(lang);
   const initialWhyChooseUs = await whyChooseUsService.getPublicPayload(lang);
   const initialCustomerReviews =
     await homeCustomerReviewsService.getPublicPayload(lang);
@@ -28,7 +26,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <HeroCarousel initialHero={initialHero} />
+      <HeroCarousel />
 
       <HomeReelsSection items={reelsFeed.items} />
 
