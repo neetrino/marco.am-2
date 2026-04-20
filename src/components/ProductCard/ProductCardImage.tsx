@@ -44,7 +44,7 @@ export function ProductCardImage({
             src={image}
             alt={title}
             fill
-            className="object-cover"
+            className="object-cover object-center"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
             unoptimized
             onError={onImageError}

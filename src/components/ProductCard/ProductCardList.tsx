@@ -84,7 +84,7 @@ export function ProductCardList({
               src={product.image}
               alt={product.title}
               fill
-              className="object-cover"
+              className="object-cover object-center"
               sizes="80px"
               unoptimized
               onError={onImageError}

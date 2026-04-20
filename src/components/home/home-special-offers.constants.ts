@@ -243,7 +243,7 @@ export const SPECIAL_OFFERS_GALLERY_PIP_INACTIVE = '#d1d5db';
 export const SPECIAL_OFFERS_GALLERY_PIP_ACTIVE = '#FFCA03';
 
 /** Top padding under card shell before image well (Figma ~17). */
-export const SPECIAL_OFFERS_CARD_PADDING_TOP_PX = 8;
+export const SPECIAL_OFFERS_CARD_PADDING_TOP_PX = 12;
 
 /** Inner horizontal padding — matches `px-4` on the card content column. */
 export const SPECIAL_OFFERS_CARD_PADDING_X_PX = 16;
