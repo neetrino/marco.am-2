@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { db } from "@white-shop/db";
 import { ensureProductVariantAttributesColumn } from "../../utils/db-ensure";
+import { ensureProductClassColumns } from "../../utils/db-ensure-product-class";
 import { logger } from "../../utils/logger";
 import type { ProductWithRelations } from "./types";
 
@@ -78,31 +79,37 @@ const getProductAttributesInclude = () => ({
  * Check if error is related to product_attributes table
  */
 function isProductAttributesError(error: unknown): boolean {
-  const errorObj = error as { code?: string; message?: string };
+  const errorObj = error as { code?: string; message?: string; meta?: { table?: string } };
   const errorMessage = error instanceof Error ? error.message : String(error);
-  return (errorObj && typeof errorObj === 'object' && 'code' in errorObj && errorObj.code === 'P2021') || 
-         errorMessage.includes('product_attributes') || 
-         errorMessage.includes('does not exist');
+  return (
+    errorObj?.meta?.table === "product_attributes" ||
+    (errorObj?.code === "P2021" && errorMessage.includes("product_attributes")) ||
+    errorMessage.includes("product_attributes")
+  );
 }
 
 /**
  * Check if error is related to product_variants.attributes column
  */
 function isVariantAttributesError(error: unknown): boolean {
+  const errorObj = error as { meta?: { column?: string } };
   const errorMessage = error instanceof Error ? error.message : String(error);
-  return errorMessage.includes('product_variants.attributes') || 
-         (errorMessage.includes('attributes') && errorMessage.includes('does not exist'));
+  return (
+    errorObj?.meta?.column === "product_variants.attributes" ||
+    errorMessage.includes("product_variants.attributes")
+  );
 }
 
 /**
  * Check if error is related to attribute_values.colors column
  */
 function isAttributeValuesColorsError(error: unknown): boolean {
-  const errorObj = error as { code?: string; message?: string };
+  const errorObj = error as { message?: string; meta?: { column?: string } };
   const errorMessage = error instanceof Error ? error.message : String(error);
-  return (errorObj && typeof errorObj === 'object' && 'code' in errorObj && errorObj.code === 'P2022') || 
-         errorMessage.includes('attribute_values.colors') || 
-         errorMessage.includes('does not exist');
+  return (
+    errorObj?.meta?.column === "attribute_values.colors" ||
+    errorMessage.includes("attribute_values.colors")
+  );
 }
 
 /**
@@ -113,6 +120,7 @@ export async function executeProductQuery(
   limit: number,
   skip: number = 0
 ): Promise<ProductWithRelations[]> {
+  await ensureProductClassColumns();
   const baseInclude = getBaseInclude();
 
   try {
