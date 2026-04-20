@@ -48,7 +48,9 @@
     "addresses": "Addresses",
     "categoriesMegaMenu": {
       "viewProducts": "View all products",
-      "subcategories": "Subcategories"
+      "subcategories": "Subcategories",
+      "productsWord": "products",
+      "emptySubcategories": "No subcategories yet. Add child categories in the admin or run the database seed."
     }
   },
   "stock": {

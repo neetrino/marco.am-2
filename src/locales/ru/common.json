@@ -48,7 +48,9 @@
     "addresses": "Адреса",
     "categoriesMegaMenu": {
       "viewProducts": "Смотреть все товары",
-      "subcategories": "Подкатегории"
+      "subcategories": "Подкатегории",
+      "productsWord": "товаров",
+      "emptySubcategories": "Подкатегорий пока нет. Добавьте их в админке или выполните seed базы."
     }
   },
   "stock": {

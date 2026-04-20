@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import { LanguagePreferenceContext } from '../../lib/language-context';
 import type { Category } from './category-nav-types';
+import { CategoryMegaSubcategoryPills } from './CategoryMegaSubcategoryPills';
 import { CategoryDropdownPromoBanner } from './CategoryDropdownPromoBanner';
 import { resolveCategoryNavPresentation } from './categoryNavPresentation';
 import { headerCategoryNavFont } from './headerCategoryNavTypography';
@@ -77,7 +77,7 @@ export function CategoriesDropdownMega({
         })}
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col self-stretch overflow-hidden rounded-b-[13px] bg-white px-5 pb-5 pt-6 md:rounded-b-none md:rounded-r-[13px] md:pl-6 md:pr-5 md:pt-6">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col self-stretch overflow-y-auto rounded-b-[13px] bg-white px-5 pb-5 pt-6 md:rounded-b-none md:rounded-r-[13px] md:pl-6 md:pr-5 md:pt-6">
         <CategoryDropdownPromoBanner
           badge={preview.promo.badge}
           headline={preview.promo.headline}
@@ -86,28 +86,14 @@ export function CategoriesDropdownMega({
           onNavigate={onClose}
           ctaLabel={t('common.buttons.shopNow')}
         />
-        {selected.children.length > 0 ? (
-          <div className="mt-6 flex min-h-0 min-w-0 flex-1 flex-col border-t border-marco-border pt-5">
-            <p
-              className={`${headerCategoryNavFont.className} mb-3 shrink-0 text-xs font-semibold uppercase tracking-wide text-marco-black/70`}
-            >
-              {t('common.navigation.categoriesMegaMenu.subcategories')}
-            </p>
-            <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-              {selected.children.map((child) => (
-                <li key={child.id}>
-                  <Link
-                    href={`/products?category=${child.slug}`}
-                    onClick={onClose}
-                    className={`${headerCategoryNavFont.className} block rounded-md py-1 text-sm text-[#5d7285] transition-colors hover:text-marco-black`}
-                  >
-                    {child.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+        <CategoryMegaSubcategoryPills
+          sectionTitle={preview.title.toUpperCase()}
+          items={selected.children}
+          lang={lang}
+          productsWord={t('common.navigation.categoriesMegaMenu.productsWord')}
+          emptyMessage={t('common.navigation.categoriesMegaMenu.emptySubcategories')}
+          onNavigate={onClose}
+        />
       </div>
     </div>
   );

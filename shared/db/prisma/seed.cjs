@@ -95,6 +95,65 @@ const CATEGORIES = [
   },
 ];
 
+/**
+ * Child categories for mega-menu pills (Figma 242:1949). Parent slugs must exist in CATEGORIES.
+ * Idempotent: skips when a child slug already exists.
+ */
+const SUBCATEGORIES_BY_PARENT = {
+  furniture: [
+    {
+      slug: "furniture-soft-seating",
+      titles: {
+        en: "Soft furniture",
+        hy: "ՓԱՓՈՒԿ ԿԱՀՈՒՅՔ",
+        ru: "Мягкая мебель",
+      },
+    },
+    {
+      slug: "furniture-dining-sets",
+      titles: {
+        en: "Dining room collection",
+        hy: "ՃԱՇԱՍԵՆՅԱԿԱՅԻՆ ՀԱՎԱՔԱԾՈՒ",
+        ru: "Обеденные группы",
+      },
+    },
+    {
+      slug: "furniture-bedroom",
+      titles: {
+        en: "Bedroom furniture",
+        hy: "ՆՆՋԱՍԵՆՅԱԿԻ ԿԱՀՈՒՅՔ",
+        ru: "Мебель для спальни",
+      },
+    },
+  ],
+  "kitchen-appliances": [
+    {
+      slug: "kitchen-appliances-cooking",
+      titles: {
+        en: "Cooking appliances",
+        hy: "Խոհարարական տեխնիկա",
+        ru: "Техника для приготовления",
+      },
+    },
+    {
+      slug: "kitchen-appliances-food-prep",
+      titles: {
+        en: "Food prep",
+        hy: "Մթերքի մշակում",
+        ru: "Измельчение и смешивание",
+      },
+    },
+    {
+      slug: "kitchen-appliances-coffee",
+      titles: {
+        en: "Coffee & beverages",
+        hy: "Սուրճ և ըմպելիքներ",
+        ru: "Кофе и напитки",
+      },
+    },
+  ],
+};
+
 /** Shop filter brands (Figma / product listing) */
 const BRANDS = [
   { slug: "apple", name: "Apple" },
@@ -171,6 +230,44 @@ async function seedCategories() {
   }
   console.log("[Seed] Categories:", ids.length);
   return ids;
+}
+
+async function seedSubcategories() {
+  for (const [parentSlug, children] of Object.entries(SUBCATEGORIES_BY_PARENT)) {
+    const parent = await prisma.category.findFirst({
+      where: { translations: { some: { slug: parentSlug, locale: "en" } } },
+    });
+    if (!parent) {
+      console.warn("[Seed] Subcategories: parent not found:", parentSlug);
+      continue;
+    }
+    for (let i = 0; i < children.length; i++) {
+      const { slug, titles } = children[i];
+      const existing = await prisma.category.findFirst({
+        where: { translations: { some: { slug, locale: "en" } } },
+      });
+      if (existing) {
+        continue;
+      }
+      await prisma.category.create({
+        data: {
+          parentId: parent.id,
+          position: i,
+          published: true,
+          media: [],
+          translations: {
+            create: ["en", "hy", "ru"].map((locale) => ({
+              locale,
+              title: titles[locale],
+              slug,
+              fullPath: `${parentSlug}/${slug}`,
+            })),
+          },
+        },
+      });
+    }
+  }
+  console.log("[Seed] Subcategories ensured");
 }
 
 async function seedBrands() {
@@ -327,6 +424,7 @@ async function main() {
   try {
     await seedAdmin();
     const categoryIds = await seedCategories();
+    await seedSubcategories();
     const brandIds = await seedBrands();
     await seedBrandDemoProducts(categoryIds);
     await seedProducts(categoryIds, brandIds);

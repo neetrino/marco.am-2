@@ -48,7 +48,9 @@
     "addresses": "Հասցեներ",
     "categoriesMegaMenu": {
       "viewProducts": "Դիտել բոլոր ապրանքները",
-      "subcategories": "Ենթաբաժիններ"
+      "subcategories": "Ենթաբաժիններ",
+      "productsWord": "ԱՊՐԱՆՔ",
+      "emptySubcategories": "Ենթաբաժիններ դեռ չկան։ Ավելացրեք դրանք ադմինից կամ գործարկեք seed։"
     }
   },
   "stock": {
