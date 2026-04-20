@@ -4,9 +4,8 @@ import type { LanguageCode } from '../../lib/language';
 import { Suspense, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { SearchDropdown } from '../SearchDropdown';
-import { CategoryMenuItem } from './CategoryMenuItem';
+import { CategoriesDropdownMega } from './CategoriesDropdownMega';
 import {
-  HEADER_CATEGORIES_DROPDOWN_PANEL_CLASS,
   HEADER_CONTAINER_CLASS,
   HEADER_SEARCH_BAR_HEIGHT_CLASS,
   HEADER_SEARCH_BAR_INNER_CLASS,
@@ -59,6 +58,8 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
   } = data;
 
   const categoriesTriggerRef = useRef<HTMLButtonElement>(null);
+  /** Align categories dropdown right edge with the header content column (`.marco-header-container`). */
+  const headerRowContainerRef = useRef<HTMLDivElement>(null);
   const [categoriesDropdownLayout, setCategoriesDropdownLayout] = useState<{
     bridge: CSSProperties;
     panel: CSSProperties;
@@ -73,12 +74,15 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
     const gapPx = 8;
 
     const updateLayout = () => {
-      const el = categoriesTriggerRef.current;
-      if (!el) {
+      const trigger = categoriesTriggerRef.current;
+      const container = headerRowContainerRef.current;
+      if (!trigger) {
         return;
       }
-      const r = el.getBoundingClientRect();
-      const panelWidth = Math.min(426, Math.max(280, window.innerWidth - r.left - 16));
+      const r = trigger.getBoundingClientRect();
+      const cr = container?.getBoundingClientRect();
+      const rightEdge = cr ? cr.right : window.innerWidth - 16;
+      const panelWidth = Math.max(280, Math.min(rightEdge, window.innerWidth - 8) - r.left);
       setCategoriesDropdownLayout({
         bridge: {
           position: 'fixed',
@@ -111,7 +115,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
     <div
       className={`w-full border-b border-marco-border bg-white max-md:border-b-0 ${headerMobileLike ? 'border-b-0' : ''}`}
     >
-      <div className={HEADER_CONTAINER_CLASS}>
+      <div ref={headerRowContainerRef} className={HEADER_CONTAINER_CLASS}>
         <div
           className={
             headerMobileLike
@@ -160,22 +164,17 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                     className="pointer-events-auto"
                     style={categoriesDropdownLayout.bridge}
                   />
-                  <div
-                    data-marco-categories-dropdown
-                    className={HEADER_CATEGORIES_DROPDOWN_PANEL_CLASS}
-                    style={categoriesDropdownLayout.panel}
-                  >
+                  <div data-marco-categories-dropdown style={categoriesDropdownLayout.panel}>
                     {loadingCategories ? (
-                      <div className="px-2 py-1 text-sm text-[#5d7285]">{t('common.messages.loading')}</div>
+                      <div className="rounded-[13px] bg-marco-gray px-4 py-3 text-sm text-[#5d7285] shadow-2xl">
+                        {t('common.messages.loading')}
+                      </div>
                     ) : (
                       <Suspense fallback={null}>
-                        {getRootCategories(categories).map((category) => (
-                          <CategoryMenuItem
-                            key={category.id}
-                            category={category}
-                            onClose={() => setShowProductsMenu(false)}
-                          />
-                        ))}
+                        <CategoriesDropdownMega
+                          categories={getRootCategories(categories)}
+                          onClose={() => setShowProductsMenu(false)}
+                        />
                       </Suspense>
                     )}
                   </div>

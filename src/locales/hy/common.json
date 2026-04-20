@@ -45,7 +45,11 @@
     "shop": "Խանութ",
     "brands": "Բրենդներ",
     "reels": "Reels",
-    "addresses": "Հասցեներ"
+    "addresses": "Հասցեներ",
+    "categoriesMegaMenu": {
+      "viewProducts": "Դիտել բոլոր ապրանքները",
+      "subcategories": "Ենթաբաժիններ"
+    }
   },
   "stock": {
     "inStock": "Պահեստում",

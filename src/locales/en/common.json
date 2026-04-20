@@ -45,7 +45,11 @@
     "shop": "Shop",
     "brands": "Brands",
     "reels": "Reels",
-    "addresses": "Addresses"
+    "addresses": "Addresses",
+    "categoriesMegaMenu": {
+      "viewProducts": "View all products",
+      "subcategories": "Subcategories"
+    }
   },
   "stock": {
     "inStock": "In Stock",

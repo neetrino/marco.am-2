@@ -235,9 +235,3 @@ export const HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS =
 /** Figma 314:2501 — mobile search FAB (same shell as {@link HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS}). */
 export const HEADER_MOBILE_SEARCH_FAB_CLASS = HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS;
 
-/**
- * Root categories dropdown panel — Figma 218:4894 «Side Nav» (light gray surface, ~13px radius).
- * Width is capped; individual rows carry icon + label styling.
- */
-export const HEADER_CATEGORIES_DROPDOWN_PANEL_CLASS =
-  'flex max-h-[min(70vh,640px)] w-[min(426px,calc(100vw-2rem))] min-w-[280px] flex-col gap-4 overflow-y-auto rounded-[13px] bg-marco-gray py-[29px] pl-[25px] pr-2 shadow-2xl';

@@ -45,7 +45,11 @@
     "shop": "Магазин",
     "brands": "Бренды",
     "reels": "Reels",
-    "addresses": "Адреса"
+    "addresses": "Адреса",
+    "categoriesMegaMenu": {
+      "viewProducts": "Смотреть все товары",
+      "subcategories": "Подкатегории"
+    }
   },
   "stock": {
     "inStock": "В наличии",
