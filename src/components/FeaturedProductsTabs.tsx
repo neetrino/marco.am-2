@@ -57,6 +57,13 @@ interface ProductsResponse {
   };
 }
 
+function hasAtLeastOneBrandLogo(payload: HomeBrandPartnersPublicPayload): boolean {
+  return payload.brands.some((brand) => {
+    const logoUrl = brand.logoUrl;
+    return typeof logoUrl === 'string' && logoUrl.trim().length > 0;
+  });
+}
+
 type FilterType = 'new' | 'featured' | 'bestseller';
 
 const TAB_ORDER: FilterType[] = ['new', 'bestseller', 'featured'];
@@ -194,7 +201,9 @@ export function FeaturedProductsTabs() {
           { params: { locale: language } },
         );
         if (!cancelled) {
-          setBrandPartners(res);
+          // If the API returns brands without logos, fall back to static
+          // home placeholders (historical design assets in HomeBrandsSlide).
+          setBrandPartners(hasAtLeastOneBrandLogo(res) ? res : null);
         }
       } catch (err) {
         logger.warn('[FeaturedProductsTabs] home brand partners fetch failed', { error: err });
