@@ -1,7 +1,6 @@
 'use client';
 
 import type { MouseEvent } from 'react';
-import Link from 'next/link';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import { formatPrice, type CurrencyCode } from '../../../lib/currency';
 import { t, getProductText } from '../../../lib/i18n';
@@ -15,16 +14,10 @@ import {
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import type { Product, ProductVariant } from './types';
 
-/** Trailing arrow circle — scales with row-2 bar height (same as qty / toolbar icons and header strip). */
-const PRODUCT_PRIMARY_CTA_ICON_PX = 36;
-
 /** Buy CTA — taller row; trailing circle with light left nudge (−4px). */
 const PRODUCT_BUY_CTA_HEIGHT_CLASS = 'h-12';
 const PRODUCT_BUY_CTA_ICON_PX = 36;
 const PRODUCT_BUY_CTA_ICON_NUDGE_LEFT_CLASS = 'translate-x-2';
-
-/** Figma: offer CTA sits slightly above the purchase row — transform only, layout box unchanged. */
-const PRODUCT_OFFER_CTA_LIFT_CLASS = '-translate-y-1.5 sm:-translate-y-2';
 
 interface ProductInfoAndActionsProps {
   product: Product;
@@ -236,8 +229,8 @@ export function ProductInfoAndActions({
             </p>
           </div>
         )}
-        <div className="flex -translate-y-0.5 flex-col gap-3 border-t pb-2 pt-7">
-          <div className="flex w-full min-w-0 items-center justify-between gap-3">
+        <div className="flex -translate-y-0.5 border-t pb-2 pt-7">
+          <div className="flex w-full min-w-0 flex-nowrap items-center gap-3">
             <button
               type="button"
               disabled={!canAddToCart || isAddingToCart}
@@ -266,7 +259,7 @@ export function ProductInfoAndActions({
                 <ArrowUpRight className="size-3.5" strokeWidth={2.5} />
               </span>
             </button>
-            <div className="flex shrink-0 items-center overflow-hidden rounded-xl border bg-gray-50">
+            <div className="ml-auto flex shrink-0 items-center overflow-hidden rounded-xl border bg-gray-50">
               <button
                 onClick={() => onQuantityAdjust(-1)}
                 disabled={quantity <= 1}
@@ -283,38 +276,18 @@ export function ProductInfoAndActions({
                 +
               </button>
             </div>
-          </div>
-          <div className="flex w-full min-w-0 translate-y-2 items-end justify-between gap-3">
-            <Link
-              href={`/contact?product=${encodeURIComponent(product.slug)}`}
-              className={`flex w-full min-w-0 shrink-0 items-center gap-1.5 bg-marco-yellow pl-3 pr-1.5 text-left text-sm font-semibold leading-normal text-marco-black transition-[filter,transform] hover:-translate-y-2 hover:brightness-95 active:brightness-90 sm:max-w-[195px] sm:pl-6 sm:hover:-translate-y-2.5 ${PRODUCT_OFFER_CTA_LIFT_CLASS} ${PRODUCT_BUY_CTA_HEIGHT_CLASS} ${HEADER_FIGMA_PILL_RADIUS_CLASS}`}
+            <button
+              onClick={onCompareToggle}
+              className={`w-11 h-11 shrink-0 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-marco-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
             >
-              <span className="min-w-0 flex-1">{t(language, 'product.makeOffer')}</span>
-              <span
-                className="flex shrink-0 items-center justify-center rounded-full bg-black text-white"
-                style={{
-                  width: PRODUCT_PRIMARY_CTA_ICON_PX,
-                  height: PRODUCT_PRIMARY_CTA_ICON_PX,
-                }}
-                aria-hidden
-              >
-                <ArrowUpRight className="size-3.5" strokeWidth={2.5} />
-              </span>
-            </Link>
-            <div className="flex -translate-y-[8px] items-center justify-end gap-3">
-              <button
-                onClick={onCompareToggle}
-                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-marco-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
-              >
-                <CompareIcon isActive={isInCompare} />
-              </button>
-              <button
-                onClick={onAddToWishlist}
-                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-marco-black bg-gray-50' : 'border-gray-200'}`}
-              >
-                <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
-              </button>
-            </div>
+              <CompareIcon isActive={isInCompare} />
+            </button>
+            <button
+              onClick={onAddToWishlist}
+              className={`w-11 h-11 shrink-0 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-marco-black bg-gray-50' : 'border-gray-200'}`}
+            >
+              <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
+            </button>
           </div>
         </div>
       </div>

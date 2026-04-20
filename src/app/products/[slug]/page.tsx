@@ -7,6 +7,7 @@ import { RelatedProducts } from '../../../components/RelatedProducts';
 import { ProductReviews } from '../../../components/ProductReviews';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfoAndActions } from './ProductInfoAndActions';
+import { ProductSpecifications } from './ProductSpecifications';
 import { useProductPage } from './useProductPage';
 import type { ProductPageProps } from './types';
 
@@ -150,6 +151,8 @@ export default function ProductPage({ params }: ProductPageProps) {
             getRequiredAttributesMessage={getRequiredAttributesMessage}
           />
       </div>
+
+      <ProductSpecifications product={product} language={language} />
 
       <div id="product-reviews" className="mt-24 scroll-mt-24">
         <ProductReviews productSlug={slug} productId={product.id} />
