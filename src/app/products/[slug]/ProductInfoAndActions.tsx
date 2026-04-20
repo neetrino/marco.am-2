@@ -10,7 +10,6 @@ import { sanitizeHtml } from '../../../lib/utils/sanitize';
 import { CompareIcon } from '../../../components/icons/CompareIcon';
 import {
   HEADER_FIGMA_PILL_RADIUS_CLASS,
-  HEADER_ROW2_BAR_HEIGHT_CLASS,
 } from '../../../components/header/header.constants';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import type { Product, ProductVariant } from './types';
@@ -66,7 +65,7 @@ export function ProductInfoAndActions({
   price,
   originalPrice,
   compareAtPrice,
-  discountPercent,
+  discountPercent: _discountPercent,
   currency,
   language,
   averageRating,

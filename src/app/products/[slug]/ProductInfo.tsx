@@ -26,7 +26,7 @@ export function ProductInfo({
   price,
   originalPrice,
   compareAtPrice,
-  discountPercent,
+  discountPercent: _discountPercent,
   currency,
   language,
   averageRating,

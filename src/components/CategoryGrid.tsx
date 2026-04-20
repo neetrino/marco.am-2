@@ -39,7 +39,7 @@ interface ProductsResponse {
 /**
  * Get icon for category based on title/slug
  */
-function getCategoryIcon(categoryTitle: string, categorySlug: string): ReactNode {
+function _getCategoryIcon(categoryTitle: string, categorySlug: string): ReactNode {
   const title = categoryTitle.toLowerCase();
   const slug = categorySlug.toLowerCase();
 
@@ -305,7 +305,7 @@ export function CategoryGrid() {
         <div className="flex items-center justify-center gap-6 md:gap-8 lg:gap-12 flex-wrap">
           {categories.map((category) => {
             const productCount = productCounts[category.slug] ?? 0;
-            const product = categoryProducts[category.slug];
+            const _product = categoryProducts[category.slug];
             
             return (
               <Link

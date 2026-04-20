@@ -6,7 +6,6 @@
  */
 
 import { useMemo, useCallback, useContext } from 'react';
-import { type LanguageCode } from './language';
 import { t, getProductText, getAttributeLabel, type ProductField } from './i18n';
 import { LanguagePreferenceContext } from './language-context';
 

@@ -23,7 +23,7 @@ interface ProductCardImageProps {
  */
 export function ProductCardImage({
   slug,
-  image,
+  image: _image,
   title,
   labels,
   imageError,
