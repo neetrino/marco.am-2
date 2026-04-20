@@ -273,13 +273,10 @@ export default async function BrandsPage() {
   return (
     <div className="w-full pb-16 pt-10">
       <div className="marco-header-container">
-        <div className="mb-8 flex items-end justify-between gap-3">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold text-marco-black md:text-4xl">
             {t(language, 'common.navigation.brands')}
           </h1>
-          <span className="shrink-0 text-sm text-[#5d7285]">
-            {BRAND_LOGO_CARDS.length}
-          </span>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
