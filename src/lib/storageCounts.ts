@@ -28,16 +28,16 @@ function getStoredArrayLength(key: string): number {
 }
 
 /**
- * Retrieves wishlist items count from localStorage.
- */
-export function getWishlistCount(): number {
-  return getStoredArrayLength(WISHLIST_KEY);
-}
-
-/**
  * Retrieves compare items count from localStorage.
  */
 export function getCompareCount(): number {
   return getStoredArrayLength(COMPARE_KEY);
+}
+
+/**
+ * Retrieves wishlist items count from localStorage.
+ */
+export function getWishlistCount(): number {
+  return getStoredArrayLength(WISHLIST_KEY);
 }
 

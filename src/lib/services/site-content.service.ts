@@ -1,0 +1,290 @@
+import { db } from "@white-shop/db";
+
+import {
+  SITE_CONTENT_SETTINGS_KEY,
+  SUPPORTED_SITE_LOCALES,
+  type SiteLocale,
+} from "@/lib/constants/site-content";
+import {
+  SITE_CONTENT_DEFAULT_STORAGE,
+  SITE_CONTENT_MAP_EMBED_ALLOWED_HOSTS,
+} from "@/lib/constants/site-content.defaults";
+import {
+  siteContentStorageSchema,
+  type SiteContentStorage,
+} from "@/lib/schemas/site-content.schema";
+import {
+  buildAboutPageSeoMetadata,
+  buildBrandPageSeoMetadata,
+  buildContactPageSeoMetadata,
+} from "@/lib/seo/structured-data";
+import { buildApiLocaleFallbackOrder, resolveApiLocale } from "@/lib/i18n/api-locale";
+import { AppError } from "@/lib/types/errors";
+import type { LocaleResolution, SiteAboutPublicPayload, SiteBrandPagePublicPayload, SiteContactPublicPayload } from "@/lib/types/site-content";
+import { logger } from "@/lib/utils/logger";
+
+type BrandRow = { readonly id: string; readonly slug: string; readonly logoUrl: string | null; readonly translations: ReadonlyArray<{ readonly locale: string; readonly name: string; readonly description: string | null }> };
+
+type LocalizedMap = SiteContentStorage["about"]["title"];
+
+function normalizeLocale(localeRaw: string | null, acceptLanguageRaw: string | null): LocaleResolution {
+  const locale = resolveApiLocale({
+    localeRaw,
+    acceptLanguageRaw,
+    fallbackLocale: "hy",
+  });
+  return {
+    requestedLocale: locale.requestedLocale,
+    resolvedLocale: locale.resolvedLocale,
+    fallbackUsed: locale.fallbackUsed,
+  };
+}
+
+function pickLocalized(value: LocalizedMap, locale: SiteLocale): string {
+  return value[locale];
+}
+
+function parseStored(raw: unknown): SiteContentStorage | null {
+  const parsed = siteContentStorageSchema.safeParse(raw);
+  if (!parsed.success) {
+    logger.warn("[siteContent] Invalid stored payload", parsed.error.flatten());
+    return null;
+  }
+  return parsed.data;
+}
+
+async function loadStorage(): Promise<SiteContentStorage> {
+  const row = await db.settings.findUnique({
+    where: { key: SITE_CONTENT_SETTINGS_KEY },
+  });
+  if (!row) {
+    return SITE_CONTENT_DEFAULT_STORAGE;
+  }
+  return parseStored(row.value) ?? SITE_CONTENT_DEFAULT_STORAGE;
+}
+
+function toPublicMapEmbed(
+  mapEmbed: SiteContentStorage["contact"]["mapEmbed"],
+): SiteContactPublicPayload["mapEmbed"] {
+  if (!mapEmbed.enabled || !mapEmbed.iframeSrc) {
+    return { enabled: false, iframeSrc: null };
+  }
+  const src = mapEmbed.iframeSrc.trim();
+  if (!isAllowedMapEmbedUrl(src)) {
+    logger.warn("[siteContent] Public map embed URL rejected", { src });
+    return { enabled: false, iframeSrc: null };
+  }
+  return { enabled: true, iframeSrc: src };
+}
+
+function isAllowedMapEmbedUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:") {
+      return false;
+    }
+    return SITE_CONTENT_MAP_EMBED_ALLOWED_HOSTS.has(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
+async function findPublishedBrandBySlug(slug: string): Promise<BrandRow | null> {
+  const row = await db.brand.findFirst({
+    where: {
+      slug,
+      published: true,
+      deletedAt: null,
+    },
+    include: {
+      translations: true,
+    },
+  });
+  return row as BrandRow | null;
+}
+
+function resolveBrandTranslation(brand: BrandRow, locale: SiteLocale): { readonly name: string; readonly description: string | null } {
+  const order = buildApiLocaleFallbackOrder(locale);
+  for (const loc of order) {
+    const translation = brand.translations.find((item) => item.locale === loc);
+    if (translation?.name.trim()) {
+      return {
+        name: translation.name.trim(),
+        description: translation.description?.trim() ?? null,
+      };
+    }
+  }
+  return { name: brand.slug, description: null };
+}
+
+function resolveBrandCatalogHref(storage: SiteContentStorage, brandId: string): string {
+  const basePath = storage.brandPages.catalogPath;
+  const query = new URLSearchParams({ brand: brandId });
+  return `${basePath}?${query.toString()}`;
+}
+
+export const siteContentService = {
+  async getAboutPublicPayload(args: {
+    readonly localeRaw: string | null;
+    readonly acceptLanguageRaw: string | null;
+  }): Promise<SiteAboutPublicPayload> {
+    const localeResolution = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
+    const storage = await loadStorage();
+    const locale = localeResolution.resolvedLocale;
+    const subtitle = pickLocalized(storage.about.subtitle, locale);
+    const title = pickLocalized(storage.about.title, locale);
+    const paragraph1 = pickLocalized(storage.about.paragraph1, locale);
+    return {
+      locale,
+      i18n: { ...localeResolution, availableLocales: SUPPORTED_SITE_LOCALES },
+      heroImageUrl: storage.about.heroImageUrl,
+      subtitle,
+      title,
+      paragraphs: [
+        paragraph1,
+        pickLocalized(storage.about.paragraph2, locale),
+        pickLocalized(storage.about.paragraph3, locale),
+      ],
+      team: {
+        subtitle: pickLocalized(storage.about.teamSubtitle, locale),
+        title: pickLocalized(storage.about.teamTitle, locale),
+        description: pickLocalized(storage.about.teamDescription, locale),
+      },
+      seo: buildAboutPageSeoMetadata({
+        locale,
+        title,
+        subtitle,
+        paragraph: paragraph1,
+      }),
+    };
+  },
+
+  async getContactPublicPayload(args: { readonly localeRaw: string | null; readonly acceptLanguageRaw: string | null }): Promise<SiteContactPublicPayload> {
+    const localeResolution = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
+    const storage = await loadStorage();
+    const locale = localeResolution.resolvedLocale;
+    return {
+      locale,
+      i18n: { ...localeResolution, availableLocales: SUPPORTED_SITE_LOCALES },
+      phoneDisplay: pickLocalized(storage.contact.phoneDisplay, locale),
+      phoneTel: storage.contact.phoneTel,
+      email: storage.contact.email,
+      address: pickLocalized(storage.contact.address, locale),
+      workingHours: {
+        weekdays: pickLocalized(storage.contact.workingHours.weekdays, locale),
+        saturday: pickLocalized(storage.contact.workingHours.saturday, locale),
+      },
+      callToUs: {
+        title: pickLocalized(storage.contact.callToUs.title, locale),
+        description: pickLocalized(storage.contact.callToUs.description, locale),
+      },
+      writeToUs: {
+        title: pickLocalized(storage.contact.writeToUs.title, locale),
+        description: pickLocalized(storage.contact.writeToUs.description, locale),
+        emailLabel: pickLocalized(storage.contact.writeToUs.emailLabel, locale),
+      },
+      headquarterTitle: pickLocalized(storage.contact.headquarterTitle, locale),
+      socialLinks: storage.contact.socialLinks,
+      mapEmbed: toPublicMapEmbed(storage.contact.mapEmbed),
+      seo: buildContactPageSeoMetadata({
+        locale,
+        title: pickLocalized(storage.contact.headquarterTitle, locale),
+        description: pickLocalized(storage.contact.callToUs.description, locale),
+        phoneTel: storage.contact.phoneTel,
+        email: storage.contact.email,
+      }),
+    };
+  },
+
+  async getBrandPagePublicPayload(args: { readonly slug: string; readonly localeRaw: string | null; readonly acceptLanguageRaw: string | null }): Promise<SiteBrandPagePublicPayload | null> {
+    const localeResolution = normalizeLocale(args.localeRaw, args.acceptLanguageRaw);
+    const storage = await loadStorage();
+    const brand = await findPublishedBrandBySlug(args.slug);
+    if (!brand) {
+      return null;
+    }
+    const translation = resolveBrandTranslation(brand, localeResolution.resolvedLocale);
+    const fallbackDescriptionTemplate = pickLocalized(
+      storage.brandPages.fallbackDescriptionTemplate,
+      localeResolution.resolvedLocale,
+    );
+    const fallbackDescription = fallbackDescriptionTemplate.replace(
+      /\{brandName\}/g,
+      translation.name,
+    );
+    return {
+      locale: localeResolution.resolvedLocale,
+      i18n: { ...localeResolution, availableLocales: SUPPORTED_SITE_LOCALES },
+      brand: {
+        id: brand.id,
+        slug: brand.slug,
+        name: translation.name,
+        description: translation.description ?? fallbackDescription,
+        logoUrl: brand.logoUrl,
+      },
+      content: {
+        sectionTitle: pickLocalized(
+          storage.brandPages.sectionTitle,
+          localeResolution.resolvedLocale,
+        ),
+        descriptionSource:
+          translation.description === null
+            ? "fallback_template"
+            : "brand_translation",
+        ctaLabel: pickLocalized(storage.brandPages.ctaLabel, localeResolution.resolvedLocale),
+        href: resolveBrandCatalogHref(storage, brand.id),
+      },
+      seo: buildBrandPageSeoMetadata({
+        locale: localeResolution.resolvedLocale,
+        brandSlug: brand.slug,
+        brandName: translation.name,
+        brandDescription: translation.description ?? fallbackDescription,
+      }),
+    };
+  },
+
+  async getAdminStorage(): Promise<SiteContentStorage> {
+    return loadStorage();
+  },
+
+  async updateAdminStorage(payload: SiteContentStorage): Promise<SiteContentStorage> {
+    const parsed = siteContentStorageSchema.parse(payload);
+    if (parsed.contact.mapEmbed.enabled) {
+      const src = parsed.contact.mapEmbed.iframeSrc;
+      if (!src || src.trim().length === 0) {
+        throw new AppError(
+          "Map embed enabled but iframeSrc is missing",
+          400,
+          "https://api.shop.am/problems/validation-error",
+          "Validation Error",
+          "Enable map only with a valid iframe URL",
+        );
+      }
+      if (!isAllowedMapEmbedUrl(src)) {
+        throw new AppError(
+          "Invalid map embed URL",
+          400,
+          "https://api.shop.am/problems/validation-error",
+          "Validation Error",
+          "Map iframe URL must be HTTPS from an allowed provider (Google Maps or OpenStreetMap embed)",
+        );
+      }
+    }
+    await db.settings.upsert({
+      where: { key: SITE_CONTENT_SETTINGS_KEY },
+      update: {
+        value: parsed as object,
+        updatedAt: new Date(),
+        description:
+          "Site content pages — About, Contact, Brand page copy (per-locale CMS/static API document)",
+      },
+      create: {
+        key: SITE_CONTENT_SETTINGS_KEY,
+        value: parsed as object,
+        description:
+          "Site content pages — About, Contact, Brand page copy (per-locale CMS/static API document)",
+      },
+    });
+    return parsed;
+  },
+};

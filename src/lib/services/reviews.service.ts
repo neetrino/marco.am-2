@@ -3,6 +3,10 @@ import { Prisma } from "@prisma/client";
 import { ensureProductReviewsTable } from "../utils/db-ensure";
 import { logger } from "@/lib/utils/logger";
 
+function isReviewPurchaseRequired(): boolean {
+  return process.env.REVIEW_REQUIRE_PURCHASE === "true";
+}
+
 type ProductReviewWithUser = Prisma.ProductReviewGetPayload<{
   include: {
     user: {
@@ -30,7 +34,7 @@ class ReviewsService {
     
     logger.devLog('📝 [REVIEWS SERVICE] Getting reviews for product:', productId);
     
-    const where: any = {
+    const where: Prisma.ProductReviewWhereInput = {
       productId,
     };
 
@@ -131,9 +135,22 @@ class ReviewsService {
   }
 
   /**
-   * Get review statistics for a product
-   * @param productId - Product ID
+   * True if the user has a non-cancelled order that includes this product (via variant).
    */
+  async hasUserPurchasedProduct(userId: string, productId: string): Promise<boolean> {
+    await ensureProductReviewsTable();
+    const count = await db.orderItem.count({
+      where: {
+        variant: { productId },
+        order: {
+          userId,
+          NOT: { status: "cancelled" },
+        },
+      },
+    });
+    return count > 0;
+  }
+
   async getProductReviewStats(productId: string) {
     // Ensure table exists before querying
     await ensureProductReviewsTable();
@@ -174,11 +191,36 @@ class ReviewsService {
    * @param userId - User ID
    * @param data - Review data (rating, comment)
    */
-  async createReview(productId: string, userId: string, data: { rating: number; comment?: string }) {
+  async createReview(
+    productId: string,
+    userId: string,
+    data: { rating: number; comment?: string; policyAccepted: boolean }
+  ) {
     // Ensure table exists before creating review
     await ensureProductReviewsTable();
     
     logger.devLog('📝 [REVIEWS SERVICE] Creating review:', { productId, userId, rating: data.rating });
+
+    if (!data.policyAccepted) {
+      throw {
+        status: 400,
+        type: "https://api.shop.am/problems/validation-error",
+        title: "Validation Error",
+        detail: "You must accept the review policy before submitting",
+      };
+    }
+
+    if (isReviewPurchaseRequired()) {
+      const purchased = await this.hasUserPurchasedProduct(userId, productId);
+      if (!purchased) {
+        throw {
+          status: 403,
+          type: "https://api.shop.am/problems/forbidden",
+          title: "Forbidden",
+          detail: "Reviews are limited to customers who purchased this product",
+        };
+      }
+    }
 
     // Validate rating
     if (!data.rating || data.rating < 1 || data.rating > 5) {

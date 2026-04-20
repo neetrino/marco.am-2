@@ -21,6 +21,7 @@
     "startShopping": "Սկսել գնումները",
     "orderStatus": "Պատվերի կարգավիճակ",
     "paymentStatus": "Վճարման կարգավիճակ",
+    "fulfillmentStatus": "Կատարում",
     "items": "ապրանք",
     "itemsPlural": "ապրանք",
     "placedOn": "Պատվիրված է",
@@ -127,7 +128,10 @@
     "previous": "Նախորդ",
     "next": "Հաջորդ",
     "item": "ապրանք",
-    "items": "ապրանք"
+    "items": "ապրանք",
+    "filterByStatus": "Զտել պատվերները ըստ կարգավիճակի",
+    "noOrdersInFilter": "Այս կարգավիճակով պատվերներ չկան",
+    "showAllOrders": "Ցուցադրել բոլորը"
   },
   "orderDetails": {
     "title": "Պատվեր #",
@@ -138,6 +142,7 @@
     "loading": "Պատվերի մանրամասները բեռնվում են...",
     "failedToLoad": "Չհաջողվեց բեռնել պատվերի մանրամասները",
     "orderStatus": "Պատվերի կարգավիճակ",
+    "fulfillment": "Կատարում",
     "payment": "Վճարում",
     "orderItems": "Պատվերի ապրանքներ",
     "orderSummary": "Պատվերի ամփոփում",

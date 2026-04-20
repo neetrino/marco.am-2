@@ -1,6 +1,7 @@
-    import { Button, Card } from '@shop/ui';
+import { Button, Card } from '@shop/ui';
 import { formatPriceInCurrency, convertPrice, type CurrencyCode } from '../../lib/currency';
-import { getStatusColor, getPaymentStatusColor, getColorValue } from './utils';
+import { isCourierShipping } from '../../lib/constants/shipping-method';
+import { getStatusColor, getPaymentStatusColor, getFulfillmentStatusColor, getColorValue } from './utils';
 import type { OrderDetails } from './types';
 
 interface OrderDetailsModalProps {
@@ -30,7 +31,7 @@ export function OrderDetailsModal({
     return key.charAt(0).toUpperCase() + key.slice(1);
   };
 
-  const getColorsArray = (colors: any): string[] => {
+  const getColorsArray = (colors: unknown): string[] => {
     if (!colors) return [];
     if (Array.isArray(colors)) return colors;
     if (typeof colors === 'string') {
@@ -109,6 +110,9 @@ export function OrderDetailsModal({
                       </span>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(selectedOrder.paymentStatus)}`}>
                         {t('profile.orderDetails.payment')}: {selectedOrder.paymentStatus}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getFulfillmentStatusColor(selectedOrder.fulfillmentStatus)}`}>
+                        {t('profile.orderDetails.fulfillment')}: {selectedOrder.fulfillmentStatus}
                       </span>
                     </div>
                   </Card>
@@ -280,12 +284,12 @@ export function OrderDetailsModal({
                       <div>
                         <span className="font-medium">{t('profile.orderDetails.method')}: </span>
                         <span className="capitalize">
-                          {selectedOrder.shippingMethod === 'delivery' ? t('profile.orderDetails.delivery') : 
+                          {isCourierShipping(selectedOrder.shippingMethod) ? t('profile.orderDetails.delivery') : 
                            selectedOrder.shippingMethod === 'pickup' ? t('profile.orderDetails.pickup') : 
                            selectedOrder.shippingMethod || t('profile.orderDetails.notSpecified')}
                         </span>
                       </div>
-                      {selectedOrder.shippingMethod === 'delivery' && selectedOrder.shippingAddress && (
+                      {isCourierShipping(selectedOrder.shippingMethod) && selectedOrder.shippingAddress && (
                         <div className="mt-3 pt-3 border-t border-gray-200">
                           <p className="font-medium text-gray-900 mb-2">{t('profile.orderDetails.deliveryAddress')}:</p>
                           <div className="text-gray-600">

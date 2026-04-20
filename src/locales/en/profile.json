@@ -21,6 +21,7 @@
     "startShopping": "Start Shopping",
     "orderStatus": "Order Status",
     "paymentStatus": "Payment Status",
+    "fulfillmentStatus": "Fulfillment",
     "items": "item",
     "itemsPlural": "items",
     "placedOn": "Placed On",
@@ -127,7 +128,10 @@
     "previous": "Previous",
     "next": "Next",
     "item": "item",
-    "items": "items"
+    "items": "items",
+    "filterByStatus": "Filter orders by status",
+    "noOrdersInFilter": "No orders with this status",
+    "showAllOrders": "Show all orders"
   },
   "orderDetails": {
     "title": "Order #",
@@ -138,6 +142,7 @@
     "loading": "Loading order details...",
     "failedToLoad": "Failed to load order details",
     "orderStatus": "Order Status",
+    "fulfillment": "Fulfillment",
     "payment": "Payment",
     "orderItems": "Order Items",
     "orderSummary": "Order Summary",

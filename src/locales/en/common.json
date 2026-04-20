@@ -115,7 +115,12 @@
     "noReviews": "No reviews yet. Be the first to review this product!",
     "review": "review",
     "reviews": "reviews",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "policyPrefix": "I confirm I have read and accept the",
+    "policyTermsLink": "Terms of Use",
+    "policySuffix": " and the shop review guidelines.",
+    "policyRequired": "Please accept the review policy to continue.",
+    "purchaseRequired": "Reviews are limited to customers who purchased this product."
   },
   "messages": {
     "addedToCart": "Added to cart",

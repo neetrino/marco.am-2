@@ -1,6 +1,7 @@
+import type { CheckoutPaymentMethodId } from '../../../lib/constants/checkout-payment-method';
 import { useTranslation } from '../../../lib/i18n-client';
 
-export type PaymentMethodId = 'idram' | 'arca' | 'cash_on_delivery';
+export type PaymentMethodId = CheckoutPaymentMethodId;
 
 export interface PaymentMethod {
   id: PaymentMethodId;
@@ -14,26 +15,16 @@ export function usePaymentMethods(): PaymentMethod[] {
 
   return [
     {
-      id: 'cash_on_delivery',
-      name: t('checkout.payment.cashOnDelivery'),
-      description: t('checkout.payment.cashOnDeliveryDescription'),
+      id: 'card',
+      name: t('checkout.payment.card'),
+      description: t('checkout.payment.cardDescription'),
       logo: null,
     },
     {
-      id: 'idram',
-      name: t('checkout.payment.idram'),
-      description: t('checkout.payment.idramDescription'),
-      logo: '/assets/payments/idram.svg',
-    },
-    {
-      id: 'arca',
-      name: t('checkout.payment.arca'),
-      description: t('checkout.payment.arcaDescription'),
-      logo: '/assets/payments/arca.svg',
+      id: 'cash',
+      name: t('checkout.payment.cash'),
+      description: t('checkout.payment.cashDescription'),
+      logo: null,
     },
   ];
 }
-
-
-
-

@@ -1,20 +1,32 @@
 'use client';
 
 import { ReviewRating } from './ReviewRating';
-import { calculateAverageRating, calculateRatingDistribution, type Review } from './utils';
+import {
+  calculateAverageRating,
+  calculateRatingDistribution,
+  type Review,
+} from './utils';
 import { useTranslation } from '../../lib/i18n-client';
+import type { ProductReviewsAggregate } from '@/lib/types/product-reviews';
 
 interface ReviewSummaryProps {
   reviews: Review[];
+  /** When set (e.g. from GET /reviews), must match list; avoids drift vs server aggregate. */
+  aggregate?: ProductReviewsAggregate;
 }
 
 /**
  * Rating summary and distribution component
  */
-export function ReviewSummary({ reviews }: ReviewSummaryProps) {
+export function ReviewSummary({ reviews, aggregate }: ReviewSummaryProps) {
   const { t } = useTranslation();
-  const averageRating = calculateAverageRating(reviews);
-  const ratingDistribution = calculateRatingDistribution(reviews);
+  const averageRating = aggregate
+    ? aggregate.averageRating
+    : calculateAverageRating(reviews);
+  const ratingDistribution = aggregate
+    ? aggregate.distribution
+    : calculateRatingDistribution(reviews);
+  const count = aggregate ? aggregate.reviewCount : reviews.length;
 
   return (
     <div className="flex flex-col md:flex-row gap-8 mb-8">
@@ -31,7 +43,8 @@ export function ReviewSummary({ reviews }: ReviewSummaryProps) {
           interactive={false}
         />
         <div className="text-sm text-gray-600 mt-2">
-          {reviews.length} {reviews.length === 1 
+          {count}{' '}
+          {count === 1
             ? t('common.reviews.review')
             : t('common.reviews.reviews')}
         </div>

@@ -21,6 +21,7 @@
     "startShopping": "Начать покупки",
     "orderStatus": "Статус заказа",
     "paymentStatus": "Статус оплаты",
+    "fulfillmentStatus": "Выполнение",
     "items": "товар",
     "itemsPlural": "товаров",
     "placedOn": "Размещен",
@@ -127,7 +128,10 @@
     "previous": "Предыдущая",
     "next": "Следующая",
     "item": "товар",
-    "items": "товаров"
+    "items": "товаров",
+    "filterByStatus": "Фильтр заказов по статусу",
+    "noOrdersInFilter": "Нет заказов с этим статусом",
+    "showAllOrders": "Показать все заказы"
   },
   "orderDetails": {
     "title": "Заказ #",
@@ -138,6 +142,7 @@
     "loading": "Загрузка деталей заказа...",
     "failedToLoad": "Не удалось загрузить детали заказа",
     "orderStatus": "Статус заказа",
+    "fulfillment": "Выполнение",
     "payment": "Оплата",
     "orderItems": "Товары заказа",
     "orderSummary": "Сводка заказа",

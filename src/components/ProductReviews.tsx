@@ -3,24 +3,37 @@
 import { Button } from '@shop/ui';
 import { useAuth } from '../lib/auth/AuthContext';
 import { useTranslation } from '../lib/i18n-client';
-import { useReviews } from './ProductReviews/hooks/useReviews';
 import { useReviewForm } from './ProductReviews/hooks/useReviewForm';
 import { ReviewSummary } from './ProductReviews/ReviewSummary';
 import { ReviewForm } from './ProductReviews/ReviewForm';
 import { ReviewList } from './ProductReviews/ReviewList';
 import { ProductReviewsLoading } from './ProductReviews/ProductReviewsLoading';
+import type { Review } from './ProductReviews/utils';
+import type { ProductReviewsAggregate } from '@/lib/types/product-reviews';
 
 interface ProductReviewsProps {
-  productId?: string; // For backward compatibility
-  productSlug?: string; // Preferred: use slug for API calls
+  productId?: string;
+  productSlug?: string;
+  reviews?: Review[];
+  aggregate?: ProductReviewsAggregate;
+  loading?: boolean;
+  loadReviews?: () => void | Promise<void>;
 }
 
-export function ProductReviews({ productId, productSlug }: ProductReviewsProps) {
+export function ProductReviews({
+  productId,
+  productSlug,
+  reviews,
+  aggregate,
+  loading,
+  loadReviews,
+}: ProductReviewsProps) {
   const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
-  
-  const { reviews, loading, setReviews } = useReviews(productId, productSlug);
-  
+  const safeReviews = reviews ?? [];
+  const isLoading = loading ?? false;
+  const reloadReviews = loadReviews ?? (() => undefined);
+
   const {
     showForm,
     setShowForm,
@@ -30,6 +43,9 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
     setHoveredRating,
     comment,
     setComment,
+    policyAccepted,
+    setPolicyAccepted,
+    resetReviewPolicy,
     submitting,
     editingReviewId,
     handleEditReview,
@@ -39,14 +55,16 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
   } = useReviewForm({
     productId,
     productSlug,
-    reviews,
-    setReviews,
+    reviews: safeReviews,
+    onReviewUpdated: () => {
+      void reloadReviews();
+    },
   });
 
   // Get user's review if exists (reserved for future UI)
-  const _userReview = user ? reviews.find(r => r.userId === user.id) : null;
+  const _userReview = user ? safeReviews.find((r) => r.userId === user.id) : null;
 
-  if (loading) {
+  if (isLoading) {
     return <ProductReviewsLoading />;
   }
 
@@ -55,6 +73,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
       alert(t('common.reviews.loginRequired'));
       return;
     }
+    resetReviewPolicy();
     setShowForm(true);
   };
 
@@ -63,14 +82,14 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
+    <div className="page-shell py-12 border-t border-gray-200">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           {t('common.reviews.title')}
         </h2>
 
         {/* Rating Summary */}
-        <ReviewSummary reviews={reviews} />
+        <ReviewSummary reviews={safeReviews} aggregate={aggregate} />
 
         {/* Write Review Button */}
         {!showForm && (
@@ -91,6 +110,8 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
             comment={comment}
             submitting={submitting}
             editingReviewId={editingReviewId}
+            policyAccepted={policyAccepted}
+            onPolicyChange={setPolicyAccepted}
             onRatingChange={setRating}
             onHover={setHoveredRating}
             onCommentChange={setComment}
@@ -99,6 +120,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
               setShowForm(false);
               setRating(0);
               setComment('');
+              resetReviewPolicy();
             }}
           />
         )}
@@ -106,7 +128,7 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
 
       {/* Reviews List */}
       <ReviewList
-        reviews={reviews}
+        reviews={safeReviews}
         currentUserId={user?.id}
         showForm={showForm}
         onEditReview={handleEditReview}

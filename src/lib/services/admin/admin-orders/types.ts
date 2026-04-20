@@ -18,6 +18,14 @@ export interface UpdateOrderData {
   status?: string;
   paymentStatus?: string;
   fulfillmentStatus?: string;
+  adminNotes?: string | null;
+}
+
+/**
+ * Optional context when an admin updates an order (audit trail).
+ */
+export interface UpdateOrderContext {
+  actorUserId?: string;
 }
 
 

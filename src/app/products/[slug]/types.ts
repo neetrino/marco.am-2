@@ -20,7 +20,16 @@ export interface VariantOption {
 export interface ProductVariant {
   id: string;
   sku: string;
+  /** Optional display order from API (not always present on type). */
+  position?: number;
   price: number;
+  currentPrice?: number;
+  oldPrice?: number | null;
+  discountBadge?: {
+    type: 'percentage';
+    value: number;
+    label: string;
+  } | null;
   originalPrice?: number | null;
   compareAtPrice?: number;
   stock: number;
@@ -29,6 +38,8 @@ export interface ProductVariant {
   productDiscount?: number | null;
   globalDiscount?: number | null;
   imageUrl?: string;
+  inStock?: boolean;
+  stockStatus?: 'in_stock' | 'out_of_stock';
 }
 
 export interface ProductLabel {
@@ -70,9 +81,38 @@ export interface Product {
   slug: string;
   title: string;
   subtitle?: string;
+  shortDescription?: string | null;
   description?: string;
+  fullDescription?: string | null;
+  i18n?: {
+    requestedLocale: string;
+    availableLocales: string[];
+    descriptions: Record<
+      string,
+      {
+        shortDescription: string | null;
+        fullDescription: string | null;
+      }
+    >;
+  };
   media: ProductMedia[] | string[];
   variants: ProductVariant[];
+  currentPrice?: number | null;
+  oldPrice?: number | null;
+  discountBadge?: {
+    type: 'percentage';
+    value: number;
+    label: string;
+  } | null;
+  pricing?: {
+    currentPrice: number | null;
+    oldPrice: number | null;
+    discountBadge: {
+      type: 'percentage';
+      value: number;
+      label: string;
+    } | null;
+  };
   labels?: ProductLabel[];
   brand?: {
     id: string;
@@ -87,6 +127,9 @@ export interface Product {
   productAttributes?: ProductAttribute[];
   productDiscount?: number | null;
   globalDiscount?: number | null;
+  inStock?: boolean;
+  stockStatus?: 'in_stock' | 'out_of_stock';
+  stockQuantity?: number;
 }
 
 // Reserved routes that should not be treated as product slugs

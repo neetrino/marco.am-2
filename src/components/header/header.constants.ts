@@ -1,6 +1,3 @@
-/** Default external target for “Reels” nav until CMS/social URLs are wired */
-export const HEADER_REELS_EXTERNAL_HREF = 'https://www.instagram.com/reels/';
-
 /**
  * Row-2 compact toolbar (narrow categories pill, tight search pill, etc.) from `md` through this width — includes iPad Pro 12.9″ landscape (~1366px). Full Figma desktop row-2 from 1367px.
  * Tailwind: `md:max-[1366px]:…` / `min-[1367px]:…` (keep literals static for JIT).
@@ -11,6 +8,9 @@ export const HEADER_TABLET_ROW2_MAX_WIDTH_PX = 1366;
  * Primary nav row switches to the compact (hamburger) top bar at or below this width — e.g. iPad mini portrait (~744px) and tight tablets before the bar overlaps.
  */
 export const HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX = 820;
+
+/** Reels destination used by primary navigation. */
+export const HEADER_REELS_EXTERNAL_HREF = '/reels';
 
 /**
  * Shared width + horizontal padding for both header rows — `.marco-header-container` in `globals.css`.

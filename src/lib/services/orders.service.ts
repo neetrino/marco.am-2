@@ -5,6 +5,19 @@ import type { CheckoutData } from "../types/checkout";
 import { logger } from "../utils/logger";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
+import { resolveCheckoutPaymentMethod } from "../constants/checkout-payment-method";
+import { normalizeShippingMethod } from "../constants/shipping-method";
+import { buildOrderAddressJson } from "./orders-checkout-address";
+import { validateCheckoutCustomer } from "./orders-checkout-validation";
+import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
+import type { AdminOrderListStatus } from "../constants/admin-order-list-status";
+import { cartService } from "./cart.service";
+import { deliverOrderConfirmation } from "./order-confirmation-delivery.service";
+import { resolveGuestCheckoutItems } from "./checkout-guest-items.service";
+import { createCardPaymentSession } from "./payment-psp.service";
+import { shouldChargeCourierShipping } from "./checkout-delivery-rules.service";
+import { resolveProductClass, type ProductClass } from "../constants/product-class";
+import { promoCodesService } from "./promo-codes.service";
 
 const orderNumberId = customAlphabet("0123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 10);
 
@@ -53,29 +66,27 @@ type OrderItemWithVariant = Prisma.OrderItemGetPayload<{
 class OrdersService {
   /**
    * Create order (checkout)
+   * @param checkoutLocale — used for cart pricing (discount rules) and persisted `customerLocale`
    */
-  async checkout(data: CheckoutData, userId?: string) {
+  async checkout(data: CheckoutData, userId?: string, checkoutLocale = "en") {
     try {
       const {
         cartId,
         items: guestItems,
-        email,
-        phone,
-        shippingMethod = 'pickup',
+        shippingMethod: rawShippingMethod = 'pickup',
         shippingAddress,
-        paymentMethod = 'idram',
+        paymentMethod: rawPaymentMethod,
+        couponCode,
       } = data;
+      const shippingMethod = normalizeShippingMethod(rawShippingMethod);
+      const paymentMethod = resolveCheckoutPaymentMethod(rawPaymentMethod);
       // shippingAmount is ignored — computed server-side from shippingMethod and address
 
-      // Validate required fields
-      if (!email || !phone) {
-        throw {
-          status: 400,
-          type: "https://api.shop.am/problems/validation-error",
-          title: "Validation Error",
-          detail: "Email and phone are required",
-        };
-      }
+      const { email, phone, firstName, lastName, notes: orderNotes } =
+        validateCheckoutCustomer(data, shippingMethod);
+
+      const { shippingAddress: shippingAddressJson, billingAddress: billingAddressJson } =
+        buildOrderAddressJson(shippingMethod, shippingAddress, firstName, lastName);
 
       // Get cart items - either from user cart or guest items
       let cartItems: Array<{
@@ -83,6 +94,7 @@ class OrdersService {
         productId: string;
         quantity: number;
         price: number;
+        productClass: ProductClass;
         productTitle: string;
         variantTitle?: string;
         sku: string;
@@ -124,6 +136,19 @@ class OrdersService {
             detail: "Cannot checkout with an empty cart",
           };
         }
+
+        const { cart: pricedCart } = await cartService.getCart(userId, checkoutLocale);
+        if (pricedCart.id !== cartId) {
+          throw {
+            status: 400,
+            type: "https://api.shop.am/problems/validation-error",
+            title: "Cart mismatch",
+            detail: "cartId does not match the current user's cart",
+          };
+        }
+        const unitPriceByVariantId = new Map(
+          pricedCart.items.map((line) => [line.variant.id, line.price] as const)
+        );
 
         // Format cart items
         logger.debug('Processing cart items', { count: cart.items.length });
@@ -176,13 +201,20 @@ class OrdersService {
               };
             }
 
-            // Use current variant price from DB (ignore priceSnapshot to prevent outdated/abused prices)
-            const currentPrice = Number(variant.price);
+            // Align line unit price with cart / checkout totals (admin + product discounts)
+            const fromCart = unitPriceByVariantId.get(variant.id);
+            const currentPrice =
+              typeof fromCart === "number" && Number.isFinite(fromCart)
+                ? fromCart
+                : Number(variant.price);
             const cartItem = {
               variantId: variant.id,
               productId: product.id,
               quantity: item.quantity,
               price: currentPrice,
+              productClass: resolveProductClass(
+                variant.productClass ?? product.productClass
+              ),
               productTitle: translation?.title || 'Unknown Product',
               variantTitle,
               sku: variant.sku || '',
@@ -202,65 +234,7 @@ class OrdersService {
         
         logger.info('All cart items processed', { count: cartItems.length });
       } else if (guestItems && Array.isArray(guestItems) && guestItems.length > 0) {
-        // Validate and collect variant IDs
-        const variantIds: string[] = [];
-        for (const item of guestItems) {
-          if (!item.productId || !item.variantId || !item.quantity) {
-            throw {
-              status: 400,
-              type: "https://api.shop.am/problems/validation-error",
-              title: "Validation Error",
-              detail: "Each item must have productId, variantId, and quantity",
-            };
-          }
-          variantIds.push(item.variantId);
-        }
-        const uniqueVariantIds = [...new Set(variantIds)];
-
-        // Batch fetch all variants (one query instead of N)
-        const variants = await db.productVariant.findMany({
-          where: { id: { in: uniqueVariantIds } },
-          include: {
-            product: { include: { translations: true } },
-            options: true,
-          },
-        });
-        const variantMap = new Map(variants.map((v) => [v.id, v]));
-
-        cartItems = guestItems.map((item: { productId: string; variantId: string; quantity: number }) => {
-          const variant = variantMap.get(item.variantId);
-          if (!variant || variant.productId !== item.productId) {
-            throw {
-              status: 404,
-              type: "https://api.shop.am/problems/not-found",
-              title: "Product variant not found",
-              detail: `Variant ${item.variantId} not found for product ${item.productId}`,
-            };
-          }
-          if (variant.stock < item.quantity) {
-            throw {
-              status: 422,
-              type: "https://api.shop.am/problems/validation-error",
-              title: "Insufficient stock",
-              detail: `Insufficient stock. Available: ${variant.stock}, Requested: ${item.quantity}`,
-            };
-          }
-          const translation = variant.product.translations?.[0] || variant.product.translations?.[0];
-          const variantTitle = variant.options
-            ?.map((opt: { attributeKey?: string | null; value?: string | null }) => `${opt.attributeKey ?? ""}: ${opt.value ?? ""}`)
-            .join(", ") ?? undefined;
-          const imageUrl = extractMediaUrl(variant.product.media) ?? undefined;
-          return {
-            variantId: variant.id,
-            productId: variant.product.id,
-            quantity: item.quantity,
-            price: Number(variant.price),
-            productTitle: translation?.title ?? "Unknown Product",
-            variantTitle,
-            sku: variant.sku ?? "",
-            imageUrl,
-          };
-        });
+        cartItems = await resolveGuestCheckoutItems(guestItems, checkoutLocale);
       } else {
         throw {
           status: 400,
@@ -281,10 +255,24 @@ class OrdersService {
 
       // Calculate totals
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const discountAmount = 0; // TODO: Implement discount/coupon logic
+      const promoDiscount = await promoCodesService.resolveDiscount({
+        couponCode,
+        subtotal,
+        userId,
+        customerEmail: email,
+        productClasses: cartItems.map((item) => item.productClass),
+      });
+      const discountAmount = promoDiscount.discountAmount;
       // Shipping: computed server-side only (never trust client-provided amount)
       let shippingAmount = 0;
-      if (shippingMethod === 'delivery' && shippingAddress?.city?.trim()) {
+      const shouldChargeShipping = shouldChargeCourierShipping(
+        cartItems.map((item) => item.productClass)
+      );
+      if (
+        shippingMethod === 'courier' &&
+        shippingAddress?.city?.trim() &&
+        shouldChargeShipping
+      ) {
         const country = (shippingAddress.countryCode ?? 'Armenia').toString();
         shippingAmount = await adminDeliveryService.getDeliveryPrice(
           shippingAddress.city.trim(),
@@ -311,16 +299,18 @@ class OrdersService {
             fulfillmentStatus: 'unfulfilled',
             subtotal,
             discountAmount,
+            couponCode: promoDiscount.couponCode,
             shippingAmount,
             taxAmount,
             total,
             currency: 'AMD',
             customerEmail: email,
             customerPhone: phone,
-            customerLocale: 'en', // TODO: Get from request
+            customerLocale: checkoutLocale,
             shippingMethod,
-            shippingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
-            billingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
+            shippingAddress: shippingAddressJson,
+            billingAddress: billingAddressJson,
+            notes: orderNotes,
             items: {
               create: cartItems.map((item) => ({
                 variantId: item.variantId,
@@ -340,6 +330,9 @@ class OrdersService {
                   source: userId ? 'user' : 'guest',
                   paymentMethod,
                   shippingMethod,
+                  shippingPricingRuleApplied: shouldChargeShipping
+                    ? "retail_yandex"
+                    : "wholesale_or_mixed_free",
                 },
               },
             },
@@ -421,6 +414,32 @@ class OrdersService {
         { timeout: 10000, maxWait: 5000 }
       );
 
+      let cardSession:
+        | {
+            provider: string;
+            paymentUrl: string;
+            expiresAt: string;
+          }
+        | null = null;
+
+      if (paymentMethod === "card") {
+        cardSession = await createCardPaymentSession({
+          paymentId: order.payment.id,
+          orderId: order.order.id,
+          orderNumber: order.order.number,
+          amount: Number(order.order.total),
+          currency: order.order.currency,
+        });
+      }
+
+      const confirmationNotifications = await deliverOrderConfirmation({
+        orderNumber: order.order.number,
+        total: Number(order.order.total),
+        currency: order.order.currency,
+        customerEmail: order.order.customerEmail ?? undefined,
+        customerPhone: order.order.customerPhone ?? undefined,
+      });
+
       // Return order and payment info
       return {
         order: {
@@ -432,13 +451,24 @@ class OrdersService {
           currency: order.order.currency,
         },
         payment: {
-          provider: order.payment.provider,
-          paymentUrl: null, // TODO: Generate payment URL for Idram/ArCa
-          expiresAt: null, // TODO: Set expiration if needed
+          provider: cardSession?.provider ?? order.payment.provider,
+          paymentUrl: cardSession?.paymentUrl ?? null,
+          expiresAt: cardSession?.expiresAt ?? null,
         },
-        nextAction: paymentMethod === 'idram' || paymentMethod === 'arca' 
-          ? 'redirect_to_payment' 
-          : 'view_order',
+        nextAction:
+          paymentMethod === 'card' ? 'redirect_to_payment' : 'view_order',
+        confirmation: {
+          orderId: order.order.id,
+          orderNumber: order.order.number,
+          summary: {
+            itemsCount: order.order.items.length,
+            subtotal: Number(order.order.subtotal),
+            shippingAmount: Number(order.order.shippingAmount),
+            total: Number(order.order.total),
+            currency: order.order.currency,
+          },
+          notifications: confirmationNotifications,
+        },
       };
     } catch (error: unknown) {
       // Type guard for custom error
@@ -483,23 +513,42 @@ class OrdersService {
   /**
    * Get user orders list (paginated)
    */
-  async list(userId: string, options?: { page?: number; limit?: number }) {
-    const page = Math.max(1, options?.page ?? 1);
-    const limit = Math.min(100, Math.max(1, options?.limit ?? 20));
+  async list(
+    userId: string,
+    options?: { page?: number; limit?: number; status?: AdminOrderListStatus }
+  ) {
+    const page =
+      typeof options?.page === "number" &&
+      Number.isFinite(options.page) &&
+      options.page >= 1
+        ? Math.floor(options.page)
+        : 1;
+    const limitRaw =
+      typeof options?.limit === "number" &&
+      Number.isFinite(options.limit) &&
+      options.limit >= 1
+        ? Math.floor(options.limit)
+        : 20;
+    const limit = Math.min(100, Math.max(1, limitRaw));
     const skip = (page - 1) * limit;
+
+    const status = options?.status;
+    const where = {
+      userId,
+      ...(status ? { status } : {}),
+    };
 
     const [orders, total] = await Promise.all([
       db.order.findMany({
-        where: { userId },
+        where,
         include: {
           items: { select: { id: true } },
-          payments: { select: { id: true } },
         },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
       }),
-      db.order.count({ where: { userId } }),
+      db.order.count({ where }),
     ]);
 
     return {
@@ -529,8 +578,9 @@ class OrdersService {
         shippingAmount: order.shippingAmount,
         taxAmount: order.taxAmount,
         currency: order.currency,
-        createdAt: order.createdAt,
+        createdAt: order.createdAt.toISOString(),
         itemsCount: order.items.length,
+        links: buildCustomerOrderLinks(order.number),
       })),
       meta: {
         total,
@@ -614,6 +664,7 @@ class OrdersService {
       status: order.status,
       paymentStatus: order.paymentStatus,
       fulfillmentStatus: order.fulfillmentStatus,
+      links: buildCustomerOrderLinks(order.number),
       items: order.items.map((item: OrderItemWithVariant) => {
         const variantOptions = item.variant?.options?.map((opt) => {
           // Debug logging for each option

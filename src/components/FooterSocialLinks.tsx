@@ -18,8 +18,15 @@ const FOOTER_SOCIAL_LINK_BASE =
 
 export type FooterSocialLinksDensity = 'default' | 'compact';
 
+export type FooterSocialApiLink = {
+  readonly platform: 'instagram' | 'facebook' | 'telegram' | 'whatsapp' | 'viber';
+  readonly href: string;
+};
+
 type FooterSocialLinksProps = {
   density?: FooterSocialLinksDensity;
+  /** CMS-driven URLs; when set and non-empty, overrides i18n `contact.social.*` URLs. */
+  apiLinks?: readonly FooterSocialApiLink[];
 };
 
 type TileRenderCtx = {
@@ -98,10 +105,20 @@ function FooterSocialTileControl({
   );
 }
 
+function specForPlatform(
+  platform: FooterSocialApiLink['platform'],
+): FooterSocialTileSpec | undefined {
+  const key = `contact.social.${platform}`;
+  return FOOTER_SOCIAL_TILE_SPECS.find((s) => s.translationKey === key);
+}
+
 /**
  * Social row — Figma tiles (black on #FACC15). Use `compact` beside a single-line copyright.
  */
-export function FooterSocialLinks({ density = 'default' }: FooterSocialLinksProps) {
+export function FooterSocialLinks({
+  density = 'default',
+  apiLinks,
+}: FooterSocialLinksProps) {
   const { t } = useTranslation();
   const isCompact = density === 'compact';
   const tileClass = isCompact ? 'h-7 w-7' : 'h-8 w-8';
@@ -116,28 +133,48 @@ export function FooterSocialLinks({ density = 'default' }: FooterSocialLinksProp
       : 'h-5 w-[18px] shrink-0 object-contain',
   };
 
+  const useApi = apiLinks !== undefined && apiLinks.length > 0;
+
   return (
     <div
       className={`flex flex-wrap items-center ${gapClass}`}
       role="list"
       aria-label={t('common.ariaLabels.socialLinks')}
     >
-      {FOOTER_SOCIAL_TILE_SPECS.map((spec) => {
-        const href = t(spec.translationKey)?.trim();
-        const hasHref = href.length > 0 && href !== '#';
-        const name = t(spec.ariaKey);
+      {useApi
+        ? apiLinks.map((link) => {
+            const spec = specForPlatform(link.platform);
+            if (!spec) {
+              return null;
+            }
+            const name = t(spec.ariaKey);
+            return (
+              <FooterSocialTileControl
+                key={`${link.platform}-${link.href}`}
+                spec={spec}
+                href={link.href}
+                hasHref
+                name={name}
+                ctx={ctx}
+              />
+            );
+          })
+        : FOOTER_SOCIAL_TILE_SPECS.map((spec) => {
+            const href = t(spec.translationKey)?.trim();
+            const hasHref = href.length > 0 && href !== '#';
+            const name = t(spec.ariaKey);
 
-        return (
-          <FooterSocialTileControl
-            key={spec.translationKey}
-            spec={spec}
-            href={href}
-            hasHref={hasHref}
-            name={name}
-            ctx={ctx}
-          />
-        );
-      })}
+            return (
+              <FooterSocialTileControl
+                key={spec.translationKey}
+                spec={spec}
+                href={href}
+                hasHref={hasHref}
+                name={name}
+                ctx={ctx}
+              />
+            );
+          })}
     </div>
   );
 }

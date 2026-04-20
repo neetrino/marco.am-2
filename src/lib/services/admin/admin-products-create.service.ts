@@ -8,6 +8,10 @@ import {
   cleanImageUrls,
   separateMainAndVariantImages,
 } from "../../utils/image-utils";
+import {
+  resolveProductClass,
+  type ProductClass,
+} from "@/lib/constants/product-class";
 import { logger } from "@/lib/utils/logger";
 import type { PrismaTransactionClient } from "@/lib/types/prisma";
 import { getErrorMessage, getPrismaErrorCode } from "@/lib/types/errors";
@@ -19,6 +23,7 @@ type CreateProductVariantInput = {
   compareAtPrice?: string | number;
   stock: string | number;
   sku?: string;
+  productClass?: ProductClass;
   color?: string;
   size?: string;
   imageUrl?: string;
@@ -118,6 +123,7 @@ class AdminProductsCreateService {
     brandId?: string;
     primaryCategoryId?: string;
     categoryIds?: string[];
+    productClass?: ProductClass;
     published: boolean;
     featured?: boolean;
     locale: string;
@@ -135,6 +141,7 @@ class AdminProductsCreateService {
       compareAtPrice?: string | number;
       stock: string | number;
       sku?: string;
+      productClass?: ProductClass;
       color?: string;
       size?: string;
       imageUrl?: string;
@@ -284,6 +291,7 @@ class AdminProductsCreateService {
 
             return {
               sku: uniqueSku,
+              productClass: resolveProductClass(variant.productClass ?? data.productClass),
               price,
               compareAtPrice,
               stock: isNaN(stock) ? 0 : stock,
@@ -359,6 +367,7 @@ class AdminProductsCreateService {
             brandId: data.brandId || undefined,
             primaryCategoryId: data.primaryCategoryId || undefined,
             categoryIds: data.categoryIds || [],
+            productClass: resolveProductClass(data.productClass),
             media: finalMedia,
             published: data.published,
             featured: data.featured ?? false,

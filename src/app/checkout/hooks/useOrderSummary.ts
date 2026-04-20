@@ -1,18 +1,18 @@
-import { useMemo } from 'react';
-import { convertPrice } from '../../../lib/currency';
-import type { Cart } from '../types';
+import { useMemo } from "react";
+import { convertPrice } from "../../../lib/currency";
+import type { CheckoutTotalsResponse } from "../../../lib/types/checkout-totals";
+import type { Cart } from "../types";
 
 interface UseOrderSummaryProps {
   cart: Cart | null;
-  shippingMethod: 'pickup' | 'delivery';
-  deliveryPrice: number | null;
-  currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
+  /** Server-authoritative totals (AMD); when null, legacy cart subtotal + zero shipping until first response */
+  checkoutTotals: CheckoutTotalsResponse | null;
+  currency: "USD" | "AMD" | "EUR" | "RUB" | "GEL";
 }
 
 export function useOrderSummary({
   cart,
-  shippingMethod,
-  deliveryPrice,
+  checkoutTotals,
   currency,
 }: UseOrderSummaryProps) {
   const orderSummary = useMemo(() => {
@@ -29,16 +29,51 @@ export function useOrderSummary({
       };
     }
 
-    const subtotalAMD = convertPrice(cart.totals.subtotal, 'USD', 'AMD');
-    const taxAMD = convertPrice(cart.totals.tax, 'USD', 'AMD');
-    const shippingAMD = shippingMethod === 'delivery' && deliveryPrice !== null ? deliveryPrice : 0;
+    if (checkoutTotals) {
+      const subtotalAMD = checkoutTotals.subtotal;
+      const taxAMD = checkoutTotals.taxAmount;
+      const shippingAMD = checkoutTotals.shippingAmount;
+      const totalAMD = checkoutTotals.total;
+
+      const subtotalDisplay =
+        currency === "AMD" ? subtotalAMD : convertPrice(subtotalAMD, "AMD", currency);
+      const taxDisplay = currency === "AMD" ? taxAMD : convertPrice(taxAMD, "AMD", currency);
+      const shippingDisplay =
+        currency === "AMD" ? shippingAMD : convertPrice(shippingAMD, "AMD", currency);
+      const totalDisplay =
+        currency === "AMD" ? totalAMD : convertPrice(totalAMD, "AMD", currency);
+
+      return {
+        subtotalAMD,
+        taxAMD,
+        shippingAMD,
+        totalAMD,
+        subtotalDisplay,
+        taxDisplay,
+        shippingDisplay,
+        totalDisplay,
+      };
+    }
+
+    const subtotalAMD =
+      cart.totals.currency === "AMD"
+        ? cart.totals.subtotal
+        : convertPrice(cart.totals.subtotal, "USD", "AMD");
+    const taxAMD =
+      cart.totals.currency === "AMD"
+        ? cart.totals.tax
+        : convertPrice(cart.totals.tax, "USD", "AMD");
+    const shippingAMD = 0;
     const totalAMD = subtotalAMD + taxAMD + shippingAMD;
-    
-    const subtotalDisplay = currency === 'AMD' ? subtotalAMD : convertPrice(subtotalAMD, 'AMD', currency);
-    const taxDisplay = currency === 'AMD' ? taxAMD : convertPrice(taxAMD, 'AMD', currency);
-    const shippingDisplay = currency === 'AMD' ? shippingAMD : convertPrice(shippingAMD, 'AMD', currency);
-    const totalDisplay = currency === 'AMD' ? totalAMD : convertPrice(totalAMD, 'AMD', currency);
-    
+
+    const subtotalDisplay =
+      currency === "AMD" ? subtotalAMD : convertPrice(subtotalAMD, "AMD", currency);
+    const taxDisplay = currency === "AMD" ? taxAMD : convertPrice(taxAMD, "AMD", currency);
+    const shippingDisplay =
+      currency === "AMD" ? shippingAMD : convertPrice(shippingAMD, "AMD", currency);
+    const totalDisplay =
+      currency === "AMD" ? totalAMD : convertPrice(totalAMD, "AMD", currency);
+
     return {
       subtotalAMD,
       taxAMD,
@@ -49,11 +84,7 @@ export function useOrderSummary({
       shippingDisplay,
       totalDisplay,
     };
-  }, [cart, shippingMethod, deliveryPrice, currency]);
+  }, [cart, checkoutTotals, currency]);
 
   return { orderSummary };
 }
-
-
-
-

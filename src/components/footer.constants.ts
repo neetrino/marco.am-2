@@ -32,6 +32,31 @@ export const FOOTER_NAV_COLUMN_LIST_ITEM_GAP_CLASS = 'gap-1';
 export const FOOTER_NAV_COLUMN_HEADING_LEADING_CLASS = 'leading-tight';
 export const FOOTER_NAV_COLUMN_LINK_LEADING_CLASS = 'leading-tight';
 
+export const FOOTER_COMPANY_LINKS = [
+  { href: '/about', labelKey: 'common.footer.marco.links.companyAbout' },
+  { href: '/stores', labelKey: 'common.footer.marco.links.companyStores' },
+  { href: '/careers', labelKey: 'common.footer.marco.links.companyCareers' },
+  { href: '/news', labelKey: 'common.footer.marco.links.companyNews' },
+  { href: '/contact', labelKey: 'common.footer.marco.links.companyFeedback' },
+] as const;
+
+export const FOOTER_SUPPORT_LINKS = [
+  {
+    href: '/delivery-returns',
+    labelKey: 'common.footer.marco.links.supportDelivery',
+  },
+  {
+    href: '/installment-terms',
+    labelKey: 'common.footer.marco.links.supportInstallment',
+  },
+  {
+    href: '/warranty',
+    labelKey: 'common.footer.marco.links.supportWarranty',
+  },
+  { href: '/faq', labelKey: 'common.footer.marco.links.supportFaq' },
+  { href: '/service-centers', labelKey: 'common.footer.marco.links.supportService' },
+] as const;
+
 export const NEETRINO_STUDIO_HREF = 'https://neetrino.com/';
 
 /**
@@ -95,23 +120,3 @@ export const FOOTER_BRAND_DESCRIPTION_OVERLAP_CLASS =
 export const FOOTER_BRAND_DESCRIPTION_TEXT_CLASS =
   'text-[10px] leading-snug sm:text-[11px]';
 
-export type FooterNavItem = {
-  readonly href: string;
-  readonly labelKey: string;
-};
-
-export const FOOTER_COMPANY_LINKS: readonly FooterNavItem[] = [
-  { href: '/about', labelKey: 'common.footer.marco.links.companyAbout' },
-  { href: '/stores', labelKey: 'common.footer.marco.links.companyStores' },
-  { href: '/contact', labelKey: 'common.footer.marco.links.companyCareers' },
-  { href: '/about', labelKey: 'common.footer.marco.links.companyNews' },
-  { href: '/contact', labelKey: 'common.footer.marco.links.companyFeedback' },
-];
-
-export const FOOTER_SUPPORT_LINKS: readonly FooterNavItem[] = [
-  { href: '/delivery', labelKey: 'common.footer.marco.links.supportDelivery' },
-  { href: '/delivery-terms', labelKey: 'common.footer.marco.links.supportInstallment' },
-  { href: '/support', labelKey: 'common.footer.marco.links.supportWarranty' },
-  { href: '/faq', labelKey: 'common.footer.marco.links.supportFaq' },
-  { href: '/stores', labelKey: 'common.footer.marco.links.supportService' },
-];

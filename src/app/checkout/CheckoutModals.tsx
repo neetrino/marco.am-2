@@ -3,6 +3,8 @@
 import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import { ShippingAddressModal } from './components/ShippingAddressModal';
 import { CardDetailsModal } from './components/CardDetailsModal';
+import type { CheckoutPaymentMethodId } from '../../lib/constants/checkout-payment-method';
+import type { ShippingMethodId } from '../../lib/constants/shipping-method';
 import { CheckoutFormData, Cart } from './types';
 
 interface CheckoutModalsProps {
@@ -15,8 +17,8 @@ interface CheckoutModalsProps {
   handleSubmit: UseFormHandleSubmit<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
-  shippingMethod: 'pickup' | 'delivery';
-  paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
+  shippingMethod: ShippingMethodId;
+  paymentMethod: CheckoutPaymentMethodId;
   shippingCity: string | undefined;
   cart: Cart | null;
   orderSummary: {
@@ -26,10 +28,8 @@ interface CheckoutModalsProps {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
-  logoErrors: Record<string, boolean>;
-  setLogoErrors: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
   isLoggedIn: boolean;
   onSubmit: (data: CheckoutFormData) => void;
 }
@@ -50,10 +50,8 @@ export function CheckoutModals({
   cart,
   orderSummary,
   currency,
-  loadingDeliveryPrice,
-  deliveryPrice,
-  logoErrors,
-  setLogoErrors,
+  loadingCheckoutTotals,
+  checkoutTotalsStale,
   isLoggedIn,
   onSubmit,
 }: CheckoutModalsProps) {
@@ -63,7 +61,6 @@ export function CheckoutModals({
         isOpen={showShippingModal}
         onClose={() => setShowShippingModal(false)}
         register={register}
-        setValue={setValue}
         handleSubmit={handleSubmit}
         errors={errors}
         isSubmitting={isSubmitting}
@@ -73,8 +70,8 @@ export function CheckoutModals({
         orderSummary={orderSummary}
         currency={currency}
         shippingCity={shippingCity}
-        loadingDeliveryPrice={loadingDeliveryPrice}
-        deliveryPrice={deliveryPrice}
+        loadingCheckoutTotals={loadingCheckoutTotals}
+        checkoutTotalsStale={checkoutTotalsStale}
         onSubmit={onSubmit}
       />
 
@@ -86,16 +83,13 @@ export function CheckoutModals({
         handleSubmit={handleSubmit}
         errors={errors}
         isSubmitting={isSubmitting}
-        paymentMethod={paymentMethod}
         shippingMethod={shippingMethod}
         shippingCity={shippingCity}
         cart={cart}
         orderSummary={orderSummary}
         currency={currency}
-        loadingDeliveryPrice={loadingDeliveryPrice}
-        deliveryPrice={deliveryPrice}
-        logoErrors={logoErrors}
-        setLogoErrors={setLogoErrors}
+        loadingCheckoutTotals={loadingCheckoutTotals}
+        checkoutTotalsStale={checkoutTotalsStale}
         isLoggedIn={isLoggedIn}
         onShowShippingModal={() => setShowShippingModal(true)}
         onSubmit={onSubmit}

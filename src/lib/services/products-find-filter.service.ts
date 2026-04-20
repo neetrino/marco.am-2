@@ -1,4 +1,5 @@
-import { ProductFilters, ProductWithRelations } from "./products-find-query.service";
+import type { ProductFilters, ProductWithRelations } from "./products-find-query/types";
+import { productMatchesTechnicalSpecs } from "./products-technical-filters";
 
 /**
  * Normalize comma-separated filter values and drop placeholders like "undefined" or "null".
@@ -22,6 +23,41 @@ const normalizeFilterList = (
   return items;
 };
 
+const normalizeBrandTokens = (brand?: string): { raw: Set<string>; normalized: Set<string> } => {
+  const rawList = normalizeFilterList(brand);
+  const normalizedList = normalizeFilterList(brand, (token) => token.toLowerCase());
+  return {
+    raw: new Set(rawList),
+    normalized: new Set(normalizedList),
+  };
+};
+
+type SupportedSort = "newest" | "popular" | "price-asc" | "price-desc";
+
+function resolveSort(sort?: string): SupportedSort {
+  switch (sort) {
+    case "price-asc":
+      return "price-asc";
+    case "price-desc":
+    case "price":
+      return "price-desc";
+    case "popular":
+    case "bestseller":
+      return "popular";
+    case "createdAt":
+    case "createdAt-desc":
+    case "newest":
+    default:
+      return "newest";
+  }
+}
+
+function getMinVariantPrice(product: ProductWithRelations): number {
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+  if (variants.length === 0) return Number.POSITIVE_INFINITY;
+  return Math.min(...variants.map((variant: { price: number }) => variant.price));
+}
+
 class ProductsFindFilterService {
   /**
    * Filter products by price, colors, sizes, brand in memory
@@ -31,7 +67,7 @@ class ProductsFindFilterService {
     filters: ProductFilters,
     bestsellerProductIds: string[]
   ): ProductWithRelations[] {
-    const { minPrice, maxPrice, colors, sizes, brand } = filters;
+    const { minPrice, maxPrice, colors, sizes, brand, technicalSpecs } = filters;
 
     // Filter by price
     if (minPrice || maxPrice) {
@@ -48,12 +84,32 @@ class ProductsFindFilterService {
     }
 
     // Filter by brand(s) - support multiple brands (comma-separated)
-    const brandList = normalizeFilterList(brand);
-    if (brandList.length > 0) {
-      products = products.filter(
-        (product: ProductWithRelations) => 
-          product.brandId && brandList.includes(product.brandId)
-      );
+    const brandTokens = normalizeBrandTokens(brand);
+    if (brandTokens.raw.size > 0 || brandTokens.normalized.size > 0) {
+      products = products.filter((product: ProductWithRelations) => {
+        if (product.brandId && brandTokens.raw.has(product.brandId)) {
+          return true;
+        }
+
+        const brandTranslations = product.brand?.translations ?? [];
+        const brandSlug = product.brand?.slug?.trim().toLowerCase();
+        const matchesSlug = brandSlug
+          ? brandTokens.normalized.has(brandSlug)
+          : false;
+
+        if (matchesSlug) {
+          return true;
+        }
+
+        const fallbackBrandName = brandTranslations
+          .find((translation) => translation.name?.trim())
+          ?.name?.trim()
+          .toLowerCase();
+        if (!fallbackBrandName) {
+          return false;
+        }
+        return brandTokens.normalized.has(fallbackBrandName);
+      });
     }
 
     // Filter by colors and sizes together if both are provided.
@@ -70,7 +126,17 @@ class ProductsFindFilterService {
         }
         
         // Find variants that match ALL specified filters
-        const matchingVariants = variants.filter((variant: any) => {
+        type VariantRow = ProductWithRelations["variants"][number];
+        /** Prisma option row plus legacy attributeKey/value fields */
+        type VariantOptionLike = VariantRow["options"][number] & {
+          attributeKey?: string | null;
+          key?: string | null;
+          attribute?: string | null;
+          value?: string | null;
+          label?: string | null;
+        };
+
+        const matchingVariants = variants.filter((variant: VariantRow) => {
           const options = Array.isArray(variant.options) ? variant.options : [];
           
           if (options.length === 0) {
@@ -78,7 +144,7 @@ class ProductsFindFilterService {
           }
           
           // Helper function to get color value from option (support all formats)
-          const getColorValue = (opt: any, lang: string = 'en'): string | null => {
+          const getColorValue = (opt: VariantOptionLike, lang: string = 'en'): string | null => {
             // New format: Use AttributeValue if available
             if (opt.attributeValue && opt.attributeValue.attribute?.key === "color") {
               const translation = opt.attributeValue.translations?.find((t: { locale: string }) => t.locale === lang) || opt.attributeValue.translations?.[0];
@@ -92,7 +158,7 @@ class ProductsFindFilterService {
           };
           
           // Helper function to get size value from option (support all formats)
-          const getSizeValue = (opt: any, lang: string = 'en'): string | null => {
+          const getSizeValue = (opt: VariantOptionLike, lang: string = 'en'): string | null => {
             // New format: Use AttributeValue if available
             if (opt.attributeValue && opt.attributeValue.attribute?.key === "size") {
               const translation = opt.attributeValue.translations?.find((t: { locale: string }) => t.locale === lang) || opt.attributeValue.translations?.[0];
@@ -143,9 +209,23 @@ class ProductsFindFilterService {
       });
     }
 
+    if (technicalSpecs && Object.keys(technicalSpecs).length > 0) {
+      products = products.filter((product: ProductWithRelations) =>
+        productMatchesTechnicalSpecs(product, technicalSpecs)
+      );
+    }
+
     // Sort
-    const { filter, sort = "createdAt" } = filters;
-    if (filter === "bestseller" && bestsellerProductIds.length > 0) {
+    const { filter } = filters;
+    const sort = resolveSort(filters.sort);
+    if (filter === "promotion" || filter === "special_offer") {
+      products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
+        const aD = a.discountPercent ?? 0;
+        const bD = b.discountPercent ?? 0;
+        if (bD !== aD) return bD - aD;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+    } else if (filter === "bestseller" && bestsellerProductIds.length > 0) {
       const rank = new Map<string, number>();
       bestsellerProductIds.forEach((id, index) => rank.set(id, index));
       products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
@@ -153,19 +233,29 @@ class ProductsFindFilterService {
         const bRank = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
         return aRank - bRank;
       });
-    } else if (sort === "price") {
+    } else if (sort === "price-desc" || sort === "price-asc") {
       products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
-        const aVariants = Array.isArray(a.variants) ? a.variants : [];
-        const bVariants = Array.isArray(b.variants) ? b.variants : [];
-        const aPrice = aVariants.length > 0 ? Math.min(...aVariants.map((v: { price: number }) => v.price)) : 0;
-        const bPrice = bVariants.length > 0 ? Math.min(...bVariants.map((v: { price: number }) => v.price)) : 0;
+        const aPrice = getMinVariantPrice(a);
+        const bPrice = getMinVariantPrice(b);
+        if (sort === "price-asc") {
+          return aPrice - bPrice;
+        }
         return bPrice - aPrice;
+      });
+    } else if (sort === "popular" && bestsellerProductIds.length > 0) {
+      const rank = new Map<string, number>();
+      bestsellerProductIds.forEach((id, index) => rank.set(id, index));
+      products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
+        const aRank = rank.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+        const bRank = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+        if (aRank !== bRank) {
+          return aRank - bRank;
+        }
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
     } else {
       products.sort((a: ProductWithRelations, b: ProductWithRelations) => {
-        const aValue = a[sort as keyof typeof a] as Date;
-        const bValue = b[sort as keyof typeof b] as Date;
-        return new Date(bValue).getTime() - new Date(aValue).getTime();
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
     }
 

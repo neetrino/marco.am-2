@@ -1,6 +1,10 @@
 import { getErrorMessage } from "@/lib/types/errors";
 import { db } from "@white-shop/db";
+import { buildCustomerOrderLinks } from "../constants/customer-order-api-paths";
 import * as bcrypt from "bcryptjs";
+import type { UpdateProfileRequest } from "@/lib/schemas/user-profile.schema";
+import { applyUserProfileUpdate } from "@/lib/services/user-profile-update";
+import { logger } from "@/lib/utils/logger";
 
 class UsersService {
   /**
@@ -15,6 +19,8 @@ class UsersService {
         phone: true,
         firstName: true,
         lastName: true,
+        emailVerified: true,
+        phoneVerified: true,
         locale: true,
         roles: true,
         addresses: true,
@@ -35,6 +41,8 @@ class UsersService {
       phone: user.phone,
       firstName: user.firstName,
       lastName: user.lastName,
+      emailVerified: user.emailVerified,
+      phoneVerified: user.phoneVerified,
       locale: user.locale,
       roles: user.roles,
       addresses: user.addresses,
@@ -42,34 +50,11 @@ class UsersService {
   }
 
   /**
-   * Update user profile
+   * Update user profile (name, contact, locale). Returns same shape as {@link getProfile}.
    */
-  async updateProfile(userId: string, data: any) {
-    const user = await db.user.update({
-      where: { id: userId },
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        locale: data.locale,
-      },
-      select: {
-        id: true,
-        email: true,
-        phone: true,
-        firstName: true,
-        lastName: true,
-        locale: true,
-      },
-    });
-
-    return {
-      id: user.id,
-      email: user.email,
-      phone: user.phone,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      locale: user.locale,
-    };
+  async updateProfile(userId: string, data: UpdateProfileRequest) {
+    await applyUserProfileUpdate(userId, data);
+    return this.getProfile(userId);
   }
 
   /**
@@ -122,21 +107,12 @@ class UsersService {
       };
     }
 
+    let isValid: boolean;
     try {
-      const isValid = await bcrypt.compare(oldPassword.trim(), user.passwordHash);
-      if (!isValid) {
-        throw {
-          status: 401,
-          type: "https://api.shop.am/problems/unauthorized",
-          title: "Invalid password",
-          detail: "The old password is incorrect",
-        };
-      }
-    } catch (bcryptError: unknown) {
-      // Handle bcrypt errors
-      console.error("❌ [USERS SERVICE] bcrypt.compare error:", {
-        error: bcryptError,
-        message: getErrorMessage(bcryptError),
+      isValid = await bcrypt.compare(oldPassword.trim(), user.passwordHash);
+    } catch (compareError: unknown) {
+      logger.error("UsersService changePassword: bcrypt.compare failed", {
+        message: getErrorMessage(compareError),
         userId,
         hasOldPassword: !!oldPassword,
         hasPasswordHash: !!user.passwordHash,
@@ -146,6 +122,15 @@ class UsersService {
         type: "https://api.shop.am/problems/internal-error",
         title: "Internal Server Error",
         detail: "Failed to verify password",
+      };
+    }
+
+    if (!isValid) {
+      throw {
+        status: 401,
+        type: "https://api.shop.am/problems/unauthorized",
+        title: "Invalid password",
+        detail: "The old password is incorrect",
       };
     }
 
@@ -159,8 +144,7 @@ class UsersService {
 
       return { success: true };
     } catch (hashError: unknown) {
-      console.error("❌ [USERS SERVICE] bcrypt.hash error:", {
-        error: hashError,
+      logger.error("UsersService changePassword: bcrypt.hash failed", {
         message: getErrorMessage(hashError),
         userId,
       });
@@ -171,100 +155,6 @@ class UsersService {
         detail: "Failed to hash new password",
       };
     }
-  }
-
-  /**
-   * Get addresses
-   */
-  async getAddresses(userId: string) {
-    const addresses = await db.address.findMany({
-      where: { userId },
-      orderBy: { isDefault: "desc" },
-    });
-
-    return { data: addresses };
-  }
-
-  /**
-   * Add address
-   */
-  async addAddress(userId: string, data: any) {
-    // If this is the first address, set it as default
-    const existingAddresses = await db.address.findMany({
-      where: { userId },
-    });
-
-    const address = await db.address.create({
-      data: {
-        ...data,
-        userId,
-        isDefault: existingAddresses.length === 0,
-      },
-    });
-
-    return address;
-  }
-
-  /**
-   * Update address
-   */
-  async updateAddress(userId: string, addressId: string, data: any) {
-    const address = await db.address.findFirst({
-      where: { id: addressId, userId },
-    });
-
-    if (!address) {
-      throw {
-        status: 404,
-        type: "https://api.shop.am/problems/not-found",
-        title: "Address not found",
-      };
-    }
-
-    return await db.address.update({
-      where: { id: addressId },
-      data,
-    });
-  }
-
-  /**
-   * Delete address
-   */
-  async deleteAddress(userId: string, addressId: string) {
-    const address = await db.address.findFirst({
-      where: { id: addressId, userId },
-    });
-
-    if (!address) {
-      throw {
-        status: 404,
-        type: "https://api.shop.am/problems/not-found",
-        title: "Address not found",
-      };
-    }
-
-    await db.address.delete({
-      where: { id: addressId },
-    });
-
-    return null;
-  }
-
-  /**
-   * Set default address
-   */
-  async setDefaultAddress(userId: string, addressId: string) {
-    // Unset all other default addresses
-    await db.address.updateMany({
-      where: { userId, isDefault: true },
-      data: { isDefault: false },
-    });
-
-    // Set this one as default
-    return await db.address.update({
-      where: { id: addressId },
-      data: { isDefault: true },
-    });
   }
 
   /**
@@ -314,6 +204,7 @@ class UsersService {
       currency: order.currency,
       itemsCount: order.items.length,
       createdAt: order.createdAt.toISOString(),
+      links: buildCustomerOrderLinks(order.number),
     }));
 
     return {

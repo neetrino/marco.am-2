@@ -9,32 +9,34 @@ export function buildProductWhereClause(filters: ProductFilters): Prisma.Product
     deletedAt: null,
   };
 
-  const orConditions: Prisma.ProductWhereInput[] = [];
+  const andConditions: Prisma.ProductWhereInput[] = [];
 
   // Search filter
   if (filters.search) {
-    orConditions.push(
-      {
-        translations: {
-          some: {
-            title: {
-              contains: filters.search,
-              mode: "insensitive",
+    andConditions.push({
+      OR: [
+        {
+          translations: {
+            some: {
+              title: {
+                contains: filters.search,
+                mode: "insensitive",
+              },
             },
           },
         },
-      },
-      {
-        variants: {
-          some: {
-            sku: {
-              contains: filters.search,
-              mode: "insensitive",
+        {
+          variants: {
+            some: {
+              sku: {
+                contains: filters.search,
+                mode: "insensitive",
+              },
             },
           },
         },
-      }
-    );
+      ],
+    });
   }
 
   // Category filter - support both single category and multiple categories
@@ -45,9 +47,8 @@ export function buildProductWhereClause(filters: ProductFilters): Prisma.Product
       : [];
   
   if (categoryIds.length > 0) {
-    const categoryConditions: Prisma.ProductWhereInput[] = [];
-    categoryIds.forEach((categoryId) => {
-      categoryConditions.push(
+    const categoryConditions: Prisma.ProductWhereInput[] = categoryIds.map((categoryId) => ({
+      OR: [
         {
           primaryCategoryId: categoryId,
         },
@@ -56,25 +57,55 @@ export function buildProductWhereClause(filters: ProductFilters): Prisma.Product
             has: categoryId,
           },
         }
-      );
-    });
-    orConditions.push(...categoryConditions);
+      ],
+    }));
+    andConditions.push({ OR: categoryConditions });
   }
 
-  if (orConditions.length > 0) {
-    where.OR = orConditions;
+  // Brand filter - multiple brand IDs supported
+  if (filters.brand && filters.brand.length > 0) {
+    andConditions.push({
+      brandId: {
+        in: filters.brand,
+      },
+    });
+  }
+
+  // Price range filter - any variant in range
+  if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+    const priceRange: Prisma.FloatFilter = {};
+    if (filters.minPrice !== undefined) {
+      priceRange.gte = filters.minPrice;
+    }
+    if (filters.maxPrice !== undefined) {
+      priceRange.lte = filters.maxPrice;
+    }
+
+    andConditions.push({
+      variants: {
+        some: {
+          price: priceRange,
+        },
+      },
+    });
   }
 
   // SKU filter
   if (filters.sku) {
-    where.variants = {
-      some: {
-        sku: {
-          contains: filters.sku,
-          mode: "insensitive",
+    andConditions.push({
+      variants: {
+        some: {
+          sku: {
+            contains: filters.sku,
+            mode: "insensitive",
+          },
         },
       },
-    };
+    });
+  }
+
+  if (andConditions.length > 0) {
+    where.AND = andConditions;
   }
 
   return where;

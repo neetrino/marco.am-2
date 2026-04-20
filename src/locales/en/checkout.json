@@ -17,7 +17,8 @@
     "cardNumber": "Card Number",
     "expiryDate": "Expiry Date",
     "cvv": "CVV",
-    "cardHolderName": "Card Holder Name"
+    "cardHolderName": "Card Holder Name",
+    "notes": "Order notes (optional)"
   },
   "placeholders": {
     "phone": "+374XXXXXXXX",
@@ -27,11 +28,14 @@
     "cardNumber": "1234 5678 9012 3456",
     "expiryDate": "MM/YY",
     "cvv": "123",
-    "cardHolderName": "John Doe"
+    "cardHolderName": "John Doe",
+    "notes": "Delivery instructions or other comments"
   },
   "shipping": {
     "storePickup": "Store Pickup",
     "storePickupDescription": "Pick up your order from our store (Free)",
+    "courier": "Courier delivery",
+    "courierDescription": "Delivery to your address — pricing follows admin delivery rules (e.g. Yandex Delivery or another partner courier).",
     "delivery": "Delivery",
     "deliveryDescription": "We will deliver your order to your address",
     "freePickup": "Free (Store Pickup)",
@@ -39,6 +43,10 @@
     "enterCity": "Enter City"
   },
   "payment": {
+    "card": "Bank card",
+    "cardDescription": "Pay online by card (you will be redirected when payment is enabled)",
+    "cash": "Cash",
+    "cashDescription": "Pay cash when you receive or pick up your order",
     "cashOnDelivery": "Cash on Delivery",
     "cashOnDeliveryDescription": "Pay cash when you receive your order",
     "idram": "Idram",
@@ -66,9 +74,11 @@
     "completeOrder": "Complete Your Order",
     "confirmOrder": "Confirm Order",
     "cardDetails": "{method} Card Details",
+    "cardDetailsHeading": "Card payment",
     "closeModal": "Close Window"
   },
   "messages": {
+    "totalsStaleWarning": "Could not refresh totals. Showing last known amounts.",
     "cashOnDeliveryInfo": "Cash on Delivery: You will pay cash when you receive your order. Card details are not required.",
     "cashOnDeliveryPickup": "Cash on Delivery: You will pay cash when you pick up your order. Card details are not required.",
     "storePickupInfo": "Store Pickup: You will pick up your order from our store. Delivery is free."
@@ -94,7 +104,8 @@
     "fillShippingAddress": "Please fill in all shipping address fields",
     "cartEmpty": "Cart is empty",
     "failedToLoadCart": "Failed to load cart",
-    "failedToCreateOrder": "Failed to create order. Please try again."
+    "failedToCreateOrder": "Failed to create order. Please try again.",
+    "notesTooLong": "Notes must be at most 2000 characters"
   }
 }
 

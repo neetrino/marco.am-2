@@ -1,3 +1,5 @@
+import type { CustomerOrderLinks } from "@/lib/constants/customer-order-api-paths";
+
 export interface Address {
   id?: string;
   _id?: string; // For backward compatibility
@@ -42,7 +44,7 @@ export interface OrderItem {
     value?: string;
     label?: string;
     imageUrl?: string;
-    colors?: string[] | any;
+    colors?: string[] | null;
   }>;
 }
 
@@ -52,6 +54,8 @@ export interface OrderDetails {
   status: string;
   paymentStatus: string;
   fulfillmentStatus: string;
+  /** HATEOAS entry points from `GET /api/v1/orders/{number}` (self + reorder). */
+  links?: CustomerOrderLinks;
   items: OrderItem[];
   totals: {
     subtotal: number;
@@ -65,7 +69,7 @@ export interface OrderDetails {
     email?: string;
     phone?: string;
   };
-  shippingAddress?: any;
+  shippingAddress?: Address | null;
   shippingMethod: string;
   trackingNumber?: string;
   timeline?: Array<{
@@ -109,6 +113,8 @@ export interface OrderListItem {
   status: string;
   paymentStatus: string;
   fulfillmentStatus: string;
+  /** Same `links` as order detail (`GET /api/v1/orders` list rows). */
+  links?: CustomerOrderLinks;
   total: number;
   subtotal?: number;
   discountAmount?: number;

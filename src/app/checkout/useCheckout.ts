@@ -7,11 +7,12 @@ import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { usePaymentMethods } from './utils/payment-methods';
 import { useCheckoutSchema } from './utils/validation-schema';
-import { useDeliveryPrice } from './hooks/useDeliveryPrice';
+import { useCheckoutTotals } from './hooks/useCheckoutTotals';
 import { useCart } from './hooks/useCart';
 import { useUserProfile } from './hooks/useUserProfile';
 import { useOrderSubmission } from './hooks/useOrderSubmission';
 import { useOrderSummary } from './hooks/useOrderSummary';
+import { isCourierShipping } from '../../lib/constants/shipping-method';
 import type { CheckoutFormData } from './types';
 
 export function useCheckout() {
@@ -33,6 +34,8 @@ export function useCheckout() {
     formState: { errors, isSubmitting },
     setValue,
     watch,
+    setError: setFormFieldError,
+    clearErrors,
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -40,8 +43,9 @@ export function useCheckout() {
       lastName: '',
       email: '',
       phone: '',
+      notes: '',
       shippingMethod: 'pickup',
-      paymentMethod: 'cash_on_delivery',
+      paymentMethod: 'cash',
       shippingAddress: '',
       shippingCity: '',
       cardNumber: '',
@@ -55,21 +59,28 @@ export function useCheckout() {
   const shippingMethod = watch('shippingMethod');
   const shippingCity = watch('shippingCity');
 
-  const { deliveryPrice, loadingDeliveryPrice } = useDeliveryPrice(shippingMethod, shippingCity);
   const { cart, loading, fetchCart } = useCart(isLoggedIn);
+  const { checkoutTotals, loadingCheckoutTotals, checkoutTotalsStale } = useCheckoutTotals(
+    cart,
+    isLoggedIn,
+    shippingMethod,
+    shippingCity
+  );
   useUserProfile(isLoggedIn, isLoading, setValue);
 
   const { submitOrder } = useOrderSubmission({
     cart,
     isLoggedIn,
-    deliveryPrice,
+    checkoutTotals,
     setError,
+    clearFieldErrors: () => clearErrors(),
+    setFieldError: (field, message) =>
+      setFormFieldError(field, { type: "server", message }),
   });
 
   const { orderSummary } = useOrderSummary({
     cart,
-    shippingMethod,
-    deliveryPrice,
+    checkoutTotals,
     currency,
   });
 
@@ -106,7 +117,7 @@ export function useCheckout() {
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (shippingMethod === 'delivery') {
+    if (isCourierShipping(shippingMethod)) {
       const formData = watch();
       const hasShippingAddress = formData.shippingAddress && formData.shippingAddress.trim().length > 0;
       const hasShippingCity = formData.shippingCity && formData.shippingCity.trim().length > 0;
@@ -121,7 +132,7 @@ export function useCheckout() {
       }
     }
     
-    if (paymentMethod === 'arca' || paymentMethod === 'idram') {
+    if (paymentMethod === 'card') {
       setShowCardModal(true);
       return;
     }
@@ -151,8 +162,9 @@ export function useCheckout() {
     setShowShippingModal,
     showCardModal,
     setShowCardModal,
-    deliveryPrice,
-    loadingDeliveryPrice,
+    checkoutTotals,
+    loadingCheckoutTotals,
+    checkoutTotalsStale,
     // Form
     register,
     handleSubmit,

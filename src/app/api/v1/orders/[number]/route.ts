@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { toApiErrorResponse } from "@/lib/api/next-route-error";
+import { getErrorLogFields } from "@/lib/types/errors";
 import { authenticateToken } from "@/lib/middleware/auth";
 import { ordersService } from "@/lib/services/orders.service";
+import { logger } from "@/lib/utils/logger";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ number: string }> }
 ) {
   let user: { id: string } | null = null;
+  let orderNumber: string | undefined;
   try {
     user = await authenticateToken(req);
     if (!user) {
@@ -23,32 +27,16 @@ export async function GET(
     }
 
     const { number } = await params;
+    orderNumber = number;
     const result = await ordersService.findByNumber(number, user.id);
     return NextResponse.json(result);
-  } catch (error: any) {
-    const { number } = await params;
-    console.error("❌ [ORDERS] Get order by number error:", {
-      orderNumber: number,
+  } catch (error: unknown) {
+    logger.error("[ORDERS] Get order by number error", {
+      orderNumber,
       userId: user?.id,
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name,
-      type: error?.type,
-      title: error?.title,
-      status: error?.status,
-      detail: error?.detail,
-      fullError: error,
+      ...getErrorLogFields(error),
     });
-    return NextResponse.json(
-      {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
-        instance: req.url,
-      },
-      { status: error.status || 500 }
-    );
+    return toApiErrorResponse(error, req.url);
   }
 }
 

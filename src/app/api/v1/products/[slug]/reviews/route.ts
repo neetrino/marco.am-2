@@ -59,23 +59,40 @@ export async function GET(
       return NextResponse.json(review);
     }
 
-    // Otherwise, return all published reviews
-    const reviews = await reviewsService.getProductReviews(product.id, {
-      publishedOnly: true,
-    });
+    // Otherwise, return published reviews + aggregate (PDP reviews section)
+    const [reviews, stats] = await Promise.all([
+      reviewsService.getProductReviews(product.id, {
+        publishedOnly: true,
+      }),
+      reviewsService.getProductReviewStats(product.id),
+    ]);
 
-    return NextResponse.json(reviews);
-  } catch (error: any) {
-    console.error("❌ [REVIEWS API] GET Error:", error);
+    return NextResponse.json({
+      reviews,
+      aggregate: {
+        averageRating: stats.average,
+        reviewCount: stats.total,
+        distribution: stats.distribution,
+      },
+    });
+  } catch (error: unknown) {
+    const e = error as {
+      type?: string;
+      title?: string;
+      status?: number;
+      detail?: string;
+      message?: string;
+    };
+    logger.error("REVIEWS API GET error", { detail: e.detail ?? e.message });
     return NextResponse.json(
       {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
+        type: e.type || "https://api.shop.am/problems/internal-error",
+        title: e.title || "Internal Server Error",
+        status: e.status || 500,
+        detail: e.detail || e.message || "An error occurred",
         instance: req.url,
       },
-      { status: error.status || 500 }
+      { status: e.status || 500 }
     );
   }
 }
@@ -107,9 +124,17 @@ export async function POST(
     const { slug } = await params;
     const { searchParams } = new URL(req.url);
     const lang = searchParams.get("lang") || "en";
-    const body = await req.json();
+    const body = (await req.json()) as {
+      rating?: unknown;
+      comment?: unknown;
+      policyAccepted?: unknown;
+    };
 
-    logger.devLog('📝 [REVIEWS API] POST request:', { slug, userId: user.id, rating: body.rating });
+    logger.devLog("📝 [REVIEWS API] POST request:", {
+      slug,
+      userId: user.id,
+      rating: body.rating,
+    });
 
     // First, get the product by slug to get the productId
     const product = await productsService.findBySlug(slug, lang);
@@ -153,26 +178,49 @@ export async function POST(
       );
     }
 
-    // Create review
+    if (body.policyAccepted !== true) {
+      return NextResponse.json(
+        {
+          type: "https://api.shop.am/problems/validation-error",
+          title: "Validation Error",
+          status: 400,
+          detail: "policyAccepted must be true (review policy acceptance)",
+          instance: req.url,
+        },
+        { status: 400 }
+      );
+    }
+
+    const comment =
+      typeof body.comment === "string" ? body.comment : undefined;
+
     const review = await reviewsService.createReview(product.id, user.id, {
       rating: body.rating,
-      comment: body.comment,
+      comment,
+      policyAccepted: true,
     });
 
-    logger.devLog('✅ [REVIEWS API] Review created:', review.id);
+    logger.devLog("✅ [REVIEWS API] Review created:", review.id);
 
     return NextResponse.json(review, { status: 201 });
-  } catch (error: any) {
-    console.error("❌ [REVIEWS API] POST Error:", error);
+  } catch (error: unknown) {
+    const e = error as {
+      type?: string;
+      title?: string;
+      status?: number;
+      detail?: string;
+      message?: string;
+    };
+    logger.error("REVIEWS API POST error", { detail: e.detail ?? e.message });
     return NextResponse.json(
       {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
+        type: e.type || "https://api.shop.am/problems/internal-error",
+        title: e.title || "Internal Server Error",
+        status: e.status || 500,
+        detail: e.detail || e.message || "An error occurred",
         instance: req.url,
       },
-      { status: error.status || 500 }
+      { status: e.status || 500 }
     );
   }
 }

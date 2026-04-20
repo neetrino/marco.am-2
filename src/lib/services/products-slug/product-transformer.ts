@@ -2,12 +2,108 @@ import { db } from "@white-shop/db";
 import {
   processImageUrl,
   smartSplitUrls,
-  cleanImageUrls,
-  separateMainAndVariantImages,
+  normalizeUrlForComparison,
 } from "../../utils/image-utils";
 import { logger } from "../../utils/logger";
 import { getOutOfStockLabel } from "./utils";
+import {
+  buildTechnicalSpecifications,
+  type ProductAttributeForTechnicalSpecification,
+  type ProductVariantForTechnicalSpecification,
+} from "./technical-specifications";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
+
+type ProductTranslationShape = {
+  locale: string;
+  title?: string | null;
+  slug?: string | null;
+  subtitle?: string | null;
+  descriptionHtml?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+};
+
+type ProductDescriptionI18nMap = Record<
+  string,
+  {
+    shortDescription: string | null;
+    fullDescription: string | null;
+  }
+>;
+
+type ProductGalleryImage = {
+  url: string;
+  type: "image";
+  alt: string | null;
+  title: string | null;
+  mimeType: string | null;
+  width: number | null;
+  height: number | null;
+  isPrimary: boolean;
+  position: number;
+  source: "product_media";
+  metadata: Record<string, unknown> | null;
+};
+
+type ProductDiscountBadge = {
+  type: "percentage";
+  value: number;
+  label: string;
+};
+
+type StockStatus = "in_stock" | "out_of_stock";
+
+type RawProductMediaItem = {
+  url?: string;
+  src?: string;
+  value?: string;
+  alt?: string;
+  title?: string;
+  mimeType?: string;
+  mime?: string;
+  width?: number | string;
+  height?: number | string;
+  type?: string;
+  isPrimary?: boolean;
+  primary?: boolean;
+  position?: number | string;
+  sortOrder?: number | string;
+  metadata?: unknown;
+};
+
+function parseNumericMetadata(value: number | string | undefined): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function parseMediaObjectMetadata(raw: RawProductMediaItem) {
+  const metadata =
+    raw.metadata && typeof raw.metadata === "object" && !Array.isArray(raw.metadata)
+      ? (raw.metadata as Record<string, unknown>)
+      : null;
+
+  const positionCandidate = parseNumericMetadata(raw.position ?? raw.sortOrder);
+  const sortOrder = positionCandidate ?? Number.MAX_SAFE_INTEGER;
+
+  return {
+    alt: typeof raw.alt === "string" ? raw.alt : null,
+    title: typeof raw.title === "string" ? raw.title : null,
+    mimeType: typeof raw.mimeType === "string" ? raw.mimeType : typeof raw.mime === "string" ? raw.mime : null,
+    width: parseNumericMetadata(raw.width),
+    height: parseNumericMetadata(raw.height),
+    isPrimary: raw.isPrimary === true || raw.primary === true,
+    sortOrder,
+    metadata,
+  };
+}
 
 /**
  * Get discount settings from database
@@ -65,49 +161,120 @@ function calculateActualDiscount(
   return 0;
 }
 
-/**
- * Transform product media (separate main from variant images)
- */
-function transformMedia(
-  product: ProductWithFullRelations
-): string[] {
-  if (!Array.isArray(product.media)) {
-    logger.warn('Product media is not an array, returning empty array');
-    return [];
-  }
-  
-  // Collect all variant images for separation
-  const variantImages: string[] = [];
-  if (Array.isArray(product.variants) && product.variants.length > 0) {
-    product.variants.forEach((variant: ProductVariantWithOptions) => {
-      if (variant.imageUrl) {
-        const urls = smartSplitUrls(variant.imageUrl);
-        variantImages.push(...urls);
+function collectVariantImageSet(variants: ProductVariantWithOptions[]): Set<string> {
+  const variantImageSet = new Set<string>();
+
+  for (const variant of variants) {
+    if (!variant.imageUrl) {
+      continue;
+    }
+
+    const urls = smartSplitUrls(variant.imageUrl);
+    for (const rawUrl of urls) {
+      const processedUrl = processImageUrl(rawUrl);
+      if (processedUrl) {
+        variantImageSet.add(normalizeUrlForComparison(processedUrl));
       }
+    }
+  }
+
+  return variantImageSet;
+}
+
+function toGalleryItem(
+  mediaItem: unknown,
+  fallbackAlt: string | null,
+  variantImageSet: Set<string>
+): (ProductGalleryImage & { sortOrder: number }) | null {
+  let rawItem: RawProductMediaItem = {};
+  let sourceUrl: string | null = null;
+
+  if (typeof mediaItem === "string") {
+    sourceUrl = mediaItem;
+  } else if (mediaItem && typeof mediaItem === "object") {
+    rawItem = mediaItem as RawProductMediaItem;
+    sourceUrl = rawItem.url ?? rawItem.src ?? rawItem.value ?? null;
+  }
+
+  const processedUrl = processImageUrl(sourceUrl);
+  if (!processedUrl) {
+    return null;
+  }
+
+  const normalizedUrl = normalizeUrlForComparison(processedUrl);
+  if (variantImageSet.has(normalizedUrl)) {
+    return null;
+  }
+
+  const parsedMetadata = parseMediaObjectMetadata(rawItem);
+
+  return {
+    url: processedUrl,
+    type: "image",
+    alt: parsedMetadata.alt ?? fallbackAlt,
+    title: parsedMetadata.title,
+    mimeType: parsedMetadata.mimeType,
+    width: parsedMetadata.width,
+    height: parsedMetadata.height,
+    isPrimary: parsedMetadata.isPrimary,
+    position: 0,
+    source: "product_media",
+    metadata: parsedMetadata.metadata,
+    sortOrder: parsedMetadata.sortOrder,
+  };
+}
+
+function deduplicateGallery(
+  galleryWithOrder: Array<ProductGalleryImage & { sortOrder: number }>
+): ProductGalleryImage[] {
+  const deduplicatedGallery: ProductGalleryImage[] = [];
+  const seenUrls = new Set<string>();
+
+  for (const galleryItem of galleryWithOrder) {
+    const normalizedUrl = normalizeUrlForComparison(galleryItem.url);
+    if (seenUrls.has(normalizedUrl)) {
+      continue;
+    }
+
+    seenUrls.add(normalizedUrl);
+    deduplicatedGallery.push({
+      ...galleryItem,
+      position: deduplicatedGallery.length,
     });
   }
-  
-  // Separate main images from variant images
-  // Convert JsonValue[] to (string | ImageUrlInput)[] for type compatibility
-  const mediaAsStrings = product.media.map((item: unknown) => {
-    if (typeof item === 'string') return item;
-    if (item && typeof item === 'object' && 'url' in item) return item as { url?: string };
-    if (item && typeof item === 'object' && 'src' in item) return item as { src?: string };
-    if (item && typeof item === 'object' && 'value' in item) return item as { value?: string };
-    return String(item);
-  });
-  const { main } = separateMainAndVariantImages(mediaAsStrings, variantImages);
-  
-  // Clean and validate final main images
-  const cleanedMain = cleanImageUrls(main);
-  
-  logger.debug('Main media images count (after cleanup)', { count: cleanedMain.length });
-  logger.debug('Variant images excluded', { count: variantImages.length });
-  if (cleanedMain.length > 0) {
-    logger.debug('Main media (first 3)', { images: cleanedMain.slice(0, 3).map((img: string) => img.substring(0, 50)) });
+
+  if (deduplicatedGallery.length > 0 && !deduplicatedGallery.some((image) => image.isPrimary)) {
+    deduplicatedGallery[0] = {
+      ...deduplicatedGallery[0],
+      isPrimary: true,
+    };
   }
-  
-  return cleanedMain;
+
+  return deduplicatedGallery;
+}
+
+function transformGallery(
+  product: ProductWithFullRelations,
+  fallbackAlt: string | null
+): ProductGalleryImage[] {
+  if (!Array.isArray(product.media)) {
+    logger.warn("Product media is not an array, returning empty gallery");
+    return [];
+  }
+
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+  const variantImageSet = collectVariantImageSet(variants);
+
+  const galleryWithOrder: Array<ProductGalleryImage & { sortOrder: number }> = [];
+  for (const mediaItem of product.media) {
+    const galleryItem = toGalleryItem(mediaItem, fallbackAlt, variantImageSet);
+    if (galleryItem) {
+      galleryWithOrder.push(galleryItem);
+    }
+  }
+
+  galleryWithOrder.sort((left, right) => left.sortOrder - right.sortOrder);
+  return deduplicateGallery(galleryWithOrder);
 }
 
 /**
@@ -182,6 +349,93 @@ function transformVariantImageUrl(variant: ProductVariantWithOptions): string | 
   return processedUrls.length > 0 ? processedUrls.join(',') : null;
 }
 
+function resolveVariantOldPrice(currentPrice: number, compareAtPrice: number | null): number | null {
+  if (compareAtPrice === null) {
+    return null;
+  }
+
+  return compareAtPrice > currentPrice ? compareAtPrice : null;
+}
+
+function computeDiscountPercentFromPrices(
+  currentPrice: number,
+  oldPrice: number | null
+): number | null {
+  if (!oldPrice || oldPrice <= 0 || oldPrice <= currentPrice) {
+    return null;
+  }
+
+  const rawPercent = ((oldPrice - currentPrice) / oldPrice) * 100;
+  const roundedPercent = Math.round(rawPercent);
+  return roundedPercent > 0 ? roundedPercent : null;
+}
+
+function buildDiscountBadge(discountPercent: number | null): ProductDiscountBadge | null {
+  if (!discountPercent || discountPercent <= 0) {
+    return null;
+  }
+
+  return {
+    type: "percentage",
+    value: discountPercent,
+    label: `-${discountPercent}%`,
+  };
+}
+
+function toStockStatus(stock: number): StockStatus {
+  return stock > 0 ? "in_stock" : "out_of_stock";
+}
+
+function resolveProductStockSummary(variants: ProductVariantWithOptions[]): {
+  inStock: boolean;
+  stockStatus: StockStatus;
+  stockQuantity: number;
+} {
+  if (variants.length === 0) {
+    return {
+      inStock: false,
+      stockStatus: "out_of_stock",
+      stockQuantity: 0,
+    };
+  }
+
+  const stockQuantity = variants.reduce((sum, variant) => {
+    const currentStock = Number.isFinite(variant.stock) ? Math.max(0, variant.stock) : 0;
+    return sum + currentStock;
+  }, 0);
+
+  const inStock = variants.some((variant) => variant.stock > 0);
+
+  return {
+    inStock,
+    stockStatus: inStock ? "in_stock" : "out_of_stock",
+    stockQuantity,
+  };
+}
+
+function buildVariantPricing(
+  originalPrice: number,
+  compareAtPrice: number | null,
+  actualDiscount: number
+): {
+  currentPrice: number;
+  oldPrice: number | null;
+  discountPercent: number | null;
+  discountBadge: ProductDiscountBadge | null;
+} {
+  const discountedPrice = actualDiscount > 0 ? originalPrice * (1 - actualDiscount / 100) : originalPrice;
+  const oldPrice = resolveVariantOldPrice(discountedPrice, compareAtPrice);
+  const fallbackDiscountPercent = computeDiscountPercentFromPrices(discountedPrice, oldPrice);
+  const discountPercent = actualDiscount > 0 ? actualDiscount : fallbackDiscountPercent;
+
+  return {
+    currentPrice: discountedPrice,
+    oldPrice,
+    discountPercent,
+    discountBadge: buildDiscountBadge(discountPercent),
+  };
+}
+
 /**
  * Transform product variants
  */
@@ -195,14 +449,12 @@ function transformVariants(
   return variants
     .sort((a: { price: number }, b: { price: number }) => a.price - b.price)
     .map((variant: ProductVariantWithOptions) => {
-      const originalPrice = variant.price;
-      let finalPrice = originalPrice;
-      let discountPrice = null;
-
-      if (actualDiscount > 0 && originalPrice > 0) {
-        discountPrice = originalPrice;
-        finalPrice = originalPrice * (1 - actualDiscount / 100);
-      }
+      const basePrice = variant.price;
+      const compareAtPrice =
+        typeof variant.compareAtPrice === "number" && Number.isFinite(variant.compareAtPrice)
+          ? variant.compareAtPrice
+          : null;
+      const pricing = buildVariantPricing(basePrice, compareAtPrice, actualDiscount);
 
       const variantImageUrl = transformVariantImageUrl(variant);
       
@@ -217,12 +469,17 @@ function transformVariants(
       return {
         id: variant.id,
         sku: variant.sku || "",
-        price: finalPrice,
-        originalPrice: discountPrice || variant.compareAtPrice || null,
-        compareAtPrice: variant.compareAtPrice || null,
+        price: pricing.currentPrice,
+        originalPrice: pricing.oldPrice,
+        currentPrice: pricing.currentPrice,
+        oldPrice: pricing.oldPrice,
+        discountBadge: pricing.discountBadge,
+        compareAtPrice,
         globalDiscount: globalDiscount > 0 ? globalDiscount : null,
         productDiscount: productDiscount > 0 ? productDiscount : null,
         stock: variant.stock,
+        inStock: variant.stock > 0,
+        stockStatus: toStockStatus(variant.stock),
         imageUrl: variantImageUrl,
         options: Array.isArray(variant.options) ? variant.options.map((opt: ProductVariantWithOptions['options'][number]) => {
           // Support both new format (AttributeValue) and old format (attributeKey/value)
@@ -318,6 +575,40 @@ function transformProductAttributes(
   return [];
 }
 
+function resolveProductTranslation(
+  translations: ProductTranslationShape[],
+  lang: string
+): ProductTranslationShape | null {
+  const exactMatch = translations.find((item) => item.locale === lang);
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  const englishFallback = translations.find((item) => item.locale === "en");
+  if (englishFallback) {
+    return englishFallback;
+  }
+
+  return translations[0] ?? null;
+}
+
+function buildProductDescriptionI18nMap(
+  translations: ProductTranslationShape[]
+): ProductDescriptionI18nMap {
+  return translations.reduce<ProductDescriptionI18nMap>((acc, item) => {
+    if (!item.locale) {
+      return acc;
+    }
+
+    acc[item.locale] = {
+      shortDescription: item.subtitle ?? null,
+      fullDescription: item.descriptionHtml ?? null,
+    };
+
+    return acc;
+  }, {});
+}
+
 /**
  * Transform product data to response format
  */
@@ -326,8 +617,10 @@ export async function transformProduct(
   lang: string = "en"
 ) {
   // Get translations
-  const translations = Array.isArray(product.translations) ? product.translations : [];
-  const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
+  const translations = Array.isArray(product.translations)
+    ? (product.translations as ProductTranslationShape[])
+    : [];
+  const translation = resolveProductTranslation(translations, lang);
   
   // Get brand translation
   const brandTranslations = product.brand && Array.isArray(product.brand.translations)
@@ -363,12 +656,45 @@ export async function transformProduct(
     };
   }) : [];
 
+  const gallery = transformGallery(product, translation?.title || null);
+  const media = gallery.map((item) => item.url);
+  const descriptionI18n = buildProductDescriptionI18nMap(translations);
+  const productAttributesForTechnicalSpecifications = (
+    product as { productAttributes?: ProductAttributeForTechnicalSpecification[] }
+  ).productAttributes;
+  const productVariantsForTechnicalSpecifications = (
+    product as { variants?: ProductVariantForTechnicalSpecification[] }
+  ).variants;
+  const technicalSpecifications = buildTechnicalSpecifications(
+    productAttributesForTechnicalSpecifications,
+    productVariantsForTechnicalSpecifications,
+    lang
+  );
+  const transformedVariants = Array.isArray(product.variants)
+    ? transformVariants(
+        product.variants,
+        actualDiscount,
+        globalDiscount,
+        productDiscount,
+        lang
+      )
+    : [];
+  const primaryVariant = transformedVariants[0] ?? null;
+  const productStockSummary = resolveProductStockSummary(Array.isArray(product.variants) ? product.variants : []);
+
   return {
     id: product.id,
     slug: translation?.slug || "",
     title: translation?.title || "",
     subtitle: translation?.subtitle || null,
+    shortDescription: translation?.subtitle || null,
     description: translation?.descriptionHtml || null,
+    fullDescription: translation?.descriptionHtml || null,
+    i18n: {
+      requestedLocale: lang,
+      availableLocales: Object.keys(descriptionI18n),
+      descriptions: descriptionI18n,
+    },
     brand: product.brand
       ? {
           id: product.brand.id,
@@ -378,17 +704,24 @@ export async function transformProduct(
         }
       : null,
     categories,
-    media: transformMedia(product),
+    media,
+    gallery,
     labels: transformLabels(product, lang),
-    variants: Array.isArray(product.variants) ? transformVariants(
-      product.variants,
-      actualDiscount,
-      globalDiscount,
-      productDiscount,
-      lang
-    ) : [],
+    variants: transformedVariants,
+    currentPrice: primaryVariant?.currentPrice ?? null,
+    oldPrice: primaryVariant?.oldPrice ?? null,
+    discountBadge: primaryVariant?.discountBadge ?? null,
+    inStock: productStockSummary.inStock,
+    stockStatus: productStockSummary.stockStatus,
+    stockQuantity: productStockSummary.stockQuantity,
+    pricing: {
+      currentPrice: primaryVariant?.currentPrice ?? null,
+      oldPrice: primaryVariant?.oldPrice ?? null,
+      discountBadge: primaryVariant?.discountBadge ?? null,
+    },
     globalDiscount: globalDiscount > 0 ? globalDiscount : null,
     productDiscount: productDiscount > 0 ? productDiscount : null,
+    technicalSpecifications,
     seo: {
       title: translation?.seoTitle || translation?.title,
       description: translation?.seoDescription || null,

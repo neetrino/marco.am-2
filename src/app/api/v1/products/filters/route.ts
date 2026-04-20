@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { toApiErrorResponse } from "@/lib/api/next-route-error";
 import { productsService } from "@/lib/services/products.service";
+import { parseTechnicalSpecFiltersFromSearchParams } from "@/lib/services/products-technical-filters";
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,30 +26,29 @@ export async function GET(req: NextRequest) {
     const filters = {
       category: searchParams.get("category") || undefined,
       search: searchParams.get("search") || undefined,
-      minPrice: searchParams.get("minPrice")
-        ? parseFloat(searchParams.get("minPrice")!)
-        : undefined,
-      maxPrice: searchParams.get("maxPrice")
-        ? parseFloat(searchParams.get("maxPrice")!)
-        : undefined,
+      minPrice: (() => {
+        const raw = searchParams.get("minPrice");
+        const parsed = raw ? Number(raw) : undefined;
+        return typeof parsed === "number" && Number.isFinite(parsed) && parsed >= 0
+          ? parsed
+          : undefined;
+      })(),
+      maxPrice: (() => {
+        const raw = searchParams.get("maxPrice");
+        const parsed = raw ? Number(raw) : undefined;
+        return typeof parsed === "number" && Number.isFinite(parsed) && parsed >= 0
+          ? parsed
+          : undefined;
+      })(),
       lang: searchParams.get("lang") || "en",
+      technicalSpecs: parseTechnicalSpecFiltersFromSearchParams(searchParams),
     };
 
     const result = await productsService.getFilters(filters);
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("❌ [PRODUCTS FILTERS] Error:", error);
-    console.error("❌ [PRODUCTS FILTERS] Error stack:", error.stack);
-    return NextResponse.json(
-      {
-        type: error.type || "https://api.shop.am/problems/internal-error",
-        title: error.title || "Internal Server Error",
-        status: error.status || 500,
-        detail: error.detail || error.message || "An error occurred",
-        instance: req.url || '',
-      },
-      { status: error.status || 500 }
-    );
+    return toApiErrorResponse(error, req.url || '');
   }
 }
 

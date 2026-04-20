@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Input, Card } from '@shop/ui';
 import Link from 'next/link';
 import { getErrorMessage } from '@/lib/types/errors';
@@ -9,7 +10,7 @@ import { useTranslation } from '../../lib/i18n-client';
 import { Eye, EyeOff } from 'lucide-react';
 import { logger } from "@/lib/utils/logger";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const { t } = useTranslation();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -24,6 +25,9 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { register, isLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams?.get('redirect') || '/';
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -90,29 +94,25 @@ export default function RegisterPage() {
         lastName: lastName.trim() || 'not provided',
       });
       
-      await register({
+      const flow = await register({
         email: email.trim() || undefined,
         phone: phone.trim() || undefined,
         password,
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
       });
-      
+
+      if (flow.status === 'needs_verification') {
+        logger.devLog('✅ [REGISTER PAGE] Verification required, redirecting...');
+        router.push(`/verify?redirect=${encodeURIComponent(redirectTo)}`);
+        return;
+      }
+
       logger.devLog('✅ [REGISTER PAGE] Registration successful, redirecting...');
-      // Redirect is handled by AuthContext
-      // But we can also redirect here as a fallback
-      setTimeout(() => {
-        if (window.location.pathname === '/register') {
-          logger.devLog('🔄 [REGISTER PAGE] Fallback redirect to home...');
-          window.location.href = '/';
-        }
-      }, 1000);
+      router.push(redirectTo);
     } catch (err: unknown) {
-      console.error('❌ [REGISTER PAGE] Registration error:', err);
-      console.error('❌ [REGISTER PAGE] Error details:', {
+      logger.error('Register page submission failed', {
         message: err instanceof Error ? err.message : getErrorMessage(err),
-        stack: err instanceof Error ? err.stack : undefined,
-        name: err instanceof Error ? err.name : undefined,
       });
       setError(getErrorMessage(err) || t('register.errors.registrationFailed'));
     } finally {
@@ -295,13 +295,44 @@ export default function RegisterPage() {
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             {t('register.form.alreadyHaveAccount')}{' '}
-            <Link href="/login" className="text-blue-600 hover:underline font-medium">
+            <Link
+              href={
+                redirectTo === '/'
+                  ? '/login'
+                  : `/login?redirect=${encodeURIComponent(redirectTo)}`
+              }
+              className="text-blue-600 hover:underline font-medium"
+            >
               {t('register.form.signIn')}
             </Link>
           </p>
         </div>
       </Card>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Card className="p-8">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-8" />
+              <div className="space-y-4">
+                <div className="h-10 bg-gray-200 rounded" />
+                <div className="h-10 bg-gray-200 rounded" />
+                <div className="h-10 bg-gray-200 rounded" />
+              </div>
+            </div>
+          </Card>
+        </div>
+      }
+    >
+      <RegisterPageContent />
+    </Suspense>
   );
 }
 

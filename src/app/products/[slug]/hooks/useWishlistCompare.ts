@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import { WISHLIST_KEY, COMPARE_KEY } from '../types';
+import { useState, useEffect, useCallback } from 'react';
+import { fetchWishlistProductIds } from '@/lib/wishlist/wishlist-client';
+import { getStoredLanguage, type LanguageCode } from '@/lib/language';
+import { fetchCompareProductIds } from '@/lib/compare/compare-client';
 
 interface UseWishlistCompareProps {
   productId: string | null;
@@ -8,48 +10,66 @@ interface UseWishlistCompareProps {
 export function useWishlistCompare({ productId }: UseWishlistCompareProps) {
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [isInCompare, setIsInCompare] = useState(false);
+  const [language, setLanguage] = useState<LanguageCode>(() => getStoredLanguage());
+
+  const refreshWishlist = useCallback(async () => {
+    if (!productId) {
+      setIsInWishlist(false);
+      return;
+    }
+    try {
+      const ids = await fetchWishlistProductIds(language);
+      setIsInWishlist(ids.includes(productId));
+    } catch {
+      setIsInWishlist(false);
+    }
+  }, [productId, language]);
 
   useEffect(() => {
-    if (!productId) return;
-    
-    const checkWishlist = () => {
-      if (typeof window === 'undefined') return;
-      try {
-        const stored = localStorage.getItem(WISHLIST_KEY);
-        const wishlist = stored ? JSON.parse(stored) : [];
-        setIsInWishlist(wishlist.includes(productId));
-      } catch {
-        setIsInWishlist(false);
-      }
+    const onLang = () => setLanguage(getStoredLanguage());
+    window.addEventListener('language-updated', onLang);
+    return () => window.removeEventListener('language-updated', onLang);
+  }, []);
+
+  useEffect(() => {
+    void refreshWishlist();
+  }, [refreshWishlist]);
+
+  useEffect(() => {
+    const onUpdate = () => {
+      void refreshWishlist();
     };
-    
-    checkWishlist();
-    window.addEventListener('wishlist-updated', checkWishlist);
-    return () => window.removeEventListener('wishlist-updated', checkWishlist);
-  }, [productId]);
+    window.addEventListener('wishlist-updated', onUpdate);
+    window.addEventListener('auth-updated', onUpdate);
+    return () => {
+      window.removeEventListener('wishlist-updated', onUpdate);
+      window.removeEventListener('auth-updated', onUpdate);
+    };
+  }, [refreshWishlist]);
 
   useEffect(() => {
     if (!productId) return;
-    
-    const checkCompare = () => {
-      if (typeof window === 'undefined') return;
+
+    const checkCompare = async () => {
       try {
-        const stored = localStorage.getItem(COMPARE_KEY);
-        const compare = stored ? JSON.parse(stored) : [];
+        const compare = await fetchCompareProductIds(language);
         setIsInCompare(compare.includes(productId));
       } catch {
         setIsInCompare(false);
       }
     };
-    
-    checkCompare();
-    window.addEventListener('compare-updated', checkCompare);
-    return () => window.removeEventListener('compare-updated', checkCompare);
-  }, [productId]);
+
+    void checkCompare();
+    const onCompare = () => {
+      void checkCompare();
+    };
+    window.addEventListener('compare-updated', onCompare);
+    window.addEventListener('auth-updated', onCompare);
+    return () => {
+      window.removeEventListener('compare-updated', onCompare);
+      window.removeEventListener('auth-updated', onCompare);
+    };
+  }, [language, productId]);
 
   return { isInWishlist, setIsInWishlist, isInCompare, setIsInCompare };
 }
-
-
-
-

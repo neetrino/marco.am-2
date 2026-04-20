@@ -2,6 +2,7 @@
 
 import { useTranslation } from '../../../lib/i18n-client';
 import { formatPriceInCurrency } from '../../../lib/currency';
+import { isCourierShipping, type ShippingMethodId } from '../../../lib/constants/shipping-method';
 import { Cart } from '../types';
 
 interface OrderSummaryModalProps {
@@ -13,10 +14,10 @@ interface OrderSummaryModalProps {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: ShippingMethodId;
   shippingCity?: string;
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
 }
 
 export function OrderSummaryModal({
@@ -25,8 +26,8 @@ export function OrderSummaryModal({
   currency,
   shippingMethod,
   shippingCity,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
+  checkoutTotalsStale,
 }: OrderSummaryModalProps) {
   const { t } = useTranslation();
 
@@ -34,17 +35,23 @@ export function OrderSummaryModal({
     return null;
   }
 
-  const shippingDisplay = shippingMethod === 'pickup' 
-    ? t('checkout.shipping.freePickup')
-    : loadingDeliveryPrice
-      ? t('checkout.shipping.loading')
-      : deliveryPrice !== null
-        ? formatPriceInCurrency(orderSummary.shippingDisplay, currency) + 
-          (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.delivery')})`)
-        : t('checkout.shipping.enterCity');
+  const shippingDisplay =
+    shippingMethod === 'pickup'
+      ? t('checkout.shipping.freePickup')
+      : isCourierShipping(shippingMethod) && !shippingCity?.trim()
+        ? t('checkout.shipping.enterCity')
+        : loadingCheckoutTotals
+          ? t('checkout.shipping.loading')
+          : formatPriceInCurrency(orderSummary.shippingDisplay, currency) +
+            (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.courier')})`);
 
   return (
     <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+      {checkoutTotalsStale ? (
+        <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-2 py-1.5 mb-1">
+          {t('checkout.messages.totalsStaleWarning')}
+        </p>
+      ) : null}
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">{t('checkout.summary.items')}:</span>
         <span className="font-medium">{cart.itemsCount}</span>

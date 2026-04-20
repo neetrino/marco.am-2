@@ -1,0 +1,2603 @@
+openapi: 3.0.3
+info:
+  title: Shop Marco API
+  version: 1.0.0
+  description: |
+    REST JSON API for Shop Marco (Next.js App Router under `src/app/api`).
+
+    **GraphQL:** not supported.
+
+    Narrative contract (auth, errors, versioning): `docs/API_CONTRACT.md`.
+
+servers:
+  - url: "{origin}"
+    variables:
+      origin:
+        default: http://localhost:3000
+        description: Deployment origin (scheme + host, no trailing slash).
+
+tags:
+  - name: Health
+    description: Operations and monitoring.
+  - name: Auth
+    description: Registration and login (JWT issuance).
+  - name: Orders
+    description: Customer orders and reorder-to-cart.
+  - name: Wishlist
+    description: Saved products per user (JWT) or guest session (cookie / header).
+  - name: Site
+    description: Site-wide public endpoints (contact form, etc.).
+  - name: Home
+    description: Home page structured CMS content (public + supersudo admin).
+  - name: Reels
+    description: Vertical reels feed (public) and admin moderation/config.
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Health check with database connectivity
+      operationId: getApiHealth
+      responses:
+        "200":
+          description: Database reachable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthOk"
+        "503":
+          description: Database unavailable or timeout.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthError"
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login (issues JWT or OTP challenge)
+      operationId: postAuthLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: |
+            Either `{ user, token }`, or when `AUTH_REQUIRE_VERIFICATION=true` and the identifier
+            is not yet verified, `{ needsVerification, channel, verificationToken }`.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Validation or business rule failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register (issues JWT or OTP challenge)
+      operationId: postAuthRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        "201":
+          description: |
+            Account created. Either `{ user, token }` or, when `AUTH_REQUIRE_VERIFICATION=true`,
+            `{ needsVerification, channel, verificationToken }` for `POST /api/v1/auth/verify`.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/auth/verify:
+    post:
+      tags: [Auth]
+      summary: Submit email/phone OTP and receive JWT
+      operationId: postAuthVerify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [verificationToken, code]
+              properties:
+                verificationToken:
+                  type: string
+                code:
+                  type: string
+      responses:
+        "200":
+          description: Authenticated; `{ user, token }`.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Invalid code or validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/auth/resend-verification:
+    post:
+      tags: [Auth]
+      summary: Resend OTP (same verification session)
+      operationId: postAuthResendVerification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [verificationToken]
+              properties:
+                verificationToken:
+                  type: string
+      responses:
+        "200":
+          description: `{ ok: true }` if a new code was sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+        "429":
+          description: Resend cooldown (60s between sends).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/orders:
+    get:
+      tags: [Orders]
+      summary: Order history (paginated)
+      operationId: getOrdersList
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: |
+            Paginated list. Each row includes `status`, `paymentStatus`, `fulfillmentStatus`,
+            totals, `itemsCount`, ISO8601 `createdAt`, and `links` (GET detail + POST reorder).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderListResponse"
+        "401":
+          description: Missing or invalid JWT.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/orders/{number}:
+    get:
+      tags: [Orders]
+      summary: Order detail by order number
+      operationId: getOrderByNumber
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Order number belonging to the authenticated user.
+      responses:
+        "200":
+          description: |
+            Full order with line items and `links` (same `self`/`reorder` shape as list rows).
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "401":
+          description: Missing or invalid JWT.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Order not found for this user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/orders/{number}/reorder:
+    post:
+      tags: [Orders]
+      summary: Prefill cart from a past order (reorder)
+      operationId: postOrderReorder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Order number belonging to the authenticated user.
+      responses:
+        "200":
+          description: |
+            Cart updated. Response includes `orderNumber`, `added` (lines merged into the cart),
+            `skipped` (lines not added with a reason), and `cart` (same structure as `GET /api/v1/cart`).
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        "400":
+          description: Order has no line items.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "401":
+          description: Missing or invalid JWT.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Order not found for this user.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/wishlist:
+    get:
+      tags: [Wishlist]
+      summary: List wishlist items (authenticated user or guest session)
+      operationId: getWishlist
+      parameters:
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+          description: Catalog locale for titles/slugs when the caller is not authenticated (defaults to `en`).
+      responses:
+        "200":
+          description: |
+            `{ wishlist: { id, items[] } }` — each item includes `productId`, `title`, `slug`, `image`, `addedAt` (ISO8601).
+            Guests receive `Set-Cookie` for `shop_wishlist_session` (HttpOnly) or may send `x-wishlist-session` instead.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WishlistResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    post:
+      tags: [Wishlist]
+      summary: Add a product to the wishlist
+      operationId: postWishlistItem
+      parameters:
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WishlistAddRequest"
+      responses:
+        "201":
+          description: Updated wishlist payload (same shape as GET).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WishlistResponse"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Product not published or missing.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "422":
+          description: Wishlist size limit reached.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/wishlist/{productId}:
+    delete:
+      tags: [Wishlist]
+      summary: Remove a product from the wishlist
+      operationId: deleteWishlistItem
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+      responses:
+        "200":
+          description: Updated wishlist payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WishlistResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/wishlist/merge:
+    post:
+      tags: [Wishlist]
+      summary: Merge guest wishlist into the authenticated user
+      operationId: postWishlistMerge
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: |
+            `{ mergedItems, guestWishlistFound }` — clears guest session cookie when a session token was sent.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WishlistMergeResponse"
+        "401":
+          description: Missing or invalid JWT.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/home/why-choose-us:
+    get:
+      tags: [Home]
+      summary: Home «Why choose us» block (locale-resolved copy + icon keys)
+      operationId: getHomeWhyChooseUs
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: Section title and active items for the requested locale.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WhyChooseUsPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/why-choose-us:
+    get:
+      tags: [Home]
+      summary: Full Why choose us document (all locales) for admin
+      operationId: getSupersudoWhyChooseUs
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = homeWhyChooseUs`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WhyChooseUsStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Home]
+      summary: Replace Why choose us document (validated)
+      operationId: putSupersudoWhyChooseUs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WhyChooseUsStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WhyChooseUsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/home/customer-reviews:
+    get:
+      tags: [Home]
+      summary: Home customer reviews carousel (locale-resolved copy + ratings + optional photos)
+      operationId: getHomeCustomerReviews
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: Section title and active testimonials for the requested locale.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerReviewsPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/home-customer-reviews:
+    get:
+      tags: [Home]
+      summary: Full customer reviews document (all locales) for admin
+      operationId: getSupersudoHomeCustomerReviews
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = homeCustomerReviews`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerReviewsStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Home]
+      summary: Replace customer reviews document (validated)
+      operationId: putSupersudoHomeCustomerReviews
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerReviewsStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerReviewsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/home/brand-partners:
+    get:
+      tags: [Home]
+      summary: Home brand partners rail (localized metadata, logo URLs, PLP links)
+      operationId: getHomeBrandPartners
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: Section title and brands for the requested locale (`logoUrl` may be null if unset in admin).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrandPartnersPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/home-brand-partners:
+    get:
+      tags: [Home]
+      summary: Full home brand partners document (all locales) for admin
+      operationId: getSupersudoHomeBrandPartners
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = homeBrandPartners`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrandPartnersStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Home]
+      summary: Replace home brand partners document (validated)
+      operationId: putSupersudoHomeBrandPartners
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BrandPartnersStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrandPartnersStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/home/footer:
+    get:
+      tags: [Home]
+      summary: Site footer (locale-resolved contact, social URLs, optional map embed, nav + legal links)
+      operationId: getHomeFooter
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: |
+            Column titles, contact fields, optional HTTPS map iframe URL (allowed hosts only),
+            active navigation links, and active social links with HTTPS profile URLs.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteFooterPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/home-footer:
+    get:
+      tags: [Home]
+      summary: Full site footer document (all locales) for admin
+      operationId: getSupersudoHomeFooter
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = homeSiteFooter`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteFooterStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Home]
+      summary: Replace site footer document (validated)
+      operationId: putSupersudoHomeFooter
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteFooterStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteFooterStorageDocument"
+        "400":
+          description: Validation error (including invalid map embed when enabled).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/reels:
+    get:
+      tags: [Reels]
+      summary: Public vertical feed metadata (approved + active reels)
+      operationId: getReelsFeed
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+      responses:
+        "200":
+          description: |
+            Feed items sorted by `order` (`sortOrder` alias). Includes canonical metadata fields
+            (`url`, `poster`, `order`) and backward-compatible aliases
+            (`videoUrl`, `posterUrl`, `sortOrder`), plus like counters and viewer-specific
+            like state.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsPublicResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/reels/{id}/like:
+    post:
+      tags: [Reels]
+      summary: Like one reel for authenticated user
+      operationId: postReelLike
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Reel item identifier from public feed.
+      responses:
+        "200":
+          description: Like state after mutation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelLikeMutationResponse"
+        "401":
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Reel is not available in public feed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    delete:
+      tags: [Reels]
+      summary: Unlike one reel for authenticated user
+      operationId: deleteReelLike
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Reel item identifier from public feed.
+      responses:
+        "200":
+          description: Like state after mutation.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelLikeMutationResponse"
+        "401":
+          description: Authentication required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Reel is not available in public feed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/reels:
+    get:
+      tags: [Reels]
+      summary: Full reels config document for admin
+      operationId: getSupersudoReels
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stored JSON document (`settings.key = reels`).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsStorageDocument"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Reels]
+      summary: Replace reels document (validated)
+      operationId: putSupersudoReels
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReelsStorageDocument"
+      responses:
+        "200":
+          description: Saved document (echo).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/reels/{id}/moderation:
+    patch:
+      tags: [Reels]
+      summary: Patch moderation status for one reel
+      operationId: patchSupersudoReelModeration
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Reel item identifier from `items[].id`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReelModerationPatch"
+      responses:
+        "200":
+          description: Updated full reels storage document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsStorageDocument"
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Not an admin.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "404":
+          description: Reel id not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/contact:
+    post:
+      tags: [Site]
+      summary: Submit contact form
+      operationId: postContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactFormRequest"
+      responses:
+        "201":
+          description: Message stored in `contact_messages`.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ContactMessageCreated"
+        "400":
+          description: Validation failed, honeypot triggered, or captcha rejected.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "429":
+          description: Too many submissions from this client (rate limit).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/search/instant:
+    get:
+      tags: [Site]
+      summary: Instant global search suggestions (products + categories)
+      operationId: getInstantSearch
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          description: User query string.
+        - name: lang
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [en, hy, ru]
+            default: en
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+          description: Backward-compatible alias for productLimit.
+        - name: productLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 8
+        - name: categoryLimit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 4
+      responses:
+        "200":
+          description: Instant suggestions payload for debounce/autocomplete UI.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstantSearchResponse"
+        "500":
+          description: Server-side search failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/site-content/about:
+    get:
+      tags: [Site]
+      summary: Public About Us content document
+      operationId: getSiteContentAbout
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hy, ru, en]
+          description: Optional locale override. Fallback uses `Accept-Language`, then `hy`.
+      responses:
+        "200":
+          description: Localized About Us payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentAboutResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/site-content/contact:
+    get:
+      tags: [Site]
+      summary: Public Contact Us content document
+      operationId: getSiteContentContact
+      parameters:
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hy, ru, en]
+          description: Optional locale override. Fallback uses `Accept-Language`, then `hy`.
+      responses:
+        "200":
+          description: Localized Contact Us payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentContactResponse"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/site-content/legal/{page}:
+    get:
+      tags: [Site]
+      summary: Public legal page document by key
+      operationId: getSiteContentLegalPage
+      parameters:
+        - name: page
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/SiteLegalPageKey"
+          description: Legal page key (`privacy`, `terms`, `refund`, `delivery-policy`) or compatibility alias (`refund-policy`, `delivery-terms`).
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hy, ru, en]
+          description: Optional locale override. Fallback uses `Accept-Language`, then `hy`.
+      responses:
+        "200":
+          description: Localized legal page payload.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentLegalPageResponse"
+        "404":
+          description: Unsupported legal page key.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/site-content/brands/{slug}:
+    get:
+      tags: [Site]
+      summary: Public brand page copy by brand slug
+      operationId: getSiteContentBrandBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: locale
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [hy, ru, en]
+          description: Optional locale override. Fallback uses `Accept-Language`, then `hy`.
+      responses:
+        "200":
+          description: Localized brand page payload for a published brand.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentBrandPageResponse"
+        "404":
+          description: Brand slug not found or not published.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/site-content/legal:
+    get:
+      tags: [Site]
+      summary: Full legal pages storage document for admin
+      operationId: getSupersudoSiteLegalPages
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Full legal pages document (all locales).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteLegalPagesStorageDocument"
+        "403":
+          description: Admin access required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Site]
+      summary: Replace full legal pages storage document
+      operationId: putSupersudoSiteLegalPages
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteLegalPagesStorageDocument"
+      responses:
+        "200":
+          description: Saved full legal pages document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteLegalPagesStorageDocument"
+        "400":
+          description: Validation failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Admin access required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+  /api/v1/supersudo/site-content:
+    get:
+      tags: [Site]
+      summary: Full site content storage document for admin
+      operationId: getSupersudoSiteContent
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Full site content document (all locales).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentStorageDocument"
+        "403":
+          description: Admin access required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+    put:
+      tags: [Site]
+      summary: Replace full site content storage document
+      operationId: putSupersudoSiteContent
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteContentStorageDocument"
+      responses:
+        "200":
+          description: Saved full site content document.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContentStorageDocument"
+        "400":
+          description: Validation failure.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        "403":
+          description: Admin access required.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Send `Authorization: Bearer <token>` on protected routes.
+        Tokens are returned from `POST /api/v1/auth/login`, `POST /api/v1/auth/register`
+        (when verification is off), and `POST /api/v1/auth/verify` after OTP.
+
+  schemas:
+    ProblemDetails:
+      type: object
+      description: RFC 7807–aligned problem body (JSON; may be served as application/json).
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          example: https://api.shop.am/problems/validation-error
+        title:
+          type: string
+          example: Validation Error
+        status:
+          type: integer
+          format: int32
+          example: 400
+        detail:
+          type: string
+          example: Field 'email' is required
+        instance:
+          type: string
+          format: uri
+          description: Often the request path or a URI identifying this occurrence.
+          example: /api/v1/contact
+
+    HealthOk:
+      type: object
+      required: [status, db, latencyMs]
+      properties:
+        status:
+          type: string
+          example: ok
+        db:
+          type: string
+          example: ok
+        latencyMs:
+          type: integer
+          format: int32
+
+    HealthError:
+      type: object
+      required: [status, db]
+      properties:
+        status:
+          type: string
+          example: error
+        db:
+          type: string
+          example: unavailable
+        detail:
+          type: string
+
+    SiteContentAboutResponse:
+      type: object
+      description: Localized About Us page payload with i18n and SEO metadata.
+      required: [locale, i18n, heroImageUrl, subtitle, title, paragraphs, team, seo]
+      properties:
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        heroImageUrl:
+          type: string
+        subtitle:
+          type: string
+        title:
+          type: string
+        paragraphs:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            type: string
+        team:
+          type: object
+          required: [subtitle, title, description]
+          properties:
+            subtitle:
+              type: string
+            title:
+              type: string
+            description:
+              type: string
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
+
+    SiteContentContactResponse:
+      type: object
+      description: Localized Contact Us payload with contact details, map/social config, and SEO metadata.
+      required:
+        - locale
+        - i18n
+        - phoneDisplay
+        - phoneTel
+        - email
+        - address
+        - workingHours
+        - callToUs
+        - writeToUs
+        - headquarterTitle
+        - socialLinks
+        - mapEmbed
+        - seo
+      properties:
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        phoneDisplay:
+          type: string
+        phoneTel:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+        workingHours:
+          type: object
+          required: [weekdays, saturday]
+          properties:
+            weekdays:
+              type: string
+            saturday:
+              type: string
+        callToUs:
+          type: object
+          required: [title, description]
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+        writeToUs:
+          type: object
+          required: [title, description, emailLabel]
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            emailLabel:
+              type: string
+        headquarterTitle:
+          type: string
+        socialLinks:
+          type: object
+          additionalProperties:
+            type: string
+        mapEmbed:
+          type: object
+          required: [enabled, iframeSrc]
+          properties:
+            enabled:
+              type: boolean
+            iframeSrc:
+              type: string
+              nullable: true
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
+
+    SiteContentBrandPageResponse:
+      type: object
+      description: Localized brand-page payload for a published brand slug, with SEO metadata.
+      required: [locale, i18n, brand, content, seo]
+      properties:
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        brand:
+          type: object
+          required: [id, slug, name, description, logoUrl]
+          properties:
+            id:
+              type: string
+            slug:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            logoUrl:
+              type: string
+              nullable: true
+        content:
+          type: object
+          required: [sectionTitle, descriptionSource, ctaLabel, href]
+          properties:
+            sectionTitle:
+              type: string
+            descriptionSource:
+              type: string
+              enum: [brand_translation, fallback_template]
+            ctaLabel:
+              type: string
+            href:
+              type: string
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
+
+    SiteContentLegalPageResponse:
+      type: object
+      description: Localized legal page payload for privacy/terms/refund/delivery-policy with SEO metadata.
+      required: [page, locale, i18n, title, summary, contentHtml, lastUpdatedIso, seo]
+      properties:
+        page:
+          type: string
+          enum: [privacy, terms, refund, delivery-policy]
+        locale:
+          type: string
+          enum: [hy, ru, en]
+        i18n:
+          $ref: "#/components/schemas/SiteLocaleResolutionWithAvailable"
+        title:
+          type: string
+        summary:
+          type: string
+        contentHtml:
+          type: string
+        lastUpdatedIso:
+          type: string
+          format: date-time
+        seo:
+          $ref: "#/components/schemas/SitePageSeoMetadata"
+
+    SiteContentStorageDocument:
+      type: object
+      additionalProperties: true
+      description: Full admin-managed site content document (about, contact, brand pages).
+
+    SiteLegalPagesStorageDocument:
+      type: object
+      additionalProperties: true
+      description: Full admin-managed legal pages document (privacy, terms, refund, delivery policy).
+
+    SiteLegalPageKey:
+      type: string
+      enum: [privacy, terms, refund, delivery-policy, refund-policy, delivery-terms]
+      description: Supported legal page keys and compatibility aliases.
+
+    SiteLocaleResolutionWithAvailable:
+      type: object
+      required: [requestedLocale, resolvedLocale, fallbackUsed, availableLocales]
+      properties:
+        requestedLocale:
+          type: string
+          nullable: true
+        resolvedLocale:
+          type: string
+          enum: [hy, ru, en]
+        fallbackUsed:
+          type: boolean
+        availableLocales:
+          type: array
+          items:
+            type: string
+            enum: [hy, ru, en]
+
+    SitePageSeoRobots:
+      type: object
+      required: [index, follow]
+      properties:
+        index:
+          type: boolean
+        follow:
+          type: boolean
+
+    SitePageStructuredData:
+      oneOf:
+        - $ref: "#/components/schemas/SitePageStructuredDataAbout"
+        - $ref: "#/components/schemas/SitePageStructuredDataContact"
+        - $ref: "#/components/schemas/SitePageStructuredDataCollection"
+        - $ref: "#/components/schemas/SitePageStructuredDataWebPage"
+      discriminator:
+        propertyName: "@type"
+
+    SitePageStructuredDataAbout:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [AboutPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+
+    SitePageStructuredDataContact:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description, contactPoint]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [ContactPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        contactPoint:
+          type: object
+          required: ["@type", telephone, email, contactType, areaServed]
+          properties:
+            "@type":
+              type: string
+              enum: [ContactPoint]
+            telephone:
+              type: string
+            email:
+              type: string
+              format: email
+            contactType:
+              type: string
+              enum: ["customer support"]
+            areaServed:
+              type: string
+              enum: [AM]
+
+    SitePageStructuredDataCollection:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description, mainEntity]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [CollectionPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        mainEntity:
+          type: object
+          required: ["@type", name]
+          properties:
+            "@type":
+              type: string
+              enum: [Brand]
+            name:
+              type: string
+
+    SitePageStructuredDataWebPage:
+      type: object
+      required: ["@context", "@type", inLanguage, url, name, description, dateModified]
+      properties:
+        "@context":
+          type: string
+          enum: ["https://schema.org"]
+        "@type":
+          type: string
+          enum: [WebPage]
+        inLanguage:
+          type: string
+        url:
+          type: string
+          format: uri
+        name:
+          type: string
+        description:
+          type: string
+        dateModified:
+          type: string
+          format: date-time
+
+    SitePageSeoMetadata:
+      type: object
+      required: [title, description, canonicalPath, canonicalUrl, robots, structuredData]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        canonicalPath:
+          type: string
+        canonicalUrl:
+          type: string
+          format: uri
+        robots:
+          $ref: "#/components/schemas/SitePageSeoRobots"
+        structuredData:
+          $ref: "#/components/schemas/SitePageStructuredData"
+
+    OrderResourceLink:
+      type: object
+      required: [method, href]
+      properties:
+        method:
+          type: string
+          enum: [GET, POST]
+        href:
+          type: string
+          description: Path under the API origin (e.g. `/api/v1/orders/...`).
+
+    CustomerOrderLinks:
+      type: object
+      required: [self, reorder]
+      properties:
+        self:
+          $ref: "#/components/schemas/OrderResourceLink"
+        reorder:
+          $ref: "#/components/schemas/OrderResourceLink"
+
+    OrderListRow:
+      type: object
+      additionalProperties: true
+      required:
+        - id
+        - number
+        - status
+        - paymentStatus
+        - fulfillmentStatus
+        - total
+        - currency
+        - createdAt
+        - itemsCount
+        - links
+      properties:
+        id:
+          type: string
+        number:
+          type: string
+        status:
+          type: string
+        paymentStatus:
+          type: string
+        fulfillmentStatus:
+          type: string
+        total:
+          type: number
+        subtotal:
+          type: number
+        discountAmount:
+          type: number
+        shippingAmount:
+          type: number
+        taxAmount:
+          type: number
+        currency:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        itemsCount:
+          type: integer
+        links:
+          $ref: "#/components/schemas/CustomerOrderLinks"
+
+    OrderListResponse:
+      type: object
+      required: [data, meta]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderListRow"
+        meta:
+          type: object
+          required: [total, page, limit, totalPages]
+          properties:
+            total:
+              type: integer
+            page:
+              type: integer
+            limit:
+              type: integer
+            totalPages:
+              type: integer
+
+    WishlistAddRequest:
+      type: object
+      required: [productId]
+      additionalProperties: false
+      properties:
+        productId:
+          type: string
+          minLength: 1
+
+    WishlistItemRow:
+      type: object
+      required: [productId, title, slug, image, addedAt]
+      properties:
+        productId:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        image:
+          type: string
+          nullable: true
+        addedAt:
+          type: string
+          format: date-time
+
+    WishlistResponse:
+      type: object
+      required: [wishlist]
+      properties:
+        wishlist:
+          type: object
+          required: [id, items]
+          properties:
+            id:
+              type: string
+            items:
+              type: array
+              items:
+                $ref: "#/components/schemas/WishlistItemRow"
+
+    WishlistMergeResponse:
+      type: object
+      required: [mergedItems, guestWishlistFound]
+      properties:
+        mergedItems:
+          type: integer
+          minimum: 0
+        guestWishlistFound:
+          type: boolean
+
+    ContactFormRequest:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name:
+          type: string
+          maxLength: 120
+        email:
+          type: string
+          maxLength: 254
+        subject:
+          type: string
+          maxLength: 200
+        message:
+          type: string
+          maxLength: 5000
+        hp:
+          type: string
+          description: Honeypot field — must be empty (avoid naming `website`; browsers may autofill).
+        turnstileToken:
+          type: string
+          description: Cloudflare Turnstile token; required when `TURNSTILE_SECRET_KEY` is set.
+
+    ContactMessageCreated:
+      type: object
+      required: [id, name, email, subject, message, createdAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    InstantSearchProductResult:
+      type: object
+      required: [id, slug, title, price, href]
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        price:
+          type: number
+        compareAtPrice:
+          type: number
+          nullable: true
+        image:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        href:
+          type: string
+
+    InstantSearchCategoryResult:
+      type: object
+      required: [id, slug, title, fullPath, href]
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        title:
+          type: string
+        fullPath:
+          type: string
+        href:
+          type: string
+
+    InstantSearchSuggestion:
+      type: object
+      required: [id, type, title, href]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [product, category]
+        title:
+          type: string
+        subtitle:
+          type: string
+          nullable: true
+        href:
+          type: string
+
+    InstantSearchResponse:
+      type: object
+      required: [query, locale, results, categories, suggestions, meta]
+      properties:
+        query:
+          type: string
+        locale:
+          type: string
+          enum: [en, hy, ru]
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstantSearchProductResult"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstantSearchCategoryResult"
+        suggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/InstantSearchSuggestion"
+        meta:
+          type: object
+          required: [productLimit, categoryLimit]
+          properties:
+            productLimit:
+              type: integer
+            categoryLimit:
+              type: integer
+
+    WhyChooseUsLocaleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 200
+        hy:
+          type: string
+          maxLength: 200
+        ru:
+          type: string
+          maxLength: 200
+
+    WhyChooseUsIconKey:
+      type: string
+      enum: [warranty, fast_delivery, installment, original]
+
+    WhyChooseUsPublicItem:
+      type: object
+      required: [id, title, body, iconKey, sortOrder]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        iconKey:
+          $ref: "#/components/schemas/WhyChooseUsIconKey"
+        sortOrder:
+          type: integer
+
+    WhyChooseUsPublicResponse:
+      type: object
+      required: [sectionTitle, items]
+      properties:
+        sectionTitle:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/WhyChooseUsPublicItem"
+
+    WhyChooseUsStorageItem:
+      type: object
+      required: [id, title, body, iconKey, active, sortOrder]
+      properties:
+        id:
+          type: string
+        title:
+          $ref: "#/components/schemas/WhyChooseUsLocaleTriple"
+        body:
+          $ref: "#/components/schemas/WhyChooseUsLocaleTriple"
+        iconKey:
+          $ref: "#/components/schemas/WhyChooseUsIconKey"
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    WhyChooseUsStorageDocument:
+      type: object
+      required: [version, sectionTitle, items]
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        sectionTitle:
+          $ref: "#/components/schemas/WhyChooseUsLocaleTriple"
+        items:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/WhyChooseUsStorageItem"
+
+    CustomerReviewsSectionTitleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 200
+        hy:
+          type: string
+          maxLength: 200
+        ru:
+          type: string
+          maxLength: 200
+
+    CustomerReviewsTextTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 2000
+        hy:
+          type: string
+          maxLength: 2000
+        ru:
+          type: string
+          maxLength: 2000
+
+    CustomerReviewsAuthorTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 120
+        hy:
+          type: string
+          maxLength: 120
+        ru:
+          type: string
+          maxLength: 120
+
+    CustomerReviewsPublicItem:
+      type: object
+      required: [id, rating, text, authorName, photoUrls, sortOrder]
+      properties:
+        id:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        text:
+          type: string
+        authorName:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        sortOrder:
+          type: integer
+
+    CustomerReviewsPublicResponse:
+      type: object
+      required: [sectionTitle, items]
+      properties:
+        sectionTitle:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CustomerReviewsPublicItem"
+
+    BrandPartnersPublicBrand:
+      type: object
+      required: [id, slug, name, description, logoUrl, href]
+      properties:
+        id:
+          type: string
+        slug:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        logoUrl:
+          type: string
+          nullable: true
+        href:
+          type: string
+          description: Product listing URL with brand id filter (e.g. `/products?brand=<id>`).
+        logoScale:
+          type: string
+          enum: [default, large]
+
+    BrandPartnersPublicResponse:
+      type: object
+      required: [sectionTitle, brands]
+      properties:
+        sectionTitle:
+          type: string
+        brands:
+          type: array
+          items:
+            $ref: "#/components/schemas/BrandPartnersPublicBrand"
+
+    BrandPartnersStorageEntry:
+      type: object
+      required: [id, brandId, active, sortOrder]
+      properties:
+        id:
+          type: string
+        brandId:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+        logoScale:
+          type: string
+          enum: [default, large]
+
+    BrandPartnersStorageDocument:
+      type: object
+      required: [version, sectionTitle, entries]
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        sectionTitle:
+          $ref: "#/components/schemas/CustomerReviewsSectionTitleTriple"
+        entries:
+          type: array
+          maxItems: 48
+          items:
+            $ref: "#/components/schemas/BrandPartnersStorageEntry"
+
+    CustomerReviewsStorageItem:
+      type: object
+      required: [id, rating, text, authorName, photoUrls, active, sortOrder]
+      properties:
+        id:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        text:
+          $ref: "#/components/schemas/CustomerReviewsTextTriple"
+        authorName:
+          $ref: "#/components/schemas/CustomerReviewsAuthorTriple"
+        photoUrls:
+          type: array
+          maxItems: 6
+          items:
+            type: string
+            maxLength: 2048
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    CustomerReviewsStorageDocument:
+      type: object
+      required: [version, sectionTitle, items]
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        sectionTitle:
+          $ref: "#/components/schemas/CustomerReviewsSectionTitleTriple"
+        items:
+          type: array
+          minItems: 0
+          maxItems: 24
+          items:
+            $ref: "#/components/schemas/CustomerReviewsStorageItem"
+
+    SiteFooterLocaleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 800
+        hy:
+          type: string
+          maxLength: 800
+        ru:
+          type: string
+          maxLength: 800
+
+    SiteFooterSocialPlatform:
+      type: string
+      enum: [instagram, facebook, telegram, whatsapp, viber]
+
+    SiteFooterPublicNavLink:
+      type: object
+      required: [id, label, href, sortOrder]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        href:
+          type: string
+        sortOrder:
+          type: integer
+
+    SiteFooterPublicSocialLink:
+      type: object
+      required: [id, platform, href, sortOrder]
+      properties:
+        id:
+          type: string
+        platform:
+          $ref: "#/components/schemas/SiteFooterSocialPlatform"
+        href:
+          type: string
+          description: HTTPS profile/channel URL
+        sortOrder:
+          type: integer
+
+    SiteFooterPublicResponse:
+      type: object
+      required:
+        - companyColumnTitle
+        - supportColumnTitle
+        - contactsColumnTitle
+        - contact
+        - mapEmbed
+        - companyLinks
+        - supportLinks
+        - legalLinks
+        - socialLinks
+      properties:
+        companyColumnTitle:
+          type: string
+        supportColumnTitle:
+          type: string
+        contactsColumnTitle:
+          type: string
+        contact:
+          type: object
+          required: [address, phoneDisplay, phoneTel, email]
+          properties:
+            address:
+              type: string
+            phoneDisplay:
+              type: string
+            phoneTel:
+              type: string
+            email:
+              type: string
+              format: email
+        mapEmbed:
+          type: object
+          required: [enabled, iframeSrc]
+          properties:
+            enabled:
+              type: boolean
+            iframeSrc:
+              type: string
+              nullable: true
+        companyLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicNavLink"
+        supportLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicNavLink"
+        legalLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicNavLink"
+        socialLinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteFooterPublicSocialLink"
+
+    SiteFooterNavLinkStorage:
+      type: object
+      required: [id, label, href, active, sortOrder]
+      properties:
+        id:
+          type: string
+        label:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        href:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    SiteFooterSocialLinkStorage:
+      type: object
+      required: [id, platform, active, sortOrder]
+      properties:
+        id:
+          type: string
+        platform:
+          $ref: "#/components/schemas/SiteFooterSocialPlatform"
+        href:
+          type: string
+          description: Required when active — HTTPS URL
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+
+    SiteFooterStorageDocument:
+      type: object
+      required:
+        - version
+        - companyColumnTitle
+        - supportColumnTitle
+        - contactsColumnTitle
+        - contact
+        - mapEmbed
+        - companyLinks
+        - supportLinks
+        - legalLinks
+        - socialLinks
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        companyColumnTitle:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        supportColumnTitle:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        contactsColumnTitle:
+          $ref: "#/components/schemas/SiteFooterLocaleTriple"
+        contact:
+          type: object
+          required: [address, phoneDisplay, phoneTel, email]
+          properties:
+            address:
+              $ref: "#/components/schemas/SiteFooterLocaleTriple"
+            phoneDisplay:
+              $ref: "#/components/schemas/SiteFooterLocaleTriple"
+            phoneTel:
+              type: string
+            email:
+              type: string
+              format: email
+        mapEmbed:
+          type: object
+          required: [enabled]
+          properties:
+            enabled:
+              type: boolean
+            iframeSrc:
+              type: string
+        companyLinks:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SiteFooterNavLinkStorage"
+        supportLinks:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SiteFooterNavLinkStorage"
+        legalLinks:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SiteFooterNavLinkStorage"
+        socialLinks:
+          type: array
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/SiteFooterSocialLinkStorage"
+
+    ReelsLocaleTriple:
+      type: object
+      required: [en, hy, ru]
+      properties:
+        en:
+          type: string
+          maxLength: 160
+        hy:
+          type: string
+          maxLength: 160
+        ru:
+          type: string
+          maxLength: 160
+
+    ReelSourceType:
+      type: string
+      enum: [admin_upload, external_url]
+
+    ReelModerationStatus:
+      type: string
+      enum: [pending, approved, rejected]
+
+    ReelModerationState:
+      type: object
+      required: [status, moderatedAt, moderatedBy]
+      properties:
+        status:
+          $ref: "#/components/schemas/ReelModerationStatus"
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
+        moderatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        moderatedBy:
+          type: string
+          nullable: true
+
+    ReelStorageItem:
+      type: object
+      required:
+        [id, title, sourceType, videoUrl, posterUrl, active, sortOrder, moderation]
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        title:
+          $ref: "#/components/schemas/ReelsLocaleTriple"
+        sourceType:
+          $ref: "#/components/schemas/ReelSourceType"
+        videoUrl:
+          type: string
+          maxLength: 2048
+        posterUrl:
+          type: string
+          nullable: true
+          maxLength: 2048
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9999
+        moderation:
+          $ref: "#/components/schemas/ReelModerationState"
+
+    ReelsStorageDocument:
+      type: object
+      required: [version, items]
+      properties:
+        version:
+          type: integer
+          enum: [1]
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/ReelStorageItem"
+
+    ReelPublicItem:
+      type: object
+      required:
+        [id, title, url, poster, order, videoUrl, posterUrl, sortOrder, likesCount, likedByCurrentUser]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+          description: Canonical video URL field for vertical feed clients.
+        poster:
+          type: string
+          nullable: true
+          description: Canonical poster URL field (nullable).
+        order:
+          type: integer
+          minimum: 0
+          maximum: 9999
+          description: Canonical sort field for vertical feed clients.
+        videoUrl:
+          type: string
+          description: Backward-compatible alias for `url`.
+        posterUrl:
+          type: string
+          description: Backward-compatible alias for `poster` with fallback applied.
+        sortOrder:
+          type: integer
+          minimum: 0
+          maximum: 9999
+          description: Backward-compatible alias for `order`.
+        likesCount:
+          type: integer
+          minimum: 0
+          description: Total likes for this reel.
+        likedByCurrentUser:
+          type: boolean
+          description: True when current JWT user has liked this reel.
+
+    ReelsViewerState:
+      type: object
+      required: [likedReelsCount]
+      properties:
+        likedReelsCount:
+          type: integer
+          minimum: 0
+          description: Number of reels liked by current JWT user across visible feed.
+
+    ReelsPublicResponse:
+      type: object
+      required: [generatedAt, viewer, items]
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        viewer:
+          $ref: "#/components/schemas/ReelsViewerState"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReelPublicItem"
+
+    ReelLikeMutationResponse:
+      type: object
+      required: [reelId, likesCount, likedByCurrentUser]
+      properties:
+        reelId:
+          type: string
+        likesCount:
+          type: integer
+          minimum: 0
+        likedByCurrentUser:
+          type: boolean
+
+    ReelModerationPatch:
+      type: object
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/ReelModerationStatus"
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
+
+    LoginRequest:
+      type: object
+      description: |
+        Either `email` or `phone` is required together with `password`.
+      properties:
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      additionalProperties: false
+      anyOf:
+        - required: [email, password]
+        - required: [phone, password]

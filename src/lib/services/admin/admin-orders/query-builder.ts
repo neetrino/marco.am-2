@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { isAdminOrderListStatus } from "@/lib/constants/admin-order-list-status";
 import type { OrderFilters } from "./types";
 
 /**
@@ -7,8 +8,8 @@ import type { OrderFilters } from "./types";
 export function buildOrderWhereClause(filters: OrderFilters): Prisma.OrderWhereInput {
   const andConditions: Prisma.OrderWhereInput[] = [];
 
-  // Apply status filter
-  if (filters.status) {
+  // Apply status filter (whitelist: New / In process / Delivered / Canceled → DB values)
+  if (filters.status && isAdminOrderListStatus(filters.status)) {
     andConditions.push({ status: filters.status });
   }
 

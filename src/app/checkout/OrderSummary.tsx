@@ -3,20 +3,8 @@
 import { Card, Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
 import { formatPriceInCurrency } from '../../lib/currency';
-
-interface Cart {
-  id: string;
-  items: any[];
-  totals: {
-    subtotal: number;
-    discount: number;
-    shipping: number;
-    tax: number;
-    total: number;
-    currency: string;
-  };
-  itemsCount: number;
-}
+import { isCourierShipping, type ShippingMethodId } from '../../lib/constants/shipping-method';
+import type { Cart } from './types';
 
 interface OrderSummaryProps {
   cart: Cart | null;
@@ -27,10 +15,10 @@ interface OrderSummaryProps {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: ShippingMethodId;
   shippingCity: string | undefined;
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
   error: string | null;
   isSubmitting: boolean;
   onPlaceOrder: (e?: React.FormEvent) => void;
@@ -42,8 +30,8 @@ export function OrderSummary({
   currency,
   shippingMethod,
   shippingCity,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
+  checkoutTotalsStale,
   error,
   isSubmitting,
   onPlaceOrder,
@@ -54,6 +42,11 @@ export function OrderSummary({
     <div>
       <Card className="p-6 sticky top-4">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
+        {checkoutTotalsStale ? (
+          <p className="mb-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+            {t('checkout.messages.totalsStaleWarning')}
+          </p>
+        ) : null}
         <div className="space-y-4 mb-6">
           <div className="flex justify-between text-gray-600">
             <span>{t('checkout.summary.subtotal')}</span>
@@ -62,13 +55,14 @@ export function OrderSummary({
           <div className="flex justify-between text-gray-600">
             <span>{t('checkout.summary.shipping')}</span>
             <span>
-              {shippingMethod === 'pickup' 
+              {shippingMethod === 'pickup'
                 ? t('checkout.shipping.freePickup')
-                : loadingDeliveryPrice
-                  ? t('checkout.shipping.loading')
-                  : deliveryPrice !== null
-                    ? formatPriceInCurrency(orderSummary.shippingDisplay, currency) + (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.delivery')})`)
-                    : t('checkout.shipping.enterCity')}
+                : isCourierShipping(shippingMethod) && !shippingCity?.trim()
+                  ? t('checkout.shipping.enterCity')
+                  : loadingCheckoutTotals
+                    ? t('checkout.shipping.loading')
+                    : formatPriceInCurrency(orderSummary.shippingDisplay, currency) +
+                      (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.courier')})`)}
             </span>
           </div>
           <div className="flex justify-between text-gray-600">

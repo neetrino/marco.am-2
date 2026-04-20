@@ -1,17 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 
 import { useTranslation } from '../../lib/i18n-client';
 import {
-  REELS_CIRCLE_SIZE_PX,
   REELS_MOBILE_CIRCLE_SIZE_PX,
   REELS_MOBILE_TILE_BASIS_CSS,
-  REELS_ITEMS,
-  REELS_ITEM_HREF,
   REELS_LABEL_FONT_SIZE_PX,
   REELS_LABEL_LINE_HEIGHT_PX,
   REELS_TITLE_INSET_LEFT_PX,
@@ -45,6 +41,8 @@ import {
 import { HOME_PAGE_SECTION_SHELL_CLASS } from './home-page-section-shell.constants';
 import { useHomeReelsCarousel } from './useHomeReelsCarousel';
 import { useIsMaxMd } from './use-is-max-md';
+import { getReelsItemHref } from '../../lib/reels/reels-url';
+import type { PublicReelItem } from '../../lib/schemas/reels-management.schema';
 
 const montserratReels = Montserrat({
   subsets: ['latin'],
@@ -114,7 +112,11 @@ const REELS_NAV_ICON_CLASS =
 /**
  * REELS: circular category thumbnails in a centered row with arrow scroll.
  */
-export function HomeReelsSection() {
+export type HomeReelsSectionProps = {
+  items: PublicReelItem[];
+};
+
+export function HomeReelsSection({ items }: HomeReelsSectionProps) {
   const { t } = useTranslation();
   const isMaxMd = useIsMaxMd();
   const reelsPageCount = isMaxMd
@@ -211,26 +213,24 @@ export function HomeReelsSection() {
             ['--reels-mobile-tile-basis' as string]: REELS_MOBILE_TILE_BASIS_CSS,
           }}
         >
-          {REELS_ITEMS.map((item) => {
-            const label = t(`home.${item.labelKey}`);
+          {items.map((item, index) => {
+            const label = item.title;
             const twoWordParts = getReelLabelTwoWordParts(label);
             return (
               <Link
-                key={item.labelKey}
-                href={REELS_ITEM_HREF}
+                key={item.id}
+                href={getReelsItemHref(index)}
                 title={label}
                 className="flex max-md:min-w-0 max-md:flex-[0_0_var(--reels-mobile-tile-basis)] shrink-0 snap-start flex-col items-center gap-2.5 text-center md:min-w-[148px]"
               >
                 <div
                   className="relative mx-auto shrink-0 overflow-hidden rounded-full border border-marco-border bg-marco-gray max-md:h-[var(--reels-mobile-circle)] max-md:w-[var(--reels-mobile-circle)] md:mx-0 md:h-32 md:w-32"
                 >
-                  <Image
-                    src={item.imageSrc}
+                  <img
+                    src={item.posterUrl}
                     alt={label}
-                    width={REELS_CIRCLE_SIZE_PX}
-                    height={REELS_CIRCLE_SIZE_PX}
                     className="h-full w-full object-cover object-center"
-                    sizes={`(max-width: 767px) ${REELS_MOBILE_CIRCLE_SIZE_PX}px, ${REELS_CIRCLE_SIZE_PX}px`}
+                    loading="lazy"
                   />
                 </div>
                 <span
@@ -255,6 +255,9 @@ export function HomeReelsSection() {
             );
           })}
         </div>
+        {items.length === 0 ? (
+          <p className="py-4 text-center text-sm text-marco-muted">{t('home.reels_title')}</p>
+        ) : null}
 
         <div
           className="flex flex-row items-center justify-center"

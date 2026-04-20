@@ -1,6 +1,7 @@
 'use client';
 
 import type { FormEvent } from 'react';
+import Link from 'next/link';
 import { Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
 import { ReviewRating } from './ReviewRating';
@@ -11,6 +12,8 @@ interface ReviewFormProps {
   comment: string;
   submitting: boolean;
   editingReviewId: string | null;
+  policyAccepted: boolean;
+  onPolicyChange: (accepted: boolean) => void;
   onRatingChange: (rating: number) => void;
   onHover: (rating: number) => void;
   onCommentChange: (comment: string) => void;
@@ -27,6 +30,8 @@ export function ReviewForm({
   comment,
   submitting,
   editingReviewId,
+  policyAccepted,
+  onPolicyChange,
   onRatingChange,
   onHover,
   onCommentChange,
@@ -34,6 +39,7 @@ export function ReviewForm({
   onCancel,
 }: ReviewFormProps) {
   const { t } = useTranslation();
+  const isNewReview = !editingReviewId;
 
   return (
     <form onSubmit={onSubmit} className="mb-8 p-6 bg-gray-50 rounded-lg">
@@ -70,6 +76,32 @@ export function ReviewForm({
           required
         />
       </div>
+
+      {isNewReview && (
+        <div className="mb-4">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="reviewPolicy"
+              checked={policyAccepted}
+              onChange={(e) => onPolicyChange(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            />
+            <span className="text-sm text-gray-700">
+              {t('common.reviews.policyPrefix')}{' '}
+              <Link
+                href="/terms"
+                className="text-purple-600 underline hover:text-purple-800"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t('common.reviews.policyTermsLink')}
+              </Link>
+              {t('common.reviews.policySuffix')}
+            </span>
+          </label>
+        </div>
+      )}
 
       {/* Form Actions */}
       <div className="flex gap-4">

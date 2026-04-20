@@ -1,7 +1,17 @@
 import type { MouseEvent } from 'react';
-import { WISHLIST_KEY, COMPARE_KEY } from '../types';
 import { t } from '../../../../lib/i18n';
 import type { LanguageCode } from '../../../../lib/language';
+import { getApiOrErrorMessage } from '../../../../lib/api-client';
+import {
+  addWishlistItemClient,
+  removeWishlistItemClient,
+} from '@/lib/wishlist/wishlist-client';
+import {
+  addCompareItemClient,
+  fetchCompareProductIds,
+  removeCompareItemClient,
+} from '@/lib/compare/compare-client';
+import { logger } from '@/lib/utils/logger';
 
 interface UseProductActionsProps {
   productId: string | null;
@@ -22,61 +32,57 @@ export function useProductActions({
   setShowMessage,
   language,
 }: UseProductActionsProps) {
-  const handleAddToWishlist = (e: MouseEvent) => {
+  const handleAddToWishlist = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!productId || typeof window === 'undefined') return;
-    
+
     try {
-      const stored = localStorage.getItem(WISHLIST_KEY);
-      const wishlist: string[] = stored ? JSON.parse(stored) : [];
-      
       if (isInWishlist) {
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist.filter(id => id !== productId)));
+        await removeWishlistItemClient(productId, language);
         setIsInWishlist(false);
         setShowMessage(t(language, 'product.removedFromWishlist'));
       } else {
-        wishlist.push(productId);
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+        await addWishlistItemClient(productId, language);
         setIsInWishlist(true);
         setShowMessage(t(language, 'product.addedToWishlist'));
       }
-      
+
       setTimeout(() => setShowMessage(null), 2000);
-      window.dispatchEvent(new Event('wishlist-updated'));
-    } catch {
-      // Silently fail
+    } catch (error: unknown) {
+      logger.error('Wishlist update failed', { error });
+      setShowMessage(
+        getApiOrErrorMessage(error, t(language, 'common.alerts.invalidProduct'))
+      );
+      setTimeout(() => setShowMessage(null), 3000);
     }
   };
 
-  const handleCompareToggle = (e: MouseEvent) => {
+  const handleCompareToggle = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!productId || typeof window === 'undefined') return;
-    
+
     try {
-      const stored = localStorage.getItem(COMPARE_KEY);
-      const compare: string[] = stored ? JSON.parse(stored) : [];
-      
+      const compare = await fetchCompareProductIds(language);
+
       if (isInCompare) {
-        localStorage.setItem(COMPARE_KEY, JSON.stringify(compare.filter(id => id !== productId)));
+        await removeCompareItemClient(productId, language);
         setIsInCompare(false);
         setShowMessage(t(language, 'product.removedFromCompare'));
       } else {
         if (compare.length >= 4) {
           setShowMessage(t(language, 'product.compareListFull'));
         } else {
-          compare.push(productId);
-          localStorage.setItem(COMPARE_KEY, JSON.stringify(compare));
+          await addCompareItemClient(productId, language);
           setIsInCompare(true);
           setShowMessage(t(language, 'product.addedToCompare'));
         }
       }
-      
+
       setTimeout(() => setShowMessage(null), 2000);
-      window.dispatchEvent(new Event('compare-updated'));
     } catch {
-      // Silently fail
+      /* ignore */
     }
   };
 
@@ -85,7 +91,3 @@ export function useProductActions({
     handleCompareToggle,
   };
 }
-
-
-
-

@@ -7,6 +7,7 @@ export function formatVariantForAdmin(variant: {
   compareAtPrice: number | null;
   stock: number;
   sku: string | null;
+  productClass?: "retail" | "wholesale";
   imageUrl: string | null;
   published: boolean | null;
   attributes: unknown;
@@ -98,6 +99,7 @@ export function formatVariantForAdmin(variant: {
     compareAtPrice: variant.compareAtPrice?.toString() || "",
     stock: variant.stock.toString(),
     sku: variant.sku || "",
+    productClass: variant.productClass || "retail",
     color: color, // First color for backward compatibility
     size: size, // First size for backward compatibility
     imageUrl: variant.imageUrl || "",

@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { logger } from "../../../utils/logger";
 import { cleanImageUrls, separateMainAndVariantImages, smartSplitUrls } from "../../../utils/image-utils";
 import type { UpdateProductData } from "./types";
+import { normalizeProductClass } from "@/lib/constants/product-class";
 
 /**
  * Collect variant images from data or existing variants
@@ -46,6 +47,7 @@ export function buildProductUpdateData(
   existing: { publishedAt: Date | null }
 ): {
   brandId?: string | null;
+  productClass?: "retail" | "wholesale";
   primaryCategoryId?: string | null;
   categoryIds?: string[];
   media?: string[];
@@ -55,6 +57,7 @@ export function buildProductUpdateData(
 } {
   const updateData: {
     brandId?: string | null;
+    productClass?: "retail" | "wholesale";
     primaryCategoryId?: string | null;
     categoryIds?: string[];
     media?: string[];
@@ -64,6 +67,12 @@ export function buildProductUpdateData(
   } = {};
   
   if (data.brandId !== undefined) updateData.brandId = data.brandId || null;
+  if (data.productClass !== undefined) {
+    const normalizedClass = normalizeProductClass(data.productClass);
+    if (normalizedClass) {
+      updateData.productClass = normalizedClass;
+    }
+  }
   if (data.primaryCategoryId !== undefined) updateData.primaryCategoryId = data.primaryCategoryId || null;
   if (data.categoryIds !== undefined) updateData.categoryIds = data.categoryIds || [];
   

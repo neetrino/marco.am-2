@@ -25,8 +25,18 @@ export async function POST(req: NextRequest) {
       );
     }
     const result = await authService.register(parsed.data);
+    if ("needsVerification" in result && result.needsVerification) {
+      return NextResponse.json(
+        {
+          needsVerification: true,
+          channel: result.channel,
+          verificationToken: result.verificationToken,
+        },
+        { status: 201 }
+      );
+    }
     return NextResponse.json(result, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error("Registration error", { error });
     const apiError = toApiError(error, req.url);
     return NextResponse.json(apiError, { status: apiError.status || 500 });

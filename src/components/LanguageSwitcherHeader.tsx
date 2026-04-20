@@ -50,7 +50,7 @@ const getLanguageIcon = (code: LanguageCode): React.ReactNode => {
 };
 
 // Language colors for better visual distinction
-const getLanguageColor = (code: LanguageCode, isActive: boolean): string => {
+export function getLanguageColor(code: LanguageCode, isActive: boolean): string {
   if (isActive) {
     const colors: Record<LanguageCode, string> = {
       en: 'bg-blue-50 border-blue-200',
@@ -61,7 +61,7 @@ const getLanguageColor = (code: LanguageCode, isActive: boolean): string => {
     return colors[code] || 'bg-gray-100 border-gray-200';
   }
   return 'bg-white border-transparent';
-};
+}
 
 /**
  * Language Switcher Component for Header

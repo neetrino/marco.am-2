@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import * as jose from "jose";
+import { getCorsAllowedOrigin } from "@/lib/config/deployment-env";
 
-/** Protect /api/v1/admin/* — require valid JWT (signature + expiry). DB check (blocked/deleted) remains in route. */
+/** Protect /api/v1/supersudo/* — require valid JWT (signature + expiry). DB check (blocked/deleted) remains in route. */
 async function requireAdminAuth(request: NextRequest): Promise<NextResponse | null> {
   const authHeader = request.headers.get("authorization");
   const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
@@ -86,10 +87,7 @@ async function checkAuthRateLimit(request: NextRequest): Promise<NextResponse | 
 
 /** CORS: allowed origin from env. For /api/* requests add CORS headers and handle preflight. */
 function getCorsHeaders(): Record<string, string> {
-  const origin =
-    process.env.CORS_ORIGIN ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "");
+  const origin = getCorsAllowedOrigin();
   return {
     "Access-Control-Allow-Origin": origin || "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
@@ -109,7 +107,7 @@ export async function middleware(request: NextRequest) {
     const response = NextResponse.next();
     Object.entries(corsHeaders).forEach(([key, value]) => response.headers.set(key, value));
     // Run auth/rate-limit for protected paths, then return response with CORS
-    if (pathname.startsWith("/api/v1/admin/")) {
+    if (pathname.startsWith("/api/v1/supersudo/")) {
       const authRes = await requireAdminAuth(request);
       if (authRes) {
         Object.entries(corsHeaders).forEach(([k, v]) => authRes.headers.set(k, v));
@@ -133,7 +131,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/api/v1/admin/:path*",
+    "/api/v1/supersudo/:path*",
     "/api/v1/auth/login",
     "/api/v1/auth/register",
     "/api/v1/:path*",

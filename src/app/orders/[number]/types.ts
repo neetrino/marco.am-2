@@ -1,3 +1,5 @@
+import type { CustomerOrderLinks } from "@/lib/constants/customer-order-api-paths";
+
 export interface OrderItem {
   variantId: string;
   productTitle: string;
@@ -22,6 +24,7 @@ export interface Order {
   status: string;
   paymentStatus: string;
   fulfillmentStatus: string;
+  links?: CustomerOrderLinks;
   items: OrderItem[];
   totals: {
     subtotal: number;

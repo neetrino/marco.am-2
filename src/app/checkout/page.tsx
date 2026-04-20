@@ -24,8 +24,8 @@ export default function CheckoutPage() {
     setShowShippingModal,
     showCardModal,
     setShowCardModal,
-    deliveryPrice,
-    loadingDeliveryPrice,
+    loadingCheckoutTotals,
+    checkoutTotalsStale,
     register,
     handleSubmit,
     errors,
@@ -43,7 +43,7 @@ export default function CheckoutPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="page-shell py-12">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -59,7 +59,7 @@ export default function CheckoutPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="page-shell py-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('checkout.title')}</h1>
         <Card className="p-6 text-center">
           <p className="text-gray-600 mb-4">{t('checkout.errors.cartEmpty')}</p>
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="page-shell py-12">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('checkout.title')}</h1>
 
       <form onSubmit={handlePlaceOrder}>
@@ -99,8 +99,8 @@ export default function CheckoutPage() {
             currency={currency}
             shippingMethod={shippingMethod}
             shippingCity={shippingCity}
-            loadingDeliveryPrice={loadingDeliveryPrice}
-            deliveryPrice={deliveryPrice}
+            loadingCheckoutTotals={loadingCheckoutTotals}
+            checkoutTotalsStale={checkoutTotalsStale}
             error={error}
             isSubmitting={isSubmitting}
             onPlaceOrder={(e) => {
@@ -130,10 +130,8 @@ export default function CheckoutPage() {
         cart={cart}
         orderSummary={orderSummary}
         currency={currency}
-        loadingDeliveryPrice={loadingDeliveryPrice}
-        deliveryPrice={deliveryPrice}
-        logoErrors={logoErrors}
-        setLogoErrors={setLogoErrors}
+        loadingCheckoutTotals={loadingCheckoutTotals}
+        checkoutTotalsStale={checkoutTotalsStale}
         isLoggedIn={isLoggedIn}
         onSubmit={onSubmit}
       />

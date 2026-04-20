@@ -1,23 +1,23 @@
 'use client';
 
 import { Button, Input } from '@shop/ui';
-import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
+import { UseFormRegister, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../../lib/i18n-client';
 import { ContactInformation } from './ContactInformation';
-import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
+import type { CheckoutPaymentMethodId } from '../../../lib/constants/checkout-payment-method';
+import type { ShippingMethodId } from '../../../lib/constants/shipping-method';
 import { CheckoutFormData, Cart } from '../types';
 
 interface ShippingAddressModalProps {
   isOpen: boolean;
   onClose: () => void;
   register: UseFormRegister<CheckoutFormData>;
-  setValue: UseFormSetValue<CheckoutFormData>;
   handleSubmit: UseFormHandleSubmit<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
-  shippingMethod: 'pickup' | 'delivery';
-  paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
+  shippingMethod: ShippingMethodId;
+  paymentMethod: CheckoutPaymentMethodId;
   cart: Cart | null;
   orderSummary: {
     subtotalDisplay: number;
@@ -27,8 +27,8 @@ interface ShippingAddressModalProps {
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   shippingCity?: string;
-  loadingDeliveryPrice: boolean;
-  deliveryPrice: number | null;
+  loadingCheckoutTotals: boolean;
+  checkoutTotalsStale?: boolean;
   onSubmit: (data: CheckoutFormData) => void;
 }
 
@@ -36,7 +36,6 @@ export function ShippingAddressModal({
   isOpen,
   onClose,
   register,
-  setValue,
   handleSubmit,
   errors,
   isSubmitting,
@@ -46,8 +45,8 @@ export function ShippingAddressModal({
   orderSummary,
   currency,
   shippingCity,
-  loadingDeliveryPrice,
-  deliveryPrice,
+  loadingCheckoutTotals,
+  checkoutTotalsStale,
   onSubmit,
 }: ShippingAddressModalProps) {
   const { t } = useTranslation();
@@ -71,14 +70,13 @@ export function ShippingAddressModal({
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div 
-        className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
+      <div
+        className="z-[10000] bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
-        style={{ zIndex: 10000 }}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
-            {shippingMethod === 'delivery' 
+            {shippingMethod === 'courier' 
               ? t('checkout.modals.completeOrder') 
               : t('checkout.modals.confirmOrder')}
           </h2>
@@ -99,7 +97,7 @@ export function ShippingAddressModal({
           isSubmitting={isSubmitting}
         />
 
-        {shippingMethod === 'delivery' ? (
+        {shippingMethod === 'courier' ? (
           <>
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('checkout.shippingAddress')}</h3>
@@ -135,25 +133,10 @@ export function ShippingAddressModal({
               </div>
             )}
 
-            {(paymentMethod === 'arca' || paymentMethod === 'idram') && (
-              <div className="space-y-4 mb-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} (
-                  {paymentMethod === 'idram' ? t('checkout.payment.idram') : t('checkout.payment.arca')})
-                </h3>
-                <CardInputFields
-                  register={register}
-                  setValue={setValue}
-                  errors={errors}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
-            )}
-
-            {paymentMethod === 'cash_on_delivery' && (
+            {paymentMethod === 'cash' && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 mt-6">
                 <p className="text-sm text-green-800">
-                  <strong>{t('checkout.payment.cashOnDelivery')}:</strong> {t('checkout.messages.cashOnDeliveryInfo')}
+                  <strong>{t('checkout.payment.cash')}:</strong> {t('checkout.messages.cashOnDeliveryInfo')}
                 </p>
               </div>
             )}
@@ -164,8 +147,8 @@ export function ShippingAddressModal({
               currency={currency}
               shippingMethod={shippingMethod}
               shippingCity={shippingCity}
-              loadingDeliveryPrice={loadingDeliveryPrice}
-              deliveryPrice={deliveryPrice}
+              loadingCheckoutTotals={loadingCheckoutTotals}
+              checkoutTotalsStale={checkoutTotalsStale}
             />
           </>
         ) : (
@@ -176,25 +159,10 @@ export function ShippingAddressModal({
               </p>
             </div>
 
-            {(paymentMethod === 'arca' || paymentMethod === 'idram') && (
-              <div className="space-y-4 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} (
-                  {paymentMethod === 'idram' ? t('checkout.payment.idram') : t('checkout.payment.arca')})
-                </h3>
-                <CardInputFields
-                  register={register}
-                  setValue={setValue}
-                  errors={errors}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
-            )}
-
-            {paymentMethod === 'cash_on_delivery' && (
+            {paymentMethod === 'cash' && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                 <p className="text-sm text-green-800">
-                  <strong>{t('checkout.payment.cashOnDelivery')}:</strong> {t('checkout.messages.cashOnDeliveryPickup')}
+                  <strong>{t('checkout.payment.cash')}:</strong> {t('checkout.messages.cashOnDeliveryPickup')}
                 </p>
               </div>
             )}
@@ -205,8 +173,8 @@ export function ShippingAddressModal({
               currency={currency}
               shippingMethod={shippingMethod}
               shippingCity={shippingCity}
-              loadingDeliveryPrice={loadingDeliveryPrice}
-              deliveryPrice={deliveryPrice}
+              loadingCheckoutTotals={loadingCheckoutTotals}
+              checkoutTotalsStale={checkoutTotalsStale}
             />
           </div>
         )}

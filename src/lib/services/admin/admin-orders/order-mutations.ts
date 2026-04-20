@@ -1,6 +1,132 @@
 import { db } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
-import type { UpdateOrderData } from "./types";
+import type { UpdateOrderContext, UpdateOrderData } from "./types";
+import { getOrderById } from "./order-operations";
+import {
+  assertValidAdminNotesUpdate,
+  assertValidOrderUpdateData,
+  buildOrderUpdatePatch,
+} from "./order-update-patch";
+import type { Order } from "@prisma/client";
+import {
+  buildCashPaymentPatch,
+  isCashPaymentMethod,
+  resolveCashOrderPaymentStatus,
+} from "./cash-payment-flow";
+
+function rethrowUpdateOrderFailure(orderId: string, error: unknown): never {
+  if (error && typeof error === "object" && "status" in error && "type" in error) {
+    throw error;
+  }
+
+  const errorObj = error as {
+    name?: string;
+    message?: string;
+    code?: string;
+    meta?: { cause?: string };
+    stack?: string;
+  };
+  logger.error("updateOrder error", {
+    orderId,
+    error: {
+      name: errorObj?.name,
+      message: errorObj?.message,
+      code: errorObj?.code,
+      meta: errorObj?.meta,
+      stack: errorObj?.stack?.substring(0, 500),
+    },
+  });
+
+  if (errorObj?.code === "P2025") {
+    throw {
+      status: 404,
+      type: "https://api.shop.am/problems/not-found",
+      title: "Not Found",
+      detail: errorObj?.meta?.cause || "The requested order was not found",
+    };
+  }
+
+  throw {
+    status: 500,
+    type: "https://api.shop.am/problems/internal-error",
+    title: "Database Error",
+    detail: errorObj?.message || "An error occurred while updating the order",
+  };
+}
+
+async function persistOrderUpdate(
+  orderId: string,
+  existing: Pick<Order, "status" | "paymentStatus" | "fulfillmentStatus" | "adminNotes">,
+  payment: { id: string; method: string | null; provider: string | null } | null,
+  data: UpdateOrderData,
+  context?: UpdateOrderContext
+) {
+  const resolvedData: UpdateOrderData = {
+    ...data,
+    paymentStatus: resolveCashOrderPaymentStatus({
+      paymentMethod: payment?.method,
+      paymentProvider: payment?.provider,
+      requestedStatus: data.status,
+      requestedPaymentStatus: data.paymentStatus,
+      existingPaymentStatus: existing.paymentStatus,
+    }),
+  };
+
+  assertValidOrderUpdateData(resolvedData);
+  assertValidAdminNotesUpdate(resolvedData);
+
+  const patch = buildOrderUpdatePatch(
+    {
+      status: existing.status,
+      paymentStatus: existing.paymentStatus,
+      fulfillmentStatus: existing.fulfillmentStatus,
+      adminNotes: existing.adminNotes,
+    },
+    resolvedData
+  );
+
+  if (!patch) {
+    return getOrderById(orderId);
+  }
+
+  const { updateData, changes } = patch;
+  const updatedFieldKeys = Object.keys(updateData);
+
+  await db.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id: orderId },
+      data: updateData,
+    });
+
+    if (
+      payment &&
+      isCashPaymentMethod(payment.method ?? payment.provider) &&
+      typeof updateData.paymentStatus === "string"
+    ) {
+      const cashPaymentPatch = buildCashPaymentPatch(updateData.paymentStatus);
+      if (cashPaymentPatch) {
+        await tx.payment.update({
+          where: { id: payment.id },
+          data: cashPaymentPatch,
+        });
+      }
+    }
+
+    await tx.orderEvent.create({
+      data: {
+        orderId,
+        type: "order_updated",
+        userId: context?.actorUserId ?? undefined,
+        data: {
+          changes,
+          updatedFields: updatedFieldKeys,
+        },
+      },
+    });
+  });
+
+  return getOrderById(orderId);
+}
 
 /**
  * Delete order
@@ -124,13 +250,27 @@ export async function deleteOrder(orderId: string) {
 }
 
 /**
- * Update order
+ * Update order — persists only changed fields; writes `order_events` with actor and change log.
  */
-export async function updateOrder(orderId: string, data: UpdateOrderData) {
+export async function updateOrder(
+  orderId: string,
+  data: UpdateOrderData,
+  context?: UpdateOrderContext
+) {
   try {
-    // Check if order exists
     const existing = await db.order.findUnique({
       where: { id: orderId },
+      include: {
+        payments: {
+          select: {
+            id: true,
+            method: true,
+            provider: true,
+          },
+          orderBy: { createdAt: "asc" },
+          take: 1,
+        },
+      },
     });
 
     if (!existing) {
@@ -142,123 +282,15 @@ export async function updateOrder(orderId: string, data: UpdateOrderData) {
       };
     }
 
-    // Validate status values
-    const validStatuses = ['pending', 'processing', 'completed', 'cancelled'];
-    const validPaymentStatuses = ['pending', 'paid', 'failed', 'refunded'];
-    const validFulfillmentStatuses = ['unfulfilled', 'fulfilled', 'shipped', 'delivered'];
-
-    if (data.status !== undefined && !validStatuses.includes(data.status)) {
-      throw {
-        status: 400,
-        type: "https://api.shop.am/problems/validation-error",
-        title: "Validation Error",
-        detail: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
-      };
-    }
-
-    if (data.paymentStatus !== undefined && !validPaymentStatuses.includes(data.paymentStatus)) {
-      throw {
-        status: 400,
-        type: "https://api.shop.am/problems/validation-error",
-        title: "Validation Error",
-        detail: `Invalid paymentStatus. Must be one of: ${validPaymentStatuses.join(', ')}`,
-      };
-    }
-
-    if (data.fulfillmentStatus !== undefined && !validFulfillmentStatuses.includes(data.fulfillmentStatus)) {
-      throw {
-        status: 400,
-        type: "https://api.shop.am/problems/validation-error",
-        title: "Validation Error",
-        detail: `Invalid fulfillmentStatus. Must be one of: ${validFulfillmentStatuses.join(', ')}`,
-      };
-    }
-
-    // Prepare update data
-    const updateData: {
-      status?: string;
-      paymentStatus?: string;
-      fulfillmentStatus?: string;
-      fulfilledAt?: Date;
-      cancelledAt?: Date;
-      paidAt?: Date;
-    } = {};
-    
-    if (data.status !== undefined) updateData.status = data.status;
-    if (data.paymentStatus !== undefined) updateData.paymentStatus = data.paymentStatus;
-    if (data.fulfillmentStatus !== undefined) updateData.fulfillmentStatus = data.fulfillmentStatus;
-
-    // Update timestamps based on status changes
-    if (data.status === 'completed' && existing.status !== 'completed') {
-      updateData.fulfilledAt = new Date();
-    }
-    if (data.status === 'cancelled' && existing.status !== 'cancelled') {
-      updateData.cancelledAt = new Date();
-    }
-    if (data.paymentStatus === 'paid' && existing.paymentStatus !== 'paid') {
-      updateData.paidAt = new Date();
-    }
-
-    const order = await db.order.update({
-      where: { id: orderId },
-      data: updateData,
-      include: {
-        items: true,
-        payments: true,
-      },
-    });
-
-    // Create order event
-    await db.orderEvent.create({
-      data: {
-        orderId: order.id,
-        type: 'order_updated',
-        data: {
-          updatedFields: Object.keys(updateData),
-          previousStatus: existing.status,
-          newStatus: data.status || existing.status,
-        },
-      },
-    });
-
-    return order;
-  } catch (error: unknown) {
-    // If it's already our custom error, re-throw it
-    if (error && typeof error === 'object' && 'status' in error && 'type' in error) {
-      throw error;
-    }
-
-    // Log Prisma/database errors
-    const errorObj = error as { name?: string; message?: string; code?: string; meta?: { cause?: string }; stack?: string };
-    logger.error("updateOrder error", {
+    return await persistOrderUpdate(
       orderId,
-      error: {
-        name: errorObj?.name,
-        message: errorObj?.message,
-        code: errorObj?.code,
-        meta: errorObj?.meta,
-        stack: errorObj?.stack?.substring(0, 500),
-      },
-    });
-
-    // Handle specific Prisma errors
-    if (errorObj?.code === 'P2025') {
-      // Record not found
-      throw {
-        status: 404,
-        type: "https://api.shop.am/problems/not-found",
-        title: "Not Found",
-        detail: errorObj?.meta?.cause || "The requested order was not found",
-      };
-    }
-
-    // Generic database error
-    throw {
-      status: 500,
-      type: "https://api.shop.am/problems/internal-error",
-      title: "Database Error",
-      detail: errorObj?.message || "An error occurred while updating the order",
-    };
+      existing,
+      existing.payments[0] ?? null,
+      data,
+      context
+    );
+  } catch (error: unknown) {
+    rethrowUpdateOrderFailure(orderId, error);
   }
 }
 
