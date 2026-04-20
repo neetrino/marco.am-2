@@ -120,7 +120,7 @@ export function isHeaderRow2TabletLike(
 
 export function getHeaderFigmaRow2LeftInnerGapClass(tabletLike: boolean): string {
   return tabletLike
-    ? 'gap-y-[22px] gap-x-[22px] sm:gap-y-0 md:gap-x-3'
+    ? 'gap-y-[22px] gap-x-[22px] sm:gap-y-0'
     : 'gap-y-[22px] gap-x-[22px] sm:gap-y-0 min-[1367px]:gap-x-[22px]';
 }
 
@@ -166,7 +166,7 @@ export function getHeaderSearchSubmitClass(tabletLike: boolean): string {
 export function getHeaderCategoryButtonClass(tabletLike: boolean): string {
   const base = `gap-1 px-3 py-2 text-xs font-normal transition-[opacity,filter] hover:opacity-95 active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${HEADER_FIGMA_PILL_RADIUS_CLASS} md:h-10 md:shrink-0 md:py-0 md:text-xs md:font-medium`;
   return tabletLike
-    ? `${base} md:w-[140px] md:max-w-[140px] md:px-2.5 md:gap-1`
+    ? `${base} md:w-[140px] md:max-w-[140px] md:pl-2.5 md:pr-[18px] md:gap-1`
     : `${base} min-[1367px]:w-[184px] min-[1367px]:max-w-[184px] min-[1367px]:px-4 min-[1367px]:gap-1.5`;
 }
 

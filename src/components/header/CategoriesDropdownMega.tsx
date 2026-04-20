@@ -37,8 +37,8 @@ export function CategoriesDropdownMega({
   const preview = resolveCategoryNavPresentation(selected.slug, selected.title, lang);
 
   return (
-    <div className="flex max-h-[min(85vh,800px)] w-full min-w-0 flex-col divide-y divide-marco-border overflow-hidden rounded-[13px] bg-marco-gray shadow-2xl md:flex-row md:divide-x md:divide-y-0">
-      <div className="flex min-h-0 w-full shrink-0 flex-col gap-[16px] overflow-y-auto py-6 pl-4 pr-2 md:w-[320px] md:min-w-[320px] md:max-w-[320px] md:py-[29px] md:pl-[25px] md:pr-px">
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col divide-y divide-marco-border overflow-hidden rounded-[13px] bg-marco-gray shadow-2xl md:flex-row md:divide-x md:divide-y-0">
+      <div className="flex min-h-0 w-full shrink-0 flex-col gap-[16px] overflow-y-auto rounded-t-[13px] bg-marco-gray py-6 pl-4 pr-2 md:h-full md:w-[320px] md:min-w-[320px] md:max-w-[320px] md:rounded-l-[13px] md:rounded-r-[13px] md:rounded-t-none md:py-[29px] md:pl-[25px] md:pr-[25px]">
         {categories.map((category) => {
           const isSelected = category.slug === selectedSlug;
           const row = resolveCategoryNavPresentation(category.slug, category.title, lang);
@@ -77,7 +77,7 @@ export function CategoriesDropdownMega({
         })}
       </div>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col self-stretch overflow-y-auto bg-white px-5 pb-5 pt-6 md:pl-6 md:pr-5 md:pt-6">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col self-stretch overflow-hidden rounded-b-[13px] bg-white px-5 pb-5 pt-6 md:rounded-b-none md:rounded-r-[13px] md:pl-6 md:pr-5 md:pt-6">
         <CategoryDropdownPromoBanner
           badge={preview.promo.badge}
           headline={preview.promo.headline}
@@ -87,13 +87,13 @@ export function CategoriesDropdownMega({
           ctaLabel={t('common.buttons.shopNow')}
         />
         {selected.children.length > 0 ? (
-          <div className="mt-6 border-t border-marco-border pt-5">
+          <div className="mt-6 flex min-h-0 min-w-0 flex-1 flex-col border-t border-marco-border pt-5">
             <p
-              className={`${headerCategoryNavFont.className} mb-3 text-xs font-semibold uppercase tracking-wide text-marco-black/70`}
+              className={`${headerCategoryNavFont.className} mb-3 shrink-0 text-xs font-semibold uppercase tracking-wide text-marco-black/70`}
             >
               {t('common.navigation.categoriesMegaMenu.subcategories')}
             </p>
-            <ul className="max-h-[min(36vh,320px)] space-y-2 overflow-y-auto pr-1">
+            <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
               {selected.children.map((child) => (
                 <li key={child.id}>
                   <Link

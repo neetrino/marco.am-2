@@ -58,7 +58,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
   } = data;
 
   const categoriesTriggerRef = useRef<HTMLButtonElement>(null);
-  /** Align categories dropdown right edge with the header content column (`.marco-header-container`). */
+  /** Align categories dropdown right edge with the header *inner* content (same as search row), not the container border box. */
   const headerRowContainerRef = useRef<HTMLDivElement>(null);
   const [categoriesDropdownLayout, setCategoriesDropdownLayout] = useState<{
     bridge: CSSProperties;
@@ -71,7 +71,8 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
       return;
     }
 
-    const gapPx = 8;
+    /** Space between categories button and mega menu (bridge keeps hover path continuous). */
+    const gapPx = 14;
 
     const updateLayout = () => {
       const trigger = categoriesTriggerRef.current;
@@ -81,8 +82,13 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
       }
       const r = trigger.getBoundingClientRect();
       const cr = container?.getBoundingClientRect();
-      const rightEdge = cr ? cr.right : window.innerWidth - 16;
+      const paddingRight = container
+        ? parseFloat(getComputedStyle(container).paddingRight) || 0
+        : 0;
+      const rightEdge = cr ? cr.right - paddingRight : window.innerWidth - 16;
       const panelWidth = Math.max(280, Math.min(rightEdge, window.innerWidth - 8) - r.left);
+      const panelTop = r.bottom + gapPx;
+      const panelHeight = Math.max(240, Math.floor(window.innerHeight - panelTop));
       setCategoriesDropdownLayout({
         bridge: {
           position: 'fixed',
@@ -94,9 +100,11 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
         },
         panel: {
           position: 'fixed',
-          top: r.bottom + gapPx,
+          top: panelTop,
           left: r.left,
           width: panelWidth,
+          height: panelHeight,
+          maxHeight: panelHeight,
           zIndex: 70,
         },
       });
@@ -164,9 +172,13 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                     className="pointer-events-auto"
                     style={categoriesDropdownLayout.bridge}
                   />
-                  <div data-marco-categories-dropdown style={categoriesDropdownLayout.panel}>
+                  <div
+                    data-marco-categories-dropdown
+                    className="flex min-h-0 flex-col"
+                    style={categoriesDropdownLayout.panel}
+                  >
                     {loadingCategories ? (
-                      <div className="rounded-[13px] bg-marco-gray px-4 py-3 text-sm text-[#5d7285] shadow-2xl">
+                      <div className="h-full min-h-[200px] rounded-[13px] bg-marco-gray px-4 py-3 text-sm text-[#5d7285] shadow-2xl">
                         {t('common.messages.loading')}
                       </div>
                     ) : (
