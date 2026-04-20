@@ -111,16 +111,16 @@ export function ProductInfoAndActions({
     <div className="flex flex-col h-full">
       <div className="flex-1">
         {product.brand && <p className="text-sm text-gray-500 mb-2">{product.brand.name}</p>}
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-marco-black mb-4">
           {getProductText(language, product.id, 'title') || product.title}
         </h1>
         <div className="mb-6">
           <div className="flex flex-col gap-1">
             {/* Discounted price with discount percentage */}
             <div className="flex items-center gap-2">
-              <p className="text-3xl font-bold text-gray-900">{formatPrice(price, currency as CurrencyCode)}</p>
+              <p className="text-3xl font-bold text-marco-black">{formatPrice(price, currency as CurrencyCode)}</p>
               {discountPercent && discountPercent > 0 && (
-                <span className="text-lg font-semibold text-blue-600">
+                <span className="text-lg font-semibold text-marco-black">
                   -{discountPercent}%
                 </span>
               )}
@@ -166,8 +166,8 @@ export function ProductInfoAndActions({
         </div>
 
         {/* Rating Section */}
-        <div className="mt-8 p-4 bg-white border border-gray-200 rounded-2xl space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-gray-200">
+        <div className="mt-8 p-4 bg-white rounded-2xl space-y-4">
+          <div className="flex items-center gap-2 pb-3">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -185,13 +185,13 @@ export function ProductInfoAndActions({
                   </svg>
                 ))}
               </div>
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-marco-black">
                 {averageRating > 0 ? averageRating.toFixed(1) : '0.0'}
               </span>
             </div>
             <span 
               onClick={onScrollToReviews}
-              className="text-sm text-gray-600 cursor-pointer hover:text-gray-900 hover:underline transition-colors"
+              className="text-sm text-gray-600 cursor-pointer hover:text-marco-black hover:underline transition-colors"
             >
               ({reviewsCount} {reviewsCount === 1 ? t(language, 'common.reviews.review') : t(language, 'common.reviews.reviews')})
             </span>
@@ -223,7 +223,7 @@ export function ProductInfoAndActions({
             </p>
           </div>
         )}
-        <div className="flex translate-y-1.5 flex-col gap-3 border-t pb-2 pt-4">
+        <div className="flex -translate-y-0.5 flex-col gap-3 border-t pb-2 pt-7">
           <div className="flex w-full min-w-0 items-center justify-between gap-3">
             <button
               type="button"
@@ -250,7 +250,7 @@ export function ProductInfoAndActions({
                 }}
                 aria-hidden
               >
-                <ArrowUpRight className="size-3" strokeWidth={2.5} />
+                <ArrowUpRight className="size-3.5" strokeWidth={2.5} />
               </span>
             </button>
             <div className="flex shrink-0 items-center overflow-hidden rounded-xl border bg-gray-50">
@@ -291,13 +291,13 @@ export function ProductInfoAndActions({
             <div className="flex -translate-y-[8px] items-center justify-end gap-3">
               <button
                 onClick={onCompareToggle}
-                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-marco-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
               >
                 <CompareIcon isActive={isInCompare} />
               </button>
               <button
                 onClick={onAddToWishlist}
-                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
+                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-marco-black bg-gray-50' : 'border-gray-200'}`}
               >
                 <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
               </button>
@@ -305,7 +305,7 @@ export function ProductInfoAndActions({
           </div>
         </div>
       </div>
-      {showMessage && <div className="mt-4 p-4 bg-gray-900 text-white rounded-md shadow-lg">{showMessage}</div>}
+      {showMessage && <div className="mt-4 p-4 bg-marco-black text-white rounded-md shadow-lg">{showMessage}</div>}
     </div>
   );
 }
