@@ -32,7 +32,8 @@ type HeaderRow2Props = {
 };
 
 export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }: HeaderRow2Props) {
-  const { headerMobileLike, row2TabletLike } = layout;
+  const { headerMobileLike, row2DesktopLike, row2TabletLike } = layout;
+  const useMobileRow2 = headerMobileLike && !row2DesktopLike;
   const {
     t,
     router,
@@ -121,19 +122,19 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
 
   return (
     <div
-      className={`w-full border-b border-marco-border bg-white max-md:border-b-0 ${headerMobileLike ? 'border-b-0' : ''}`}
+      className={`w-full border-b border-marco-border bg-white max-md:border-b-0 ${useMobileRow2 ? 'border-b-0' : ''}`}
     >
       <div ref={headerRowContainerRef} className={HEADER_CONTAINER_CLASS}>
         <div
           className={
-            headerMobileLike
+            useMobileRow2
               ? 'flex w-full min-w-0 flex-col flex-wrap gap-y-0 py-2'
               : `flex w-full min-w-0 flex-col flex-wrap gap-y-1.5 max-md:gap-y-0 py-2 md:flex-row md:flex-nowrap md:items-center md:gap-y-0 ${getHeaderFigmaRow2MainGapClass(row2TabletLike)}`
           }
         >
           <div
             className={
-              headerMobileLike
+              useMobileRow2
                 ? 'flex min-w-0 w-full flex-1 flex-col min-h-0 gap-y-0'
                 : `flex min-w-0 w-full flex-1 flex-col sm:flex-row sm:items-center ${getHeaderFigmaRow2LeftInnerGapClass(row2TabletLike)} max-md:min-h-0 max-md:gap-y-0`
             }
@@ -141,7 +142,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
             <div
               ref={productsMenuRef}
               className={
-                headerMobileLike
+                useMobileRow2
                   ? 'relative hidden w-full shrink-0'
                   : 'relative hidden w-full shrink-0 sm:w-auto md:block'
               }
@@ -150,14 +151,19 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                 ref={categoriesTriggerRef}
                 type="button"
                 onClick={() => setShowProductsMenu((open) => !open)}
-                className={`flex w-full items-center bg-marco-black text-white ${getHeaderCategoryButtonClass(row2TabletLike)} [&_svg]:text-white`}
+                className={`flex w-full items-center bg-marco-black text-white ${getHeaderCategoryButtonClass(
+                  row2TabletLike,
+                  row2DesktopLike,
+                )} [&_svg]:text-white`}
                 aria-expanded={showProductsMenu}
                 aria-haspopup="true"
               >
                 <span
                   className={
                     row2TabletLike
-                      ? 'min-w-0 flex-1 text-center whitespace-nowrap md:truncate md:pl-2 md:text-left md:text-[11px]'
+                      ? `min-w-0 flex-1 text-center whitespace-nowrap md:truncate md:text-left md:text-[11px] ${
+                          row2DesktopLike ? 'md:pl-[18px]' : 'md:pl-2'
+                        }`
                       : 'min-w-0 flex-1 text-center whitespace-nowrap'
                   }
                 >
@@ -244,7 +250,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                 onClose={() => setSearchDropdownOpen(false)}
                 onSeeAllClick={() => undefined}
                 className={
-                  headerMobileLike
+                  useMobileRow2
                     ? 'fixed left-3 right-3 top-[4.5rem] z-[70] mt-0'
                     : 'max-md:fixed max-md:left-3 max-md:right-3 max-md:top-[4.5rem] max-md:mt-0 max-md:z-[70]'
                 }
@@ -255,7 +261,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
           <HeaderRow2RightToolbar
             data={data}
             compactPrimaryNav={compactPrimaryNav}
-            headerMobileLike={headerMobileLike}
+            headerMobileLike={useMobileRow2}
             initialLanguage={initialLanguage}
           />
         </div>

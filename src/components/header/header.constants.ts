@@ -163,8 +163,11 @@ export function getHeaderSearchSubmitClass(tabletLike: boolean): string {
   return `flex items-center justify-center self-center ${HEADER_SEARCH_SUBMIT_HEIGHT_CLASS} shrink-0 bg-marco-yellow text-xs font-semibold leading-normal text-marco-black transition-[filter] hover:brightness-95 active:brightness-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marco-black/15 ${textShrink} ${radius}`.trim();
 }
 
-export function getHeaderCategoryButtonClass(tabletLike: boolean): string {
+export function getHeaderCategoryButtonClass(tabletLike: boolean, ipadDesktopRow2Like = false): string {
   const base = `gap-1 px-3 py-2 text-xs font-normal transition-[opacity,filter] hover:opacity-95 active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 ${HEADER_FIGMA_PILL_RADIUS_CLASS} md:h-10 md:shrink-0 md:py-0 md:text-xs md:font-medium`;
+  if (tabletLike && ipadDesktopRow2Like) {
+    return `${base} md:w-[172px] md:max-w-[172px] md:pl-2.5 md:pr-[18px] md:gap-1`;
+  }
   return tabletLike
     ? `${base} md:w-[140px] md:max-w-[140px] md:pl-2.5 md:pr-[18px] md:gap-1`
     : `${base} min-[1367px]:w-[184px] min-[1367px]:max-w-[184px] min-[1367px]:px-4 min-[1367px]:gap-1.5`;

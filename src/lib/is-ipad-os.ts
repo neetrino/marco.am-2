@@ -59,6 +59,21 @@ export function getUseMobileHeaderChrome(): boolean {
   return getLikelyTabletTouchWithoutDesktopPointer();
 }
 
+/** iPad Air / Pro logical viewport in CSS pixels (portrait/landscape). */
+export function getIsIpadDesktopRow2Viewport(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  const minEdge = Math.min(window.innerWidth, window.innerHeight);
+  const maxEdge = Math.max(window.innerWidth, window.innerHeight);
+  // Pro 12.9" => 1024x1366, Air 10.9" => 820x1180, Air/Pro 11" => 834x1194
+  return (
+    (minEdge === 1024 && maxEdge === 1366) ||
+    (minEdge === 820 && maxEdge === 1180) ||
+    (minEdge === 834 && maxEdge === 1194)
+  );
+}
+
 /**
  * Large touch viewport typical of iPad when `getIsIpadOs` is false (embedded browser, odd UA).
  */
@@ -68,15 +83,22 @@ function getLikelyTabletTouchWithoutDesktopPointer(): boolean {
   }
 
   const w = window.innerWidth;
+  if (getIsIpadDesktopRow2Viewport()) {
+    return true;
+  }
+
   if (w < 744 || w > 1366) {
     return false;
   }
 
-  if ((navigator.maxTouchPoints ?? 0) < 5) {
-    return false;
-  }
+  const coarsePointer =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(pointer: coarse)').matches;
+  const touchPoints = navigator.maxTouchPoints ?? 0;
 
-  if (!('ontouchstart' in window)) {
+  // iPad Pro Safari/embedded webviews can report odd touch capabilities;
+  // coarse pointer is a reliable signal for tablet-like touch chrome.
+  if (!coarsePointer && touchPoints < 1) {
     return false;
   }
 

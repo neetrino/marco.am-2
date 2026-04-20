@@ -1,7 +1,7 @@
 'use client';
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { getUseMobileHeaderChrome } from '../../lib/is-ipad-os';
+import { getIsIpadDesktopRow2Viewport, getUseMobileHeaderChrome } from '../../lib/is-ipad-os';
 import { HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX, isHeaderRow2TabletLike } from './header.constants';
 
 /**
@@ -14,6 +14,9 @@ export function useHeaderLayoutMetrics() {
 
   const [mobileHeaderChrome, setMobileHeaderChrome] = useState(() =>
     typeof window !== 'undefined' ? getUseMobileHeaderChrome() : false
+  );
+  const [ipadDesktopRow2Viewport, setIpadDesktopRow2Viewport] = useState(() =>
+    typeof window !== 'undefined' ? getIsIpadDesktopRow2Viewport() : false
   );
 
   const [compactPrimaryNav, setCompactPrimaryNav] = useState(() => {
@@ -30,18 +33,23 @@ export function useHeaderLayoutMetrics() {
   const desktopTopRowMeasureRef = useRef<HTMLDivElement | null>(null);
 
   const headerMobileLike = mobileHeaderChrome;
+  const row2DesktopLike = headerMobileLike && ipadDesktopRow2Viewport;
 
   const row2TabletLike = useMemo(() => {
+    if (row2DesktopLike) {
+      return true;
+    }
     if (headerMobileLike) {
       return false;
     }
     return isHeaderRow2TabletLike(viewportWidth, false);
-  }, [headerMobileLike, viewportWidth]);
+  }, [headerMobileLike, row2DesktopLike, viewportWidth]);
 
   useLayoutEffect(() => {
     const syncViewportAndChrome = () => {
       setViewportWidth(window.innerWidth);
       setMobileHeaderChrome(getUseMobileHeaderChrome());
+      setIpadDesktopRow2Viewport(getIsIpadDesktopRow2Viewport());
     };
 
     syncViewportAndChrome();
@@ -95,6 +103,7 @@ export function useHeaderLayoutMetrics() {
     desktopTopRowInnerRef,
     desktopTopRowMeasureRef,
     headerMobileLike,
+    row2DesktopLike,
     row2TabletLike,
   };
 }

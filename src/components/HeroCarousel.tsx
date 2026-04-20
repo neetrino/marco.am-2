@@ -6,9 +6,10 @@ import { HomePromoMobileHeroSlateCta } from './home/HomePromoMobileHeroSlateCta'
 import { HomePromoMobileHeroSlateLabel } from './home/HomePromoMobileHeroSlateLabel';
 import { HomePromoMobileHeroSlatePanel } from './home/HomePromoMobileHeroSlatePanel';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
+import { HOME_PAGE_SECTION_SHELL_CLASS } from './home/home-page-section-shell.constants';
 
-/** Hero shell: explicit equal desktop gutters (29px each side). */
-const HERO_PAGE_CONTAINER_CLASS = 'pt-3 sm:pt-7 lg:pt-5 md:px-[29px]';
+/** Hero shell follows the same responsive width rhythm as the whole home page. */
+const HERO_PAGE_CONTAINER_CLASS = `${HOME_PAGE_SECTION_SHELL_CLASS} pt-3 sm:pt-7 lg:pt-5`;
 
 /** Desktop hero tiles from Figma (1023:2720, 1023:2721, 1023:2719). */
 const HERO_DESKTOP_LEFT_TOP_BG = 'https://www.figma.com/api/mcp/asset/3791ef5c-cb75-4fdf-b91c-867dfea32623';
