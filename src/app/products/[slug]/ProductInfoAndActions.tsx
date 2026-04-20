@@ -107,6 +107,17 @@ export function ProductInfoAndActions({
   getOptionValue,
   getRequiredAttributesMessage,
 }: ProductInfoAndActionsProps) {
+  const rawDescription = getProductText(language, product.id, 'longDescription') || product.description || '';
+  const sanitizedDescription = sanitizeHtml(rawDescription);
+  const hasDescription = sanitizedDescription
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .trim().length > 0;
+  const hasAttributeSelectors =
+    attributeGroups.size > 0 ||
+    colorGroups.length > 0 ||
+    (!product?.productAttributes && sizeGroups.length > 0);
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1">
@@ -128,40 +139,47 @@ export function ProductInfoAndActions({
             )}
           </div>
         </div>
-        <div className="text-gray-600 mb-8 prose prose-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || '') }} />
+        {hasDescription && (
+          <div
+            className="text-gray-600 mb-8 prose prose-sm"
+            dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+          />
+        )}
 
         {/* Attributes Section */}
-        <div className="mb-8">
-          <ProductAttributesSelector
-            product={product}
-            attributeGroups={attributeGroups}
-            selectedColor={selectedColor}
-            selectedSize={selectedSize}
-            selectedAttributeValues={selectedAttributeValues}
-            unavailableAttributes={unavailableAttributes}
-            colorGroups={colorGroups}
-            sizeGroups={sizeGroups}
-            language={language}
-            quantity={quantity}
-            maxQuantity={maxQuantity}
-            isOutOfStock={isOutOfStock}
-            isVariationRequired={isVariationRequired}
-            hasUnavailableAttributes={hasUnavailableAttributes}
-            canAddToCart={canAddToCart}
-            isAddingToCart={isAddingToCart}
-            showMessage={showMessage}
-            onColorSelect={onColorSelect}
-            onSizeSelect={onSizeSelect}
-            onAttributeValueSelect={onAttributeValueSelect}
-            onQuantityAdjust={onQuantityAdjust}
-            onAddToCart={onAddToCart}
-            getOptionValue={getOptionValue}
-            getRequiredAttributesMessage={getRequiredAttributesMessage}
-          />
-        </div>
+        {hasAttributeSelectors && (
+          <div className="mb-8">
+            <ProductAttributesSelector
+              product={product}
+              attributeGroups={attributeGroups}
+              selectedColor={selectedColor}
+              selectedSize={selectedSize}
+              selectedAttributeValues={selectedAttributeValues}
+              unavailableAttributes={unavailableAttributes}
+              colorGroups={colorGroups}
+              sizeGroups={sizeGroups}
+              language={language}
+              quantity={quantity}
+              maxQuantity={maxQuantity}
+              isOutOfStock={isOutOfStock}
+              isVariationRequired={isVariationRequired}
+              hasUnavailableAttributes={hasUnavailableAttributes}
+              canAddToCart={canAddToCart}
+              isAddingToCart={isAddingToCart}
+              showMessage={showMessage}
+              onColorSelect={onColorSelect}
+              onSizeSelect={onSizeSelect}
+              onAttributeValueSelect={onAttributeValueSelect}
+              onQuantityAdjust={onQuantityAdjust}
+              onAddToCart={onAddToCart}
+              getOptionValue={getOptionValue}
+              getRequiredAttributesMessage={getRequiredAttributesMessage}
+            />
+          </div>
+        )}
 
         {/* Rating Section */}
-        <div className="mt-8 p-4 bg-white rounded-2xl space-y-4">
+        <div className={`${hasAttributeSelectors || hasDescription ? 'mt-8' : 'mt-0'} p-4 bg-white rounded-2xl space-y-4`}>
           <div className="flex items-center gap-2 pb-3">
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">

@@ -34,6 +34,13 @@ export function ProductInfo({
   scrollToReviews,
   t,
 }: ProductInfoProps) {
+  const rawDescription = getProductText(language, product.id, 'longDescription') || product.description || '';
+  const sanitizedDescription = sanitizeHtml(rawDescription);
+  const hasDescription = sanitizedDescription
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .trim().length > 0;
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1">
@@ -55,7 +62,12 @@ export function ProductInfo({
             )}
           </div>
         </div>
-        <div className="text-gray-600 mb-8 prose prose-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || '') }} />
+        {hasDescription && (
+          <div
+            className="text-gray-600 mb-8 prose prose-sm"
+            dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+          />
+        )}
 
         <div className="mt-8 p-4 bg-white border border-gray-200 rounded-2xl space-y-4">
           {/* Rating Section */}

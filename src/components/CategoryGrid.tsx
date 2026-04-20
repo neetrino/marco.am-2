@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage } from '../lib/language';
 import { logger } from "@/lib/utils/logger";
+import { SPECIAL_OFFERS_UNIFIED_NATURE_IMAGE_SRC } from './home/home-special-offers.constants';
 
 interface Category {
   id: string;
@@ -153,6 +154,7 @@ export function CategoryGrid() {
   const [loading, setLoading] = useState(true);
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
   const [categoryProducts, setCategoryProducts] = useState<Record<string, Product | null>>({});
+  const displayImageSrc = SPECIAL_OFFERS_UNIFIED_NATURE_IMAGE_SRC;
 
   useEffect(() => {
     fetchCategories();
@@ -317,20 +319,16 @@ export function CategoryGrid() {
               >
                 {/* Product Image or Icon */}
                 <div className="transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1 relative">
-                  {product?.image ? (
-                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-white shadow-md border-2 border-gray-200 group-hover:border-gray-400 transition-all duration-300">
-                      <Image
-                        src={product.image}
-                        alt={category.title}
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-300"
-                        unoptimized
-                      />
-                    </div>
-                  ) : (
-                    getCategoryIcon(category.title, category.slug)
-                  )}
+                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-white shadow-md border-2 border-gray-200 group-hover:border-gray-400 transition-all duration-300">
+                    <Image
+                      src={displayImageSrc}
+                      alt={category.title}
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-300"
+                      unoptimized
+                    />
+                  </div>
                 </div>
                 
                 {/* Category Name */}
