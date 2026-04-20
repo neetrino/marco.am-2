@@ -6,6 +6,7 @@ import { HomePromoMobileHeroSlateCta } from './home/HomePromoMobileHeroSlateCta'
 import { HomePromoMobileHeroSlateLabel } from './home/HomePromoMobileHeroSlateLabel';
 import { HomePromoMobileHeroSlatePanel } from './home/HomePromoMobileHeroSlatePanel';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
+import { HERO_MOBILE_PRIMARY_IMAGE_SRC } from './hero.constants';
 import { HOME_PAGE_SECTION_SHELL_CLASS } from './home/home-page-section-shell.constants';
 
 /** Hero shell follows the same responsive width rhythm as the whole home page. */
@@ -22,6 +23,12 @@ export function HeroCarousel() {
   return (
     <div className={HERO_PAGE_CONTAINER_CLASS} id="hero">
       <div className="relative aspect-[141/79] min-h-[260px] w-full min-w-0 overflow-hidden rounded-[32px] bg-marco-yellow box-border sm:min-h-[320px] md:aspect-[141/68] md:min-h-0 md:bg-transparent">
+        {/* Guaranteed mobile hero background texture pinned to top edge. */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat md:hidden"
+          style={{ backgroundImage: `url(${HERO_MOBILE_PRIMARY_IMAGE_SRC})`, backgroundPosition: 'center top' }}
+          aria-hidden
+        />
         <div className="md:hidden">
           <HeroCarouselSlides />
           <HomePromoMobileHeroSlatePanel />

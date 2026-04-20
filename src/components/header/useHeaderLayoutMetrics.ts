@@ -8,26 +8,11 @@ import { HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX, isHeaderRow2TabletLike } from 
  * Viewport width, tablet/iPad mobile chrome, compact top bar, row-2 tablet styling flags.
  */
 export function useHeaderLayoutMetrics() {
-  const [viewportWidth, setViewportWidth] = useState<number | null>(() =>
-    typeof window !== 'undefined' ? window.innerWidth : null
-  );
-
-  const [mobileHeaderChrome, setMobileHeaderChrome] = useState(() =>
-    typeof window !== 'undefined' ? getUseMobileHeaderChrome() : false
-  );
-  const [ipadDesktopRow2Viewport, setIpadDesktopRow2Viewport] = useState(() =>
-    typeof window !== 'undefined' ? getIsIpadDesktopRow2Viewport() : false
-  );
-
-  const [compactPrimaryNav, setCompactPrimaryNav] = useState(() => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-    if (getUseMobileHeaderChrome()) {
-      return true;
-    }
-    return window.innerWidth <= HEADER_COMPACT_PRIMARY_NAV_MAX_WIDTH_PX;
-  });
+  // IMPORTANT: keep SSR and first client render identical to avoid hydration mismatch.
+  const [viewportWidth, setViewportWidth] = useState<number | null>(null);
+  const [mobileHeaderChrome, setMobileHeaderChrome] = useState(false);
+  const [ipadDesktopRow2Viewport, setIpadDesktopRow2Viewport] = useState(false);
+  const [compactPrimaryNav, setCompactPrimaryNav] = useState(false);
 
   const desktopTopRowInnerRef = useRef<HTMLDivElement | null>(null);
   const desktopTopRowMeasureRef = useRef<HTMLDivElement | null>(null);
