@@ -20,8 +20,8 @@ const PRODUCT_PRIMARY_CTA_ICON_PX = 36;
 
 /** Buy CTA — taller row; trailing circle with light left nudge (−4px). */
 const PRODUCT_BUY_CTA_HEIGHT_CLASS = 'h-12';
-const PRODUCT_BUY_CTA_ICON_PX = 38;
-const PRODUCT_BUY_CTA_ICON_NUDGE_LEFT_CLASS = '-translate-x-1';
+const PRODUCT_BUY_CTA_ICON_PX = 36;
+const PRODUCT_BUY_CTA_ICON_NUDGE_LEFT_CLASS = 'translate-x-2';
 
 /** Figma: offer CTA sits slightly above the purchase row — transform only, layout box unchanged. */
 const PRODUCT_OFFER_CTA_LIFT_CLASS = '-translate-y-1.5 sm:-translate-y-2';
@@ -223,45 +223,12 @@ export function ProductInfoAndActions({
             </p>
           </div>
         )}
-        <div className="flex flex-col gap-4 pb-2 pt-4 border-t sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:gap-y-3">
-          <Link
-            href={`/contact?product=${encodeURIComponent(product.slug)}`}
-            className={`flex w-full min-w-0 shrink-0 items-center gap-1.5 bg-marco-yellow pl-3 pr-5 text-left text-sm font-semibold leading-normal text-marco-black transition-[filter,transform] hover:-translate-y-2 hover:brightness-95 active:brightness-90 sm:max-w-[280px] sm:pl-6 sm:hover:-translate-y-2.5 ${PRODUCT_OFFER_CTA_LIFT_CLASS} ${HEADER_ROW2_BAR_HEIGHT_CLASS} ${HEADER_FIGMA_PILL_RADIUS_CLASS}`}
-          >
-            <span className="min-w-0 flex-1">{t(language, 'product.makeOffer')}</span>
-            <span
-              className="flex shrink-0 items-center justify-center rounded-full bg-black text-white"
-              style={{
-                width: PRODUCT_PRIMARY_CTA_ICON_PX,
-                height: PRODUCT_PRIMARY_CTA_ICON_PX,
-              }}
-              aria-hidden
-            >
-              <ArrowUpRight className="size-2.5" strokeWidth={2.25} />
-            </span>
-          </Link>
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:justify-end">
-            <div className="flex items-center border rounded-xl overflow-hidden bg-gray-50">
-              <button
-                onClick={() => onQuantityAdjust(-1)}
-                disabled={quantity <= 1}
-                className="w-11 h-11 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                -
-              </button>
-              <div className="w-11 text-center font-bold text-sm">{quantity}</div>
-              <button
-                onClick={() => onQuantityAdjust(1)}
-                disabled={quantity >= maxQuantity}
-                className="w-11 h-11 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                +
-              </button>
-            </div>
+        <div className="flex translate-y-1.5 flex-col gap-3 border-t pb-2 pt-4">
+          <div className="flex w-full min-w-0 items-center justify-between gap-3">
             <button
               type="button"
               disabled={!canAddToCart || isAddingToCart}
-              className={`flex min-w-0 flex-1 items-center gap-1.5 bg-marco-yellow pl-4 pr-6 text-left text-sm font-semibold leading-normal text-marco-black transition-[filter,transform] hover:-translate-y-0.5 hover:brightness-95 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:brightness-100 md:max-w-72 md:flex-none md:pl-7 ${PRODUCT_BUY_CTA_HEIGHT_CLASS} ${HEADER_FIGMA_PILL_RADIUS_CLASS}`}
+                className={`flex min-w-0 flex-1 items-center gap-1.5 bg-marco-yellow pl-4 pr-4 text-left text-sm font-semibold leading-normal text-marco-black transition-[filter,transform] hover:-translate-y-0.5 hover:brightness-95 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:brightness-100 md:max-w-72 md:flex-none md:pl-7 ${PRODUCT_BUY_CTA_HEIGHT_CLASS} ${HEADER_FIGMA_PILL_RADIUS_CLASS}`}
               onClick={onAddToCart}
             >
               <span className="min-w-0 flex-1">
@@ -283,21 +250,58 @@ export function ProductInfoAndActions({
                 }}
                 aria-hidden
               >
-                <ArrowUpRight className="size-2.5" strokeWidth={2.25} />
+                <ArrowUpRight className="size-3" strokeWidth={2.5} />
               </span>
             </button>
-            <button
-              onClick={onCompareToggle}
-              className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+            <div className="flex shrink-0 items-center overflow-hidden rounded-xl border bg-gray-50">
+              <button
+                onClick={() => onQuantityAdjust(-1)}
+                disabled={quantity <= 1}
+                className="flex h-11 w-11 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                -
+              </button>
+              <div className="w-11 text-center text-sm font-bold">{quantity}</div>
+              <button
+                onClick={() => onQuantityAdjust(1)}
+                disabled={quantity >= maxQuantity}
+                className="flex h-11 w-11 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <div className="flex w-full min-w-0 translate-y-2 items-end justify-between gap-3">
+            <Link
+              href={`/contact?product=${encodeURIComponent(product.slug)}`}
+              className={`flex w-full min-w-0 shrink-0 items-center gap-1.5 bg-marco-yellow pl-3 pr-1.5 text-left text-sm font-semibold leading-normal text-marco-black transition-[filter,transform] hover:-translate-y-2 hover:brightness-95 active:brightness-90 sm:max-w-[195px] sm:pl-6 sm:hover:-translate-y-2.5 ${PRODUCT_OFFER_CTA_LIFT_CLASS} ${PRODUCT_BUY_CTA_HEIGHT_CLASS} ${HEADER_FIGMA_PILL_RADIUS_CLASS}`}
             >
-              <CompareIcon isActive={isInCompare} />
-            </button>
-            <button
-              onClick={onAddToWishlist}
-              className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
-            >
-              <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
-            </button>
+              <span className="min-w-0 flex-1">{t(language, 'product.makeOffer')}</span>
+              <span
+                className="flex shrink-0 items-center justify-center rounded-full bg-black text-white"
+                style={{
+                  width: PRODUCT_PRIMARY_CTA_ICON_PX,
+                  height: PRODUCT_PRIMARY_CTA_ICON_PX,
+                }}
+                aria-hidden
+              >
+                <ArrowUpRight className="size-3.5" strokeWidth={2.5} />
+              </span>
+            </Link>
+            <div className="flex -translate-y-[8px] items-center justify-end gap-3">
+              <button
+                onClick={onCompareToggle}
+                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+              >
+                <CompareIcon isActive={isInCompare} />
+              </button>
+              <button
+                onClick={onAddToWishlist}
+                className={`w-11 h-11 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
+              >
+                <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
