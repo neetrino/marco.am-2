@@ -87,6 +87,13 @@ function getMetaLabel(language: LanguageCode, key: MetaLabelKey): string {
       variants: 'Տարբերակներ',
       availability: 'Առկայություն',
     },
+    ka: {
+      brand: 'ბრენდი',
+      category: 'კატეგორია',
+      sku: 'SKU',
+      variants: 'ვარიანტები',
+      availability: 'ხელმისაწვდომობა',
+    },
   };
 
   return labels[language]?.[key] || labels.en[key];
@@ -95,7 +102,13 @@ function getMetaLabel(language: LanguageCode, key: MetaLabelKey): string {
 function getAvailabilityValue(product: Product, language: LanguageCode): string {
   const hasStock = product.variants.some((variant) => variant.stock > 0);
   if (hasStock) {
-    return language === 'ru' ? 'В наличии' : language === 'hy' ? 'Առկա է' : 'In stock';
+    return language === 'ru'
+      ? 'В наличии'
+      : language === 'hy'
+        ? 'Առկա է'
+        : language === 'ka'
+          ? 'ხელმისაწვდომია'
+          : 'In stock';
   }
   return t(language, 'product.outOfStock');
 }
