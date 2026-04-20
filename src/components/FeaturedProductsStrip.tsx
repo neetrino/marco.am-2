@@ -287,7 +287,7 @@ export function FeaturedProductsStrip({
           className="flex justify-center"
           style={{ marginTop: brandsDotsToCtaGapPx }}
         >
-          <Link href="/products" className={SPECIAL_OFFERS_CTA_LINK_CLASS}>
+          <Link href="/brands" className={SPECIAL_OFFERS_CTA_LINK_CLASS}>
             {t(language, 'home.special_offers.cta')}
           </Link>
         </div>
