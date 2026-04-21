@@ -90,7 +90,7 @@ export function HeaderRow2RightToolbar({ data, compactPrimaryNav, headerMobileLi
                   </Link>
                   {isAdmin && (
                     <Link
-                      href="/admin"
+                      href="/supersudo"
                       className="block border-b border-gray-100 px-5 py-3 text-sm font-medium text-blue-600 transition-all duration-150 hover:bg-gradient-to-r hover:from-blue-50 hover:to-white"
                       onClick={() => setShowUserMenu(false)}
                     >
