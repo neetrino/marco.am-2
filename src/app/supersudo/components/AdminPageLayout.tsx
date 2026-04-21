@@ -24,7 +24,7 @@ export function AdminPageLayout({
 }: AdminPageLayoutProps) {
   return (
     <div className="admin-page">
-      <div className="page-shell admin-shell">
+      <div className="page-shell admin-page-shell admin-shell">
         <div className="admin-layout">
           <AdminSidebar currentPath={currentPath} router={router} t={t} />
           <div className="admin-main">{children}</div>

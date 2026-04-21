@@ -127,6 +127,10 @@
     padding-bottom: 1.25rem;
   }
 
+  .admin-page-shell {
+    max-width: 112rem;
+  }
+
   .admin-shell {
     display: flex;
     flex-direction: column;

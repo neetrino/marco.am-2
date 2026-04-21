@@ -191,7 +191,7 @@ function AddProductPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="page-shell">
+      <div className="page-shell admin-page-shell">
         <div className="flex flex-col lg:flex-row gap-8">
           <AdminSidebar currentPath={currentPath} router={router} t={t} />
 
