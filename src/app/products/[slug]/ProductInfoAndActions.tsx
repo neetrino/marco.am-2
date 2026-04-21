@@ -128,9 +128,15 @@ export function ProductInfoAndActions({
             <p className="text-sm text-gray-500">{product.brand.name}</p>
           </div>
         )}
-        <h1 className="text-4xl font-bold text-marco-black mb-4">
-          {getProductText(language, product.id, 'title') || product.title}
-        </h1>
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <h1 className="min-w-0 flex-1 text-4xl font-bold text-marco-black">
+            {getProductText(language, product.id, 'title') || product.title}
+          </h1>
+          <div className="shrink-0 rounded-2xl bg-[#1e1e1e] px-4 py-2.5 text-center leading-tight">
+            <p className="text-base font-bold text-marco-yellow">3 ՏԱՐԻ</p>
+            <p className="text-xs font-bold uppercase tracking-[0.3px] text-white">ԵՐԱՇԽԻՔ</p>
+          </div>
+        </div>
         <div className="mb-6">
           <div className="flex flex-col gap-1">
             {/* Discounted price with discount percentage */}

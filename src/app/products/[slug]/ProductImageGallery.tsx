@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Maximize2 } from "lucide-react";
 import { ProductLabels } from "../../../components/ProductLabels";
 import { ProductImagePlaceholder } from "../../../components/ProductImagePlaceholder";
@@ -15,7 +16,7 @@ interface ProductImageGalleryProps {
   discountPercent: number | null;
   language: LanguageCode;
   currentImageIndex: number;
-  onImageIndexChange: (index: number) => void;
+  onImageIndexChange: Dispatch<SetStateAction<number>>;
   thumbnailStartIndex: number;
   onThumbnailStartIndexChange: (index: number) => void;
 }
@@ -50,6 +51,13 @@ export function ProductImageGallery({
     const prevIndex =
       currentImageIndex === 0 ? unifiedImages.length - 1 : currentImageIndex - 1;
     onImageIndexChange(prevIndex);
+    if (unifiedImages.length > THUMBNAILS_PER_VIEW) {
+      if (prevIndex < thumbnailStartIndex) {
+        onThumbnailStartIndexChange(prevIndex);
+      } else if (prevIndex >= thumbnailStartIndex + THUMBNAILS_PER_VIEW) {
+        onThumbnailStartIndexChange(prevIndex - THUMBNAILS_PER_VIEW + 1);
+      }
+    }
   };
 
   const goToNextImage = () => {
@@ -57,6 +65,13 @@ export function ProductImageGallery({
     const nextIndex =
       currentImageIndex === unifiedImages.length - 1 ? 0 : currentImageIndex + 1;
     onImageIndexChange(nextIndex);
+    if (unifiedImages.length > THUMBNAILS_PER_VIEW) {
+      if (nextIndex < thumbnailStartIndex) {
+        onThumbnailStartIndexChange(nextIndex);
+      } else if (nextIndex >= thumbnailStartIndex + THUMBNAILS_PER_VIEW) {
+        onThumbnailStartIndexChange(nextIndex - THUMBNAILS_PER_VIEW + 1);
+      }
+    }
   };
 
   // Auto-scroll thumbnails to show selected image
