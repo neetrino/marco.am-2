@@ -22,8 +22,8 @@ export function ProfilePassword({
 }: ProfilePasswordProps) {
   return (
     <Card className="p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.password.title')}</h2>
-      <form onSubmit={onSave} className="space-y-4 max-w-2xl">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">{t('profile.password.title')}</h2>
+      <form onSubmit={onSave} className="space-y-4 max-w-xl mx-auto">
         <Input
           label={t('profile.password.currentPassword')}
           type="password"
@@ -51,14 +51,21 @@ export function ProfilePassword({
           className="!rounded-full !px-5 !py-3"
           required
         />
-        <div className="pt-4">
+        <div className="pt-4 flex justify-center">
           <Button
             type="submit"
             variant="primary"
             disabled={savingPassword}
-            className="!rounded-full !px-6 !py-3 !bg-marco-black !text-white !hover:bg-marco-black hover:opacity-90 transition-opacity"
+            className="!rounded-full !px-4 sm:!px-6 !py-3 !bg-marco-black !text-white !hover:bg-marco-black hover:opacity-90 transition-opacity whitespace-nowrap"
           >
-            {savingPassword ? t('profile.password.changing') : t('profile.password.change')}
+            {savingPassword ? (
+              t('profile.password.changing')
+            ) : (
+              <>
+                <span className="sm:hidden">{t('profile.password.changeShort')}</span>
+                <span className="hidden sm:inline">{t('profile.password.change')}</span>
+              </>
+            )}
           </Button>
         </div>
       </form>

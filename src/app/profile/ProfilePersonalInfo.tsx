@@ -26,8 +26,8 @@ export function ProfilePersonalInfo({
 }: ProfilePersonalInfoProps) {
   return (
     <Card className="p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.personal.title')}</h2>
-      <form onSubmit={onSave} className="space-y-4 max-w-2xl">
+      <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">{t('profile.personal.title')}</h2>
+      <form onSubmit={onSave} className="space-y-4 max-w-xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label={t('profile.personal.firstName')}
@@ -60,19 +60,26 @@ export function ProfilePersonalInfo({
           placeholder={t('profile.personal.phonePlaceholder')}
           className="!rounded-full !px-5 !py-3"
         />
-        <div className="flex items-center gap-2 pt-4">
+        <div className="flex flex-nowrap items-center justify-center gap-2 pt-4">
           <Button
             type="submit"
             variant="primary"
             disabled={savingPersonal}
-            className="!rounded-full !px-6 !py-3 !bg-marco-black !text-white !hover:bg-marco-black hover:opacity-90 transition-opacity"
+            className="whitespace-nowrap !rounded-full !px-4 sm:!px-6 !py-3 !bg-marco-black !text-white !hover:bg-marco-black hover:opacity-90 transition-opacity"
           >
-            {savingPersonal ? t('profile.personal.saving') : t('profile.personal.save')}
+            {savingPersonal ? (
+              t('profile.personal.saving')
+            ) : (
+              <>
+                <span className="sm:hidden">{t('profile.personal.saveShort')}</span>
+                <span className="hidden sm:inline">{t('profile.personal.save')}</span>
+              </>
+            )}
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="!rounded-full !px-6 !py-3"
+            className="whitespace-nowrap !rounded-full !px-4 sm:!px-6 !py-3"
             onClick={() => {
               setPersonalInfo({
                 firstName: profile?.firstName || '',

@@ -14,7 +14,7 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ profile, tabs, activeTab, onTabChange, t }: ProfileHeaderProps) {
   return (
     <>
-      <div className="lg:w-64 flex-shrink-0">
+      <div className="lg:w-96 flex-shrink-0">
         {/* Profile Header Section */}
         <Card className="mb-4 p-4">
           <div className="flex flex-row items-center gap-4">
@@ -71,7 +71,7 @@ export function ProfileHeader({ profile, tabs, activeTab, onTabChange, t }: Prof
       </div>
 
       {/* Mobile Menu Drawer */}
-      <div className="lg:hidden mb-6">
+      <div className="lg:hidden mb-3">
         <ProfileMenuDrawer
           tabs={tabs}
           activeTab={activeTab}
