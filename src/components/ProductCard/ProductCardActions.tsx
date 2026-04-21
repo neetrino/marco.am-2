@@ -60,7 +60,7 @@ export function ProductCardActions({
         onClick={onCompareToggle}
         className={`${buttonSize} rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
           isInCompare
-            ? 'border-gray-900 text-gray-900 bg-white shadow-sm'
+            ? 'border-red-600 bg-red-600 text-white shadow-lg'
             : 'border-gray-200 text-gray-700 bg-white hover:border-gray-300 hover:bg-gray-50'
         }`}
         title={isInCompare ? t('common.messages.removedFromCompare') : t('common.messages.addedToCompare')}

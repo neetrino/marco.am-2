@@ -309,7 +309,7 @@ export function HeaderMobileDrawer({ data, compactPrimaryNav }: Props) {
                   {t('common.navigation.compare')}
                 </span>
                 {compareCount > 0 && (
-                  <span className="rounded-full bg-gray-900 px-2 py-0.5 text-xs font-semibold text-white">
+                  <span className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">
                     {compareCount > 99 ? '99+' : compareCount}
                   </span>
                 )}

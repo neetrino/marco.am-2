@@ -58,24 +58,22 @@ interface BadgeIconProps {
   badge?: number;
   className?: string;
   iconClassName?: string;
+  badgeClassName?: string;
 }
 
-export function HeaderBadgeIcon({ icon, badge = 0, className = '', iconClassName = '' }: BadgeIconProps) {
+export function HeaderBadgeIcon({
+  icon,
+  badge = 0,
+  className = '',
+  iconClassName = '',
+  badgeClassName = 'bg-red-600 text-white',
+}: BadgeIconProps) {
   return (
     <div className={`relative ${className}`}>
       <div className={iconClassName}>{icon}</div>
       {badge > 0 && (
         <span
-          className="
-      absolute
-      -top-[13px]
-      -right-[13px]
-      bg-red-600
-      text-white text-[9px] font-bold
-      rounded-full min-w-[18px] h-4 px-0.5
-      flex items-center justify-center
-      leading-none
-    "
+          className={`absolute -top-[13px] -right-[13px] text-[9px] font-bold rounded-full min-w-[18px] h-4 px-0.5 flex items-center justify-center leading-none ${badgeClassName}`}
         >
           {badge > 99 ? '99+' : badge}
         </span>

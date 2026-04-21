@@ -15,6 +15,7 @@ import { logger } from '@/lib/utils/logger';
 export function useWishlist(productId: string) {
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [language, setLanguage] = useState<LanguageCode>(() => getStoredLanguage());
+  const [isToggling, setIsToggling] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -49,17 +50,37 @@ export function useWishlist(productId: string) {
   }, [refresh]);
 
   const toggleWishlist = async () => {
+    if (isToggling) {
+      return;
+    }
+
+    const nextValue = !isInWishlist;
+    const delta = nextValue ? 1 : -1;
+    setIsToggling(true);
+    setIsInWishlist(nextValue);
+    window.dispatchEvent(
+      new CustomEvent('wishlist-optimistic-updated', {
+        detail: { delta },
+      })
+    );
+
     try {
-      if (isInWishlist) {
-        await removeWishlistItemClient(productId, language);
-        setIsInWishlist(false);
-      } else {
+      if (nextValue) {
         await addWishlistItemClient(productId, language);
-        setIsInWishlist(true);
+      } else {
+        await removeWishlistItemClient(productId, language);
       }
     } catch (error: unknown) {
+      setIsInWishlist(!nextValue);
+      window.dispatchEvent(
+        new CustomEvent('wishlist-optimistic-updated', {
+          detail: { delta: -delta },
+        })
+      );
       logger.error('Wishlist toggle failed', { error });
       void refresh();
+    } finally {
+      setIsToggling(false);
     }
   };
 

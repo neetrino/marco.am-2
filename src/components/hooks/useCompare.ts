@@ -8,6 +8,7 @@ import {
   fetchCompareProductIds,
   removeCompareItemClient,
 } from '@/lib/compare/compare-client';
+import { getErrorHttpStatus } from '@/lib/api-client';
 
 const MAX_COMPARE_ITEMS = 4;
 
@@ -19,6 +20,7 @@ const MAX_COMPARE_ITEMS = 4;
 export function useCompare(productId: string) {
   const { t } = useTranslation();
   const [isInCompare, setIsInCompare] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
 
   useEffect(() => {
     const checkCompare = async () => {
@@ -47,23 +49,51 @@ export function useCompare(productId: string) {
   }, [productId]);
 
   const toggleCompare = async () => {
-    try {
-      const language = getStoredLanguage();
-      const compare = await fetchCompareProductIds(language);
+    if (isToggling) {
+      return;
+    }
 
-      if (isInCompare) {
-        await removeCompareItemClient(productId, language);
-        setIsInCompare(false);
-      } else {
+    const language = getStoredLanguage();
+    const nextValue = !isInCompare;
+    const delta = nextValue ? 1 : -1;
+    setIsToggling(true);
+    setIsInCompare(nextValue);
+    window.dispatchEvent(
+      new CustomEvent('compare-optimistic-updated', {
+        detail: { delta },
+      })
+    );
+
+    try {
+      if (nextValue) {
+        const compare = await fetchCompareProductIds(language);
         if (compare.length >= MAX_COMPARE_ITEMS) {
+          setIsInCompare(false);
+          window.dispatchEvent(
+            new CustomEvent('compare-optimistic-updated', {
+              detail: { delta: -delta },
+            })
+          );
           alert(t('common.alerts.compareMaxReached'));
           return;
         }
         await addCompareItemClient(productId, language);
-        setIsInCompare(true);
+      } else {
+        await removeCompareItemClient(productId, language);
       }
-    } catch {
+    } catch (error: unknown) {
+      setIsInCompare(!nextValue);
+      window.dispatchEvent(
+        new CustomEvent('compare-optimistic-updated', {
+          detail: { delta: -delta },
+        })
+      );
+      if (nextValue && getErrorHttpStatus(error) === 422) {
+        alert(t('common.alerts.compareMaxReached'));
+      }
       /* ignore compare toggle errors in card widgets */
+    } finally {
+      setIsToggling(false);
     }
   };
 
