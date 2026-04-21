@@ -19,8 +19,6 @@ type UploadVideoResponse = {
 
 type ReelFormState = {
   titleHy: string;
-  titleRu: string;
-  titleEn: string;
   videoUrl: string;
   posterUrl: string;
   sourceType: 'admin_upload' | 'external_url';
@@ -28,8 +26,6 @@ type ReelFormState = {
 
 const EMPTY_FORM: ReelFormState = {
   titleHy: '',
-  titleRu: '',
-  titleEn: '',
   videoUrl: '',
   posterUrl: '',
   sourceType: 'external_url',
@@ -39,6 +35,16 @@ function buildId(seed: string): string {
   const compact = seed.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   const randomPart = Math.random().toString(36).slice(2, 8);
   return `${compact || 'reel'}-${randomPart}`;
+}
+
+function getModerationTone(status: string): string {
+  if (status === 'approved') {
+    return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100';
+  }
+  if (status === 'rejected') {
+    return 'bg-rose-50 text-rose-700 ring-1 ring-rose-100';
+  }
+  return 'bg-amber-50 text-amber-700 ring-1 ring-amber-100';
 }
 
 export default function ReelsPage() {
@@ -53,6 +59,7 @@ export default function ReelsPage() {
   const [storage, setStorage] = useState<ReelsManagementStorage | null>(null);
   const [likesByReelId, setLikesByReelId] = useState<Record<string, number>>({});
   const [form, setForm] = useState<ReelFormState>(EMPTY_FORM);
+  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -85,13 +92,24 @@ export default function ReelsPage() {
   }, [isAdmin, isLoggedIn, reload]);
 
   const canAdd = useMemo(() => {
-    return (
-      form.titleHy.trim().length > 0 &&
-      form.titleRu.trim().length > 0 &&
-      form.titleEn.trim().length > 0 &&
-      form.videoUrl.trim().length > 0
-    );
+    return form.titleHy.trim().length > 0 && form.videoUrl.trim().length > 0;
   }, [form]);
+
+  const sortedItems = useMemo(() => {
+    return (
+      storage?.items
+        .slice()
+        .sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id)) ?? []
+    );
+  }, [storage?.items]);
+
+  const activeReelsCount = useMemo(() => {
+    return sortedItems.filter((item) => item.active).length;
+  }, [sortedItems]);
+
+  const totalLikes = useMemo(() => {
+    return sortedItems.reduce((sum, item) => sum + (likesByReelId[item.id] ?? 0), 0);
+  }, [sortedItems, likesByReelId]);
 
   const persistStorage = useCallback(
     async (nextStorage: ReelsManagementStorage) => {
@@ -119,11 +137,11 @@ export default function ReelsPage() {
       items: [
         ...storage.items,
         {
-          id: buildId(form.titleEn || form.titleHy),
+          id: buildId(form.titleHy),
           title: {
             hy: form.titleHy.trim(),
-            ru: form.titleRu.trim(),
-            en: form.titleEn.trim(),
+            ru: form.titleHy.trim(),
+            en: form.titleHy.trim(),
           },
           sourceType: form.sourceType,
           videoUrl: form.videoUrl.trim(),
@@ -142,6 +160,7 @@ export default function ReelsPage() {
 
     await persistStorage(nextStorage);
     setForm(EMPTY_FORM);
+    setIsAddFormOpen(false);
   };
 
   const handleDelete = async (reelId: string) => {
@@ -208,88 +227,191 @@ export default function ReelsPage() {
       backLabel={t('admin.reels.backToAdmin')}
       onBack={() => router.push('/supersudo')}
     >
-          <div className="min-w-0 flex-1 space-y-4">
-            <div className="admin-card">
-              <h2 className="mb-4 text-lg font-semibold text-gray-900">{t('admin.reels.addNew')}</h2>
-              <div className="grid gap-3 md:grid-cols-2">
-                <input value={form.titleHy} onChange={(e) => setForm((prev) => ({ ...prev, titleHy: e.target.value }))} placeholder={t('admin.reels.titleHy')} className="admin-field" />
-                <input value={form.titleRu} onChange={(e) => setForm((prev) => ({ ...prev, titleRu: e.target.value }))} placeholder={t('admin.reels.titleRu')} className="admin-field" />
-                <input value={form.titleEn} onChange={(e) => setForm((prev) => ({ ...prev, titleEn: e.target.value }))} placeholder={t('admin.reels.titleEn')} className="admin-field" />
-                <select value={form.sourceType} onChange={(e) => setForm((prev) => ({ ...prev, sourceType: e.target.value as ReelFormState['sourceType'] }))} className="admin-field">
+      <div className="min-w-0 flex-1 space-y-4">
+        <section className="overflow-hidden rounded-xl border border-marco-border bg-gradient-to-r from-white via-marco-gray/70 to-white p-4 text-marco-black shadow-[0_12px_28px_rgba(16,16,16,0.08)] sm:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-marco-text/60">Marco Admin Studio</p>
+              <h2 className="mt-1 text-2xl font-semibold">{t('admin.reels.title')}</h2>
+              <p className="mt-2 max-w-xl text-sm text-marco-text/75">
+                Manage your reels with a clean workflow, quick uploads, and moderation visibility.
+              </p>
+            </div>
+            <button
+              onClick={() => void reload()}
+              className="inline-flex h-9 items-center rounded-lg border border-marco-yellow/70 bg-marco-yellow px-3.5 text-sm font-semibold text-marco-black transition hover:brightness-95"
+            >
+              {t('admin.reels.refreshLikes')}
+            </button>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl border border-marco-border bg-white/85 p-3">
+              <p className="text-xs text-marco-text/70">{t('admin.reels.list')}</p>
+              <p className="mt-1 text-2xl font-semibold">{sortedItems.length}</p>
+            </div>
+            <div className="rounded-xl border border-marco-border bg-white/85 p-3">
+              <p className="text-xs text-marco-text/70">Active</p>
+              <p className="mt-1 text-2xl font-semibold">{activeReelsCount}</p>
+            </div>
+            <div className="rounded-xl border border-marco-border bg-white/85 p-3">
+              <p className="text-xs text-marco-text/70">{t('admin.reels.likes')}</p>
+              <p className="mt-1 text-2xl font-semibold">{totalLikes}</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-marco-border bg-gradient-to-b from-marco-yellow/10 to-white p-4 shadow-sm sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">{t('admin.reels.addNew')}</h2>
+              <p className="mt-1 text-sm text-gray-500">Fill all titles and provide a valid video source.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsAddFormOpen((prev) => !prev)}
+              className="inline-flex h-10 items-center rounded-lg bg-marco-yellow px-4 text-sm font-semibold text-marco-black transition hover:brightness-95"
+            >
+              {isAddFormOpen ? t('admin.common.close') : t('admin.reels.add')}
+            </button>
+          </div>
+
+          {isAddFormOpen ? (
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <label className="space-y-1 md:col-span-2">
+                <span className="text-xs font-medium text-gray-600">{t('admin.reels.titleHy')}</span>
+                <input
+                  value={form.titleHy}
+                  onChange={(e) => setForm((prev) => ({ ...prev, titleHy: e.target.value }))}
+                  placeholder={t('admin.reels.titleHy')}
+                  className="admin-field"
+                />
+              </label>
+              <label className="space-y-1">
+                <span className="text-xs font-medium text-gray-600">{t('admin.reels.externalSource')}</span>
+                <select
+                  value={form.sourceType}
+                  onChange={(e) => setForm((prev) => ({ ...prev, sourceType: e.target.value as ReelFormState['sourceType'] }))}
+                  className="admin-field"
+                >
                   <option value="external_url">{t('admin.reels.externalSource')}</option>
                   <option value="admin_upload">{t('admin.reels.adminUpload')}</option>
                 </select>
-                <input value={form.videoUrl} onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))} placeholder={t('admin.reels.videoUrl')} className="admin-field md:col-span-2" />
-                <div className="md:col-span-2">
-                  <input
-                    ref={videoInputRef}
-                    type="file"
-                    accept="video/mp4,video/webm,video/quicktime,video/ogg"
-                    onChange={handleVideoUpload}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => videoInputRef.current?.click()}
-                    disabled={uploadingVideo}
-                    className="inline-flex h-9 items-center rounded-lg border border-gray-300 px-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {uploadingVideo ? t('admin.reels.uploadingVideo') : t('admin.reels.uploadVideo')}
-                  </button>
-                </div>
-                <input value={form.posterUrl} onChange={(e) => setForm((prev) => ({ ...prev, posterUrl: e.target.value }))} placeholder={t('admin.reels.posterUrl')} className="admin-field md:col-span-2" />
-              </div>
-              <button onClick={handleAdd} disabled={!canAdd || saving} className="mt-4 inline-flex h-9 items-center rounded-lg bg-marco-yellow px-3.5 text-sm font-semibold text-marco-black disabled:cursor-not-allowed disabled:opacity-60">
-                {saving ? t('admin.reels.saving') : t('admin.reels.add')}
-              </button>
-            </div>
-
-            <div className="admin-card">
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">{t('admin.reels.list')}</h2>
-                <button onClick={() => void reload()} className="inline-flex h-9 items-center rounded-lg border border-gray-300 px-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                  {t('admin.reels.refreshLikes')}
+              </label>
+              <label className="space-y-1 md:col-span-2">
+                <span className="text-xs font-medium text-gray-600">{t('admin.reels.videoUrl')}</span>
+                <input
+                  value={form.videoUrl}
+                  onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
+                  placeholder={t('admin.reels.videoUrl')}
+                  className="admin-field"
+                />
+              </label>
+              <div className="rounded-xl border border-dashed border-marco-border bg-white/80 p-3 md:col-span-2">
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/mp4,video/webm,video/quicktime,video/ogg"
+                  onChange={handleVideoUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => videoInputRef.current?.click()}
+                  disabled={uploadingVideo}
+                  className="inline-flex h-9 items-center rounded-lg border border-marco-yellow/60 bg-marco-yellow/25 px-3.5 text-sm font-medium text-marco-black transition hover:bg-marco-yellow/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {uploadingVideo ? t('admin.reels.uploadingVideo') : t('admin.reels.uploadVideo')}
                 </button>
               </div>
-
-              {loading ? (
-                <p className="text-sm text-gray-500">{t('admin.reels.loading')}</p>
-              ) : (storage?.items.length ?? 0) === 0 ? (
-                <p className="text-sm text-gray-500">{t('admin.reels.empty')}</p>
-              ) : (
-                <div className="space-y-3">
-                  {storage?.items
-                    .slice()
-                    .sort((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id))
-                    .map((item) => (
-                      <div key={item.id} className="rounded-xl border border-gray-200 p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
-                            <p className="font-semibold text-gray-900">{item.title.hy}</p>
-                            <p className="text-xs text-gray-500">ID: {item.id}</p>
-                            <p className="mt-1 text-xs text-gray-500">
-                              {item.sourceType} · {item.moderation.status} · {item.active ? 'active' : 'inactive'}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-semibold text-gray-800">
-                              {t('admin.reels.likes')}: {likesByReelId[item.id] ?? 0}
-                            </p>
-                            <button
-                              onClick={() => void handleDelete(item.id)}
-                              disabled={saving}
-                              className="mt-2 rounded-lg border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                              {t('admin.reels.delete')}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
+              <label className="space-y-1 md:col-span-2">
+                <span className="text-xs font-medium text-gray-600">{t('admin.reels.posterUrl')}</span>
+                <input
+                  value={form.posterUrl}
+                  onChange={(e) => setForm((prev) => ({ ...prev, posterUrl: e.target.value }))}
+                  placeholder={t('admin.reels.posterUrl')}
+                  className="admin-field"
+                />
+              </label>
+              <div className="mt-1 flex items-center gap-2 md:col-span-2">
+                <button
+                  onClick={handleAdd}
+                  disabled={!canAdd || saving}
+                  className="inline-flex h-10 items-center rounded-lg bg-marco-yellow px-4 text-sm font-semibold text-marco-black transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {saving ? t('admin.reels.saving') : t('admin.reels.add')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddFormOpen(false)}
+                  className="inline-flex h-10 items-center rounded-lg border border-marco-border bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                >
+                  {t('admin.common.cancel')}
+                </button>
+              </div>
             </div>
+          ) : null}
+        </section>
+
+        <section className="admin-card">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-gray-900">{t('admin.reels.list')}</h2>
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+              {sortedItems.length} items
+            </span>
           </div>
+
+          {loading ? (
+            <p className="text-sm text-gray-500">{t('admin.reels.loading')}</p>
+          ) : sortedItems.length === 0 ? (
+            <p className="text-sm text-gray-500">{t('admin.reels.empty')}</p>
+          ) : (
+            <div className="space-y-3">
+              {sortedItems.map((item) => (
+                <article
+                  key={item.id}
+                  className="rounded-2xl border border-gray-200 bg-gradient-to-b from-white to-slate-50/70 p-4 shadow-sm transition hover:border-slate-300 hover:shadow-md"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="space-y-2">
+                      <p className="font-semibold text-gray-900">{item.title.hy}</p>
+                      <p className="text-xs text-gray-500">ID: {item.id}</p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+                        <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-indigo-700 ring-1 ring-indigo-100">
+                          {item.sourceType}
+                        </span>
+                        <span className={`rounded-full px-2.5 py-1 ${getModerationTone(item.moderation.status)}`}>
+                          {item.moderation.status}
+                        </span>
+                        <span
+                          className={`rounded-full px-2.5 py-1 ring-1 ${
+                            item.active
+                              ? 'bg-emerald-50 text-emerald-700 ring-emerald-100'
+                              : 'bg-gray-100 text-gray-600 ring-gray-200'
+                          }`}
+                        >
+                          {item.active ? 'active' : 'inactive'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-gray-800">
+                        {t('admin.reels.likes')}: {likesByReelId[item.id] ?? 0}
+                      </p>
+                      <button
+                        onClick={() => void handleDelete(item.id)}
+                        disabled={saving}
+                        className="mt-2 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {t('admin.reels.delete')}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </AdminPageLayout>
   );
 }
