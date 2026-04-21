@@ -19,6 +19,8 @@ type AdminLanguageCode = (typeof ADMIN_LANGUAGES)[number];
 
 export function AdminSidebar({ currentPath, router, t }: AdminSidebarProps) {
   const adminTabs = getAdminMenuTABS(t);
+  const homeTab = adminTabs.find((tab) => tab.id === 'home');
+  const sidebarTabs = adminTabs.filter((tab) => tab.id !== 'home');
   const isProductsSectionActive = PRODUCT_SECTION_PATHS.some(
     (path) => currentPath === path || currentPath.startsWith(`${path}/`),
   );
@@ -65,7 +67,7 @@ export function AdminSidebar({ currentPath, router, t }: AdminSidebarProps) {
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-marco-text/70">Admin Panel</p>
           </div>
           <div className="flex-1 space-y-1 overflow-y-auto">
-          {adminTabs.map((tab) => {
+          {sidebarTabs.map((tab) => {
             const isProductsItem = tab.id === 'products';
             const isProductSubmenuItem = PRODUCT_SUBMENU_ITEM_IDS.has(tab.id);
 
@@ -159,6 +161,43 @@ export function AdminSidebar({ currentPath, router, t }: AdminSidebarProps) {
           })}
           </div>
           <div className="mt-3 border-t border-marco-border pt-3">
+            {homeTab ? (
+              <button
+                type="button"
+                onClick={() => router.push(homeTab.path)}
+                className={`group mb-3 w-full flex items-center justify-between rounded-2xl border px-3 py-3 text-sm font-semibold transition-all duration-200 ${
+                  currentPath === '/'
+                    ? 'border-marco-yellow bg-marco-yellow/90 text-marco-black shadow-[0_8px_20px_rgba(247,206,63,0.35)]'
+                    : 'border-marco-yellow/40 bg-marco-yellow/20 text-marco-text hover:-translate-y-0.5 hover:border-marco-yellow hover:bg-marco-yellow/35 hover:text-marco-black'
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <span
+                    className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl transition-colors ${
+                      currentPath === '/'
+                        ? 'bg-marco-black/10 text-marco-black'
+                        : 'bg-marco-yellow/35 text-marco-text/80 group-hover:bg-marco-yellow/50 group-hover:text-marco-black'
+                    }`}
+                  >
+                    {homeTab.icon}
+                  </span>
+                  <span className="text-left leading-tight">
+                    <span className="block text-xs font-medium uppercase tracking-[0.08em] text-current/70">Quick Access</span>
+                    <span className="block">{homeTab.label}</span>
+                  </span>
+                </span>
+                <svg
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    currentPath === '/' ? 'text-marco-black' : 'text-marco-text/50 group-hover:translate-x-0.5 group-hover:text-marco-black'
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            ) : null}
             <div className="grid grid-cols-3 gap-2">
               {ADMIN_LANGUAGES.map((language) => {
                 const isActive = language === currentLanguage;
