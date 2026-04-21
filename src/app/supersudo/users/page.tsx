@@ -6,7 +6,7 @@ import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button, Input } from '@shop/ui';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { logger } from "@/lib/utils/logger";
 
 interface User {
@@ -190,27 +190,15 @@ export default function UsersPage() {
         );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 lg:ml-64">
-          <button
-            onClick={() => router.push('/supersudo')}
-            className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('admin.users.backToAdmin')}
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t('admin.users.title')}</h1>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          <div className="flex-1 min-w-0">
-            {/* Search */}
-            <Card className="p-4 mb-6">
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.users.title')}
+      backLabel={t('admin.users.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+            <Card className="admin-card mb-5">
               <form onSubmit={handleSearch} className="flex flex-col gap-4">
                 <div className="flex gap-4">
                   <Input
@@ -282,7 +270,7 @@ export default function UsersPage() {
             </Card>
 
             {/* Users Table */}
-            <Card className="p-6">
+            <Card className="admin-table-card">
               {loading ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
@@ -357,7 +345,7 @@ export default function UsersPage() {
                                 {user.roles?.map((role) => (
                                   <span
                                     key={role}
-                                    className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                                    className="rounded-full bg-marco-gray px-2 py-1 text-xs font-medium text-gray-700"
                                   >
                                     {role}
                                   </span>
@@ -377,7 +365,7 @@ export default function UsersPage() {
                                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
                                   user.blocked
                                     ? 'bg-gray-300 focus:ring-gray-400'
-                                    : 'bg-green-500 focus:ring-green-500'
+                                    : 'bg-gray-900 focus:ring-gray-500'
                                 }`}
                                 title={user.blocked ? t('admin.users.clickToActivate') : t('admin.users.clickToBlock')}
                                 role="switch"
@@ -436,10 +424,7 @@ export default function UsersPage() {
                 </>
               )}
             </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }
 

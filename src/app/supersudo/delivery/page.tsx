@@ -6,7 +6,7 @@ import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { logger } from "@/lib/utils/logger";
 
 interface DeliveryLocation {
@@ -115,30 +115,17 @@ export default function DeliveryPage() {
   const currentPath = pathname || '/supersudo/delivery';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <div className="mb-8">
-              <button
-                onClick={() => router.push('/supersudo')}
-                className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                {t('admin.delivery.backToAdmin')}
-              </button>
-              <h1 className="text-3xl font-bold text-gray-900">{t('admin.delivery.title')}</h1>
-            </div>
-
-            {/* Delivery Locations */}
-            <Card className="p-6 mb-6">
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.delivery.title')}
+      backLabel={t('admin.delivery.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+            <Card className="admin-card mb-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">{t('admin.delivery.deliveryPricesByLocation')}</h2>
+                <h2 className="text-lg font-semibold text-gray-900">{t('admin.delivery.deliveryPricesByLocation')}</h2>
                 <Button
                   variant="primary"
                   onClick={handleAddLocation}
@@ -155,7 +142,7 @@ export default function DeliveryPage() {
               ) : (
                 <div className="space-y-4">
                   {locations.map((location, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
+                    <div key={index} className="rounded-lg border border-gray-200 p-3">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -165,7 +152,7 @@ export default function DeliveryPage() {
                             type="text"
                             value={location.country}
                             onChange={(e) => handleUpdateLocation(index, 'country', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="admin-field"
                             placeholder={t('admin.delivery.countryPlaceholder')}
                           />
                         </div>
@@ -177,7 +164,7 @@ export default function DeliveryPage() {
                             type="text"
                             value={location.city}
                             onChange={(e) => handleUpdateLocation(index, 'city', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="admin-field"
                             placeholder={t('admin.delivery.cityPlaceholder')}
                           />
                         </div>
@@ -190,7 +177,7 @@ export default function DeliveryPage() {
                               type="number"
                               value={location.price}
                               onChange={(e) => handleUpdateLocation(index, 'price', parseFloat(e.target.value) || 0)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="admin-field flex-1"
                             placeholder={t('admin.delivery.pricePlaceholder')}
                             min="0"
                             step="100"
@@ -214,7 +201,7 @@ export default function DeliveryPage() {
             </Card>
 
             {/* Actions */}
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Button
                 variant="primary"
                 onClick={handleSave}
@@ -230,10 +217,7 @@ export default function DeliveryPage() {
                 {t('admin.delivery.cancel')}
               </Button>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }
 

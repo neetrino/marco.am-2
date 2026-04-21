@@ -57,9 +57,9 @@ export function ProductFilters({
   const { t } = useTranslation();
 
   return (
-    <div className="space-y-4 mb-6">
+    <div className="mb-5 space-y-3">
       {/* Search Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t('admin.products.searchByTitleOrSlug')}
@@ -75,7 +75,7 @@ export function ProductFilters({
               }
             }}
             placeholder={t('admin.products.searchPlaceholder')}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="admin-field"
           />
         </div>
         
@@ -91,13 +91,13 @@ export function ProductFilters({
               setPage(1);
             }}
             placeholder={t('admin.products.skuPlaceholder')}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+            className="admin-field"
           />
         </div>
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {/* Category Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -107,7 +107,7 @@ export function ProductFilters({
             <button
               type="button"
               onClick={() => setCategoriesExpanded(!categoriesExpanded)}
-              className="w-full px-4 py-2.5 text-left border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm flex items-center justify-between"
+              className="admin-field flex items-center justify-between text-left"
             >
               <span className="text-gray-700">
                 {selectedCategories.size === 0
@@ -128,7 +128,7 @@ export function ProductFilters({
               </svg>
             </button>
             {categoriesExpanded && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-gray-300 bg-white shadow-lg">
                 {categoriesLoading ? (
                   <div className="p-3 text-sm text-gray-500 text-center">{t('admin.products.loadingCategories')}</div>
                 ) : categories.length === 0 ? (
@@ -154,7 +154,7 @@ export function ProductFilters({
                               setSelectedCategories(newSelected);
                               setPage(1);
                             }}
-                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
                           />
                           <span className="text-sm text-gray-700">{category.title}</span>
                         </label>
@@ -178,7 +178,7 @@ export function ProductFilters({
               setStockFilter(e.target.value as 'all' | 'inStock' | 'outOfStock');
               setPage(1);
             }}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm"
+            className="admin-field"
           >
             <option value="all">{t('admin.products.allProducts')}</option>
             <option value="inStock">{t('admin.products.inStock')}</option>
@@ -189,7 +189,7 @@ export function ProductFilters({
 
       {/* Selected Products and Delete */}
       {selectedIds.size > 0 && (
-        <div className="px-4 py-3 flex items-center justify-between border border-gray-200 rounded-md bg-white">
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-2.5">
           <div className="text-sm text-gray-700">
             {t('admin.products.selectedProducts').replace('{count}', selectedIds.size.toString())}
           </div>

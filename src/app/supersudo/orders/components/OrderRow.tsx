@@ -72,7 +72,7 @@ export function OrderRow({
         {order.customerPhone && (
           <div className="text-sm text-gray-500">{order.customerPhone}</div>
         )}
-        <div className="mt-1 text-xs text-blue-600">{t('admin.orders.viewOrderDetails')}</div>
+        <div className="mt-1 text-xs text-gray-600">{t('admin.orders.viewOrderDetails')}</div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
         {calculateTotalWithoutShipping()}
@@ -91,7 +91,7 @@ export function OrderRow({
             <select
               value={order.status}
               onChange={(e) => onStatusChange(e.target.value)}
-              className={`px-2 py-1 text-xs font-medium rounded-md border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${getStatusColor(order.status)}`}
+              className={`px-2 py-1 text-xs font-medium rounded-md border-0 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer ${getStatusColor(order.status)}`}
             >
               <option value="pending">{t(ADMIN_ORDER_STATUS_I18N_KEY.pending)}</option>
               <option value="processing">{t(ADMIN_ORDER_STATUS_I18N_KEY.processing)}</option>
@@ -112,7 +112,7 @@ export function OrderRow({
             <select
               value={order.paymentStatus}
               onChange={(e) => onPaymentStatusChange(e.target.value)}
-              className={`px-2 py-1 text-xs font-medium rounded-md border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer ${getPaymentStatusColor(order.paymentStatus)}`}
+              className={`px-2 py-1 text-xs font-medium rounded-md border-0 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer ${getPaymentStatusColor(order.paymentStatus)}`}
             >
               <option value="paid">{t('admin.orders.paid')}</option>
               <option value="pending">{t('admin.orders.pendingPayment')}</option>

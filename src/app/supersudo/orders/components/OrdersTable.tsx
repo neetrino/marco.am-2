@@ -50,7 +50,7 @@ export function OrdersTable({
 
   if (loading) {
     return (
-      <Card className="p-6">
+      <Card className="admin-card">
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
           <p className="text-gray-600">{t('admin.orders.loadingOrders')}</p>
@@ -61,7 +61,7 @@ export function OrdersTable({
 
   if (orders.length === 0) {
     return (
-      <Card className="p-6">
+      <Card className="admin-card">
         <div className="text-center py-8">
           <p className="text-gray-600">{t('admin.orders.noOrders')}</p>
         </div>
@@ -70,12 +70,12 @@ export function OrdersTable({
   }
 
   return (
-    <Card className="p-6">
+    <Card className="admin-table-card">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3">
+              <th className="px-3 py-2.5">
                 <input
                   type="checkbox"
                   aria-label={t('admin.orders.selectAllOrders')}
@@ -83,28 +83,28 @@ export function OrdersTable({
                   onChange={onToggleSelectAll}
                 />
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 {t('admin.orders.orderNumber')}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 {t('admin.orders.customer')}
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="cursor-pointer select-none px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500 hover:bg-gray-100"
                 onClick={() => onSort('total')}
               >
                 <div className="flex items-center gap-1">
                   {t('admin.orders.total')}
                   <div className="flex flex-col">
                     <svg
-                      className={`w-3 h-3 ${sortBy === 'total' && sortOrder === 'asc' ? 'text-blue-600' : 'text-gray-400'}`}
+                      className={`w-3 h-3 ${sortBy === 'total' && sortOrder === 'asc' ? 'text-gray-900' : 'text-gray-400'}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
                       <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
                     <svg
-                      className={`w-3 h-3 -mt-1 ${sortBy === 'total' && sortOrder === 'desc' ? 'text-blue-600' : 'text-gray-400'}`}
+                      className={`w-3 h-3 -mt-1 ${sortBy === 'total' && sortOrder === 'desc' ? 'text-gray-900' : 'text-gray-400'}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -113,31 +113,31 @@ export function OrdersTable({
                   </div>
                 </div>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 {t('admin.orders.items')}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 {t('admin.orders.status')}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 {t('admin.orders.payment')}
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
+                className="cursor-pointer select-none px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500 hover:bg-gray-100"
                 onClick={() => onSort('createdAt')}
               >
                 <div className="flex items-center gap-1">
                   {t('admin.orders.date')}
                   <div className="flex flex-col">
                     <svg
-                      className={`w-3 h-3 ${sortBy === 'createdAt' && sortOrder === 'asc' ? 'text-blue-600' : 'text-gray-400'}`}
+                      className={`w-3 h-3 ${sortBy === 'createdAt' && sortOrder === 'asc' ? 'text-gray-900' : 'text-gray-400'}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
                       <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
                     <svg
-                      className={`w-3 h-3 -mt-1 ${sortBy === 'createdAt' && sortOrder === 'desc' ? 'text-blue-600' : 'text-gray-400'}`}
+                      className={`w-3 h-3 -mt-1 ${sortBy === 'createdAt' && sortOrder === 'desc' ? 'text-gray-900' : 'text-gray-400'}`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >

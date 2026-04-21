@@ -58,7 +58,7 @@ export function ProductsTable({
   const router = useRouter();
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="admin-table-card">
       {loading ? (
         <div className="p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
@@ -74,7 +74,7 @@ export function ProductsTable({
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3">
+                  <th className="px-3 py-2.5">
                     <input
                       type="checkbox"
                       aria-label={t('admin.products.selectAll')}
@@ -82,7 +82,7 @@ export function ProductsTable({
                       onChange={toggleSelectAll}
                     />
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     <button
                       type="button"
                       onClick={() => handleHeaderSort('title')}
@@ -117,7 +117,7 @@ export function ProductsTable({
                       </span>
                     </button> 
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     <button
                       type="button"
                       onClick={() => handleHeaderSort('stock')}
@@ -152,7 +152,7 @@ export function ProductsTable({
                       </span>
                     </button>
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     <button
                       type="button"
                       onClick={() => handleHeaderSort('price')}
@@ -187,7 +187,7 @@ export function ProductsTable({
                       </span>
                     </button>
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     <button
                       type="button"
                       onClick={() => handleHeaderSort('createdAt')}
@@ -222,10 +222,10 @@ export function ProductsTable({
                       </span>
                     </button>
                   </th>
-                  <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-2.5 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                     {t('admin.products.featured')}
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider pl-6">
+                  <th className="pl-5 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     {t('admin.products.actions')}
                   </th>
                 </tr>
@@ -233,7 +233,7 @@ export function ProductsTable({
               <tbody className="bg-white divide-y divide-gray-200">
                 {sortedProducts.map((product) => (
                   <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-3">
                       <input
                         type="checkbox"
                         aria-label={t('admin.products.selectProduct').replace('{title}', product.title)}
@@ -241,13 +241,13 @@ export function ProductsTable({
                         onChange={() => toggleSelect(product.id)}
                       />
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-3 py-3">
                       <div className="flex items-center">
                         {product.image && (
                           <img
                             src={processImageUrl(product.image)}
                             alt={product.title}
-                            className="h-12 w-12 rounded object-cover mr-3"
+                            className="mr-2.5 h-10 w-10 rounded object-cover"
                           />
                         )}
                         <div>
@@ -256,7 +256,7 @@ export function ProductsTable({
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-4">
+                    <td className="px-3 py-3">
                       {product.colorStocks && product.colorStocks.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {product.colorStocks.map((colorStock) => (
@@ -275,7 +275,7 @@ export function ProductsTable({
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-3 py-3">
                       <div className="flex flex-col">
                         <div className="text-sm font-medium text-gray-900">
                           {formatPrice(product.price, currency)}
@@ -293,20 +293,20 @@ export function ProductsTable({
                         ) : null}
                       </div>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
                       {new Date(product.createdAt).toLocaleDateString('hy-AM')}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-center">
+                    <td className="whitespace-nowrap px-3 py-3 text-center">
                       <button
                         onClick={() => handleToggleFeatured(product.id, product.featured || false, product.title)}
-                        className="inline-flex items-center justify-center w-8 h-8 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                         title={product.featured ? t('admin.products.clickToRemoveFeatured') : t('admin.products.clickToMarkFeatured')}
                       >
                         <svg
                           className={`w-6 h-6 transition-all duration-200 ${
                             product.featured
-                              ? 'fill-blue-500 text-blue-500 drop-shadow-sm'
-                              : 'fill-none stroke-blue-400 text-blue-400 opacity-50 hover:opacity-75'
+                              ? 'fill-marco-black text-marco-black drop-shadow-sm'
+                              : 'fill-none stroke-gray-400 text-gray-400 opacity-50 hover:opacity-75'
                           }`}
                           viewBox="0 0 24 24"
                           strokeWidth="1.5"
@@ -320,13 +320,13 @@ export function ProductsTable({
                         </svg>
                       </button>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="whitespace-nowrap px-3 py-3 text-sm font-medium">
                       <div className="flex items-center gap-1 flex-wrap">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => router.push(`/supersudo/products/add?id=${product.id}`)}
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          className="text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                         >
                           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -347,7 +347,7 @@ export function ProductsTable({
                         <button
                           type="button"
                           onClick={() => handleTogglePublished(product.id, product.published, product.title)}
-                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 ${
                             product.published
                               ? 'bg-green-500'
                               : 'bg-gray-300'

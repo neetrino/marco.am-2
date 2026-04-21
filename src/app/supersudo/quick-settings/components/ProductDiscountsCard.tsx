@@ -40,9 +40,9 @@ export function ProductDiscountsCard({
   };
 
   return (
-    <Card className="p-6 bg-white border-gray-200">
+    <Card className="admin-card bg-white border-gray-200">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('admin.quickSettings.productDiscounts')}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.quickSettings.productDiscounts')}</h2>
         <p className="text-sm text-gray-600">{t('admin.quickSettings.productDiscountsSubtitle')}</p>
       </div>
 
@@ -67,7 +67,7 @@ export function ProductDiscountsCard({
             return (
               <div
                 key={product.id}
-                className="flex items-center gap-4 p-4 border-2 border-blue-300 rounded-lg hover:bg-blue-50 transition-colors bg-blue-50/30"
+                className="flex items-center gap-4 rounded-lg border border-gray-300 bg-gray-50 p-3 hover:bg-white transition-colors"
               >
                 {product.image && (
                   <div className="flex-shrink-0">
@@ -83,7 +83,7 @@ export function ProductDiscountsCard({
                   <div className="flex items-center gap-2 mt-1">
                     {currentDiscount > 0 && originalPrice > 0 ? (
                       <>
-                        <span className="text-xs font-semibold text-blue-600 select-none">
+                        <span className="text-xs font-semibold text-gray-700 select-none">
                           {formatPrice(discountedPrice)}
                         </span>
                         <span className="text-xs text-gray-400 line-through select-none">

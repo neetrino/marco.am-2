@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth/AuthContext';
 import { apiClient, getApiOrErrorMessage } from '@/lib/api-client';
 import { useTranslation } from '@/lib/i18n-client';
 import type { ReelsManagementStorage } from '@/lib/schemas/reels-management.schema';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 
 type ReelsLikesResponse = {
   likesByReelId: Record<string, number>;
@@ -200,33 +200,26 @@ export default function ReelsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 lg:ml-64">
-          <button onClick={() => router.push('/supersudo')} className="mb-4 flex items-center text-gray-600 hover:text-gray-900">
-            <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('admin.reels.backToAdmin')}
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t('admin.reels.title')}</h1>
-        </div>
-
-        <div className="flex flex-col gap-8 lg:flex-row">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          <div className="min-w-0 flex-1 space-y-6">
-            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.reels.title')}
+      backLabel={t('admin.reels.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+          <div className="min-w-0 flex-1 space-y-4">
+            <div className="admin-card">
               <h2 className="mb-4 text-lg font-semibold text-gray-900">{t('admin.reels.addNew')}</h2>
               <div className="grid gap-3 md:grid-cols-2">
-                <input value={form.titleHy} onChange={(e) => setForm((prev) => ({ ...prev, titleHy: e.target.value }))} placeholder={t('admin.reels.titleHy')} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-                <input value={form.titleRu} onChange={(e) => setForm((prev) => ({ ...prev, titleRu: e.target.value }))} placeholder={t('admin.reels.titleRu')} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-                <input value={form.titleEn} onChange={(e) => setForm((prev) => ({ ...prev, titleEn: e.target.value }))} placeholder={t('admin.reels.titleEn')} className="rounded-lg border border-gray-300 px-3 py-2 text-sm" />
-                <select value={form.sourceType} onChange={(e) => setForm((prev) => ({ ...prev, sourceType: e.target.value as ReelFormState['sourceType'] }))} className="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+                <input value={form.titleHy} onChange={(e) => setForm((prev) => ({ ...prev, titleHy: e.target.value }))} placeholder={t('admin.reels.titleHy')} className="admin-field" />
+                <input value={form.titleRu} onChange={(e) => setForm((prev) => ({ ...prev, titleRu: e.target.value }))} placeholder={t('admin.reels.titleRu')} className="admin-field" />
+                <input value={form.titleEn} onChange={(e) => setForm((prev) => ({ ...prev, titleEn: e.target.value }))} placeholder={t('admin.reels.titleEn')} className="admin-field" />
+                <select value={form.sourceType} onChange={(e) => setForm((prev) => ({ ...prev, sourceType: e.target.value as ReelFormState['sourceType'] }))} className="admin-field">
                   <option value="external_url">{t('admin.reels.externalSource')}</option>
                   <option value="admin_upload">{t('admin.reels.adminUpload')}</option>
                 </select>
-                <input value={form.videoUrl} onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))} placeholder={t('admin.reels.videoUrl')} className="rounded-lg border border-gray-300 px-3 py-2 text-sm md:col-span-2" />
+                <input value={form.videoUrl} onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))} placeholder={t('admin.reels.videoUrl')} className="admin-field md:col-span-2" />
                 <div className="md:col-span-2">
                   <input
                     ref={videoInputRef}
@@ -239,22 +232,22 @@ export default function ReelsPage() {
                     type="button"
                     onClick={() => videoInputRef.current?.click()}
                     disabled={uploadingVideo}
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-9 items-center rounded-lg border border-gray-300 px-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {uploadingVideo ? t('admin.reels.uploadingVideo') : t('admin.reels.uploadVideo')}
                   </button>
                 </div>
-                <input value={form.posterUrl} onChange={(e) => setForm((prev) => ({ ...prev, posterUrl: e.target.value }))} placeholder={t('admin.reels.posterUrl')} className="rounded-lg border border-gray-300 px-3 py-2 text-sm md:col-span-2" />
+                <input value={form.posterUrl} onChange={(e) => setForm((prev) => ({ ...prev, posterUrl: e.target.value }))} placeholder={t('admin.reels.posterUrl')} className="admin-field md:col-span-2" />
               </div>
-              <button onClick={handleAdd} disabled={!canAdd || saving} className="mt-4 rounded-lg bg-black px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60">
+              <button onClick={handleAdd} disabled={!canAdd || saving} className="mt-4 inline-flex h-9 items-center rounded-lg bg-marco-yellow px-3.5 text-sm font-semibold text-marco-black disabled:cursor-not-allowed disabled:opacity-60">
                 {saving ? t('admin.reels.saving') : t('admin.reels.add')}
               </button>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+            <div className="admin-card">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900">{t('admin.reels.list')}</h2>
-                <button onClick={() => void reload()} className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <button onClick={() => void reload()} className="inline-flex h-9 items-center rounded-lg border border-gray-300 px-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
                   {t('admin.reels.refreshLikes')}
                 </button>
               </div>
@@ -297,8 +290,6 @@ export default function ReelsPage() {
               )}
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }

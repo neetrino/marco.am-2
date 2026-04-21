@@ -28,7 +28,7 @@ export function Publishing({
           id="productClass"
           value={productClass}
           onChange={(event) => onProductClassChange(event.target.value as ProductClass)}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/20"
         >
           <option value="retail">Retail</option>
           <option value="wholesale">Wholesale</option>

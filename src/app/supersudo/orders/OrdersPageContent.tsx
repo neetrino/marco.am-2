@@ -2,7 +2,7 @@
 
 import { useTranslation } from '../../../lib/i18n-client';
 import { usePathname } from 'next/navigation';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { useOrders } from './useOrders';
 import { OrdersFilters } from './components/OrdersFilters';
 import { BulkSelectionControls } from './components/BulkSelectionControls';
@@ -51,77 +51,63 @@ export function OrdersPageContent() {
   } = useOrders();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="page-shell">
-        <div className="mb-8 lg:ml-64">
-          <button
-            onClick={() => router.push('/supersudo')}
-            className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('admin.orders.backToAdmin')}
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t('admin.orders.title')}</h1>
-        </div>
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.orders.title')}
+      backLabel={t('admin.orders.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+      <OrdersFilters
+        statusFilter={statusFilter}
+        paymentStatusFilter={paymentStatusFilter}
+        searchQuery={searchQuery}
+        updateMessage={updateMessage}
+        setStatusFilter={setStatusFilter}
+        setPaymentStatusFilter={setPaymentStatusFilter}
+        setSearchQuery={setSearchQuery}
+        setPage={setPage}
+        router={router}
+        searchParams={searchParams}
+      />
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
+      <BulkSelectionControls
+        selectedCount={selectedIds.size}
+        onBulkDelete={handleBulkDelete}
+        bulkDeleting={bulkDeleting}
+      />
 
-          <div className="flex-1 min-w-0">
-            <OrdersFilters
-              statusFilter={statusFilter}
-              paymentStatusFilter={paymentStatusFilter}
-              searchQuery={searchQuery}
-              updateMessage={updateMessage}
-              setStatusFilter={setStatusFilter}
-              setPaymentStatusFilter={setPaymentStatusFilter}
-              setSearchQuery={setSearchQuery}
-              setPage={setPage}
-              router={router}
-              searchParams={searchParams}
-            />
+      <OrdersTable
+        orders={orders}
+        loading={loading}
+        selectedIds={selectedIds}
+        updatingStatuses={updatingStatuses}
+        updatingPaymentStatuses={updatingPaymentStatuses}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        page={page}
+        meta={meta}
+        onToggleSelect={toggleSelect}
+        onToggleSelectAll={toggleSelectAll}
+        onSort={handleSort}
+        onViewDetails={handleViewOrderDetails}
+        onStatusChange={handleStatusChange}
+        onPaymentStatusChange={handlePaymentStatusChange}
+        onPageChange={(newPage) => setPage(newPage)}
+        formatCurrency={formatCurrency}
+      />
 
-            <BulkSelectionControls
-              selectedCount={selectedIds.size}
-              onBulkDelete={handleBulkDelete}
-              bulkDeleting={bulkDeleting}
-            />
-
-            <OrdersTable
-              orders={orders}
-              loading={loading}
-              selectedIds={selectedIds}
-              updatingStatuses={updatingStatuses}
-              updatingPaymentStatuses={updatingPaymentStatuses}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              page={page}
-              meta={meta}
-              onToggleSelect={toggleSelect}
-              onToggleSelectAll={toggleSelectAll}
-              onSort={handleSort}
-              onViewDetails={handleViewOrderDetails}
-              onStatusChange={handleStatusChange}
-              onPaymentStatusChange={handlePaymentStatusChange}
-              onPageChange={(newPage) => setPage(newPage)}
-              formatCurrency={formatCurrency}
-            />
-          </div>
-        </div>
-
-        {selectedOrderId && (
-          <OrderDetailsModal
-            orderDetails={orderDetails}
-            loading={loadingOrderDetails}
-            savingAdminNotes={savingAdminNotes}
-            onSaveAdminNotes={handleAdminNotesSave}
-            onClose={handleCloseModal}
-            formatCurrency={formatCurrency}
-          />
-        )}
-      </div>
-    </div>
+      {selectedOrderId && (
+        <OrderDetailsModal
+          orderDetails={orderDetails}
+          loading={loadingOrderDetails}
+          savingAdminNotes={savingAdminNotes}
+          onSaveAdminNotes={handleAdminNotesSave}
+          onClose={handleCloseModal}
+          formatCurrency={formatCurrency}
+        />
+      )}
+    </AdminPageLayout>
   );
 }

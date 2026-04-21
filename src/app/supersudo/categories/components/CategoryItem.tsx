@@ -17,13 +17,13 @@ export function CategoryItem({ category, parentCategory, onEdit, onDelete }: Cat
 
   return (
     <div
-      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+      className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100"
     >
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium text-gray-900">{`${depthPrefix}${category.title}`}</div>
           {category.requiresSizes && (
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+            <span className="rounded bg-marco-gray px-2 py-0.5 text-xs text-gray-700">
               Sizes
             </span>
           )}
@@ -42,7 +42,7 @@ export function CategoryItem({ category, parentCategory, onEdit, onDelete }: Cat
           variant="ghost"
           size="sm"
           onClick={() => onEdit(category)}
-          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+          className="text-gray-700 hover:bg-gray-100 hover:text-gray-900"
         >
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

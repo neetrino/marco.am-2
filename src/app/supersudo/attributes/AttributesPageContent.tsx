@@ -52,40 +52,30 @@ export function AttributesPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="page-shell">
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p className="text-sm text-gray-600">{t('admin.attributes.loadingAttributes')}</p>
-          </div>
-        </div>
+      <div className="py-12 text-center">
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
+        <p className="text-sm text-gray-600">{t('admin.attributes.loadingAttributes')}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="page-shell">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('admin.attributes.title')}</h1>
-            <p className="text-gray-600 mt-2">{t('admin.attributes.subtitle')}</p>
-          </div>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            {showAddForm ? t('admin.attributes.cancel') : t('admin.attributes.addAttribute')}
-          </button>
-        </div>
+    <div>
+      <div className="mb-5 flex items-center justify-end">
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-marco-yellow px-3.5 text-sm font-medium text-marco-black transition-colors hover:brightness-95"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          {showAddForm ? t('admin.attributes.cancel') : t('admin.attributes.addAttribute')}
+        </button>
+      </div>
 
         {/* Add Attribute Form */}
         {showAddForm && (
-          <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="admin-card mb-5">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.attributes.createNewAttribute')}</h2>
             <form onSubmit={handleCreateAttribute} className="space-y-4">
               <div>
@@ -97,7 +87,7 @@ export function AttributesPageContent() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder={t('admin.attributes.namePlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  className="admin-field"
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -108,7 +98,7 @@ export function AttributesPageContent() {
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  className="inline-flex h-9 items-center rounded-lg bg-marco-yellow px-3.5 text-sm font-medium text-marco-black hover:brightness-95"
                 >
                   {t('admin.attributes.createAttribute')}
                 </button>
@@ -118,7 +108,7 @@ export function AttributesPageContent() {
                     setShowAddForm(false);
                     setFormData({ name: '' });
                   }}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="inline-flex h-9 items-center rounded-lg border border-gray-300 bg-white px-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 >
                   {t('admin.attributes.cancel')}
                 </button>
@@ -129,7 +119,7 @@ export function AttributesPageContent() {
 
         {/* Attributes List */}
         {attributes.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <div className="admin-card py-10 text-center">
             <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
@@ -137,19 +127,19 @@ export function AttributesPageContent() {
             <p className="text-gray-600 mb-4">{t('admin.attributes.getStarted')}</p>
             <button
               onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
+              className="inline-flex h-9 items-center rounded-lg bg-marco-yellow px-3.5 text-sm font-medium text-marco-black hover:brightness-95"
             >
               {t('admin.attributes.createAttribute')}
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {attributes.map((attribute) => {
               const isExpanded = expandedAttributes.has(attribute.id);
               return (
                 <div
                   key={attribute.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                  className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-[0_1px_2px_rgba(16,16,16,0.04)]"
                 >
                   {/* Attribute Header */}
                   <div className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
@@ -217,7 +207,7 @@ export function AttributesPageContent() {
                                 {attribute.key}
                               </span>
                               {attribute.filterable && (
-                                <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                                <span className="rounded bg-marco-gray px-2 py-1 text-xs text-gray-700">
                                   {t('admin.attributes.filterable')}
                                 </span>
                               )}

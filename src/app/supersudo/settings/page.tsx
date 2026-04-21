@@ -7,7 +7,7 @@ import { Card, Button } from '@shop/ui';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { clearCurrencyRatesCache } from '../../../lib/currency';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { logger } from "@/lib/utils/logger";
 
 interface Settings {
@@ -147,84 +147,73 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 lg:ml-64">
-          <button
-            onClick={() => router.push('/supersudo')}
-            className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('admin.settings.backToAdmin')}
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">{t('admin.settings.title')}</h1>
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.settings.title')}
+      backLabel={t('admin.settings.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+      <Card className="admin-card mb-5">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">{t('admin.settings.generalSettings')}</h2>
+        <div className="space-y-3">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              {t('admin.settings.siteName')}
+            </label>
+            <input
+              type="text"
+              className="admin-field"
+              defaultValue={t('admin.settings.siteNamePlaceholder')}
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              {t('admin.settings.siteDescription')}
+            </label>
+            <textarea
+              className="admin-field"
+              rows={3}
+              defaultValue={t('admin.settings.siteDescriptionPlaceholder')}
+            />
+          </div>
         </div>
+      </Card>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
+      <Card className="admin-card mb-5">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">{t('admin.settings.paymentSettings')}</h2>
+        <div className="space-y-3">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              {t('admin.settings.defaultCurrency')}
+            </label>
+            <select
+              value={settings.defaultCurrency || 'AMD'}
+              onChange={(e) => setSettings({ ...settings, defaultCurrency: e.target.value })}
+              className="admin-field"
+            >
+              <option value="AMD">{t('admin.settings.amd')}</option>
+              <option value="USD">{t('admin.settings.usd')}</option>
+              <option value="EUR">{t('admin.settings.eur')}</option>
+            </select>
+          </div>
+          <div>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                defaultChecked
+                className="mr-2"
+              />
+              <span className="text-sm font-medium text-gray-700">{t('admin.settings.enableOnlinePayments')}</span>
+            </label>
+          </div>
+        </div>
+      </Card>
 
-          <div className="flex-1 min-w-0">
-            <Card className="p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.settings.generalSettings')}</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('admin.settings.siteName')}
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    defaultValue={t('admin.settings.siteNamePlaceholder')}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('admin.settings.siteDescription')}
-                  </label>
-                  <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={3}
-                    defaultValue={t('admin.settings.siteDescriptionPlaceholder')}
-                  />
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.settings.paymentSettings')}</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('admin.settings.defaultCurrency')}
-                  </label>
-                  <select
-                    value={settings.defaultCurrency || 'AMD'}
-                    onChange={(e) => setSettings({ ...settings, defaultCurrency: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="AMD">{t('admin.settings.amd')}</option>
-                    <option value="USD">{t('admin.settings.usd')}</option>
-                    <option value="EUR">{t('admin.settings.eur')}</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      defaultChecked
-                      className="mr-2"
-                    />
-                    <span className="text-sm font-medium text-gray-700">{t('admin.settings.enableOnlinePayments')}</span>
-                  </label>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.settings.currencyRates')}</h2>
-              <p className="text-sm text-gray-600 mb-4">{t('admin.settings.currencyRatesDescription')}</p>
+      <Card className="admin-card mb-5">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('admin.settings.currencyRates')}</h2>
+              <p className="text-sm text-gray-600 mb-3">{t('admin.settings.currencyRatesDescription')}</p>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -242,7 +231,7 @@ export default function SettingsPage() {
                           USD: parseFloat(e.target.value) || 1,
                         },
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-field"
                       disabled
                     />
                     <p className="text-xs text-gray-500 mt-1">{t('admin.settings.baseCurrency')}</p>
@@ -262,7 +251,7 @@ export default function SettingsPage() {
                             ...settings,
                             currencyRates: {
                               ...settings.currencyRates,
-                              AMD: undefined as any,
+                              AMD: undefined,
                             },
                           });
                         } else {
@@ -289,7 +278,7 @@ export default function SettingsPage() {
                           });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-field"
                       placeholder="400"
                     />
                     <p className="text-xs text-gray-500 mt-1">{t('admin.settings.rateToUSD')}</p>
@@ -309,7 +298,7 @@ export default function SettingsPage() {
                             ...settings,
                             currencyRates: {
                               ...settings.currencyRates,
-                              EUR: undefined as any,
+                              EUR: undefined,
                             },
                           });
                         } else {
@@ -336,7 +325,7 @@ export default function SettingsPage() {
                           });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-field"
                       placeholder="0.92"
                     />
                     <p className="text-xs text-gray-500 mt-1">{t('admin.settings.rateToUSD')}</p>
@@ -356,7 +345,7 @@ export default function SettingsPage() {
                             ...settings,
                             currencyRates: {
                               ...settings.currencyRates,
-                              RUB: undefined as any,
+                              RUB: undefined,
                             },
                           });
                         } else {
@@ -383,7 +372,7 @@ export default function SettingsPage() {
                           });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-field"
                       placeholder="90"
                     />
                     <p className="text-xs text-gray-500 mt-1">{t('admin.settings.rateToUSD')}</p>
@@ -403,7 +392,7 @@ export default function SettingsPage() {
                             ...settings,
                             currencyRates: {
                               ...settings.currencyRates,
-                              GEL: undefined as any,
+                              GEL: undefined,
                             },
                           });
                         } else {
@@ -430,35 +419,32 @@ export default function SettingsPage() {
                           });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="admin-field"
                       placeholder="2.7"
                     />
                     <p className="text-xs text-gray-500 mt-1">{t('admin.settings.rateToUSD')}</p>
                   </div>
                 </div>
               </div>
-            </Card>
+      </Card>
 
-            <div className="flex gap-4">
-              <Button
-                variant="primary"
-                onClick={handleSave}
-                disabled={saving}
-              >
-                {saving ? t('admin.settings.saving') : t('admin.settings.saveSettings')}
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => router.push('/supersudo')}
-                disabled={saving}
-              >
-                {t('admin.settings.cancel')}
-              </Button>
-            </div>
-          </div>
-        </div>
+      <div className="flex gap-3">
+        <Button
+          variant="primary"
+          onClick={handleSave}
+          disabled={saving}
+        >
+          {saving ? t('admin.settings.saving') : t('admin.settings.saveSettings')}
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/supersudo')}
+          disabled={saving}
+        >
+          {t('admin.settings.cancel')}
+        </Button>
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }
 

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { AttributesPageContent } from './AttributesPageContent';
 
 export default function AttributesPage() {
@@ -38,18 +38,17 @@ export default function AttributesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="page-shell py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <AttributesPageContent />
-          </div>
-        </div>
-      </div>
-    </div>
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.attributes.title')}
+      subtitle={t('admin.attributes.subtitle')}
+      backLabel={t('admin.common.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+      <AttributesPageContent />
+    </AdminPageLayout>
   );
 }
 

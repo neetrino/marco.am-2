@@ -7,8 +7,7 @@ import { Card } from '@shop/ui';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useStockAnalytics } from './hooks/useStockAnalytics';
-import { AnalyticsHeader } from './components/AnalyticsHeader';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { PeriodSelector } from './components/PeriodSelector';
 import { StatsCards } from './components/StatsCards';
 import { TopProducts } from './components/TopProducts';
@@ -78,77 +77,72 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="page-shell">
-        <AnalyticsHeader />
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.analytics.title')}
+      subtitle={t('admin.analytics.subtitle')}
+      backLabel={t('admin.analytics.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+      <PeriodSelector
+        period={period}
+        startDate={startDate}
+        endDate={endDate}
+        analytics={analytics}
+        onPeriodChange={setPeriod}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <PeriodSelector
-              period={period}
-              startDate={startDate}
-              endDate={endDate}
-              analytics={analytics}
-              onPeriodChange={setPeriod}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-            />
-
-            {loading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-                <p className="text-gray-600">{t('admin.analytics.loadingAnalytics')}</p>
-              </div>
-            ) : (
-              <>
-                {analytics ? (
-                  <>
-                    <StatsCards analytics={analytics} totalUsers={totalUsers} />
-
-                    {orderStatusBreakdownFailed ? (
-                      <Card className="p-4 mb-6 border border-amber-200 bg-amber-50">
-                        <p className="text-sm text-amber-950">
-                          {t('admin.analytics.orderStatusBreakdownLoadFailed')}
-                        </p>
-                      </Card>
-                    ) : null}
-
-                    {orderStatusBreakdown ? (
-                      <OrderStatusBreakdown data={orderStatusBreakdown} />
-                    ) : null}
-
-                    <CustomerAnalytics data={analytics.customerAnalytics} />
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                      <TopProducts products={analytics.topProducts} />
-                      <LeastSellingProducts products={analytics.leastSellingProducts} />
-                    </div>
-
-                    <div className="mb-6">
-                      <TopCategories categories={analytics.topCategories} />
-                    </div>
-
-                    <OrdersByDayChart ordersByDay={analytics.ordersByDay} />
-                  </>
-                ) : (
-                  <Card className="p-6 mb-6">
-                    <p className="text-gray-600 text-center">{t('admin.analytics.noAnalyticsData')}</p>
-                  </Card>
-                )}
-
-                <StockAnalyticsSection
-                  data={stockAnalytics}
-                  loading={stockLoading}
-                  failed={stockFailed}
-                />
-              </>
-            )}
-          </div>
+      {loading ? (
+        <div className="py-10 text-center">
+          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-gray-900"></div>
+          <p className="text-gray-600">{t('admin.analytics.loadingAnalytics')}</p>
         </div>
-      </div>
-    </div>
+      ) : (
+        <>
+          {analytics ? (
+            <>
+              <StatsCards analytics={analytics} totalUsers={totalUsers} />
+
+              {orderStatusBreakdownFailed ? (
+                <Card className="mb-5 border border-amber-200 bg-amber-50 p-4">
+                  <p className="text-sm text-amber-950">
+                    {t('admin.analytics.orderStatusBreakdownLoadFailed')}
+                  </p>
+                </Card>
+              ) : null}
+
+              {orderStatusBreakdown ? <OrderStatusBreakdown data={orderStatusBreakdown} /> : null}
+
+              <CustomerAnalytics data={analytics.customerAnalytics} />
+
+              <div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <TopProducts products={analytics.topProducts} />
+                <LeastSellingProducts products={analytics.leastSellingProducts} />
+              </div>
+
+              <div className="mb-5">
+                <TopCategories categories={analytics.topCategories} />
+              </div>
+
+              <OrdersByDayChart ordersByDay={analytics.ordersByDay} />
+            </>
+          ) : (
+            <Card className="admin-card mb-5">
+              <p className="text-center text-gray-600">{t('admin.analytics.noAnalyticsData')}</p>
+            </Card>
+          )}
+
+          <StockAnalyticsSection
+            data={stockAnalytics}
+            loading={stockLoading}
+            failed={stockFailed}
+          />
+        </>
+      )}
+    </AdminPageLayout>
   );
 }

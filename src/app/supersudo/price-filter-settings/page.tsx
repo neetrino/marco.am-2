@@ -6,7 +6,7 @@ import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button, Input } from '@shop/ui';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { logger } from "@/lib/utils/logger";
 
 export default function PriceFilterSettingsPage() {
@@ -254,35 +254,18 @@ export default function PriceFilterSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8 lg:ml-64">
-          <button
-            onClick={() => router.push('/supersudo')}
-            className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
-          >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('admin.common.backToAdmin')}
-          </button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('admin.priceFilter.title')}</h1>
-              <p className="text-gray-600 mt-2">{t('admin.priceFilter.subtitle')}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <Card className="p-6">
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.priceFilter.title')}
+      subtitle={t('admin.priceFilter.subtitle')}
+      backLabel={t('admin.common.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+            <Card className="admin-card">
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('admin.priceFilter.priceFilterDefaultRange')}</h2>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">{t('admin.priceFilter.priceFilterDefaultRange')}</h2>
                 <p className="text-sm text-gray-600">
                   {t('admin.priceFilter.stepSizeDescription')}
                 </p>
@@ -354,14 +337,14 @@ export default function PriceFilterSettingsPage() {
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <div className="flex items-start gap-3">
-                      <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="mt-0.5 h-5 w-5 flex-shrink-0 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <div className="text-sm text-blue-800">
+                      <div className="text-sm text-gray-800">
                         <p className="font-medium mb-1">{t('admin.priceFilter.howItWorks')}</p>
-                        <ul className="list-disc list-inside space-y-1 text-blue-700">
+                        <ul className="list-inside list-disc space-y-1 text-gray-700">
                           <li>{t('admin.priceFilter.stepSizeControls')}</li>
                           <li>{t('admin.priceFilter.differentStepSizes')}</li>
                           <li>{t('admin.priceFilter.defaultRange')}</li>
@@ -406,10 +389,7 @@ export default function PriceFilterSettingsPage() {
                 </div>
               )}
             </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }
 

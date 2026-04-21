@@ -6,7 +6,7 @@ import { useAuth } from '../../../lib/auth/AuthContext';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { getStoredCurrency, initializeCurrencyRates, type CurrencyCode } from '../../../lib/currency';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import { ProductFilters } from './components/ProductFilters';
 import { ProductsTable } from './components/ProductsTable';
 import { useProductHandlers } from './hooks/useProductHandlers';
@@ -316,96 +316,79 @@ export default function ProductsPage() {
   const currentPath = pathname || '/supersudo/products';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-6 lg:ml-64">
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.products.title')}
+      backLabel={t('admin.products.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+      headerActions={
+        (search || selectedCategories.size > 0 || skuSearch || stockFilter !== 'all') ? (
           <button
-            onClick={() => router.push('/supersudo')}
-            className="text-gray-600 hover:text-gray-900 mb-2 flex items-center text-sm"
+            type="button"
+            onClick={handleClearFilters}
+            className="text-sm font-medium text-gray-600 underline hover:text-gray-900"
           >
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('admin.products.backToAdmin')}
+            {t('admin.products.clearAll')}
           </button>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{t('admin.products.title')}</h1>
-            {(search || selectedCategories.size > 0 || skuSearch || stockFilter !== 'all') && (
-              <button
-                type="button"
-                onClick={handleClearFilters}
-                className="text-sm text-gray-600 hover:text-gray-900 underline"
-              >
-                {t('admin.products.clearAll')}
-              </button>
-            )}
-          </div>
-        </div>
+        ) : undefined
+      }
+    >
+      <ProductFilters
+        search={search}
+        setSearch={setSearch}
+        skuSearch={skuSearch}
+        setSkuSearch={setSkuSearch}
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
+        categoriesExpanded={categoriesExpanded}
+        setCategoriesExpanded={setCategoriesExpanded}
+        stockFilter={stockFilter}
+        setStockFilter={setStockFilter}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        selectedIds={selectedIds}
+        handleSearch={handlers.handleSearch}
+        handleBulkDelete={handlers.handleBulkDelete}
+        handleClearFilters={handleClearFilters}
+        bulkDeleting={bulkDeleting}
+        setPage={setPage}
+      />
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            <ProductFilters
-              search={search}
-              setSearch={setSearch}
-              skuSearch={skuSearch}
-              setSkuSearch={setSkuSearch}
-              selectedCategories={selectedCategories}
-              setSelectedCategories={setSelectedCategories}
-              categories={categories}
-              categoriesLoading={categoriesLoading}
-              categoriesExpanded={categoriesExpanded}
-              setCategoriesExpanded={setCategoriesExpanded}
-              stockFilter={stockFilter}
-              setStockFilter={setStockFilter}
-              minPrice={minPrice}
-              setMinPrice={setMinPrice}
-              maxPrice={maxPrice}
-              setMaxPrice={setMaxPrice}
-              selectedIds={selectedIds}
-              handleSearch={handlers.handleSearch}
-              handleBulkDelete={handlers.handleBulkDelete}
-              handleClearFilters={handleClearFilters}
-              bulkDeleting={bulkDeleting}
-              setPage={setPage}
-            />
-
-            {/* Add New Product Button */}
-            <div className="mb-6">
-              <button
-                onClick={() => router.push('/supersudo/products/add')}
-                className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 font-medium text-sm"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                {t('admin.products.addNewProduct')}
-              </button>
-            </div>
-
-            {/* Products Table */}
-            <ProductsTable
-              loading={loading}
-              sortedProducts={sortedProducts}
-              products={products}
-              selectedIds={selectedIds}
-              toggleSelect={handlers.toggleSelect}
-              toggleSelectAll={handlers.toggleSelectAll}
-              sortBy={sortBy}
-              handleHeaderSort={handleHeaderSort}
-              currency={currency}
-              handleDeleteProduct={handlers.handleDeleteProduct}
-              handleTogglePublished={handlers.handleTogglePublished}
-              handleToggleFeatured={handlers.handleToggleFeatured}
-              meta={meta}
-              page={page}
-              setPage={setPage}
-            />
-          </div>
-        </div>
+      <div className="mb-4">
+        <button
+          onClick={() => router.push('/supersudo/products/add')}
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-marco-yellow px-4 text-sm font-medium text-marco-black transition-colors hover:brightness-95"
+        >
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          {t('admin.products.addNewProduct')}
+        </button>
       </div>
-    </div>
+
+      <ProductsTable
+        loading={loading}
+        sortedProducts={sortedProducts}
+        products={products}
+        selectedIds={selectedIds}
+        toggleSelect={handlers.toggleSelect}
+        toggleSelectAll={handlers.toggleSelectAll}
+        sortBy={sortBy}
+        handleHeaderSort={handleHeaderSort}
+        currency={currency}
+        handleDeleteProduct={handlers.handleDeleteProduct}
+        handleTogglePublished={handlers.handleTogglePublished}
+        handleToggleFeatured={handlers.handleToggleFeatured}
+        meta={meta}
+        page={page}
+        setPage={setPage}
+      />
+    </AdminPageLayout>
   );
 }

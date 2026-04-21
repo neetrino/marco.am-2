@@ -6,7 +6,7 @@ import { Button, Card } from '@shop/ui';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
-import { AdminSidebar } from '../components/AdminSidebar';
+import { AdminPageLayout } from '../components/AdminPageLayout';
 import type { HomeHeroBannerStorage } from '../../../lib/schemas/home-hero-banner.schema';
 
 type HeroBannerFormState = {
@@ -105,27 +105,16 @@ export default function HeroBannerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar currentPath={currentPath} router={router} t={t} />
-
-          <div className="flex-1 min-w-0">
-            <div className="mb-8">
-              <button
-                onClick={() => router.push('/supersudo')}
-                className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                {t('admin.heroBanner.backToAdmin')}
-              </button>
-              <h1 className="text-3xl font-bold text-gray-900">{t('admin.heroBanner.title')}</h1>
-              <p className="mt-2 text-gray-600">{t('admin.heroBanner.subtitle')}</p>
-            </div>
-
-            <Card className="p-6 mb-6">
+    <AdminPageLayout
+      currentPath={currentPath}
+      router={router}
+      t={t}
+      title={t('admin.heroBanner.title')}
+      subtitle={t('admin.heroBanner.subtitle')}
+      backLabel={t('admin.heroBanner.backToAdmin')}
+      onBack={() => router.push('/supersudo')}
+    >
+            <Card className="admin-card mb-5">
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -140,7 +129,7 @@ export default function HeroBannerPage() {
                         desktopImageUrl: event.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-field"
                     placeholder={t('admin.heroBanner.imageUrlPlaceholder')}
                   />
                 </div>
@@ -158,16 +147,16 @@ export default function HeroBannerPage() {
                         mobileImageUrl: event.target.value,
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="admin-field"
                     placeholder={t('admin.heroBanner.imageUrlPlaceholder')}
                   />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.heroBanner.previewTitle')}</h2>
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <Card className="admin-card mb-5">
+              <h2 className="mb-4 text-lg font-semibold text-gray-900">{t('admin.heroBanner.previewTitle')}</h2>
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                 <div>
                   <p className="text-sm text-gray-600 mb-2">{t('admin.heroBanner.desktopPreview')}</p>
                   {form.desktopImageUrl.trim() ? (
@@ -199,7 +188,7 @@ export default function HeroBannerPage() {
               </div>
             </Card>
 
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               <Button variant="primary" onClick={handleSave} disabled={saving}>
                 {saving ? t('admin.heroBanner.saving') : t('admin.heroBanner.save')}
               </Button>
@@ -207,9 +196,6 @@ export default function HeroBannerPage() {
                 {t('admin.heroBanner.cancel')}
               </Button>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }

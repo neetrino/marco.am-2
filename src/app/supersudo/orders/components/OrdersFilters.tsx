@@ -73,7 +73,7 @@ export function OrdersFilters({
   };
 
   return (
-    <Card className="p-4 mb-6">
+    <Card className="admin-card mb-5">
       <div className="flex gap-4 items-center flex-wrap">
         <div
           className="flex flex-wrap gap-2 items-center"
@@ -83,9 +83,9 @@ export function OrdersFilters({
           <button
             type="button"
             onClick={() => handleStatusChange('')}
-            className={`px-3 py-2 rounded-md text-sm font-medium border transition-colors ${
+            className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
               statusFilter === ''
-                ? 'bg-blue-600 text-white border-blue-600'
+                ? 'border-marco-yellow bg-marco-yellow text-marco-black'
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
             }`}
           >
@@ -96,9 +96,9 @@ export function OrdersFilters({
               key={value}
               type="button"
               onClick={() => handleStatusChange(value)}
-              className={`px-3 py-2 rounded-md text-sm font-medium border transition-colors ${
+              className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                 statusFilter === value
-                  ? 'bg-blue-600 text-white border-blue-600'
+                  ? 'border-marco-yellow bg-marco-yellow text-marco-black'
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               }`}
             >
@@ -107,7 +107,7 @@ export function OrdersFilters({
           ))}
         </div>
         <select
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="admin-field"
           value={paymentStatusFilter}
           onChange={(e) => handlePaymentStatusChange(e.target.value)}
         >
@@ -119,7 +119,7 @@ export function OrdersFilters({
         <input
           type="text"
           placeholder={t('admin.orders.searchPlaceholder')}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 min-w-[200px]"
+          className="admin-field min-w-[200px] flex-1"
           value={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
         />
