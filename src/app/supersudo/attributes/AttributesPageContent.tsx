@@ -399,8 +399,6 @@ export function AttributesPageContent() {
             })}
           </div>
         )}
-      </div>
-
     </div>
   );
 }
