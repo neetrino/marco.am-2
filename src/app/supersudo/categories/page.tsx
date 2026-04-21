@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useCategories } from './hooks/useCategories';
 import { useCategoryActions } from './hooks/useCategoryActions';
 import { CategoriesHeader } from './components/CategoriesHeader';
-import { AdminSidebar } from './components/AdminSidebar';
+import { AdminSidebar } from '../components/AdminSidebar';
 import { CategoriesList } from './components/CategoriesList';
 import { AddCategoryModal } from './components/AddCategoryModal';
 import { EditCategoryModal } from './components/EditCategoryModal';
@@ -17,6 +17,8 @@ export default function CategoriesPage() {
   const { t } = useTranslation();
   const { isLoggedIn, isAdmin, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = pathname || '/supersudo/categories';
   const { categories, loading, fetchCategories } = useCategories();
   const {
     showAddModal,
@@ -64,7 +66,7 @@ export default function CategoriesPage() {
         <CategoriesHeader />
 
         <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar t={t} />
+          <AdminSidebar currentPath={currentPath} router={router} t={t} />
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">

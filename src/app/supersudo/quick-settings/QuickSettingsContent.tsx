@@ -3,7 +3,7 @@
 import { Card } from '@shop/ui';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '../../../lib/i18n-client';
-import { AdminSidebar } from './components/AdminSidebar';
+import { AdminSidebar } from '../components/AdminSidebar';
 import { GlobalDiscountCard } from './components/GlobalDiscountCard';
 import { QuickInfoCard } from './components/QuickInfoCard';
 import { CategoryDiscountsCard } from './components/CategoryDiscountsCard';

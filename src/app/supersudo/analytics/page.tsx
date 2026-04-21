@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card } from '@shop/ui';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useStockAnalytics } from './hooks/useStockAnalytics';
 import { AnalyticsHeader } from './components/AnalyticsHeader';
-import { AdminSidebar } from './components/AdminSidebar';
+import { AdminSidebar } from '../components/AdminSidebar';
 import { PeriodSelector } from './components/PeriodSelector';
 import { StatsCards } from './components/StatsCards';
 import { TopProducts } from './components/TopProducts';
@@ -23,6 +23,8 @@ export default function AnalyticsPage() {
   const { t, lang } = useTranslation();
   const { isLoggedIn, isAdmin, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = pathname || '/supersudo/analytics';
   const [period, setPeriod] = useState<string>('week');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -81,7 +83,7 @@ export default function AnalyticsPage() {
         <AnalyticsHeader />
 
         <div className="flex flex-col lg:flex-row gap-8">
-          <AdminSidebar t={t} />
+          <AdminSidebar currentPath={currentPath} router={router} t={t} />
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">

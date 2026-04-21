@@ -28,8 +28,17 @@ interface AdminMenuDrawerProps {
 export function AdminMenuDrawer({ tabs, currentPath }: AdminMenuDrawerProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [isProductsExpanded, setIsProductsExpanded] = useState(false);
+  const isProductsSectionActive = PRODUCT_SECTION_PATHS.some(
+    (path) => currentPath === path || currentPath.startsWith(`${path}/`),
+  );
+  const [isProductsExpanded, setIsProductsExpanded] = useState(isProductsSectionActive);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (isProductsSectionActive) {
+      setIsProductsExpanded(true);
+    }
+  }, [isProductsSectionActive]);
 
   useEffect(() => {
     if (open) {
@@ -109,9 +118,6 @@ export function AdminMenuDrawer({ tabs, currentPath }: AdminMenuDrawerProps) {
                   return null;
                 }
 
-                const isProductsSectionActive = PRODUCT_SECTION_PATHS.some(
-                  (path) => currentPath === path || currentPath.startsWith(`${path}/`),
-                );
                 const isActive = isProductsItem
                   ? isProductsSectionActive
                   : tab.path === '/'
@@ -120,15 +126,59 @@ export function AdminMenuDrawer({ tabs, currentPath }: AdminMenuDrawerProps) {
                       (tab.path === '/supersudo' && currentPath === '/supersudo') ||
                       (tab.path !== '/supersudo' && currentPath.startsWith(tab.path));
 
+                if (isProductsItem) {
+                  return (
+                    <div key={tab.id} className="flex items-center gap-1 px-2 py-1">
+                      <button
+                        onClick={() => handleNavigate(tab.path)}
+                        className={`group flex flex-1 items-center rounded-xl px-3 py-3 text-left text-sm font-semibold transition-colors ${
+                          isActive
+                            ? 'bg-marco-yellow text-marco-black'
+                            : 'text-marco-text hover:bg-marco-gray'
+                        }`}
+                      >
+                        <span className="flex items-center gap-3">
+                          <span
+                            className={`transition-colors ${
+                              isActive ? 'text-marco-black' : 'text-marco-text/70 group-hover:text-marco-black'
+                            }`}
+                          >
+                            {tab.icon}
+                          </span>
+                          {tab.label}
+                        </span>
+                      </button>
+                      <button
+                        aria-label="Toggle products submenu"
+                        onClick={() => setIsProductsExpanded((prev) => !prev)}
+                        className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${
+                          isActive
+                            ? 'bg-marco-yellow text-marco-black'
+                            : 'text-marco-text/50 hover:bg-marco-gray hover:text-marco-black'
+                        }`}
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d={isProductsExpanded ? 'M19 9l-7 7-7-7' : 'M9 5l7 7-7 7'}
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  );
+                }
+
                 return (
                   <button
                     key={tab.id}
                     onClick={() => {
-                      if (isProductsItem) {
-                        setIsProductsExpanded((prev) => !prev);
-                        return;
-                      }
-
                       handleNavigate(tab.path);
                     }}
                     className={`group flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold transition-colors ${
@@ -155,16 +205,7 @@ export function AdminMenuDrawer({ tabs, currentPath }: AdminMenuDrawerProps) {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      {isProductsItem ? (
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={isProductsExpanded ? 'M19 9l-7 7-7-7' : 'M9 5l7 7-7 7'}
-                        />
-                      ) : (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      )}
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
                 );

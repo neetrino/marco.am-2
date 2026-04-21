@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button, Input } from '@shop/ui';
 import { apiClient, getApiOrErrorMessage } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
+import { AdminSidebar } from '../components/AdminSidebar';
 import { logger } from "@/lib/utils/logger";
 
 interface User {
@@ -34,6 +35,8 @@ export default function UsersPage() {
   const { t } = useTranslation();
   const { isLoggedIn, isAdmin, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = pathname || '/supersudo/users';
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -189,7 +192,7 @@ export default function UsersPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-8 lg:ml-64">
           <button
             onClick={() => router.push('/supersudo')}
             className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
@@ -202,233 +205,239 @@ export default function UsersPage() {
           <h1 className="text-3xl font-bold text-gray-900">{t('admin.users.title')}</h1>
         </div>
 
-        {/* Search */}
-        <Card className="p-4 mb-6">
-          <form onSubmit={handleSearch} className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <Input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('admin.users.searchPlaceholder')}
-                className="flex-1"
-              />
-              <Button type="submit" variant="primary">
-                {t('admin.users.search')}
-              </Button>
-            </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <AdminSidebar currentPath={currentPath} router={router} t={t} />
 
-            {/* Admin / Customer filter */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                {t('admin.users.adminCustomer')}
-              </span>
-              <div className="inline-flex rounded-full bg-gray-100 p-1 text-xs">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRoleFilter('all');
-                    setPage(1);
-                    logger.devLog('👥 [ADMIN] Role filter changed to: all');
-                  }}
-                  className={`px-3 py-1 rounded-full transition-all ${
-                    roleFilter === 'all'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {t('admin.users.all')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRoleFilter('admin');
-                    setPage(1);
-                    logger.devLog('👥 [ADMIN] Role filter changed to: admin');
-                  }}
-                  className={`px-3 py-1 rounded-full transition-all ${
-                    roleFilter === 'admin'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {t('admin.users.admins')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRoleFilter('customer');
-                    setPage(1);
-                    logger.devLog('👥 [ADMIN] Role filter changed to: customer');
-                  }}
-                  className={`px-3 py-1 rounded-full transition-all ${
-                    roleFilter === 'customer'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  {t('admin.users.customers')}
-                </button>
-              </div>
-            </div>
-          </form>
-        </Card>
+          <div className="flex-1 min-w-0">
+            {/* Search */}
+            <Card className="p-4 mb-6">
+              <form onSubmit={handleSearch} className="flex flex-col gap-4">
+                <div className="flex gap-4">
+                  <Input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={t('admin.users.searchPlaceholder')}
+                    className="flex-1"
+                  />
+                  <Button type="submit" variant="primary">
+                    {t('admin.users.search')}
+                  </Button>
+                </div>
 
-        {/* Users Table */}
-        <Card className="p-6">
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-gray-600">{t('admin.users.loadingUsers')}</p>
-            </div>
-          ) : filteredUsers.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600">{t('admin.users.noUsers')}</p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          aria-label={t('admin.users.selectAll')}
-                          checked={users.length > 0 && users.every(u => selectedIds.has(u.id))}
-                          onChange={toggleSelectAll}
-                        />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.users.user')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.users.contact')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.users.orders')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.users.roles')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.users.status')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.users.created')}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-4">
-                          <input
-                            type="checkbox"
-                            aria-label={t('admin.users.selectUser').replace('{email}', user.email)}
-                            checked={selectedIds.has(user.id)}
-                            onChange={() => toggleSelect(user.id)}
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.firstName} {user.lastName}
-                          </div>
-                          <div className="text-sm text-gray-500">{user.id}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{user.email}</div>
-                          {user.phone && (
-                            <div className="text-sm text-gray-500">{user.phone}</div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {user.ordersCount ?? 0}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex gap-2">
-                            {user.roles?.map((role) => (
-                              <span
-                                key={role}
-                                className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
-                              >
-                                {role}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleToggleBlocked(
-                                user.id,
-                                user.blocked,
-                                `${user.firstName} ${user.lastName}`,
-                              )
-                            }
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                              user.blocked
-                                ? 'bg-gray-300 focus:ring-gray-400'
-                                : 'bg-green-500 focus:ring-green-500'
-                            }`}
-                            title={user.blocked ? t('admin.users.clickToActivate') : t('admin.users.clickToBlock')}
-                            role="switch"
-                            aria-checked={!user.blocked}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                                user.blocked ? 'translate-x-1' : 'translate-x-6'
-                              }`}
-                            />
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(user.createdAt).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              {meta && meta.totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    {t('admin.users.showingPage').replace('{page}', meta.page.toString()).replace('{totalPages}', meta.totalPages.toString()).replace('{total}', meta.total.toString())}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
+                {/* Admin / Customer filter */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    {t('admin.users.adminCustomer')}
+                  </span>
+                  <div className="inline-flex rounded-full bg-gray-100 p-1 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRoleFilter('all');
+                        setPage(1);
+                        logger.devLog('👥 [ADMIN] Role filter changed to: all');
+                      }}
+                      className={`px-3 py-1 rounded-full transition-all ${
+                        roleFilter === 'all'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
                     >
-                      {t('admin.users.previous')}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-                      disabled={page === meta.totalPages}
+                      {t('admin.users.all')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRoleFilter('admin');
+                        setPage(1);
+                        logger.devLog('👥 [ADMIN] Role filter changed to: admin');
+                      }}
+                      className={`px-3 py-1 rounded-full transition-all ${
+                        roleFilter === 'admin'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
                     >
-                      {t('admin.users.next')}
-                    </Button>
+                      {t('admin.users.admins')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRoleFilter('customer');
+                        setPage(1);
+                        logger.devLog('👥 [ADMIN] Role filter changed to: customer');
+                      }}
+                      className={`px-3 py-1 rounded-full transition-all ${
+                        roleFilter === 'customer'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      {t('admin.users.customers')}
+                    </button>
                   </div>
                 </div>
+              </form>
+            </Card>
+
+            {/* Users Table */}
+            <Card className="p-6">
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                  <p className="text-gray-600">{t('admin.users.loadingUsers')}</p>
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">{t('admin.users.noUsers')}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              aria-label={t('admin.users.selectAll')}
+                              checked={users.length > 0 && users.every(u => selectedIds.has(u.id))}
+                              onChange={toggleSelectAll}
+                            />
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.users.user')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.users.contact')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.users.orders')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.users.roles')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.users.status')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.users.created')}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filteredUsers.map((user) => (
+                          <tr key={user.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-4">
+                              <input
+                                type="checkbox"
+                                aria-label={t('admin.users.selectUser').replace('{email}', user.email)}
+                                checked={selectedIds.has(user.id)}
+                                onChange={() => toggleSelect(user.id)}
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {user.firstName} {user.lastName}
+                              </div>
+                              <div className="text-sm text-gray-500">{user.id}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{user.email}</div>
+                              {user.phone && (
+                                <div className="text-sm text-gray-500">{user.phone}</div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                              {user.ordersCount ?? 0}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex gap-2">
+                                {user.roles?.map((role) => (
+                                  <span
+                                    key={role}
+                                    className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
+                                  >
+                                    {role}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleToggleBlocked(
+                                    user.id,
+                                    user.blocked,
+                                    `${user.firstName} ${user.lastName}`,
+                                  )
+                                }
+                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                                  user.blocked
+                                    ? 'bg-gray-300 focus:ring-gray-400'
+                                    : 'bg-green-500 focus:ring-green-500'
+                                }`}
+                                title={user.blocked ? t('admin.users.clickToActivate') : t('admin.users.clickToBlock')}
+                                role="switch"
+                                aria-checked={!user.blocked}
+                              >
+                                <span
+                                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                                    user.blocked ? 'translate-x-1' : 'translate-x-6'
+                                  }`}
+                                />
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(user.createdAt).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  {meta && meta.totalPages > 1 && (
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-sm text-gray-700">
+                        {t('admin.users.showingPage').replace('{page}', meta.page.toString()).replace('{totalPages}', meta.totalPages.toString()).replace('{total}', meta.total.toString())}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          disabled={page === 1}
+                        >
+                          {t('admin.users.previous')}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
+                          disabled={page === meta.totalPages}
+                        >
+                          {t('admin.users.next')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="text-sm text-gray-700">{t('admin.users.selectedUsers').replace('{count}', selectedIds.size.toString())}</div>
+                    <Button
+                      variant="outline"
+                      onClick={handleBulkDelete}
+                      disabled={selectedIds.size === 0 || bulkDeleting}
+                    >
+                      {bulkDeleting ? t('admin.users.deleting') : t('admin.users.deleteSelected')}
+                    </Button>
+                  </div>
+                </>
               )}
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-gray-700">{t('admin.users.selectedUsers').replace('{count}', selectedIds.size.toString())}</div>
-                <Button
-                  variant="outline"
-                  onClick={handleBulkDelete}
-                  disabled={selectedIds.size === 0 || bulkDeleting}
-                >
-                  {bulkDeleting ? t('admin.users.deleting') : t('admin.users.deleteSelected')}
-                </Button>
-              </div>
-            </>
-          )}
-        </Card>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

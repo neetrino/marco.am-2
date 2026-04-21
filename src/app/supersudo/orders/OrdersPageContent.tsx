@@ -1,6 +1,8 @@
 'use client';
 
 import { useTranslation } from '../../../lib/i18n-client';
+import { usePathname } from 'next/navigation';
+import { AdminSidebar } from '../components/AdminSidebar';
 import { useOrders } from './useOrders';
 import { OrdersFilters } from './components/OrdersFilters';
 import { BulkSelectionControls } from './components/BulkSelectionControls';
@@ -9,6 +11,8 @@ import { OrderDetailsModal } from './components/OrderDetailsModal';
 
 export function OrdersPageContent() {
   const { t } = useTranslation();
+  const pathname = usePathname();
+  const currentPath = pathname || '/supersudo/orders';
   const {
     orders,
     loading,
@@ -49,7 +53,7 @@ export function OrdersPageContent() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="page-shell">
-        <div className="mb-8">
+        <div className="mb-8 lg:ml-64">
           <button
             onClick={() => router.push('/supersudo')}
             className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
@@ -62,44 +66,50 @@ export function OrdersPageContent() {
           <h1 className="text-3xl font-bold text-gray-900">{t('admin.orders.title')}</h1>
         </div>
 
-        <OrdersFilters
-          statusFilter={statusFilter}
-          paymentStatusFilter={paymentStatusFilter}
-          searchQuery={searchQuery}
-          updateMessage={updateMessage}
-          setStatusFilter={setStatusFilter}
-          setPaymentStatusFilter={setPaymentStatusFilter}
-          setSearchQuery={setSearchQuery}
-          setPage={setPage}
-          router={router}
-          searchParams={searchParams}
-        />
+        <div className="flex flex-col lg:flex-row gap-8">
+          <AdminSidebar currentPath={currentPath} router={router} t={t} />
 
-        <BulkSelectionControls
-          selectedCount={selectedIds.size}
-          onBulkDelete={handleBulkDelete}
-          bulkDeleting={bulkDeleting}
-        />
+          <div className="flex-1 min-w-0">
+            <OrdersFilters
+              statusFilter={statusFilter}
+              paymentStatusFilter={paymentStatusFilter}
+              searchQuery={searchQuery}
+              updateMessage={updateMessage}
+              setStatusFilter={setStatusFilter}
+              setPaymentStatusFilter={setPaymentStatusFilter}
+              setSearchQuery={setSearchQuery}
+              setPage={setPage}
+              router={router}
+              searchParams={searchParams}
+            />
 
-        <OrdersTable
-          orders={orders}
-          loading={loading}
-          selectedIds={selectedIds}
-          updatingStatuses={updatingStatuses}
-          updatingPaymentStatuses={updatingPaymentStatuses}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          page={page}
-          meta={meta}
-          onToggleSelect={toggleSelect}
-          onToggleSelectAll={toggleSelectAll}
-          onSort={handleSort}
-          onViewDetails={handleViewOrderDetails}
-          onStatusChange={handleStatusChange}
-          onPaymentStatusChange={handlePaymentStatusChange}
-          onPageChange={(newPage) => setPage(newPage)}
-          formatCurrency={formatCurrency}
-        />
+            <BulkSelectionControls
+              selectedCount={selectedIds.size}
+              onBulkDelete={handleBulkDelete}
+              bulkDeleting={bulkDeleting}
+            />
+
+            <OrdersTable
+              orders={orders}
+              loading={loading}
+              selectedIds={selectedIds}
+              updatingStatuses={updatingStatuses}
+              updatingPaymentStatuses={updatingPaymentStatuses}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
+              page={page}
+              meta={meta}
+              onToggleSelect={toggleSelect}
+              onToggleSelectAll={toggleSelectAll}
+              onSort={handleSort}
+              onViewDetails={handleViewOrderDetails}
+              onStatusChange={handleStatusChange}
+              onPaymentStatusChange={handlePaymentStatusChange}
+              onPageChange={(newPage) => setPage(newPage)}
+              formatCurrency={formatCurrency}
+            />
+          </div>
+        </div>
 
         {selectedOrderId && (
           <OrderDetailsModal

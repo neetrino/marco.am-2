@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { getErrorMessage } from '@/lib/types/errors';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
+import { AdminSidebar } from '../components/AdminSidebar';
 import { logger } from "@/lib/utils/logger";
 
 interface Message {
@@ -32,6 +33,8 @@ export default function MessagesPage() {
   const { t } = useTranslation();
   const { isLoggedIn, isAdmin, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = pathname || '/supersudo/messages';
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -144,7 +147,7 @@ export default function MessagesPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
+        <div className="mb-8 lg:ml-64">
           <button
             onClick={() => router.push('/supersudo')}
             className="text-gray-600 hover:text-gray-900 mb-4 flex items-center"
@@ -157,119 +160,123 @@ export default function MessagesPage() {
           <h1 className="text-3xl font-bold text-gray-900">{t('admin.messages.title')}</h1>
         </div>
 
-        {/* Messages Table */}
-        <Card className="p-6">
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-gray-600">{t('admin.messages.loadingMessages')}</p>
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-600">{t('admin.messages.noMessages')}</p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          aria-label={t('admin.messages.selectAll')}
-                          checked={messages.length > 0 && messages.every(m => selectedIds.has(m.id))}
-                          onChange={toggleSelectAll}
-                        />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.messages.name')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.messages.email')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.messages.subject')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.messages.message')}
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t('admin.messages.date')}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {messages.map((message) => (
-                      <tr key={message.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-4">
-                          <input
-                            type="checkbox"
-                            aria-label={t('admin.messages.selectMessage').replace('{email}', message.email)}
-                            checked={selectedIds.has(message.id)}
-                            onChange={() => toggleSelect(message.id)}
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">
-                            {message.name}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{message.email}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">{message.subject}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900 max-w-md truncate">{message.message}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(message.createdAt).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+        <div className="flex flex-col lg:flex-row gap-8">
+          <AdminSidebar currentPath={currentPath} router={router} t={t} />
 
-              {/* Pagination */}
-              {meta && meta.totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    {t('admin.messages.showingPage').replace('{page}', meta.page.toString()).replace('{totalPages}', meta.totalPages.toString()).replace('{total}', meta.total.toString())}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                    >
-                      {t('admin.messages.previous')}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-                      disabled={page === meta.totalPages}
-                    >
-                      {t('admin.messages.next')}
-                    </Button>
-                  </div>
+          <div className="flex-1 min-w-0">
+            <Card className="p-6">
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+                  <p className="text-gray-600">{t('admin.messages.loadingMessages')}</p>
                 </div>
+              ) : messages.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">{t('admin.messages.noMessages')}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              aria-label={t('admin.messages.selectAll')}
+                              checked={messages.length > 0 && messages.every(m => selectedIds.has(m.id))}
+                              onChange={toggleSelectAll}
+                            />
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.messages.name')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.messages.email')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.messages.subject')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.messages.message')}
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {t('admin.messages.date')}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {messages.map((message) => (
+                          <tr key={message.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-4">
+                              <input
+                                type="checkbox"
+                                aria-label={t('admin.messages.selectMessage').replace('{email}', message.email)}
+                                checked={selectedIds.has(message.id)}
+                                onChange={() => toggleSelect(message.id)}
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">
+                                {message.name}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{message.email}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm text-gray-900">{message.subject}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm text-gray-900 max-w-md truncate">{message.message}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {new Date(message.createdAt).toLocaleDateString()}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {meta && meta.totalPages > 1 && (
+                    <div className="mt-6 flex items-center justify-between">
+                      <div className="text-sm text-gray-700">
+                        {t('admin.messages.showingPage').replace('{page}', meta.page.toString()).replace('{totalPages}', meta.totalPages.toString()).replace('{total}', meta.total.toString())}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          disabled={page === 1}
+                        >
+                          {t('admin.messages.previous')}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
+                          disabled={page === meta.totalPages}
+                        >
+                          {t('admin.messages.next')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="text-sm text-gray-700">{t('admin.messages.selectedMessages').replace('{count}', selectedIds.size.toString())}</div>
+                    <Button
+                      variant="outline"
+                      onClick={handleBulkDelete}
+                      disabled={selectedIds.size === 0 || bulkDeleting}
+                    >
+                      {bulkDeleting ? t('admin.messages.deleting') : t('admin.messages.deleteSelected')}
+                    </Button>
+                  </div>
+                </>
               )}
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-gray-700">{t('admin.messages.selectedMessages').replace('{count}', selectedIds.size.toString())}</div>
-                <Button
-                  variant="outline"
-                  onClick={handleBulkDelete}
-                  disabled={selectedIds.size === 0 || bulkDeleting}
-                >
-                  {bulkDeleting ? t('admin.messages.deleting') : t('admin.messages.deleteSelected')}
-                </Button>
-              </div>
-            </>
-          )}
-        </Card>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
