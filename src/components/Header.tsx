@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
+import { usePathname } from 'next/navigation';
 import type { LanguageCode } from '../lib/language';
 import { useTranslation } from '../lib/i18n-client';
 import { MarcoLogo } from './header/MarcoLogo';
@@ -22,9 +23,14 @@ type HeaderProps = {
 };
 
 export function Header({ initialLanguage }: HeaderProps) {
+  const pathname = usePathname();
   const data = useHeaderData();
   const layout = useHeaderLayoutMetrics();
   const { t } = useTranslation();
+
+  if (pathname?.startsWith('/supersudo')) {
+    return null;
+  }
 
   const { compactPrimaryNav, viewportWidth, desktopTopRowInnerRef, desktopTopRowMeasureRef } = layout;
 

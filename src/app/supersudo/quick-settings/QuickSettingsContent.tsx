@@ -96,7 +96,7 @@ export function QuickSettingsContent({
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="page-shell">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 lg:ml-64">
           <h1 className="text-3xl font-bold text-gray-900">{t('admin.quickSettings.title')}</h1>
           <p className="text-gray-600 mt-2">{t('admin.quickSettings.subtitle')}</p>
         </div>
