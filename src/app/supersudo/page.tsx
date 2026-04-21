@@ -80,15 +80,17 @@ export default function AdminPanel() {
       title={t('admin.dashboard.title')}
       subtitle={t('admin.dashboard.welcome').replace('{name}', user?.firstName || t('admin.dashboard.title'))}
     >
-      <StatsGrid stats={stats} statsLoading={statsLoading} />
+      <div className="space-y-6 pb-8">
+        <StatsGrid stats={stats} statsLoading={statsLoading} />
 
-      <div className="mb-6 mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <RecentOrdersCard recentOrders={recentOrders} recentOrdersLoading={recentOrdersLoading} />
-        <TopProductsCard topProducts={topProducts} topProductsLoading={topProductsLoading} />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <RecentOrdersCard recentOrders={recentOrders} recentOrdersLoading={recentOrdersLoading} />
+          <TopProductsCard topProducts={topProducts} topProductsLoading={topProductsLoading} />
+        </div>
+
+        <UserActivityCard userActivity={userActivity} userActivityLoading={userActivityLoading} />
+        <QuickActionsCard />
       </div>
-
-      <UserActivityCard userActivity={userActivity} userActivityLoading={userActivityLoading} />
-      <QuickActionsCard />
     </AdminPageLayout>
   );
 }
