@@ -56,11 +56,6 @@ export function CategoriesList({
 
   return (
     <>
-      <div className="mb-3 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50/70 px-3 py-2 text-sm">
-        <span className="font-medium text-slate-700">Table view</span>
-        <span className="text-slate-500">{selectedOnPage} selected on this page</span>
-      </div>
-
       <div className="overflow-hidden rounded-xl border border-slate-200">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] table-fixed divide-y divide-slate-200 bg-white">
