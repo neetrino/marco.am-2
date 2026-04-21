@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 
+import { apiClient } from '../../lib/api-client';
 import { useTranslation } from '../../lib/i18n-client';
 import type { PublicReelItem } from '../../lib/schemas/reels-management.schema';
 import { ReelLikeButton } from './ReelLikeButton';
@@ -32,6 +33,7 @@ export type ReelsVerticalFeedProps = {
 export function ReelsVerticalFeed({ initialIndex, items }: ReelsVerticalFeedProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const viewedReelIdsRef = useRef<Set<string>>(new Set());
   const { reelItems, pendingLikeById, doubleTapBurstById, toggleLike } =
     useReelsFeedData(items);
   const activeIndex = useActiveReelIndex({
@@ -52,6 +54,22 @@ export function ReelsVerticalFeed({ initialIndex, items }: ReelsVerticalFeedProp
       media.removeEventListener('change', sync);
     };
   }, []);
+
+  useEffect(() => {
+    const activeItem = reelItems[activeIndex];
+    if (!activeItem) {
+      return;
+    }
+    if (viewedReelIdsRef.current.has(activeItem.id)) {
+      return;
+    }
+    viewedReelIdsRef.current.add(activeItem.id);
+    void apiClient
+      .post(`/api/v1/reels/${activeItem.id}/view`)
+      .catch(() => {
+        viewedReelIdsRef.current.delete(activeItem.id);
+      });
+  }, [activeIndex, reelItems]);
 
   const feedContent = useMemo(() => {
     return reelItems.map((item, index) => {

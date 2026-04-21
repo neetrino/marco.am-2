@@ -13,6 +13,10 @@ type ReelsLikesResponse = {
   likesByReelId: Record<string, number>;
 };
 
+type ReelsViewsResponse = {
+  viewsByReelId: Record<string, number>;
+};
+
 type UploadVideoResponse = {
   url: string;
 };
@@ -58,6 +62,7 @@ export default function ReelsPage() {
   const [saving, setSaving] = useState(false);
   const [storage, setStorage] = useState<ReelsManagementStorage | null>(null);
   const [likesByReelId, setLikesByReelId] = useState<Record<string, number>>({});
+  const [viewsByReelId, setViewsByReelId] = useState<Record<string, number>>({});
   const [form, setForm] = useState<ReelFormState>(EMPTY_FORM);
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
@@ -72,12 +77,14 @@ export default function ReelsPage() {
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const [reelsStorage, likes] = await Promise.all([
+      const [reelsStorage, likes, views] = await Promise.all([
         apiClient.get<ReelsManagementStorage>('/api/v1/supersudo/reels'),
         apiClient.get<ReelsLikesResponse>('/api/v1/supersudo/reels/likes'),
+        apiClient.get<ReelsViewsResponse>('/api/v1/supersudo/reels/views'),
       ]);
       setStorage(reelsStorage);
       setLikesByReelId(likes.likesByReelId);
+      setViewsByReelId(views.viewsByReelId);
     } catch (error: unknown) {
       alert(getApiOrErrorMessage(error, t('admin.reels.failedToLoad')));
     } finally {
@@ -110,6 +117,10 @@ export default function ReelsPage() {
   const totalLikes = useMemo(() => {
     return sortedItems.reduce((sum, item) => sum + (likesByReelId[item.id] ?? 0), 0);
   }, [sortedItems, likesByReelId]);
+
+  const totalViews = useMemo(() => {
+    return sortedItems.reduce((sum, item) => sum + (viewsByReelId[item.id] ?? 0), 0);
+  }, [sortedItems, viewsByReelId]);
 
   const persistStorage = useCallback(
     async (nextStorage: ReelsManagementStorage) => {
@@ -267,7 +278,7 @@ export default function ReelsPage() {
               {t('admin.reels.refreshLikes')}
             </button>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-4">
             <div className="rounded-xl border border-marco-border bg-white/85 p-3">
               <p className="text-xs text-marco-text/70">{t('admin.reels.list')}</p>
               <p className="mt-1 text-2xl font-semibold">{sortedItems.length}</p>
@@ -279,6 +290,10 @@ export default function ReelsPage() {
             <div className="rounded-xl border border-marco-border bg-white/85 p-3">
               <p className="text-xs text-marco-text/70">{t('admin.reels.likes')}</p>
               <p className="mt-1 text-2xl font-semibold">{totalLikes}</p>
+            </div>
+            <div className="rounded-xl border border-marco-border bg-white/85 p-3">
+              <p className="text-xs text-marco-text/70">{t('admin.reels.views')}</p>
+              <p className="mt-1 text-2xl font-semibold">{totalViews}</p>
             </div>
           </div>
         </section>
@@ -419,6 +434,9 @@ export default function ReelsPage() {
                     <div className="text-right">
                       <p className="text-sm font-semibold text-gray-800">
                         {t('admin.reels.likes')}: {likesByReelId[item.id] ?? 0}
+                      </p>
+                      <p className="text-sm font-semibold text-gray-800">
+                        {t('admin.reels.views')}: {viewsByReelId[item.id] ?? 0}
                       </p>
                       {item.moderation.status !== 'approved' ? (
                         <button
