@@ -13,6 +13,7 @@
     "reels": "Reels",
     "analytics": "Аналитика",
     "filterByPrice": "Фильтр по цене",
+    "heroBanner": "Hero / Banner",
     "delivery": "Доставка",
     "settings": "Настройки"
   },
@@ -756,6 +757,24 @@
     "uploadFailed": "Не удалось загрузить видео",
     "failedToLoad": "Не удалось загрузить reels",
     "failedToSave": "Не удалось сохранить изменения"
+  },
+  "heroBanner": {
+    "title": "Hero / Banner",
+    "subtitle": "Управляйте desktop и mobile изображениями hero banner на главной странице",
+    "backToAdmin": "Вернуться в панель администратора",
+    "desktopImageUrl": "URL desktop изображения",
+    "mobileImageUrl": "URL mobile изображения",
+    "imageUrlPlaceholder": "https://example.com/banner.jpg",
+    "previewTitle": "Предпросмотр",
+    "desktopPreview": "Desktop предпросмотр",
+    "mobilePreview": "Mobile предпросмотр",
+    "noImageSelected": "URL изображения не указан",
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "cancel": "Отмена",
+    "savedSuccess": "Изображения hero banner успешно сохранены!",
+    "errorLoading": "Не удалось загрузить hero banner: {message}",
+    "errorSaving": "Не удалось сохранить hero banner: {message}"
   },
   "common": {
     "loading": "Загрузка...",
