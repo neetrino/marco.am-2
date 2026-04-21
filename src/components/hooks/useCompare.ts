@@ -9,6 +9,7 @@ import {
   removeCompareItemClient,
 } from '@/lib/compare/compare-client';
 import { getErrorHttpStatus } from '@/lib/api-client';
+import { showToast } from '@/components/Toast';
 
 const MAX_COMPARE_ITEMS = 4;
 
@@ -74,7 +75,7 @@ export function useCompare(productId: string) {
               detail: { delta: -delta },
             })
           );
-          alert(t('common.alerts.compareMaxReached'));
+          showToast(t('common.alerts.compareMaxReached'), 'warning', 2800);
           return;
         }
         await addCompareItemClient(productId, language);
@@ -89,7 +90,7 @@ export function useCompare(productId: string) {
         })
       );
       if (nextValue && getErrorHttpStatus(error) === 422) {
-        alert(t('common.alerts.compareMaxReached'));
+        showToast(t('common.alerts.compareMaxReached'), 'warning', 2800);
       }
       /* ignore compare toggle errors in card widgets */
     } finally {
