@@ -59,55 +59,57 @@ export function OrdersPageContent() {
       backLabel={t('admin.orders.backToAdmin')}
       onBack={() => router.push('/supersudo')}
     >
-      <OrdersFilters
-        statusFilter={statusFilter}
-        paymentStatusFilter={paymentStatusFilter}
-        searchQuery={searchQuery}
-        updateMessage={updateMessage}
-        setStatusFilter={setStatusFilter}
-        setPaymentStatusFilter={setPaymentStatusFilter}
-        setSearchQuery={setSearchQuery}
-        setPage={setPage}
-        router={router}
-        searchParams={searchParams}
-      />
+      <div className="space-y-5 rounded-2xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/60 p-4 shadow-sm sm:p-5">
+        <OrdersFilters
+          statusFilter={statusFilter}
+          paymentStatusFilter={paymentStatusFilter}
+          searchQuery={searchQuery}
+          updateMessage={updateMessage}
+          setStatusFilter={setStatusFilter}
+          setPaymentStatusFilter={setPaymentStatusFilter}
+          setSearchQuery={setSearchQuery}
+          setPage={setPage}
+          router={router}
+          searchParams={searchParams}
+        />
 
-      <BulkSelectionControls
-        selectedCount={selectedIds.size}
-        onBulkDelete={handleBulkDelete}
-        bulkDeleting={bulkDeleting}
-      />
+        <BulkSelectionControls
+          selectedCount={selectedIds.size}
+          onBulkDelete={handleBulkDelete}
+          bulkDeleting={bulkDeleting}
+        />
 
-      <OrdersTable
-        orders={orders}
-        loading={loading}
-        selectedIds={selectedIds}
-        updatingStatuses={updatingStatuses}
-        updatingPaymentStatuses={updatingPaymentStatuses}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        page={page}
-        meta={meta}
-        onToggleSelect={toggleSelect}
-        onToggleSelectAll={toggleSelectAll}
-        onSort={handleSort}
-        onViewDetails={handleViewOrderDetails}
-        onStatusChange={handleStatusChange}
-        onPaymentStatusChange={handlePaymentStatusChange}
-        onPageChange={(newPage) => setPage(newPage)}
-        formatCurrency={formatCurrency}
-      />
-
-      {selectedOrderId && (
-        <OrderDetailsModal
-          orderDetails={orderDetails}
-          loading={loadingOrderDetails}
-          savingAdminNotes={savingAdminNotes}
-          onSaveAdminNotes={handleAdminNotesSave}
-          onClose={handleCloseModal}
+        <OrdersTable
+          orders={orders}
+          loading={loading}
+          selectedIds={selectedIds}
+          updatingStatuses={updatingStatuses}
+          updatingPaymentStatuses={updatingPaymentStatuses}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          page={page}
+          meta={meta}
+          onToggleSelect={toggleSelect}
+          onToggleSelectAll={toggleSelectAll}
+          onSort={handleSort}
+          onViewDetails={handleViewOrderDetails}
+          onStatusChange={handleStatusChange}
+          onPaymentStatusChange={handlePaymentStatusChange}
+          onPageChange={(newPage) => setPage(newPage)}
           formatCurrency={formatCurrency}
         />
-      )}
+
+        {selectedOrderId && (
+          <OrderDetailsModal
+            orderDetails={orderDetails}
+            loading={loadingOrderDetails}
+            savingAdminNotes={savingAdminNotes}
+            onSaveAdminNotes={handleAdminNotesSave}
+            onClose={handleCloseModal}
+            formatCurrency={formatCurrency}
+          />
+        )}
+      </div>
     </AdminPageLayout>
   );
 }

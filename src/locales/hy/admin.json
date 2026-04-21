@@ -612,6 +612,7 @@
     "processing": "Մշակվող",
     "completed": "Ավարտված",
     "cancelled": "Չեղարկված",
+    "allPaymentStatuses": "Բոլոր վճարման կարգավիճակները",
     "paid": "Վճարված",
     "pendingPayment": "սպասվում է",
     "failed": "Ձախողված",

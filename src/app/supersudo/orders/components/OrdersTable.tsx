@@ -50,9 +50,9 @@ export function OrdersTable({
 
   if (loading) {
     return (
-      <Card className="admin-card">
+      <Card className="admin-card border-slate-200/80 bg-white shadow-[0_10px_25px_rgba(15,23,42,0.06)]">
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
           <p className="text-gray-600">{t('admin.orders.loadingOrders')}</p>
         </div>
       </Card>
@@ -61,7 +61,7 @@ export function OrdersTable({
 
   if (orders.length === 0) {
     return (
-      <Card className="admin-card">
+      <Card className="admin-card border-slate-200/80 bg-white shadow-[0_10px_25px_rgba(15,23,42,0.06)]">
         <div className="text-center py-8">
           <p className="text-gray-600">{t('admin.orders.noOrders')}</p>
         </div>
@@ -70,27 +70,38 @@ export function OrdersTable({
   }
 
   return (
-    <Card className="admin-table-card">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+    <Card className="admin-table-card border-slate-200/80 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
+      <div className="overflow-x-hidden">
+        <table className="w-full table-fixed divide-y divide-slate-200">
+          <colgroup>
+            <col className="w-8" />
+            <col className="w-[18%]" />
+            <col className="w-[24%]" />
+            <col className="w-[12%]" />
+            <col className="w-[7%]" />
+            <col className="w-[13%]" />
+            <col className="w-[13%]" />
+            <col className="w-[13%]" />
+          </colgroup>
+          <thead className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur">
             <tr>
-              <th className="px-3 py-2.5">
+              <th className="px-2.5 py-2">
                 <input
                   type="checkbox"
                   aria-label={t('admin.orders.selectAllOrders')}
                   checked={orders.length > 0 && orders.every(o => selectedIds.has(o.id))}
                   onChange={onToggleSelectAll}
+                  className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500"
                 />
               </th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t('admin.orders.orderNumber')}
               </th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t('admin.orders.customer')}
               </th>
               <th
-                className="cursor-pointer select-none px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500 hover:bg-gray-100"
+                className="cursor-pointer select-none px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-slate-100"
                 onClick={() => onSort('total')}
               >
                 <div className="flex items-center gap-1">
@@ -113,17 +124,17 @@ export function OrdersTable({
                   </div>
                 </div>
               </th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t('admin.orders.items')}
               </th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t('admin.orders.status')}
               </th>
-              <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                 {t('admin.orders.payment')}
               </th>
               <th
-                className="cursor-pointer select-none px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wider text-gray-500 hover:bg-gray-100"
+                className="cursor-pointer select-none px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wide text-slate-500 hover:bg-slate-100"
                 onClick={() => onSort('createdAt')}
               >
                 <div className="flex items-center gap-1">
@@ -148,7 +159,7 @@ export function OrdersTable({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-slate-100 bg-white">
             {orders.map((order) => (
               <OrderRow
                 key={order.id}

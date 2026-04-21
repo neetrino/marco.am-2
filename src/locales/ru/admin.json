@@ -615,6 +615,7 @@
     "processing": "Обрабатывается",
     "completed": "Завершен",
     "cancelled": "Отменен",
+    "allPaymentStatuses": "Все статусы оплаты",
     "paid": "Оплачен",
     "pendingPayment": "Ожидает оплаты",
     "failed": "Неудачно",

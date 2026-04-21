@@ -615,6 +615,7 @@
     "processing": "Processing",
     "completed": "Completed",
     "cancelled": "Cancelled",
+    "allPaymentStatuses": "All Payment Statuses",
     "paid": "Paid",
     "pendingPayment": "pending",
     "failed": "Failed",
