@@ -143,6 +143,7 @@ export function ReelsVerticalFeed({ initialIndex, items }: ReelsVerticalFeedProp
     doubleTapBurstById,
     pendingLikeById,
     reelItems,
+    router,
     shouldReduceMotion,
     t,
     toggleLike,

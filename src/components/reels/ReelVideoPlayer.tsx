@@ -36,7 +36,7 @@ export function ReelVideoPlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [videoFailed, setVideoFailed] = useState(false);
-  const [isWaiting, setIsWaiting] = useState(true);
+  const [_isWaiting, setIsWaiting] = useState(true);
   const [showCenterHeart, setShowCenterHeart] = useState(false);
 
   useEffect(() => {
