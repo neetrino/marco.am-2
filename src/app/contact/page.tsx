@@ -193,7 +193,7 @@ export default function ContactPage() {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full !h-10 !rounded-full !border-transparent !bg-[#efefef] !px-4 !py-0 !text-sm !text-marco-black placeholder:!text-[#8f8f8f] focus:!ring-2 focus:!ring-[#d4d4d4] sm:!text-base"
-                  placeholder={t('contact.form.name').replace('*', '').trim()}
+                  placeholder={t('contact.form.name').replace(/\*/gu, '').trim()}
                 />
               </div>
               <div>
@@ -206,7 +206,7 @@ export default function ContactPage() {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full !h-10 !rounded-full !border-transparent !bg-[#efefef] !px-4 !py-0 !text-sm !text-marco-black placeholder:!text-[#8f8f8f] focus:!ring-2 focus:!ring-[#d4d4d4] sm:!text-base"
-                  placeholder={t('contact.form.email').replace('*', '').trim()}
+                  placeholder={t('contact.form.email').replace(/\*/gu, '').trim()}
                 />
               </div>
               <div>
@@ -219,7 +219,7 @@ export default function ContactPage() {
                   value={formData.subject}
                   onChange={handleChange}
                   className="w-full !h-10 !rounded-full !border-transparent !bg-[#efefef] !px-4 !py-0 !text-sm !text-marco-black placeholder:!text-[#8f8f8f] focus:!ring-2 focus:!ring-[#d4d4d4] sm:!text-base"
-                  placeholder={t('contact.form.subject').replace('*', '').trim()}
+                  placeholder={t('contact.form.subject').replace(/\*/gu, '').trim()}
                 />
               </div>
               <div>
