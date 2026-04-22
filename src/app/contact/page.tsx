@@ -12,19 +12,32 @@ import {
   FOOTER_CONTACT_PHONE_ICON_SRC,
 } from '../../components/footer-social.constants';
 
-/** Slightly larger than footer + nudged down to align with `text-xl` headings. */
 const CONTACT_PAGE_PHONE_ICON_CLASS =
-  'mt-0.5 h-[18px] w-auto shrink-0 translate-y-[5px]';
+  'mt-0.5 h-[13px] w-auto shrink-0 translate-y-[2px]';
 const CONTACT_PAGE_MAIL_ICON_CLASS =
-  'mt-0.5 h-[16px] w-auto shrink-0 translate-y-[5px]';
+  'mt-0.5 h-[12px] w-auto shrink-0 translate-y-[2px]';
+/** Короткая линия по ширине текстового блока (адрес + телефоны), не на всю колонку. */
+const CONTACT_DIVIDER_CLASS =
+  'h-px w-full max-w-[16rem] bg-black/15 sm:max-w-[18.5rem]';
+const CONTACT_LOCATIONS = [
+  {
+    address: 'ք. Երևան Ալեք Մանուկյան 23',
+    phones: ['+374 93 52 04 06', '+374 98 19 04 06', '011 52 04 06'],
+  },
+  {
+    address: 'Արգավանդի Օրբելականյան 1',
+    phones: ['+374 93 58 04 09', '+374 41 34 04 06', '+374 77 64 04 06'],
+  },
+  {
+    address: 'Գ. Փարաքար Մերկուր Մաճառի 1',
+    phones: ['+374 77 51 04 06'],
+  },
+] as const;
 
-const CONTACT_LINK_YELLOW_CLASS =
-  'font-medium text-marco-yellow transition-colors hover:text-marco-black hover:underline';
+const CONTACT_EMAILS = ['marcogrouparmenia@mail.ru', 'marcofurniture@mail.ru'] as const;
 
 export default function ContactPage() {
   const { t } = useTranslation();
-  const phoneRaw = t('contact.phone');
-  const telHref = `tel:${phoneRaw.replace(/\s/g, '')}`;
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -74,132 +87,135 @@ export default function ContactPage() {
   return (
     <div className="bg-white">
       {/* Top Section: Contact Info and Form */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-9">
+        <div className="grid grid-cols-1 items-start gap-7 lg:grid-cols-2 lg:gap-9">
           {/* Left Side: Contact Information */}
-          <div className="space-y-8">
-            {/* Call to Us — icons match Footer contacts column */}
-            <div>
-              <div className="mb-3 flex items-start gap-3">
-                <img
-                  src={FOOTER_CONTACT_PHONE_ICON_SRC}
-                  alt=""
-                  width={22}
-                  height={18}
-                  className={CONTACT_PAGE_PHONE_ICON_CLASS}
-                  aria-hidden
-                />
-                <h3 className="text-xl font-semibold text-gray-900">{t('contact.callToUs.title')}</h3>
+          <div className="flex flex-col items-start space-y-3.5">
+            <h2 className="text-xl font-semibold tracking-tight text-marco-black sm:text-2xl">
+              ԿԱՊ ՄԵԶ ՀԵՏ
+            </h2>
+            {CONTACT_LOCATIONS.map((location, idx) => (
+              <div key={location.address} className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <MapPin
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 translate-y-px text-marco-yellow"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  <p className="text-sm font-medium leading-snug text-marco-black sm:text-base">
+                    {location.address}
+                  </p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <img
+                    src={FOOTER_CONTACT_PHONE_ICON_SRC}
+                    alt=""
+                    width={16}
+                    height={13}
+                    className={CONTACT_PAGE_PHONE_ICON_CLASS}
+                    aria-hidden
+                  />
+                  <div className="flex flex-col gap-px">
+                    {location.phones.map((phone) => (
+                      <a
+                        key={phone}
+                        href={`tel:${phone.replace(/[^\d+]/gu, '')}`}
+                        className="text-sm font-semibold leading-snug text-marco-black transition-opacity hover:opacity-80 sm:text-base"
+                      >
+                        {phone}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+                {idx < CONTACT_LOCATIONS.length - 1 && (
+                  <div className={CONTACT_DIVIDER_CLASS} aria-hidden />
+                )}
               </div>
-              <p className="mb-2 text-gray-600">{t('contact.callToUs.description')}</p>
-              <a href={telHref} className={CONTACT_LINK_YELLOW_CLASS}>
-                {phoneRaw}
-              </a>
-            </div>
-
-            {/* Write to Us */}
-            <div>
-              <div className="mb-3 flex items-start gap-3">
-                <img
-                  src={FOOTER_CONTACT_MAIL_ICON_SRC}
-                  alt=""
-                  width={28}
-                  height={20}
-                  className={CONTACT_PAGE_MAIL_ICON_CLASS}
-                  aria-hidden
-                />
-                <h3 className="text-xl font-semibold text-gray-900">{t('contact.writeToUs.title')}</h3>
-              </div>
-              <p className="mb-2 text-gray-600">{t('contact.writeToUs.description')}</p>
-              <a href={`mailto:${t('contact.email')}`} className={CONTACT_LINK_YELLOW_CLASS}>
-                {t('contact.writeToUs.emailLabel')} {t('contact.email')}
-              </a>
-            </div>
-
-            {/* Headquarter */}
-            <div>
-              <div className="mb-3 flex items-start gap-3">
-                <MapPin
-                  className="mt-0 h-6 w-6 shrink-0 -translate-x-px translate-y-[6px] self-start text-marco-yellow"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <h3 className="text-xl font-semibold text-gray-900">{t('contact.headquarter.title')}</h3>
-              </div>
-              <div className="mb-2 space-y-1 text-gray-600">
-                <p>{t('contact.headquarter.hours.weekdays')}</p>
-                <p>{t('contact.headquarter.hours.saturday')}</p>
-              </div>
-              <p className="font-medium whitespace-pre-line text-marco-yellow">{t('contact.address')}</p>
+            ))}
+            <div className={CONTACT_DIVIDER_CLASS} aria-hidden />
+            <div className="space-y-2.5">
+              {CONTACT_EMAILS.map((email) => (
+                <div key={email} className="flex items-start gap-2">
+                  <img
+                    src={FOOTER_CONTACT_MAIL_ICON_SRC}
+                    alt=""
+                    width={18}
+                    height={14}
+                    className={CONTACT_PAGE_MAIL_ICON_CLASS}
+                    aria-hidden
+                  />
+                  <a
+                    href={`mailto:${email}`}
+                    className="break-all text-xs font-semibold leading-snug text-marco-black transition-opacity hover:opacity-80 sm:text-sm"
+                  >
+                    {email}
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Right Side: Contact Form */}
-          <div>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Right Side: Contact Form — ниже и по центру колонки относительно блока «ԿԱՊ ՄԵԶ ՀԵՏ» */}
+          <div className="flex w-full flex-col items-center lg:pt-10 xl:pt-14">
+            <form
+              onSubmit={handleSubmit}
+              className="w-full max-w-[460px] space-y-2.5 lg:mx-auto"
+            >
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.name')}
-                </label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
                   required
+                  aria-label={t('contact.form.name')}
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full !rounded-full !px-5 !py-3"
-                  placeholder={t('contact.form.namePlaceholder')}
+                  className="w-full !h-10 !rounded-full !border-transparent !bg-[#efefef] !px-4 !py-0 !text-sm !text-marco-black placeholder:!text-[#8f8f8f] focus:!ring-2 focus:!ring-[#d4d4d4] sm:!text-base"
+                  placeholder={t('contact.form.name').replace('*', '').trim()}
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.email')}
-                </label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   required
+                  aria-label={t('contact.form.email')}
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full !rounded-full !px-5 !py-3"
-                  placeholder={t('contact.form.emailPlaceholder')}
+                  className="w-full !h-10 !rounded-full !border-transparent !bg-[#efefef] !px-4 !py-0 !text-sm !text-marco-black placeholder:!text-[#8f8f8f] focus:!ring-2 focus:!ring-[#d4d4d4] sm:!text-base"
+                  placeholder={t('contact.form.email').replace('*', '').trim()}
                 />
               </div>
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.subject')}
-                </label>
                 <Input
                   id="subject"
                   name="subject"
                   type="text"
                   required
+                  aria-label={t('contact.form.subject')}
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full !rounded-full !px-5 !py-3"
-                  placeholder={t('contact.form.subjectPlaceholder')}
+                  className="w-full !h-10 !rounded-full !border-transparent !bg-[#efefef] !px-4 !py-0 !text-sm !text-marco-black placeholder:!text-[#8f8f8f] focus:!ring-2 focus:!ring-[#d4d4d4] sm:!text-base"
+                  placeholder={t('contact.form.subject').replace('*', '').trim()}
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.message')}
-                </label>
                 <textarea
                   id="message"
                   name="message"
-                  rows={6}
+                  rows={4}
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full px-5 py-3 border border-gray-300 rounded-[28px] focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  placeholder={t('contact.form.messagePlaceholder')}
+                  aria-label={t('contact.form.message')}
+                  className="w-full min-h-[108px] resize-none rounded-[20px] border-transparent bg-[#efefef] px-4 py-2.5 text-sm text-marco-black focus:outline-none focus:ring-2 focus:ring-[#d4d4d4] placeholder:text-[#8f8f8f] sm:text-base"
+                  placeholder={t('contact.form.message')}
                 />
               </div>
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full !rounded-full !bg-marco-black !text-white hover:!brightness-95 focus:!ring-marco-black !py-3 font-semibold uppercase tracking-wide"
+                className="w-full !h-10 !rounded-full !border-0 !bg-marco-black !py-0 text-sm font-semibold uppercase tracking-wide !text-white hover:!brightness-95 focus:!ring-marco-black sm:!text-base"
                 disabled={submitting}
               >
                 {submitting ? (t('contact.form.submitting') || 'Ուղարկվում է...') : t('contact.form.submit')}

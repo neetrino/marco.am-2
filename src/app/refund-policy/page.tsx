@@ -63,8 +63,8 @@ export default function RefundPolicyPage() {
             <h2 className="text-2xl font-semibold text-gray-900">{t('refund-policy.contact.title')}</h2>
             <p className="text-gray-600">
               {t('refund-policy.contact.description')}{' '}
-              <a href="mailto:support@whiteshop.com" className="text-blue-600 hover:underline">
-                support@whiteshop.com
+              <a href="mailto:marcofurniture@mail.ru" className="text-blue-600 hover:underline">
+                marcofurniture@mail.ru
               </a>
               .
             </p>

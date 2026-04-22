@@ -42,6 +42,7 @@ import { FooterPaymentLogos } from './FooterPaymentLogos';
 import { FooterSocialLinks } from './FooterSocialLinks';
 
 const FOOTER_LINK_CLASS = `${FOOTER_MUTED_TEXT_CLASS} text-xs transition-colors hover:text-marco-black`;
+const FOOTER_SECONDARY_EMAIL = 'marcogrouparmenia@mail.ru';
 
 const FOOTER_NAV_COLUMN_LINK_CLASS = `${FOOTER_LINK_CLASS} ${FOOTER_NAV_COLUMN_LINK_WORD_SPACING_CLASS} ${FOOTER_NAV_COLUMN_LINK_LEADING_CLASS}`;
 
@@ -130,6 +131,22 @@ function FooterContactsColumn() {
           className={`text-xs transition-colors hover:text-marco-black ${FOOTER_MUTED_TEXT_CLASS}`}
         >
           {t('contact.email')}
+        </a>
+      </div>
+      <div className="flex items-start gap-3 md:max-[1023px]:justify-center min-[1024px]:max-[1366px]:justify-center">
+        <img
+          src={FOOTER_CONTACT_MAIL_ICON_SRC}
+          alt=""
+          width={20}
+          height={14}
+          className={FOOTER_CONTACT_MAIL_ICON_CLASS}
+          aria-hidden
+        />
+        <a
+          href={`mailto:${FOOTER_SECONDARY_EMAIL}`}
+          className={`text-xs transition-colors hover:text-marco-black ${FOOTER_MUTED_TEXT_CLASS}`}
+        >
+          {FOOTER_SECONDARY_EMAIL}
         </a>
       </div>
     </div>

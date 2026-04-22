@@ -114,8 +114,8 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-semibold text-gray-900">{t('privacy.contact.title')}</h2>
             <p className="text-gray-600">
               {t('privacy.contact.description')}{' '}
-              <a href="mailto:privacy@whiteshop.com" className="text-blue-600 hover:underline">
-                privacy@whiteshop.com
+              <a href="mailto:marcofurniture@mail.ru" className="text-blue-600 hover:underline">
+                marcofurniture@mail.ru
               </a>
             </p>
           </Card>
