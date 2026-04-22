@@ -19,8 +19,6 @@ import {
   SPECIAL_OFFERS_CARD_TEXT_SHIFT_DOWN_MOBILE_PX,
   SPECIAL_OFFERS_PRICE_BLOCK_LIFT_FROM_BOTTOM_PX,
   SPECIAL_OFFERS_PRICE_ROW_END_PADDING_PX,
-  SPECIAL_OFFERS_UNIFIED_NATURE_IMAGE_SRC,
-  SPECIAL_OFFERS_USE_UNIFIED_NATURE_IMAGE,
 } from './home-special-offers.constants';
 import {
   SpecialOfferActionsStack,
@@ -68,8 +66,6 @@ export function SpecialOfferCard({
   showMobileBottomNotch = true,
   maxWidthPx,
 }: SpecialOfferCardProps) {
-  const useUnifiedNature = SPECIAL_OFFERS_USE_UNIFIED_NATURE_IMAGE;
-
   const {
     t,
     currency,
@@ -85,22 +81,16 @@ export function SpecialOfferCard({
     onImageError,
     wishlistAria,
     compareAria,
-  } = useSpecialOfferCard(product, {
-    guaranteedImageSrc: useUnifiedNature
-      ? SPECIAL_OFFERS_UNIFIED_NATURE_IMAGE_SRC
-      : undefined,
-  });
+  } = useSpecialOfferCard(product);
 
   const brandClass = getSpecialOfferBrandTextClass(product.brand?.name);
 
   const galleryImages = duplicateSingleImageForDevGalleryTest(
-    useUnifiedNature
-      ? [SPECIAL_OFFERS_UNIFIED_NATURE_IMAGE_SRC]
-      : product.images && product.images.length > 0
-        ? product.images
-        : product.image
-          ? [product.image]
-          : [],
+    product.images && product.images.length > 0
+      ? product.images
+      : product.image
+        ? [product.image]
+        : [],
   );
 
   const cornerTranslate = `${SPECIAL_OFFERS_CARD_CORNER_MASK_TRANSLATE_PERCENT}%`;
