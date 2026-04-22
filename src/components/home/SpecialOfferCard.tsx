@@ -53,6 +53,8 @@ interface SpecialOfferCardProps {
   mobileCartButtonBottomPx?: number;
   /** Set false to hide the decorative mobile bottom notch in specific contexts. */
   showMobileBottomNotch?: boolean;
+  /** Optional desktop max-width override for contexts like products catalog. */
+  maxWidthPx?: number;
 }
 
 /**
@@ -64,6 +66,7 @@ export function SpecialOfferCard({
   align = 'center',
   mobileCartButtonBottomPx,
   showMobileBottomNotch = true,
+  maxWidthPx,
 }: SpecialOfferCardProps) {
   const useUnifiedNature = SPECIAL_OFFERS_USE_UNIFIED_NATURE_IMAGE;
 
@@ -105,7 +108,7 @@ export function SpecialOfferCard({
   const shellMaxWidthStyle =
     layout === 'mobileGrid'
       ? {}
-      : { maxWidth: SPECIAL_OFFERS_CARD_MAX_WIDTH_PX };
+      : { maxWidth: maxWidthPx ?? SPECIAL_OFFERS_CARD_MAX_WIDTH_PX };
 
   const textBlockShiftStyle =
     layout === 'mobileGrid'

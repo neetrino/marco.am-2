@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import type { MouseEvent } from 'react';
-import { Heart } from 'lucide-react';
 import { formatPrice } from '../../lib/currency';
 import { useTranslation } from '../../lib/i18n-client';
-import { CompareIcon } from '../icons/CompareIcon';
-import { CartIcon } from '../icons/CartIcon';
 import { ProductColors } from './ProductColors';
+import { ProductCardActions } from './ProductCardActions';
 import type { CurrencyCode } from '../../lib/currency';
 import type { ProductLabel } from '../ProductLabels';
 import { SPECIAL_OFFERS_UNIFIED_NATURE_IMAGE_SRC } from '../home/home-special-offers.constants';
@@ -59,11 +57,11 @@ export function ProductCardList({
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 sm:px-6 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-5 sm:px-6 py-4 sm:py-5">
         {/* Product Image */}
         <Link
           href={`/products/${product.slug}`}
-          className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 relative overflow-hidden self-start sm:self-center"
+          className="w-36 h-36 bg-gray-100 rounded-xl border-2 border-gray-300 flex-shrink-0 relative overflow-hidden self-start sm:self-center"
         >
           {!imageError ? (
             <Image
@@ -71,7 +69,7 @@ export function ProductCardList({
               alt={product.title}
               fill
               className="object-cover object-center"
-              sizes="80px"
+              sizes="144px"
               unoptimized
               onError={onImageError}
             />
@@ -87,10 +85,10 @@ export function ProductCardList({
         {/* Product Info */}
         <div className="flex-1 min-w-0 w-full sm:w-auto">
           <Link href={`/products/${product.slug}`} className="block">
-            <h3 className="text-lg sm:text-xl font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
+            <h3 className="text-xl sm:text-2xl font-medium text-gray-900 transition-colors line-clamp-2">
               {product.title}
             </h3>
-            <p className="text-base sm:text-lg text-gray-500 mt-1">
+            <p className="text-lg sm:text-xl text-gray-500 mt-1">
               {product.brand?.name || t('common.defaults.category')}
             </p>
           </Link>
@@ -130,55 +128,17 @@ export function ProductCardList({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1.5 md:gap-2 self-start sm:self-center">
-            <button
-              type="button"
-              onClick={onWishlistToggle}
-              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black text-white shadow-sm transition-opacity hover:opacity-90 md:size-10"
-              title={isInWishlist ? t('common.messages.removedFromWishlist') : t('common.messages.addedToWishlist')}
-              aria-label={isInWishlist ? t('common.ariaLabels.removeFromWishlist') : t('common.ariaLabels.addToWishlist')}
-            >
-              <Heart
-                className={`h-4 w-4 ${
-                  isInWishlist ? 'fill-red-500 text-red-500' : 'fill-none text-white'
-                }`}
-                strokeWidth={2}
-              />
-            </button>
-
-            <button
-              type="button"
-              onClick={onCompareToggle}
-              className={`flex size-9 shrink-0 items-center justify-center overflow-visible rounded-full p-0 shadow-sm transition-opacity hover:opacity-90 md:size-10 ${
-                isInCompare ? 'ring-2 ring-marco-yellow/60 ring-offset-2 ring-offset-[#f6f6f6]' : ''
-              }`}
-              title={isInCompare ? t('common.messages.removedFromCompare') : t('common.messages.addedToCompare')}
-              aria-label={isInCompare ? t('common.ariaLabels.removeFromCompare') : t('common.ariaLabels.addToCompare')}
-            >
-              <CompareIcon
-                isActive={isInCompare}
-                size={18}
-                className={isInCompare ? 'text-marco-yellow' : '!text-white'}
-              />
-            </button>
-
-            <button
-              type="button"
-              onClick={onAddToCart}
-              disabled={!product.inStock || isAddingToCart}
-              className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#ffca03] p-0 text-white shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#181111] disabled:cursor-not-allowed disabled:opacity-50 md:size-10"
-              title={product.inStock ? t('common.buttons.addToCart') : t('common.stock.outOfStock')}
-              aria-label={product.inStock ? t('common.buttons.addToCart') : t('common.stock.outOfStock')}
-            >
-              {isAddingToCart ? (
-                <svg className="h-6 w-6 animate-spin text-[#181111]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              ) : (
-                <CartIcon size={18} className="h-[18px] w-[18px] text-[#181111] md:h-[20px] md:w-[20px]" />
-              )}
-            </button>
+          <div className="self-start sm:self-center">
+            <ProductCardActions
+              isInWishlist={isInWishlist}
+              isInCompare={isInCompare}
+              isAddingToCart={isAddingToCart}
+              inStock={product.inStock}
+              isCompact
+              onWishlistToggle={onWishlistToggle}
+              onCompareToggle={onCompareToggle}
+              onAddToCart={onAddToCart}
+            />
           </div>
         </div>
       </div>
