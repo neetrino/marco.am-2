@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Suspense, useLayoutEffect, useRef, useState } from 'react';
 import type { LanguageCode } from '../lib/language';
 import { useTranslation } from '../lib/i18n-client';
 import { MarcoLogo } from './header/MarcoLogo';
@@ -30,6 +30,7 @@ export function Header({ initialLanguage }: HeaderProps) {
   const [row2ScrollProgress, setRow2ScrollProgress] = useState(0);
   const [row2HeightPx, setRow2HeightPx] = useState(0);
   const row2WrapperRef = useRef<HTMLDivElement>(null);
+  const row2ContentRef = useRef<HTMLDivElement>(null);
 
   const { compactPrimaryNav, viewportWidth, desktopTopRowInnerRef, desktopTopRowMeasureRef } = layout;
 
@@ -44,7 +45,7 @@ export function Header({ initialLanguage }: HeaderProps) {
     handleCurrencyChange,
   } = data;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const syncRow2Visibility = () => {
       const nextProgress = Math.min(window.scrollY / HEADER_ROW2_HIDE_SCROLL_DISTANCE_PX, 1);
       setRow2ScrollProgress(nextProgress);
@@ -58,7 +59,7 @@ export function Header({ initialLanguage }: HeaderProps) {
   }, []);
 
   useLayoutEffect(() => {
-    const node = row2WrapperRef.current;
+    const node = row2ContentRef.current;
     if (!node) {
       return;
     }
@@ -145,7 +146,7 @@ export function Header({ initialLanguage }: HeaderProps) {
         }}
         aria-hidden={!row2IsInteractive}
       >
-        <div style={{ marginTop: `${row2MarginTopPx}px` }}>
+        <div ref={row2ContentRef} style={{ marginTop: `${row2MarginTopPx}px` }}>
           <HeaderRow2
             data={data}
             layout={layout}
