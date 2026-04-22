@@ -57,6 +57,10 @@ export function Header({ initialLanguage }: HeaderProps) {
   const skipRow2ScrollApplyCountRef = useRef(0);
   /** Last row2 `scrollY` offset we have normalized scroll for (0 = shown, 1 = hidden in layout). */
   const row2LayoutCompensatedForRef = useRef(0);
+  /** Snapshot of row2 full height; updated when `row2HeightPx` is known. */
+  const row2ContentHeightForScrollRef = useRef(0);
+  /** `scrollY` and height (before the row2 layout flips) for scroll anchoring. */
+  const row2LayoutTransitionInputRef = useRef<{ y0: number; h: number } | null>(null);
 
   const { compactPrimaryNav, viewportWidth, desktopTopRowInnerRef, desktopTopRowMeasureRef } = layout;
 
@@ -83,6 +87,10 @@ export function Header({ initialLanguage }: HeaderProps) {
   }, [showLocaleCurrencyMenu, showProductsMenu, showUserMenu]);
 
   useLayoutEffect(() => {
+    row2ContentHeightForScrollRef.current = row2HeightPx;
+  }, [row2HeightPx]);
+
+  useLayoutEffect(() => {
     const initialY = window.scrollY;
     lastProcessedScrollYRef.current = initialY;
     let scrollRafId = 0;
@@ -92,6 +100,8 @@ export function Header({ initialLanguage }: HeaderProps) {
       if (row2ScrollProgressRef.current === next) {
         return;
       }
+      const h = Math.max(0, row2ContentHeightForScrollRef.current);
+      row2LayoutTransitionInputRef.current = { y0: window.scrollY, h };
       const now = performance.now();
       row2ScrollProgressRef.current = next;
       setRow2ScrollProgress(next);
@@ -125,6 +135,8 @@ export function Header({ initialLanguage }: HeaderProps) {
         downAccumPxRef.current = 0;
         upAccumPxRef.current = 0;
         if (row2ScrollProgressRef.current !== 0) {
+          const h = Math.max(0, row2ContentHeightForScrollRef.current);
+          row2LayoutTransitionInputRef.current = { y0: window.scrollY, h };
           row2ScrollProgressRef.current = 0;
           setRow2ScrollProgress(0);
         }
@@ -196,12 +208,16 @@ export function Header({ initialLanguage }: HeaderProps) {
     if (prev === next) {
       return;
     }
-    const h = row2HeightPx;
-    const y0 = window.scrollY;
+    const hBase = row2HeightPx;
+    const input = row2LayoutTransitionInputRef.current;
+    row2LayoutTransitionInputRef.current = null;
+    const h = input && input.h > 0 ? input.h : hBase;
+    const yBefore = input != null ? input.y0 : window.scrollY;
     const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    const y1 = next === 1 ? Math.min(y0 + h, maxY) : Math.max(0, y0 - h);
+    const y1 = next === 1 ? Math.min(yBefore + h, maxY) : Math.max(0, yBefore - h);
     row2LayoutCompensatedForRef.current = next;
-    if (Math.abs(y1 - y0) < 0.5) {
+    const yAfterLayout = window.scrollY;
+    if (Math.abs(y1 - yAfterLayout) < 0.5) {
       return;
     }
     skipRow2ScrollApplyCountRef.current = 3;
