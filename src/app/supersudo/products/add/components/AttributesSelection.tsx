@@ -2,6 +2,7 @@
 
 import type { RefObject } from 'react';
 import { useTranslation } from '../../../../../lib/i18n-client';
+import { FormSection } from './FormSection';
 import { getColorHex } from '../../../../../lib/colorMap';
 import type { Attribute } from '../types';
 
@@ -29,9 +30,8 @@ export function AttributesSelection({
   const { t } = useTranslation();
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.products.add.selectAttributesForVariants')}</h2>
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <FormSection title={t('admin.products.add.selectAttributesForVariants')}>
+      <div className="rounded-xl border border-marco-border/50 bg-white/60 p-4 sm:p-5">
         <label className="block text-sm font-medium text-gray-700 mb-3">
           {t('admin.products.add.attributes')} <span className="text-gray-500 font-normal">{t('admin.products.add.selectMultiple')}</span>
         </label>
@@ -159,7 +159,7 @@ export function AttributesSelection({
           </div>
         )}
       </div>
-    </div>
+    </FormSection>
   );
 }
 

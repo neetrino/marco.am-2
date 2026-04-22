@@ -386,6 +386,11 @@
       "backToAdmin": "Back to Admin Dashboard",
       "editProduct": "Edit Product",
       "addNewProduct": "Add New Product",
+      "pageSubtitle": "Complete the details below to create or update a product in the catalog.",
+      "pricingAndInventory": "Pricing & inventory",
+      "productClassLabel": "Product class",
+      "productClassRetail": "Retail",
+      "productClassWholesale": "Wholesale",
       "basicInformation": "Basic Information",
       "productType": "Product Type",
       "productTypeDescription": "Select whether this is a simple product with a single price and stock, or a variable product with multiple variants (e.g., different sizes, colors)",
@@ -439,6 +444,8 @@
       "noAttributesAvailable": "No attributes available",
       "attributeSelected": "{count} attribute selected",
       "attributesSelected": "{count} attributes selected",
+      "valuesPlaceholder": "values",
+      "selectValues": "Select",
       "generatedVariants": "Generated Variants",
       "applyPriceToAll": "Apply Price to All",
       "applyStockToAll": "Apply Stock to All",
@@ -472,7 +479,10 @@
       "failedToProcessImage": "Failed to process selected image",
       "enterDefaultPrice": "Enter default price for all variants:",
       "enterDefaultStock": "Enter default stock for all variants:",
-      "enterSkuPrefix": "Enter SKU prefix (will auto-add -color-size if applicable):"
+      "enterSkuPrefix": "Enter SKU prefix (will auto-add -color-size if applicable):",
+      "actions": "Actions",
+      "delete": "Delete",
+      "deleteVariant": "Delete variant"
     }
   },
   "settings": {

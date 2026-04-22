@@ -3,6 +3,7 @@
 import type { ChangeEvent } from 'react';
 import { Input } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
+import { FormSection } from './FormSection';
 
 interface BasicInformationProps {
   productType: 'simple' | 'variable';
@@ -28,8 +29,7 @@ export function BasicInformation({
   const { t } = useTranslation();
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.products.add.basicInformation')}</h2>
+    <FormSection title={t('admin.products.add.basicInformation')}>
       <div className="space-y-4">
         {/* Product Type Selector */}
         <div>
@@ -96,7 +96,7 @@ export function BasicInformation({
             {t('admin.products.add.description')}
           </label>
           <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="admin-field min-h-[8rem] w-full resize-y"
             rows={6}
             value={descriptionHtml}
             onChange={onDescriptionChange}
@@ -104,7 +104,7 @@ export function BasicInformation({
           />
         </div>
       </div>
-    </div>
+    </FormSection>
   );
 }
 

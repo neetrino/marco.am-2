@@ -2,6 +2,7 @@
 
 import { Input } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
+import { FormSection } from './FormSection';
 import type { Category, Brand, Variant } from '../types';
 
 interface CategoriesBrandsProps {
@@ -126,9 +127,8 @@ export function CategoriesBrands({
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.products.add.categoriesAndBrands')}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <FormSection title={t('admin.products.add.categoriesAndBrands')}>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Categories - Multi-select */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -338,7 +338,7 @@ export function CategoriesBrands({
           </div>
         </div>
       </div>
-    </div>
+    </FormSection>
   );
 }
 

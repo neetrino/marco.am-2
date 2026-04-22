@@ -386,6 +386,15 @@
       "backToAdmin": "Վերադառնալ ադմինիստրատորի վահան",
       "editProduct": "Խմբագրել ապրանք",
       "addNewProduct": "Ավելացնել նոր ապրանք",
+      "pageSubtitle": "Լրացրեք տվյալները՝ ապրանքը ավելացնելու կամ թարմացնելու համար։",
+      "productType": "Տեսակ",
+      "productTypeDescription": "Ընտրեք՝ պարզ ապրանք (մի գնով և մի պաշարով), թե փոփոխական (օր. չափ, գույն)։",
+      "productTypeSimple": "Պարզ",
+      "productTypeVariable": "Փոփոխական",
+      "pricingAndInventory": "Գինը և պաշարը",
+      "productClassLabel": "Դաս (մանրածախ/մեծածախ)",
+      "productClassRetail": "Մանրածախ",
+      "productClassWholesale": "Մեծածախ",
       "basicInformation": "Հիմնական տեղեկություն",
       "title": "Վերնագիր",
       "slug": "Slug",
@@ -435,6 +444,8 @@
       "noAttributesAvailable": "Ատրիբուտներ չկան",
       "attributeSelected": "{count} ատրիբուտ ընտրված",
       "attributesSelected": "{count} ատրիբուտ ընտրված",
+      "valuesPlaceholder": "արժեքներ",
+      "selectValues": "Ընտրել",
       "generatedVariants": "Գեներացված տարբերակներ",
       "applyPriceToAll": "Կիրառել գինը բոլորին",
       "applyStockToAll": "Կիրառել պաշարը բոլորին",
@@ -468,7 +479,10 @@
       "failedToProcessImage": "Չհաջողվեց մշակել ընտրված պատկերը",
       "enterDefaultPrice": "Մուտքագրել լռելյայն գին բոլոր տարբերակների համար:",
       "enterDefaultStock": "Մուտքագրել լռելյայն պաշար բոլոր տարբերակների համար:",
-      "enterSkuPrefix": "Մուտքագրել SKU նախածանց (կավտոմատ կավելացվի -color-size, եթե կիրառելի է):"
+      "enterSkuPrefix": "Մուտքագրել SKU նախածանց (կավտոմատ կավելացվի -color-size, եթե կիրառելի է):",
+      "actions": "Գործողություններ",
+      "delete": "Ջնջել",
+      "deleteVariant": "Ջնջել տարբերակը"
     }
   },
   "settings": {
