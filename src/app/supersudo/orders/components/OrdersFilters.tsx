@@ -33,7 +33,10 @@ export function OrdersFilters({
   searchParams,
 }: OrdersFiltersProps) {
   const { t } = useTranslation();
-  const statusValues = useMemo(() => ['', ...ADMIN_ORDER_LIST_STATUS_VALUES], []);
+  const statusValues = useMemo(
+    () => ['', ...ADMIN_ORDER_LIST_STATUS_VALUES] as const,
+    []
+  );
   const statusLabels = useMemo(
     () =>
       statusValues.map((value) =>
@@ -51,7 +54,7 @@ export function OrdersFilters({
 
   useEffect(() => {
     const updateIndicator = () => {
-      const activeIndex = statusValues.indexOf(statusFilter);
+      const activeIndex = statusValues.findIndex((v) => v === statusFilter);
       const fallbackIndex = activeIndex >= 0 ? activeIndex : 0;
       const activeButton = buttonRefs.current[fallbackIndex];
       if (!activeButton) {
