@@ -86,63 +86,63 @@ export default function AnalyticsPage() {
       backLabel={t('admin.analytics.backToAdmin')}
       onBack={() => router.push('/supersudo')}
     >
-      <PeriodSelector
-        period={period}
-        startDate={startDate}
-        endDate={endDate}
-        analytics={analytics}
-        onPeriodChange={setPeriod}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-      />
+      <div className="space-y-6 pb-8">
+        <PeriodSelector
+          period={period}
+          startDate={startDate}
+          endDate={endDate}
+          analytics={analytics}
+          onPeriodChange={setPeriod}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
 
-      {loading ? (
-        <div className="py-10 text-center">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-gray-900"></div>
-          <p className="text-gray-600">{t('admin.analytics.loadingAnalytics')}</p>
-        </div>
-      ) : (
-        <>
-          {analytics ? (
-            <>
-              <StatsCards analytics={analytics} totalUsers={totalUsers} />
+        {loading ? (
+          <Card className="admin-card border-marco-border/70 bg-white/95 py-12 text-center shadow-sm">
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-b-2 border-marco-black"></div>
+            <p className="text-marco-text/75">{t('admin.analytics.loadingAnalytics')}</p>
+          </Card>
+        ) : (
+          <>
+            {analytics ? (
+              <>
+                <StatsCards analytics={analytics} totalUsers={totalUsers} />
 
-              {orderStatusBreakdownFailed ? (
-                <Card className="mb-5 border border-amber-200 bg-amber-50 p-4">
-                  <p className="text-sm text-amber-950">
-                    {t('admin.analytics.orderStatusBreakdownLoadFailed')}
-                  </p>
-                </Card>
-              ) : null}
+                {orderStatusBreakdownFailed ? (
+                  <Card className="admin-card border-amber-200/80 bg-amber-50/80 p-4 shadow-sm">
+                    <p className="text-sm text-amber-950">
+                      {t('admin.analytics.orderStatusBreakdownLoadFailed')}
+                    </p>
+                  </Card>
+                ) : null}
 
-              {orderStatusBreakdown ? <OrderStatusBreakdown data={orderStatusBreakdown} /> : null}
+                {orderStatusBreakdown ? <OrderStatusBreakdown data={orderStatusBreakdown} /> : null}
 
-              <CustomerAnalytics data={analytics.customerAnalytics} />
+                <CustomerAnalytics data={analytics.customerAnalytics} />
 
-              <div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <TopProducts products={analytics.topProducts} />
-                <LeastSellingProducts products={analytics.leastSellingProducts} />
-              </div>
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  <TopProducts products={analytics.topProducts} />
+                  <LeastSellingProducts products={analytics.leastSellingProducts} />
+                </div>
 
-              <div className="mb-5">
                 <TopCategories categories={analytics.topCategories} />
-              </div>
 
-              <OrdersByDayChart ordersByDay={analytics.ordersByDay} />
-            </>
-          ) : (
-            <Card className="admin-card mb-5">
-              <p className="text-center text-gray-600">{t('admin.analytics.noAnalyticsData')}</p>
-            </Card>
-          )}
+                <OrdersByDayChart ordersByDay={analytics.ordersByDay} />
+              </>
+            ) : (
+              <Card className="admin-card border-marco-border/70 bg-white/95 py-12 shadow-sm">
+                <p className="text-center text-marco-text/75">{t('admin.analytics.noAnalyticsData')}</p>
+              </Card>
+            )}
 
-          <StockAnalyticsSection
-            data={stockAnalytics}
-            loading={stockLoading}
-            failed={stockFailed}
-          />
-        </>
-      )}
+            <StockAnalyticsSection
+              data={stockAnalytics}
+              loading={stockLoading}
+              failed={stockFailed}
+            />
+          </>
+        )}
+      </div>
     </AdminPageLayout>
   );
 }

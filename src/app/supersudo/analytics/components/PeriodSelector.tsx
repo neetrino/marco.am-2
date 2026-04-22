@@ -27,18 +27,19 @@ export function PeriodSelector({
   const { t } = useTranslation();
 
   return (
-    <Card className="admin-card mb-5">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">{t('admin.analytics.timePeriod')}</h2>
+    <Card className="admin-card overflow-hidden border-marco-border/70 bg-white/95 p-6 shadow-sm">
+      <div className="mb-4 h-1 w-14 rounded-full bg-gradient-to-r from-marco-yellow to-marco-black/30" />
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-lg font-semibold text-marco-black">{t('admin.analytics.timePeriod')}</h2>
         {analytics && (
-          <div className="text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg">
+          <div className="rounded-xl border border-marco-border/70 bg-marco-gray/40 px-3 py-1.5 text-sm text-marco-text/75">
             {formatDate(analytics.dateRange.start)} - {formatDate(analytics.dateRange.end)}
           </div>
         )}
       </div>
-      <div className="flex flex-wrap gap-3 items-end">
-        <div className="flex-1 min-w-[200px]">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="min-w-[200px] flex-1">
+          <label className="mb-2 block text-sm font-medium text-marco-text/80">
             {t('admin.analytics.period')}
           </label>
           <select
@@ -61,8 +62,8 @@ export function PeriodSelector({
         </div>
         {period === 'custom' && (
           <>
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="min-w-[200px] flex-1">
+              <label className="mb-2 block text-sm font-medium text-marco-text/80">
                 {t('admin.analytics.startDate')}
               </label>
               <input
@@ -72,8 +73,8 @@ export function PeriodSelector({
                 className="admin-field"
               />
             </div>
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="min-w-[200px] flex-1">
+              <label className="mb-2 block text-sm font-medium text-marco-text/80">
                 {t('admin.analytics.endDate')}
               </label>
               <input
