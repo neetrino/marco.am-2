@@ -101,6 +101,8 @@ export function useReelsFeedData(items: PublicReelItem[]): UseReelsFeedDataResul
       try {
         const payload = await apiClient.get<PublicReelsApiResponse>('/api/v1/reels', {
           signal: controller.signal,
+          suppressAbortErrorLogging: true,
+          suppressNetworkErrorLogging: true,
         });
         setReelItems((prev) => mergeServerLikeState(prev, payload.items));
       } catch {
