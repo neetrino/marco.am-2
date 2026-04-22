@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Heart, Play } from 'lucide-react';
+import { Heart, Pause, Play, Volume2, VolumeX } from 'lucide-react';
 
 type TapIntent = 'single' | 'double';
 
@@ -28,11 +28,13 @@ export function ReelVideoPlayer({
   shouldReduceMotion,
   onDoubleTapLike,
 }: ReelVideoPlayerProps) {
+  void poster;
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastTapAtRef = useRef(0);
   const singleTapTimeoutRef = useRef<number | null>(null);
   const [isPausedByUser, setIsPausedByUser] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [videoFailed, setVideoFailed] = useState(false);
   const [isWaiting, setIsWaiting] = useState(true);
   const [showCenterHeart, setShowCenterHeart] = useState(false);
@@ -72,6 +74,7 @@ export function ReelVideoPlayer({
 
   useEffect(() => {
     setIsPausedByUser(false);
+    setIsMuted(true);
     setVideoFailed(false);
     setIsWaiting(true);
   }, [videoUrl]);
@@ -99,6 +102,16 @@ export function ReelVideoPlayer({
     window.setTimeout(() => {
       setShowCenterHeart(false);
     }, shouldReduceMotion ? 0 : 380);
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video || videoFailed) {
+      return;
+    }
+    const nextMuted = !video.muted;
+    video.muted = nextMuted;
+    setIsMuted(nextMuted);
   };
 
   const handlePointerUp = () => {
@@ -139,26 +152,16 @@ export function ReelVideoPlayer({
       }}
     >
       {videoFailed ? (
-        poster ? (
-          <img
-            src={poster}
-            alt={title}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            loading={isActive ? 'eager' : 'lazy'}
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center px-8 text-center text-sm text-white/80">
-            Video is not available.
-          </div>
-        )
+        <div className="absolute inset-0 flex items-center justify-center px-8 text-center text-sm text-white/80">
+          Video is not available.
+        </div>
       ) : (
         <video
           ref={videoRef}
           src={videoUrl}
-          poster={poster ?? undefined}
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          className="absolute inset-0 h-full w-full bg-black object-contain object-center"
           loop
-          muted
+          muted={isMuted}
           playsInline
           preload={isActive ? 'auto' : 'metadata'}
           onCanPlay={() => {
@@ -183,24 +186,60 @@ export function ReelVideoPlayer({
           }}
         />
       )}
+      {!videoFailed ? (
+        <div className="absolute bottom-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.45rem))] right-3 z-30 flex flex-col items-center gap-2 md:bottom-8 md:right-4">
+          <button
+            type="button"
+            onPointerUp={(event) => {
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.stopPropagation();
+              togglePlayPause();
+            }}
+            className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.24)] transition-all duration-200 ${
+              isPlaying
+                ? 'border-white/30 bg-black/45 text-white hover:border-marco-yellow hover:bg-marco-yellow hover:text-marco-black'
+                : 'border-marco-yellow/70 bg-marco-yellow/20 text-marco-yellow hover:border-marco-yellow hover:bg-marco-yellow hover:text-marco-black'
+            }`}
+            aria-label={isPlaying ? 'Pause video' : 'Play video'}
+          >
+            {isPlaying ? (
+              <Pause className="h-5 w-5 transition-transform duration-200" aria-hidden />
+            ) : (
+              <Play className="h-5 w-5 transition-transform duration-200" aria-hidden />
+            )}
+          </button>
+          <button
+            type="button"
+            onPointerUp={(event) => {
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleMute();
+            }}
+            className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.24)] transition-all duration-200 ${
+              isMuted
+                ? 'border-marco-yellow/70 bg-marco-yellow/20 text-marco-yellow hover:border-marco-yellow hover:bg-marco-yellow hover:text-marco-black'
+                : 'border-white/30 bg-black/45 text-white hover:border-marco-yellow hover:bg-marco-yellow hover:text-marco-black'
+            }`}
+            aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+          >
+            {isMuted ? (
+              <VolumeX className="h-5 w-5 transition-transform duration-200" aria-hidden />
+            ) : (
+              <Volume2 className="h-5 w-5 transition-transform duration-200" aria-hidden />
+            )}
+          </button>
+        </div>
+      ) : null}
       {showCenterHeart ? (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
           <Heart
             className="h-20 w-20 fill-marco-yellow/90 text-marco-yellow drop-shadow-[0_10px_28px_rgba(0,0,0,0.45)] animate-pulse motion-reduce:animate-none"
             aria-hidden
           />
-        </div>
-      ) : null}
-      {!videoFailed && isWaiting && isActive ? (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black/15">
-          <span className="h-9 w-9 animate-spin rounded-full border-2 border-white/35 border-t-white motion-reduce:animate-none" />
-        </div>
-      ) : null}
-      {!videoFailed && isActive && !isPlaying ? (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-          <span className="rounded-full border border-white/40 bg-black/35 p-4 backdrop-blur-sm">
-            <Play className="h-7 w-7 fill-white text-white" aria-hidden />
-          </span>
         </div>
       ) : null}
     </div>

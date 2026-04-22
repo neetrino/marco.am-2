@@ -6,7 +6,6 @@ import { Heart } from 'lucide-react';
 export type ReelLikeButtonProps = {
   ariaLabel: string;
   liked: boolean;
-  likesCount: number;
   burstVersion: number;
   disabled: boolean;
   onToggle: () => void;
@@ -15,7 +14,6 @@ export type ReelLikeButtonProps = {
 export function ReelLikeButton({
   ariaLabel,
   liked,
-  likesCount,
   burstVersion,
   disabled,
   onToggle,
@@ -36,7 +34,7 @@ export function ReelLikeButton({
   }, [burstVersion]);
 
   return (
-    <div className="absolute bottom-[max(5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] right-3 z-30 flex flex-col items-center gap-2 md:bottom-8 md:right-4">
+    <div className="absolute bottom-[max(9.75rem,calc(env(safe-area-inset-bottom,0px)+9rem))] right-3 z-30 md:bottom-[8.75rem] md:right-4">
       <div className="relative">
         {isBursting ? (
           <Heart
@@ -46,24 +44,27 @@ export function ReelLikeButton({
         ) : null}
         <button
           type="button"
-          className="relative flex h-12 w-12 items-center justify-center rounded-full border border-white/30 bg-black/45 text-white shadow-[0_8px_28px_rgba(0,0,0,0.3)] backdrop-blur-sm transition duration-200 hover:bg-black/60 disabled:cursor-not-allowed disabled:opacity-70 motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl border shadow-[0_8px_20px_rgba(0,0,0,0.24)] transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-70 motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+            liked
+              ? 'border-marco-yellow/70 bg-marco-yellow/20 text-marco-yellow hover:border-marco-yellow hover:bg-marco-yellow hover:text-marco-black'
+              : 'border-white/30 bg-black/45 text-white hover:border-marco-yellow hover:bg-marco-yellow hover:text-marco-black'
+          }`}
           aria-pressed={liked}
           aria-label={ariaLabel}
           disabled={disabled}
           onClick={onToggle}
         >
           <Heart
-            className={`h-6 w-6 transition-transform duration-200 motion-reduce:transition-none ${
-              liked ? 'scale-110 fill-marco-yellow text-marco-yellow' : ''
+            className={`h-5 w-5 transition-transform duration-200 motion-reduce:transition-none ${
+              liked
+                ? 'fill-marco-yellow text-marco-yellow group-hover:fill-marco-black group-hover:text-marco-black'
+                : ''
             }`}
             strokeWidth={2}
             aria-hidden
           />
         </button>
       </div>
-      <span className="text-xs font-semibold text-white/95 drop-shadow-[0_1px_6px_rgba(0,0,0,0.45)]">
-        {likesCount}
-      </span>
     </div>
   );
 }

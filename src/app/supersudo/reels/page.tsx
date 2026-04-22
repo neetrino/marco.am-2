@@ -8,6 +8,7 @@ import { apiClient, getApiOrErrorMessage } from '@/lib/api-client';
 import { useTranslation } from '@/lib/i18n-client';
 import type { ReelsManagementStorage } from '@/lib/schemas/reels-management.schema';
 import { AdminPageLayout } from '../components/AdminPageLayout';
+import { ReelPreviewDialog } from './components/ReelPreviewDialog';
 
 type ReelsLikesResponse = {
   likesByReelId: Record<string, number>;
@@ -26,6 +27,12 @@ type ReelFormState = {
   videoUrl: string;
   posterUrl: string;
   sourceType: 'admin_upload' | 'external_url';
+};
+
+type PreviewReelState = {
+  title: string;
+  videoUrl: string;
+  posterUrl: string | null;
 };
 
 const EMPTY_FORM: ReelFormState = {
@@ -66,7 +73,10 @@ export default function ReelsPage() {
   const [form, setForm] = useState<ReelFormState>(EMPTY_FORM);
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingPoster, setUploadingPoster] = useState(false);
+  const [previewReel, setPreviewReel] = useState<PreviewReelState | null>(null);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
+  const posterInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!isLoading && (!isLoggedIn || !isAdmin)) {
@@ -248,6 +258,42 @@ export default function ReelsPage() {
     }
   };
 
+  const handlePosterUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) {
+      return;
+    }
+
+    setUploadingPoster(true);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      const payload = new FormData();
+      payload.append('file', file);
+
+      const response = await fetch('/api/v1/supersudo/reels/upload-poster', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        body: payload,
+      });
+
+      const responseBody = (await response.json().catch(() => null)) as UploadVideoResponse | { detail?: string } | null;
+      if (!response.ok || !responseBody || !('url' in responseBody)) {
+        const detail = responseBody && 'detail' in responseBody ? responseBody.detail : null;
+        throw new Error(detail || t('admin.reels.posterUploadFailed'));
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        posterUrl: responseBody.url,
+      }));
+    } catch (error: unknown) {
+      alert(getApiOrErrorMessage(error, t('admin.reels.posterUploadFailed')));
+    } finally {
+      setUploadingPoster(false);
+    }
+  };
+
   if (isLoading || (!isLoggedIn || !isAdmin)) {
     return null;
   }
@@ -370,6 +416,23 @@ export default function ReelsPage() {
                   className="admin-field"
                 />
               </label>
+              <div className="rounded-xl border border-dashed border-marco-border bg-white/80 p-3 md:col-span-2">
+                <input
+                  ref={posterInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handlePosterUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => posterInputRef.current?.click()}
+                  disabled={uploadingPoster}
+                  className="inline-flex h-9 items-center rounded-lg border border-marco-yellow/60 bg-marco-yellow/25 px-3.5 text-sm font-medium text-marco-black transition hover:bg-marco-yellow/40 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {uploadingPoster ? t('admin.reels.uploadingPoster') : t('admin.reels.uploadPoster')}
+                </button>
+              </div>
               <div className="mt-1 flex items-center gap-2 md:col-span-2">
                 <button
                   onClick={handleAdd}
@@ -448,6 +511,19 @@ export default function ReelsPage() {
                         </button>
                       ) : null}
                       <button
+                        type="button"
+                        onClick={() =>
+                          setPreviewReel({
+                            title: item.title.hy,
+                            videoUrl: item.videoUrl,
+                            posterUrl: item.posterUrl,
+                          })
+                        }
+                        className="mt-2 rounded-lg border border-indigo-200 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
+                      >
+                        {t('admin.reels.preview')}
+                      </button>
+                      <button
                         onClick={() => void handleDelete(item.id)}
                         disabled={saving}
                         className="mt-2 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
@@ -462,6 +538,14 @@ export default function ReelsPage() {
           )}
         </section>
       </div>
+      <ReelPreviewDialog
+        isOpen={previewReel !== null}
+        title={previewReel?.title ?? ''}
+        videoUrl={previewReel?.videoUrl ?? ''}
+        posterUrl={previewReel?.posterUrl ?? null}
+        closeLabel={t('admin.common.close')}
+        onClose={() => setPreviewReel(null)}
+      />
     </AdminPageLayout>
   );
 }
