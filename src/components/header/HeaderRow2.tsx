@@ -252,7 +252,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                       }}
                       onKeyDown={searchHandleKeyDown}
                       placeholder={t('common.placeholders.search')}
-                      className="min-h-0 min-w-0 flex-1 w-full border-0 bg-transparent pr-6 text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
+                      className="min-h-0 min-w-0 flex-1 w-full border-0 bg-transparent pr-6 text-xs leading-normal text-marco-text dark:!text-[#050505] placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
                       aria-controls="search-results"
                       aria-autocomplete="list"
                     />
