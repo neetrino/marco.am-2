@@ -72,8 +72,8 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
       return;
     }
 
-    /** User-requested upward shift for categories dropdown. */
-    const seamOverlapPx = 47;
+    /** Keep dropdown visibly below the navbar with a small gap. */
+    const gapPx = 10;
 
     const updateLayout = () => {
       const trigger = categoriesTriggerRef.current;
@@ -88,8 +88,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
         : 0;
       const rightEdge = cr ? cr.right - paddingRight : window.innerWidth - 16;
       const panelWidth = Math.max(280, Math.min(rightEdge, window.innerWidth - 8) - r.left);
-      const panelTop = r.bottom - seamOverlapPx;
-      const bridgeHeight = 0;
+      const panelTop = r.bottom + gapPx;
       const panelHeight = Math.max(240, Math.floor(window.innerHeight - panelTop));
       setCategoriesDropdownLayout({
         bridge: {
@@ -97,7 +96,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
           top: r.bottom,
           left: r.left,
           width: r.width,
-          height: bridgeHeight,
+          height: gapPx,
           zIndex: 69,
         },
         panel: {

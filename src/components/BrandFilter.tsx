@@ -27,7 +27,7 @@ export function BrandFilter({ category, search, minPrice, maxPrice }: BrandFilte
   const { t } = useTranslation();
   const [brands, setBrands] = useState<BrandOption[]>([]);
   const [loading, setLoading] = useState(true);
-  const [optimisticBrandIds, setOptimisticBrandIds] = useState<string[] | null>(null);
+  const [optimisticBrandSlugs, setOptimisticBrandSlugs] = useState<string[] | null>(null);
   const [, startTransition] = useTransition();
 
   useEffect(() => {
@@ -63,26 +63,26 @@ export function BrandFilter({ category, search, minPrice, maxPrice }: BrandFilte
   };
 
   const brandQs = searchParams.get('brand');
-  const selectedBrandIdsFromUrl = useMemo(
+  const selectedBrandSlugsFromUrl = useMemo(
     () => (brandQs ? brandQs.split(',').map((s) => s.trim()).filter(Boolean) : []),
     [brandQs]
   );
 
-  const selectedBrandIds = optimisticBrandIds ?? selectedBrandIdsFromUrl;
+  const selectedBrandSlugs = optimisticBrandSlugs ?? selectedBrandSlugsFromUrl;
 
   useEffect(() => {
-    setOptimisticBrandIds(null);
+    setOptimisticBrandSlugs(null);
   }, [brandQs]);
 
-  const handleBrandSelect = (brandId: string) => {
+  const handleBrandSelect = (brandSlug: string) => {
     const params = new URLSearchParams(searchParams.toString());
     const fromUrl =
-      optimisticBrandIds ??
+      optimisticBrandSlugs ??
       params.get('brand')?.split(',').map((s) => s.trim()).filter(Boolean) ??
       [];
-    const idx = fromUrl.indexOf(brandId);
-    const newBrands = idx >= 0 ? fromUrl.filter((_, i) => i !== idx) : [...fromUrl, brandId];
-    setOptimisticBrandIds(newBrands);
+    const idx = fromUrl.indexOf(brandSlug);
+    const newBrands = idx >= 0 ? fromUrl.filter((_, i) => i !== idx) : [...fromUrl, brandSlug];
+    setOptimisticBrandSlugs(newBrands);
     if (newBrands.length > 0) {
       params.set('brand', newBrands.join(','));
     } else {
@@ -99,14 +99,14 @@ export function BrandFilter({ category, search, minPrice, maxPrice }: BrandFilte
     const params = new URLSearchParams(searchParams.toString());
     params.delete('brand');
     params.delete('page');
-    setOptimisticBrandIds([]);
+    setOptimisticBrandSlugs([]);
     const qs = params.toString();
     startTransition(() => {
       router.push(qs ? `/products?${qs}` : '/products');
     });
   };
 
-  const hasBrandSelection = selectedBrandIds.length > 0;
+  const hasBrandSelection = selectedBrandSlugs.length > 0;
 
   if (loading) {
     return (
@@ -147,13 +147,13 @@ export function BrandFilter({ category, search, minPrice, maxPrice }: BrandFilte
 
       <div className={`flex flex-col gap-3 ${PRODUCTS_FILTER_LIST_SCROLL_CLASS}`}>
         {brands.map((brand) => {
-          const isSelected = selectedBrandIds.includes(brand.id);
+          const isSelected = selectedBrandSlugs.includes(brand.slug) || selectedBrandSlugs.includes(brand.id);
 
           return (
             <button
               key={brand.id}
               type="button"
-              onClick={() => handleBrandSelect(brand.id)}
+              onClick={() => handleBrandSelect(brand.slug)}
               className="flex w-full min-w-0 items-center gap-3 text-left transition-[opacity,color] duration-200 ease-out hover:opacity-90"
             >
               <ProductsFilterCheckboxVisual checked={isSelected} />
