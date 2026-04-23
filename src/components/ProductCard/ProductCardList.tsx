@@ -53,11 +53,10 @@ export function ProductCardList({
   onAddToCart,
 }: ProductCardListProps) {
   const { t } = useTranslation();
-  const imageSrc = product.image;
-  const showPlaceholder = imageError || !imageSrc;
+  const showPlaceholder = imageError || !product.image;
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors">
+    <div className="bg-white rounded-lg overflow-hidden hover:bg-gray-50 transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-5 sm:px-6 py-4 sm:py-5">
         {/* Product Image */}
         <Link
@@ -66,7 +65,7 @@ export function ProductCardList({
         >
           {!showPlaceholder ? (
             <Image
-              src={imageSrc}
+              src={product.image}
               alt={product.title}
               fill
               className="object-cover object-center"
