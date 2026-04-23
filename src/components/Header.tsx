@@ -45,6 +45,7 @@ export function Header({ initialLanguage }: HeaderProps) {
     showProductsMenu,
     showUserMenu,
     showLocaleCurrencyMenu,
+    searchDropdownOpen,
     setShowLocaleCurrencyMenu,
     setMobileMenuOpen,
     mobileMenuOpen,
@@ -52,7 +53,7 @@ export function Header({ initialLanguage }: HeaderProps) {
     handleCurrencyChange,
   } = data;
 
-  const isRow2Blocked = showProductsMenu || showUserMenu || showLocaleCurrencyMenu;
+  const isRow2Blocked = showProductsMenu || showUserMenu || showLocaleCurrencyMenu || searchDropdownOpen;
   const isRow2Hidden = useHeaderRow2AutoHide({
     isBlocked: isRow2Blocked,
   });

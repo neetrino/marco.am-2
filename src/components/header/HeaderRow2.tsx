@@ -222,7 +222,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
               )}
             </div>
 
-            <div ref={inlineSearchRef} className={`relative min-w-0 flex-1 ${HEADER_SEARCH_BAR_INNER_CLASS}`}>
+            <div ref={inlineSearchRef} className={`relative z-[480] min-w-0 flex-1 ${HEADER_SEARCH_BAR_INNER_CLASS}`}>
               <form
                 onSubmit={handleSearch}
                 className={`flex w-full min-w-0 flex-row items-center overflow-hidden bg-marco-gray ${getHeaderSearchFormRadiusClass(row2TabletLike)} ${HEADER_SEARCH_BAR_HEIGHT_CLASS}`}
@@ -233,23 +233,45 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                   <span className="shrink-0 text-[rgba(33,43,54,0.46)]" aria-hidden>
                     <HeaderSearchGlyph />
                   </span>
-                  <input
-                    ref={headerSearchInputRef}
-                    type="search"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      if (e.target.value.trim().length >= 1) setSearchDropdownOpen(true);
-                    }}
-                    onFocus={() => {
-                      if (searchQuery.trim().length >= 1) setSearchDropdownOpen(true);
-                    }}
-                    onKeyDown={searchHandleKeyDown}
-                    placeholder={t('common.placeholders.search')}
-                    className="min-h-0 min-w-0 flex-1 border-0 bg-transparent text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
-                    aria-controls="search-results"
-                    aria-autocomplete="list"
-                  />
+                  <div className="relative min-w-0 flex-1">
+                    <input
+                      ref={headerSearchInputRef}
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        const nextQuery = e.target.value;
+                        if (nextQuery.trim().length === 0) {
+                          clearSearch();
+                          return;
+                        }
+                        setSearchQuery(nextQuery);
+                        setSearchDropdownOpen(true);
+                      }}
+                      onFocus={(e) => {
+                        if (e.currentTarget.value.trim().length >= 1) setSearchDropdownOpen(true);
+                      }}
+                      onKeyDown={searchHandleKeyDown}
+                      placeholder={t('common.placeholders.search')}
+                      className="min-h-0 min-w-0 flex-1 w-full border-0 bg-transparent pr-6 text-xs leading-normal text-marco-text placeholder:text-[rgba(33,43,54,0.46)] focus:outline-none focus:ring-0"
+                      aria-controls="search-results"
+                      aria-autocomplete="list"
+                    />
+                    {searchQuery.trim().length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          clearSearch();
+                          headerSearchInputRef.current?.focus();
+                        }}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex h-4 w-4 items-center justify-center text-marco-yellow hover:brightness-95 cursor-pointer"
+                        aria-label={t('common.ariaLabels.clearSearch')}
+                      >
+                        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <button
                   type="submit"
@@ -273,8 +295,8 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                 onSeeAllClick={() => undefined}
                 className={
                   useMobileRow2
-                    ? 'fixed left-3 right-3 top-[4.5rem] z-[70] mt-0'
-                    : 'max-md:fixed max-md:left-3 max-md:right-3 max-md:top-[4.5rem] max-md:mt-0 max-md:z-[70]'
+                    ? 'fixed left-3 right-3 top-[4.5rem] z-[320] mt-0'
+                    : 'max-md:fixed max-md:left-3 max-md:right-3 max-md:top-[4.5rem] max-md:mt-0 max-md:z-[320]'
                 }
               />
             </div>
