@@ -202,7 +202,7 @@ export function Footer() {
                 alt="MARCO GROUP"
                 fill
                 className="object-contain object-left-top md:max-[1023px]:object-center min-[1024px]:max-[1366px]:object-center"
-                sizes="200px"
+                sizes="320px"
                 priority={false}
               />
             </div>

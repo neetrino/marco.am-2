@@ -98,7 +98,7 @@ export const FOOTER_MAIN_GRID_CLASS =
  * Blurb overlays the lower area via {@link FOOTER_BRAND_DESCRIPTION_OVERLAP_CLASS} (logo position unchanged).
  */
 export const FOOTER_BRAND_LOGO_BOX_CLASS =
-  'relative z-0 h-[178px] w-[200px] shrink-0';
+  'relative z-0 h-[285px] w-[320px] shrink-0';
 
 /**
  * Lifts the MARCO mark: stronger from `md` so its top lines up with the Company column heading;
