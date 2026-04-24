@@ -219,8 +219,11 @@ function readBrandsFromAssets() {
     }
   }
 
-  return Array.from(bySlug.values())
-    .map(({ fileName, ...brand }) => brand)
+  return Array.from(bySlug.values()).map(({ slug, name, logoUrl }) => ({
+    slug,
+    name,
+    logoUrl,
+  }))
     .sort((a, b) => a.slug.localeCompare(b.slug));
 }
 
