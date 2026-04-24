@@ -174,7 +174,7 @@ export function CategoryFilter({
               <ProductsFilterCheckboxVisual checked={isSelected} variant="checkmark" />
               <span
                 className={`min-w-0 flex-1 truncate text-base leading-6 tracking-[0.16px] transition-colors duration-200 ease-out ${
-                  isSelected ? 'text-[#314158] dark:text-white' : 'text-[#5d7285] dark:text-white/78'
+                  isSelected ? 'text-[#314158] dark:text-[#b8c2cf]' : 'text-[#5d7285] dark:text-[#8f9fb2]'
                 }`}
               >
                 {item.title}

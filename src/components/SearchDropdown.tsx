@@ -41,6 +41,7 @@ export function SearchDropdown({
 
   return (
     <div
+      data-theme-static="true"
       role="listbox"
       id="search-results"
       aria-label={t('common.ariaLabels.searchPlaceholder')}

@@ -172,10 +172,10 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                 ref={categoriesTriggerRef}
                 type="button"
                 onClick={() => setShowProductsMenu((open) => !open)}
-                className={`flex w-full items-center bg-marco-black text-white dark:[&_svg]:text-[#050505] ${getHeaderCategoryButtonClass(
+                className={`flex w-full items-center !bg-[#050505] !text-white dark:!bg-white dark:!text-[#050505] dark:ring-1 dark:ring-black/10 ${getHeaderCategoryButtonClass(
                   row2TabletLike,
                   row2DesktopLike,
-                )} [&_svg]:text-white`}
+                )} [&_svg]:!text-white dark:[&_svg]:!text-[#050505]`}
                 aria-expanded={showProductsMenu}
                 aria-haspopup="true"
               >
@@ -209,6 +209,7 @@ export function HeaderRow2({ data, layout, compactPrimaryNav, initialLanguage }:
                   />
                   <div
                     data-marco-categories-dropdown
+                    data-theme-static="true"
                     className="flex min-h-0 flex-col"
                     style={categoriesDropdownLayout.panel}
                   >

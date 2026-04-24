@@ -128,22 +128,27 @@ export function CategoriesDropdownMega({
               className={`${headerCategoryNavFont.className} flex w-full min-w-0 items-center gap-1.5 rounded-[35px] px-[7px] py-0 text-left text-[14px] leading-[19px] tracking-[0.14px] transition-[opacity,background-color,color] duration-150 ${
                 isSelected
                   ? 'bg-marco-yellow font-bold !text-[#050505] dark:!text-[#050505]'
-                  : 'font-normal text-[#5d7285] hover:opacity-90'
+                  : 'font-normal !text-[#050505] dark:!text-[#050505] hover:opacity-90'
               }`}
             >
-              <span className="flex size-[42px] shrink-0 items-center justify-center p-[5px] text-marco-black">
+              <span className="flex size-[42px] shrink-0 items-center justify-center p-[5px] !text-[#050505] dark:!text-[#050505]">
                 {row.icon.kind === 'figma' ? (
                   <img
                     src={row.icon.src}
                     alt=""
                     width={30}
                     height={30}
-                    className="h-[30px] w-[30px] shrink-0 object-contain"
+                    className="h-[30px] w-[30px] shrink-0 object-contain brightness-0"
                     draggable={false}
                   />
                 ) : (
                   RowLucide && (
-                    <RowLucide size={30} className="shrink-0" strokeWidth={1.35} aria-hidden />
+                    <RowLucide
+                      size={30}
+                      className="shrink-0 !text-[#050505] dark:!text-[#050505]"
+                      strokeWidth={1.35}
+                      aria-hidden
+                    />
                   )
                 )}
               </span>
