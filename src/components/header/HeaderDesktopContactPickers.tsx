@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ChevronDown, MapPin, Phone } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type Ref } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
 import {
+  contactLocationMapHref,
   getContactLocations,
-  mapsSearchUrlForAddress,
   phoneToTelHref,
 } from '../../lib/contact-locations';
 import {
@@ -146,16 +147,14 @@ function HeaderDesktopAddressPicker({
           <ul className="flex flex-col gap-0.5 px-2 pb-1">
             {locations.map((loc) => (
               <li key={loc.id} className="rounded-lg border border-transparent">
-                <a
+                <Link
                   role="menuitem"
-                  href={mapsSearchUrlForAddress(loc.address)}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={contactLocationMapHref(loc.id)}
                   aria-label={mapLinkAriaLabel}
                   className="mx-1 mb-1 mt-1 block rounded-md px-2 py-2 text-left text-xs font-medium leading-snug text-marco-text no-underline transition-colors hover:bg-marco-gray/80 hover:text-marco-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-marco-black/25 dark:text-white/88 dark:hover:bg-white/10 dark:hover:text-white dark:focus-visible:outline-white/30"
                 >
                   {loc.address}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -175,12 +174,23 @@ function HeaderDesktopAddressPicker({
 }
 
 export function HeaderDesktopContactPickers() {
+  const pathname = usePathname();
   const { t, lang } = useTranslation();
   const locations = useMemo(() => getContactLocations(lang), [lang]);
   const phoneDisplay = t('contact.phone').trim();
   const [openMenu, setOpenMenu] = useState<'phone' | 'address' | null>(null);
   const phoneRef = useRef<HTMLDivElement | null>(null);
   const addressRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setOpenMenu(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    const onHash = () => setOpenMenu(null);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
 
   useEffect(() => {
     if (!openMenu) {

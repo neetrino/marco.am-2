@@ -103,6 +103,8 @@ const nextConfig = {
               "img-src 'self' data: https: blob:",
               `media-src ${mediaSources.join(' ')}`,
               "connect-src 'self' https:",
+              // Contact page + footer map iframes (Google Maps / OSM); default-src alone blocks embeds
+              "frame-src 'self' https://www.google.com https://google.com https://maps.google.com https://www.openstreetmap.org https://openstreetmap.org",
               "frame-ancestors 'none'",
             ].join('; '),
           },

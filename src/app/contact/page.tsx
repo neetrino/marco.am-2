@@ -2,10 +2,16 @@
 
 import { Button, Input } from '@shop/ui';
 import { MapPin } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
-import { getContactLocations } from '../../lib/contact-locations';
+import {
+  getContactLocations,
+  mapsEmbedUrlForLocation,
+  parseContactLocationHash,
+  type ContactLocation,
+  type ContactLocationId,
+} from '../../lib/contact-locations';
 import { apiClient } from '../../lib/api-client';
 import { getErrorMessage } from '@/lib/types/errors';
 import {
@@ -23,9 +29,108 @@ const CONTACT_DIVIDER_CLASS =
   `${CONTACT_DIVIDER_BASE_CLASS} w-[17.5rem] sm:w-[20rem]`;
 const CONTACT_EMAILS = ['marcogrouparmenia@mail.ru', 'marcofurniture@mail.ru'] as const;
 
+type ContactMapAddressStripProps = {
+  locations: readonly ContactLocation[];
+  activeId: ContactLocationId;
+  onSelect: (id: ContactLocationId) => void;
+  sectionTitle: string;
+};
+
+function ContactMapAddressStrip({
+  locations,
+  activeId,
+  onSelect,
+  sectionTitle,
+}: ContactMapAddressStripProps) {
+  return (
+    <div className="border-b border-black/10 bg-white px-4 py-5 dark:border-white/10 dark:bg-[var(--app-bg)] sm:px-6">
+      <div className="marco-header-container">
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.08em] text-marco-text/70 dark:text-white/55">
+          {sectionTitle}
+        </p>
+        <div
+          className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          role="tablist"
+          aria-label={sectionTitle}
+        >
+          {locations.map((loc) => {
+            const active = activeId === loc.id;
+            return (
+              <button
+                key={loc.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => onSelect(loc.id)}
+                className={`flex min-h-[3.25rem] items-start gap-2.5 rounded-2xl border px-4 py-3 text-left text-sm font-medium leading-snug transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marco-yellow/80 sm:text-[15px] ${
+                  active
+                    ? 'border-marco-yellow bg-marco-yellow/12 text-marco-black shadow-sm ring-1 ring-marco-yellow/35 dark:bg-marco-yellow/14 dark:text-white dark:ring-marco-yellow/45'
+                    : 'border-gray-200/90 bg-white/90 text-marco-text hover:border-marco-yellow/45 hover:bg-marco-yellow/[0.06] hover:shadow-sm dark:border-white/12 dark:bg-white/[0.04] dark:text-white/88 dark:hover:border-marco-yellow/40 dark:hover:bg-marco-yellow/[0.08]'
+                }`}
+              >
+                <MapPin
+                  className={`mt-0.5 h-[18px] w-[18px] shrink-0 stroke-[2] ${
+                    active ? 'text-marco-yellow' : 'text-marco-text/45 dark:text-white/45'
+                  }`}
+                  aria-hidden
+                />
+                <span className="min-w-0 flex-1">{loc.address}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ContactPage() {
   const { t, lang } = useTranslation();
   const contactLocations = useMemo(() => getContactLocations(lang), [lang]);
+  const [mapFocusId, setMapFocusId] = useState<ContactLocationId | null>(null);
+  const mapSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const syncFromHash = () => {
+      setMapFocusId(parseContactLocationHash(window.location.hash));
+    };
+    syncFromHash();
+    window.addEventListener('hashchange', syncFromHash);
+    return () => window.removeEventListener('hashchange', syncFromHash);
+  }, []);
+
+  useEffect(() => {
+    if (!parseContactLocationHash(window.location.hash)) {
+      return;
+    }
+    const el = mapSectionRef.current;
+    if (!el) {
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    const headerOffset = 88;
+    const visibleEnough =
+      rect.top >= headerOffset - 32 && rect.top < window.innerHeight * 0.92;
+    if (visibleEnough) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [mapFocusId]);
+
+  const mapLocation =
+    (mapFocusId ? contactLocations.find((l) => l.id === mapFocusId) : null) ??
+    contactLocations[0];
+
+  const activeMapId: ContactLocationId =
+    mapFocusId ?? contactLocations[0]?.id ?? 'yerevan';
+
+  const selectMapLocation = (id: ContactLocationId) => {
+    window.location.hash = `loc-${id}`;
+  };
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -86,7 +191,12 @@ export default function ContactPage() {
               {contactLocations.map((location, idx) => (
                 <div
                   key={location.address}
-                  className={`space-y-2 ${idx === contactLocations.length - 1 ? 'pb-0' : 'pb-4'}`}
+                  id={`contact-loc-${location.id}`}
+                  className={`space-y-2 rounded-lg px-2 py-1 transition-colors ${idx === contactLocations.length - 1 ? 'pb-0' : 'pb-4'} ${
+                    mapFocusId !== null && mapFocusId === location.id
+                      ? 'bg-black/[0.04] dark:bg-white/[0.06]'
+                      : ''
+                  }`}
                 >
                   <div className="flex items-start gap-2">
                     <MapPin
@@ -220,18 +330,34 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Bottom Section: Map */}
-      <div className="w-full h-[500px] bg-gray-100">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.1234567890123!2d44.5150!3d40.1812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x406aa2dab8fc8b5b%3A0x3d1479ab4e9b8c5e!2sAbovyan%20St%2C%20Yerevan%2C%20Armenia!5e0!3m2!1sen!2sam!4v1234567890123!5m2!1sen!2sam"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="w-full h-full"
+      {/* Bottom: address chips + map — /contact#loc-{id} syncs with header deep links */}
+      <div
+        ref={mapSectionRef}
+        id="contact-page-map"
+        className="w-full scroll-mt-24 bg-gray-100 dark:bg-black/20"
+      >
+        <ContactMapAddressStrip
+          locations={contactLocations}
+          activeId={activeMapId}
+          onSelect={selectMapLocation}
+          sectionTitle={t('contact.mapSectionTitle')}
         />
+        <div className="h-[min(480px,62vh)] min-h-[300px] w-full">
+          {mapLocation ? (
+            <iframe
+              key={mapLocation.id}
+              title={mapLocation.address}
+              src={mapsEmbedUrlForLocation(mapLocation)}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-full w-full"
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );
