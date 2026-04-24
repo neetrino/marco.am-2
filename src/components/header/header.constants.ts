@@ -271,8 +271,8 @@ export const HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS =
 export const HEADER_MOBILE_SEARCH_FAB_CLASS = HEADER_MOBILE_HEADER_ROUND_CONTROL_CLASS;
 
 /**
- * Desktop primary nav — yellow pill via `::before` so link shrink-width (and Figma gaps) stay unchanged.
- * Hover uses the same brand yellow as header social circle links (no vertical translate on the label).
+ * Desktop primary nav — current page: yellow pill via `::before` (unchanged width vs Figma gaps).
+ * Hover (non-active): yellow bar under the label (`::after`) grows left→right via `scaleX`.
  */
 export function getHeaderPrimaryNavDesktopLinkClass(active: boolean): string {
   const shell =
@@ -280,13 +280,16 @@ export function getHeaderPrimaryNavDesktopLinkClass(active: boolean): string {
     'transition-[color] duration-200 ' +
     'before:pointer-events-none before:absolute before:left-1/2 before:top-1/2 before:z-[-1] ' +
     'before:h-9 before:w-[calc(100%+20px)] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full ' +
-    'before:bg-marco-yellow before:transition-opacity before:duration-200 ' +
+    'before:bg-marco-yellow before:content-[\'\'] before:transition-opacity before:duration-200 ' +
+    'after:pointer-events-none after:absolute after:inset-x-0 after:bottom-2 after:block after:h-1 after:origin-left ' +
+    'after:scale-x-0 after:bg-marco-yellow after:content-[\'\'] after:transition-transform after:duration-300 ' +
+    'after:ease-out ' +
     'hover:text-marco-black dark:hover:text-[#050505] ' +
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marco-black/25';
   if (active) {
-    return `${shell} before:opacity-100 text-marco-black dark:text-[#050505]`.trim();
+    return `${shell} before:opacity-100 after:scale-x-0 text-marco-black dark:text-[#050505]`.trim();
   }
-  return `${shell} before:opacity-0 hover:before:opacity-100 text-marco-text dark:text-white/88`.trim();
+  return `${shell} before:opacity-0 hover:after:scale-x-100 text-marco-text dark:text-white/88`.trim();
 }
 
 /** Mobile drawer rows for the same primary links — full-width row; yellow marks current page. */
