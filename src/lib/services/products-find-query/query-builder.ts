@@ -230,6 +230,13 @@ export async function buildWhereClause(
     deletedAt: null,
   };
 
+  const idList =
+    filters.productIds?.filter((id): id is string => typeof id === "string" && id.trim().length > 0) ?? [];
+  const uniqueProductIds = [...new Set(idList.map((id) => id.trim()))].slice(0, 500);
+  if (uniqueProductIds.length > 0) {
+    where = { ...where, id: { in: uniqueProductIds } };
+  }
+
   // Add search filter
   if (search && search.trim()) {
     const searchFilter = buildSearchFilter(search);

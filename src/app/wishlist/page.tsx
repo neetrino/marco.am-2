@@ -32,6 +32,36 @@ interface Product {
   } | null;
 }
 
+const WISHLIST_PRODUCT_IDS_CHUNK = 500;
+
+/**
+ * Loads catalog rows for exact wishlist IDs (avoids PLP page slice missing items).
+ */
+async function fetchProductsForWishlistIds(ids: string[], lang: string): Promise<Product[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += WISHLIST_PRODUCT_IDS_CHUNK) {
+    chunks.push(ids.slice(i, i + WISHLIST_PRODUCT_IDS_CHUNK));
+  }
+  const responses = await Promise.all(
+    chunks.map((chunk) =>
+      apiClient.get<{
+        data: Product[];
+        meta: { total: number; page: number; limit: number; totalPages: number };
+      }>('/api/v1/products', {
+        params: {
+          lang,
+          ids: chunk.join(','),
+          limit: String(chunk.length),
+        },
+      })
+    )
+  );
+  return responses.flatMap((response) => response.data);
+}
+
 type FetchWishlistOptions = {
   /** When true, skip full-page loading skeleton (e.g. after heart toggle on this page). */
   silent?: boolean;
@@ -65,29 +95,15 @@ export default function WishlistPage() {
       }
 
       logger.devInfo(`[Wishlist] Fetching ${idsToLoad.length} products for render`);
-      const response = await apiClient.get<{
-        data: Product[];
-        meta: {
-          total: number;
-          page: number;
-          limit: number;
-          totalPages: number;
-        };
-      }>('/api/v1/products', {
-        params: {
-          limit: '1000',
-          lang: languagePreference,
-        },
-      });
-
+      const rows = await fetchProductsForWishlistIds(idsToLoad, languagePreference);
       const positionById = new Map(idsToLoad.map((id, index) => [id, index] as const));
-      const wishlistProducts = response.data.filter((product) =>
-        idsToLoad.includes(product.id)
-      ).sort((a, b) => {
-        const aPos = positionById.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-        const bPos = positionById.get(b.id) ?? Number.MAX_SAFE_INTEGER;
-        return aPos - bPos;
-      });
+      const wishlistProducts = rows
+        .filter((product) => idsToLoad.includes(product.id))
+        .sort((a, b) => {
+          const aPos = positionById.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+          const bPos = positionById.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+          return aPos - bPos;
+        });
       setProducts(wishlistProducts);
     } catch (error) {
       console.error('[Wishlist] Error fetching wishlist products:', error);
@@ -115,6 +131,27 @@ export default function WishlistPage() {
     return () => {
       window.removeEventListener('wishlist-updated', handleWishlistUpdate);
       window.removeEventListener('language-updated', handleLanguageUpdate);
+    };
+  }, [fetchWishlistProducts]);
+
+  useEffect(() => {
+    const onOptimisticRemove = (ev: Event) => {
+      const id = (ev as CustomEvent<{ productId?: string }>).detail?.productId;
+      if (!id) {
+        return;
+      }
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    };
+
+    const onRevertRemove = () => {
+      void fetchWishlistProducts({ silent: true });
+    };
+
+    window.addEventListener('wishlist-remove-optimistic', onOptimisticRemove);
+    window.addEventListener('wishlist-remove-reverted', onRevertRemove);
+    return () => {
+      window.removeEventListener('wishlist-remove-optimistic', onOptimisticRemove);
+      window.removeEventListener('wishlist-remove-reverted', onRevertRemove);
     };
   }, [fetchWishlistProducts]);
 
