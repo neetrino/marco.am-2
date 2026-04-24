@@ -330,6 +330,7 @@
     "selectAll": "Выбрать все товары",
     "selectProduct": "Выбрать товар {title}",
     "product": "ТОВАР",
+    "categories": "КАТЕГОРИИ",
     "stock": "НАЛИЧИЕ",
     "price": "ЦЕНА",
     "status": "СТАТУС",

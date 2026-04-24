@@ -330,6 +330,7 @@
     "selectAll": "Select all products",
     "selectProduct": "Select product {title}",
     "product": "PRODUCT",
+    "categories": "CATEGORIES",
     "stock": "STOCK",
     "price": "PRICE",
     "status": "STATUS",
