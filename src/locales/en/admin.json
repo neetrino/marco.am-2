@@ -613,7 +613,22 @@
     "errorDeleting": "Error deleting brand:",
     "errorSaving": "Error saving brand:",
     "unknownError": "An unknown error occurred",
-    "unknownErrorFallback": "Unknown error"
+    "unknownErrorFallback": "Unknown error",
+    "searchLabel": "Search brands",
+    "searchHint": "Matches name or URL slug. Use several words to narrow results.",
+    "searchPlaceholder": "Type to filter the list…",
+    "clearSearch": "Clear search",
+    "searchMatchCount": "{matched} of {total} brands",
+    "searchNoMatches": "No brands match your search.",
+    "logo": "Logo",
+    "logoUrlLabel": "Logo URL or upload",
+    "logoUrlPlaceholder": "https://… or /assets/brands/…",
+    "logoUpload": "Upload image",
+    "logoRemove": "Remove logo",
+    "logoUploading": "Processing…",
+    "logoInvalidFile": "Please choose an image file.",
+    "selectedBrandsCount": "Selected brands: {count}",
+    "deleteSelected": "Delete selected"
   },
   "orders": {
     "title": "View Orders",

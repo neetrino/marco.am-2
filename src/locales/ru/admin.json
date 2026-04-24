@@ -608,7 +608,22 @@
     "errorDeleting": "Ошибка при удалении бренда:",
     "errorSaving": "Ошибка при сохранении бренда:",
     "unknownError": "Произошла неизвестная ошибка",
-    "unknownErrorFallback": "Неизвестная ошибка"
+    "unknownErrorFallback": "Неизвестная ошибка",
+    "searchLabel": "Поиск брендов",
+    "searchHint": "Ищет по названию или URL slug. Несколько слов сужают выборку.",
+    "searchPlaceholder": "Введите текст для фильтрации…",
+    "clearSearch": "Сбросить поиск",
+    "searchMatchCount": "{matched} из {total} брендов",
+    "searchNoMatches": "Нет брендов, подходящих под запрос.",
+    "logo": "Логотип",
+    "logoUrlLabel": "URL логотипа или загрузка",
+    "logoUrlPlaceholder": "https://… или /assets/brands/…",
+    "logoUpload": "Загрузить изображение",
+    "logoRemove": "Удалить логотип",
+    "logoUploading": "Обработка…",
+    "logoInvalidFile": "Выберите файл изображения.",
+    "selectedBrandsCount": "Выбрано брендов: {count}",
+    "deleteSelected": "Удалить выбранные"
   },
   "orders": {
     "title": "Просмотр заказов",

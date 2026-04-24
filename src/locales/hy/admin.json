@@ -614,7 +614,22 @@
     "errorDeleting": "Սխալ բրենդը ջնջելիս:",
     "errorSaving": "Սխալ բրենդը պահելիս:",
     "unknownError": "Անհայտ սխալ տեղի ունեցավ",
-    "unknownErrorFallback": "Անհայտ սխալ"
+    "unknownErrorFallback": "Անհայտ սխալ",
+    "searchLabel": "Որոնել բրենդներ",
+    "searchHint": "Համընկնում է անվան կամ URL slug-ի հետ։ Մի քանի բառով նեղացրեք արդյունքները։",
+    "searchPlaceholder": "Գրեք՝ ցուցակը զտելու համար…",
+    "clearSearch": "Մաքրել որոնումը",
+    "searchMatchCount": "{matched}՝ {total} բրենդներից",
+    "searchNoMatches": "Ձեր որոնմանը համապատասխանող բրենդներ չկան։",
+    "logo": "Լոգո",
+    "logoUrlLabel": "Լոգոյի հղում կամ վերբեռնում",
+    "logoUrlPlaceholder": "https://… կամ /assets/brands/…",
+    "logoUpload": "Վերբեռնել նկար",
+    "logoRemove": "Հեռացնել լոգոն",
+    "logoUploading": "Մշակվում է…",
+    "logoInvalidFile": "Ընտրեք նկարի ֆայլ։",
+    "selectedBrandsCount": "Ընտրված բրենդներ՝ {count}",
+    "deleteSelected": "Ջնջել ընտրվածները"
   },
   "orders": {
     "title": "Դիտել պատվերները",
