@@ -93,6 +93,48 @@ function buildFormState(storage: BannerManagementStorage | null): HeroBannerForm
   };
 }
 
+function buildNextHeroBannerStorageFromForm(
+  storage: BannerManagementStorage | null,
+  form: HeroBannerFormState,
+): BannerManagementStorage {
+  const mergedStorage = buildHeroBannerStorage(storage);
+  return {
+    ...mergedStorage,
+    banners: mergedStorage.banners.map((banner) => {
+      if (banner.id === HOME_HERO_PRIMARY_TOP_BANNER_ID) {
+        return {
+          ...banner,
+          imageDesktopUrl:
+            normalizeOptionalUrl(form.primaryTopDesktopUrl) ??
+            HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
+          imageMobileUrl:
+            normalizeOptionalUrl(form.mobileImageUrl) ?? HERO_MOBILE_PRIMARY_IMAGE_SRC,
+        };
+      }
+
+      if (banner.id === HOME_HERO_PRIMARY_BOTTOM_BANNER_ID) {
+        return {
+          ...banner,
+          imageDesktopUrl:
+            normalizeOptionalUrl(form.primaryBottomDesktopUrl) ??
+            HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
+        };
+      }
+
+      if (banner.id === HOME_HERO_SECONDARY_BANNER_ID) {
+        return {
+          ...banner,
+          imageDesktopUrl:
+            normalizeOptionalUrl(form.secondaryDesktopUrl) ??
+            HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
+        };
+      }
+
+      return banner;
+    }),
+  };
+}
+
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -315,51 +357,26 @@ export default function HeroBannerPage() {
         '/api/v1/supersudo/banners/upload-image',
         { image: dataUrl },
       );
-      setForm((prev) => ({ ...prev, [fieldKey]: result.url }));
+      const nextForm: HeroBannerFormState = { ...form, [fieldKey]: result.url };
+      const nextStorage = buildNextHeroBannerStorageFromForm(storage, nextForm);
+      const saved = await apiClient.put<BannerManagementStorage>(
+        '/api/v1/supersudo/banners',
+        nextStorage,
+      );
+      setStorage(buildHeroBannerStorage(saved));
+      setForm(buildFormState(saved));
+      alert(t('admin.heroBanner.savedAfterUpload'));
     } catch (error: unknown) {
-      alert(`Upload failed: ${getApiOrErrorMessage(error, 'Unknown error')}`);
+      alert(
+        `${t('admin.heroBanner.uploadOrSaveFailed')}: ${getApiOrErrorMessage(error, 'Unknown error')}`,
+      );
     } finally {
       setUploadingField(null);
     }
   }
 
   async function handleSave() {
-    const mergedStorage = buildHeroBannerStorage(storage);
-    const nextStorage: BannerManagementStorage = {
-      ...mergedStorage,
-      banners: mergedStorage.banners.map((banner) => {
-        if (banner.id === HOME_HERO_PRIMARY_TOP_BANNER_ID) {
-          return {
-            ...banner,
-            imageDesktopUrl:
-              normalizeOptionalUrl(form.primaryTopDesktopUrl) ??
-              HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
-            imageMobileUrl:
-              normalizeOptionalUrl(form.mobileImageUrl) ?? HERO_MOBILE_PRIMARY_IMAGE_SRC,
-          };
-        }
-
-        if (banner.id === HOME_HERO_PRIMARY_BOTTOM_BANNER_ID) {
-          return {
-            ...banner,
-            imageDesktopUrl:
-              normalizeOptionalUrl(form.primaryBottomDesktopUrl) ??
-              HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
-          };
-        }
-
-        if (banner.id === HOME_HERO_SECONDARY_BANNER_ID) {
-          return {
-            ...banner,
-            imageDesktopUrl:
-              normalizeOptionalUrl(form.secondaryDesktopUrl) ??
-              HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
-          };
-        }
-
-        return banner;
-      }),
-    };
+    const nextStorage = buildNextHeroBannerStorageFromForm(storage, form);
 
     try {
       setSaving(true);
@@ -416,7 +433,7 @@ export default function HeroBannerPage() {
               </p>
               <h2 className="text-lg font-semibold text-slate-900">{t('admin.heroBanner.title')}</h2>
               <p className="mt-1 text-sm text-slate-600">
-                Upload images for the home page hero section. Images are stored in the cloud.
+                {t('admin.heroBanner.uploadAutoSaveHint')}
               </p>
             </div>
             <span className="rounded-full border border-amber-200 bg-white/90 px-3 py-1 text-xs font-medium text-amber-800 shadow-sm">

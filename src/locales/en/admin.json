@@ -799,6 +799,7 @@
   "heroBanner": {
     "title": "Hero / Banner",
     "subtitle": "Manage desktop and mobile images for the homepage hero banner",
+    "uploadAutoSaveHint": "Each upload goes to Cloudflare R2 and is saved to settings immediately so the storefront shows the new image (cache may take a few seconds).",
     "backToAdmin": "Back to Admin Dashboard",
     "desktopImageUrl": "Desktop Image URL",
     "mobileImageUrl": "Mobile Image URL",
@@ -811,6 +812,8 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "savedSuccess": "Hero banner images saved successfully!",
+    "savedAfterUpload": "Image uploaded to storage and saved. It will show on the storefront shortly.",
+    "uploadOrSaveFailed": "Upload or save failed",
     "errorLoading": "Failed to load hero banner: {message}",
     "errorSaving": "Failed to save hero banner: {message}"
   },

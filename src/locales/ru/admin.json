@@ -794,6 +794,7 @@
   "heroBanner": {
     "title": "Hero / Banner",
     "subtitle": "Управляйте desktop и mobile изображениями hero banner на главной странице",
+    "uploadAutoSaveHint": "Каждая загрузка отправляется в Cloudflare R2 и сразу сохраняется в настройках, чтобы витрина показывала новое изображение (кэш может обновиться за несколько секунд).",
     "backToAdmin": "Вернуться в панель администратора",
     "desktopImageUrl": "URL desktop изображения",
     "mobileImageUrl": "URL mobile изображения",
@@ -806,6 +807,8 @@
     "saving": "Сохранение...",
     "cancel": "Отмена",
     "savedSuccess": "Изображения hero banner успешно сохранены!",
+    "savedAfterUpload": "Изображение загружено в хранилище и сохранено. На сайте оно появится в течение нескольких секунд.",
+    "uploadOrSaveFailed": "Ошибка загрузки или сохранения",
     "errorLoading": "Не удалось загрузить hero banner: {message}",
     "errorSaving": "Не удалось сохранить hero banner: {message}"
   },

@@ -18,14 +18,22 @@ const r2 =
       })
     : null;
 
+export type UploadToR2Options = {
+  /** Sent as `Cache-Control` on the object (CDN / browser caching). */
+  cacheControl?: string;
+};
+
+const DEFAULT_R2_OBJECT_CACHE_CONTROL =
+  "public, max-age=31536000, immutable";
+
 /**
  * Upload a buffer to R2 and return the public URL.
- * Key will be prefixed with "products/" and get a unique suffix.
  */
 export async function uploadToR2(
   key: string,
   body: Buffer | Uint8Array,
-  contentType: string
+  contentType: string,
+  options?: UploadToR2Options,
 ): Promise<string | null> {
   if (!r2 || !bucketName || !publicUrl) {
     return null;
@@ -36,6 +44,7 @@ export async function uploadToR2(
       Key: key,
       Body: body,
       ContentType: contentType,
+      CacheControl: options?.cacheControl ?? DEFAULT_R2_OBJECT_CACHE_CONTROL,
     })
   );
   const base = publicUrl.replace(/\/$/, "");
