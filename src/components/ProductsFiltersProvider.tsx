@@ -36,6 +36,7 @@ export interface CategoryFilterOption {
   slug: string;
   title: string;
   count: number;
+  children: CategoryFilterOption[];
 }
 
 export interface PriceRangeOption {

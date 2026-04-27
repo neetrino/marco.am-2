@@ -12,7 +12,10 @@
       "title": "Կատեգորիաներ",
       "loading": "Բեռնվում է...",
       "clear": "Մաքրել",
-      "clearAria": "Մաքրել կատեգորիայի ֆիլտրը"
+      "clearAria": "Մաքրել կատեգորիայի ֆիլտրը",
+      "expandSubcategoriesAria": "Ցուցադրել ենթակատեգորիաները՝ {title}",
+      "collapseSubcategoriesAria": "Թաքցնել ենթակատեգորիաները՝ {title}",
+      "noSubcategoriesToggleAria": "{title}՝ ենթակատեգորիաներ չկան"
     },
     "color": {
       "title": "Գույներ",

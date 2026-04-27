@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { pushShopProductsListingUrl } from '../lib/push-shop-products-listing-url';
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage } from '../lib/language';
 import { useTranslation } from '../lib/i18n-client';
-import { useProductsFilters } from './ProductsFiltersProvider';
+import { useProductsFilters, type CategoryFilterOption } from './ProductsFiltersProvider';
 import {
   PRODUCTS_FILTER_SECTION_SHELL_CLASS,
   productsFiltersSectionFont,
@@ -21,10 +22,116 @@ interface CategoryFilterProps {
   maxPrice?: string;
 }
 
-interface CategoryOption {
-  slug: string;
-  title: string;
-  count: number;
+function normalizeCategoryChildren(node: CategoryFilterOption): CategoryFilterOption {
+  const raw = node.children;
+  const children = Array.isArray(raw)
+    ? raw.map((ch) => normalizeCategoryChildren(ch))
+    : [];
+  return { ...node, children };
+}
+
+interface CategoryFilterRowProps {
+  node: CategoryFilterOption;
+  depth: number;
+  expandedKeys: ReadonlySet<string>;
+  onToggleExpand: (slug: string) => void;
+  selectedSlugs: string[];
+  onToggleCategory: (slug: string) => void;
+  expandAria: (title: string) => string;
+  collapseAria: (title: string) => string;
+  noSubcategoriesAria: (title: string) => string;
+}
+
+function CategoryFilterRow({
+  node,
+  depth,
+  expandedKeys,
+  onToggleExpand,
+  selectedSlugs,
+  onToggleCategory,
+  expandAria,
+  collapseAria,
+  noSubcategoriesAria,
+}: CategoryFilterRowProps) {
+  const key = node.slug.toLowerCase();
+  const childList = node.children ?? [];
+  const hasChildren = childList.length > 0;
+  const expanded = expandedKeys.has(key);
+  const isSelected = selectedSlugs.some((s) => s.toLowerCase() === node.slug.toLowerCase());
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div
+        className="flex w-full min-w-0 items-start gap-1 pr-3"
+        style={{ paddingLeft: depth > 0 ? depth * 14 : 0 }}
+      >
+        <button
+          type="button"
+          disabled={!hasChildren}
+          aria-expanded={hasChildren ? expanded : undefined}
+          aria-label={
+            !hasChildren
+              ? noSubcategoriesAria(node.title)
+              : expanded
+                ? collapseAria(node.title)
+                : expandAria(node.title)
+          }
+          onClick={() => {
+            if (hasChildren) {
+              onToggleExpand(node.slug);
+            }
+          }}
+          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-sm transition-[color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marco-black/25 disabled:cursor-default disabled:opacity-100 ${
+            hasChildren
+              ? 'text-[#5d7285] hover:text-[#314158] enabled:cursor-pointer dark:text-[#8f9fb2] dark:hover:text-[#b8c2cf]'
+              : 'cursor-default text-[#90a1b9]/50 dark:text-white/35'
+          }`}
+        >
+          <ChevronDown
+            className={`h-5 w-5 shrink-0 transition-transform duration-200 ease-out ${
+              hasChildren && expanded ? 'rotate-0' : '-rotate-90'
+            }`}
+            aria-hidden
+          />
+        </button>
+        <button
+          type="button"
+          onClick={() => onToggleCategory(node.slug)}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left transition-[opacity,color] duration-200 ease-out hover:opacity-90"
+        >
+          <ProductsFilterCheckboxVisual checked={isSelected} variant="checkmark" />
+          <span
+            className={`min-w-0 flex-1 truncate text-base leading-6 tracking-[0.16px] transition-colors duration-200 ease-out ${
+              isSelected ? 'text-[#314158] dark:text-[#b8c2cf]' : 'text-[#5d7285] dark:text-[#8f9fb2]'
+            }`}
+          >
+            {node.title}
+          </span>
+          <span className="shrink-0 text-base leading-6 tracking-[-0.31px] text-[#90a1b9] dark:text-white/68">
+            ({node.count})
+          </span>
+        </button>
+      </div>
+      {hasChildren && expanded ? (
+        <div className="flex flex-col gap-3">
+          {childList.map((ch) => (
+            <CategoryFilterRow
+              key={`${key}/${ch.slug}`}
+              node={ch}
+              depth={depth + 1}
+              expandedKeys={expandedKeys}
+              onToggleExpand={onToggleExpand}
+              selectedSlugs={selectedSlugs}
+              onToggleCategory={onToggleCategory}
+              expandAria={expandAria}
+              collapseAria={collapseAria}
+              noSubcategoriesAria={noSubcategoriesAria}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export function CategoryFilter({
@@ -37,14 +144,15 @@ export function CategoryFilter({
   const searchParams = useSearchParams();
   const filtersContext = useProductsFilters();
   const { t } = useTranslation();
-  const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [categories, setCategories] = useState<CategoryFilterOption[]>([]);
   const [loading, setLoading] = useState(true);
   /** Instant UI while URL / RSC catch up after navigation */
   const [optimisticSlugs, setOptimisticSlugs] = useState<string[] | null>(null);
+  const [expandedKeys, setExpandedKeys] = useState<ReadonlySet<string>>(() => new Set());
 
   useEffect(() => {
     if (filtersContext?.data?.categories) {
-      setCategories(filtersContext.data.categories);
+      setCategories(filtersContext.data.categories.map(normalizeCategoryChildren));
       setLoading(false);
       return;
     }
@@ -64,8 +172,9 @@ export function CategoryFilter({
       if (search) params.search = search;
       if (minPrice) params.minPrice = minPrice;
       if (maxPrice) params.maxPrice = maxPrice;
-      const response = await apiClient.get<{ categories: CategoryOption[] }>('/api/v1/products/filters', { params });
-      setCategories(response.categories ?? []);
+      const response = await apiClient.get<{ categories: CategoryFilterOption[] }>('/api/v1/products/filters', { params });
+      const raw = response.categories ?? [];
+      setCategories(raw.map(normalizeCategoryChildren));
     } catch (_err) {
       setCategories([]);
     } finally {
@@ -114,6 +223,32 @@ export function CategoryFilter({
     pushShopProductsListingUrl(router, qs ? `/products?${qs}` : '/products');
   };
 
+  const handleToggleExpand = useCallback((slug: string) => {
+    const k = slug.toLowerCase();
+    setExpandedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(k)) {
+        next.delete(k);
+      } else {
+        next.add(k);
+      }
+      return next;
+    });
+  }, []);
+
+  const expandAria = useCallback(
+    (title: string) => t('products.filters.category.expandSubcategoriesAria').replace('{title}', title),
+    [t]
+  );
+  const collapseAria = useCallback(
+    (title: string) => t('products.filters.category.collapseSubcategoriesAria').replace('{title}', title),
+    [t]
+  );
+  const noSubcategoriesAria = useCallback(
+    (title: string) => t('products.filters.category.noSubcategoriesToggleAria').replace('{title}', title),
+    [t]
+  );
+
   const hasCategorySelection = selectedSlugs.length > 0;
 
   if (loading) {
@@ -155,32 +290,20 @@ export function CategoryFilter({
 
       <ProductsFilterScrollArea className="max-h-[18rem] pr-[10px]">
         <div className="flex flex-col gap-3">
-        {categories.map((item) => {
-          const isSelected = selectedSlugs.some(
-            (s) => s.toLowerCase() === item.slug.toLowerCase()
-          );
-
-          return (
-            <button
+          {categories.map((item) => (
+            <CategoryFilterRow
               key={item.slug}
-              type="button"
-              onClick={() => handleToggle(item.slug)}
-              className="flex w-full min-w-0 items-center gap-3 pr-3 text-left transition-[opacity,color] duration-200 ease-out hover:opacity-90"
-            >
-              <ProductsFilterCheckboxVisual checked={isSelected} variant="checkmark" />
-              <span
-                className={`min-w-0 flex-1 truncate text-base leading-6 tracking-[0.16px] transition-colors duration-200 ease-out ${
-                  isSelected ? 'text-[#314158] dark:text-[#b8c2cf]' : 'text-[#5d7285] dark:text-[#8f9fb2]'
-                }`}
-              >
-                {item.title}
-              </span>
-              <span className="shrink-0 text-base leading-6 tracking-[-0.31px] text-[#90a1b9] dark:text-white/68">
-                ({item.count})
-              </span>
-            </button>
-          );
-        })}
+              node={item}
+              depth={0}
+              expandedKeys={expandedKeys}
+              onToggleExpand={handleToggleExpand}
+              selectedSlugs={selectedSlugs}
+              onToggleCategory={handleToggle}
+              expandAria={expandAria}
+              collapseAria={collapseAria}
+              noSubcategoriesAria={noSubcategoriesAria}
+            />
+          ))}
         </div>
       </ProductsFilterScrollArea>
     </section>

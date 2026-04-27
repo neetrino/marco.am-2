@@ -12,7 +12,10 @@
       "title": "Categories",
       "loading": "Loading...",
       "clear": "Clear",
-      "clearAria": "Clear category filter"
+      "clearAria": "Clear category filter",
+      "expandSubcategoriesAria": "Show subcategories: {title}",
+      "collapseSubcategoriesAria": "Hide subcategories: {title}",
+      "noSubcategoriesToggleAria": "{title}: no subcategories"
     },
     "color": {
       "title": "Colors",
