@@ -73,6 +73,8 @@ if (r2Origin) {
 
 const nextConfig = {
   reactStrictMode: true,
+  // Keep workspace DB + generated Prisma client as Node externals so query engine `.node` paths resolve at runtime (bundling breaks `__dirname` for native engines).
+  serverExternalPackages: ['@white-shop/db'],
   // Custom Prisma `output` lives outside `.prisma/client`; include engines in serverless / standalone traces.
   outputFileTracingIncludes: {
     '/*': ['./shared/db/generated/prisma-client/**/*'],
