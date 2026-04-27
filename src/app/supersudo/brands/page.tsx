@@ -497,7 +497,6 @@ export default function BrandsPage() {
                           </td>
                           <td className="px-2 py-2 align-middle">
                             {brand.logoUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element -- admin arbitrary URLs / data URLs
                               <img
                                 src={brand.logoUrl}
                                 alt=""
@@ -619,7 +618,6 @@ export default function BrandsPage() {
                 </div>
                 {formData.logoUrl.trim() !== '' ? (
                   <div className="mt-3 flex justify-center rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={formData.logoUrl}
                       alt=""
@@ -709,7 +707,6 @@ export default function BrandsPage() {
                 </div>
                 {formData.logoUrl.trim() !== '' ? (
                   <div className="mt-3 flex justify-center rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={formData.logoUrl}
                       alt=""
