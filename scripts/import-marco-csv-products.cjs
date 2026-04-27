@@ -13,7 +13,14 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 require("@next/env").loadEnvConfig(process.cwd());
 
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient } = require(path.join(
+  __dirname,
+  "..",
+  "shared",
+  "db",
+  "generated",
+  "prisma-client",
+));
 
 const prisma = new PrismaClient();
 

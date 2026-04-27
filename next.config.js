@@ -80,8 +80,9 @@ const nextConfig = {
   // Скрыть индикатор "Compiling..." в углу в dev — не мешает на экране
   devIndicators: false,
   transpilePackages: ['@shop/ui', '@shop/design-tokens'],
-  // Standalone output - prevents prerendering of 404 page
-  output: 'standalone',
+  // Standalone for Linux/macOS CI and Docker; omitted on Windows — Turbopack trace copy
+  // fails (EINVAL) when chunk paths contain `:` (e.g. node:crypto externals).
+  ...(process.platform !== 'win32' ? { output: 'standalone' } : {}),
   // Security headers (P1-SEC-07)
   async headers() {
     return [

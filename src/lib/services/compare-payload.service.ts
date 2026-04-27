@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@white-shop/db/prisma";
 import { db } from "@white-shop/db";
 import {
   COMPARE_MAX_LIST_ITEMS,

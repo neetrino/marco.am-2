@@ -7,7 +7,7 @@
     "dev": "next dev -p 3000",
     "dev:webpack": "next dev --no-turbo -p 3000",
     "dev:clean": "node -e \"require('fs').rmSync('.next', {recursive: true, force: true})\" && next dev -p 3000",
-    "prebuild": "cd shared/db && pnpm run db:generate",
+    "prebuild": "node src/scripts/prisma-prebuild-fallback.cjs",
     "prebuild:migrate": "node src/scripts/run-migrations.js",
     "build": "pnpm run prebuild && next build",
     "build:with-migrate": "pnpm run prebuild:migrate && next build",
