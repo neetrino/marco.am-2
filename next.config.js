@@ -71,6 +71,70 @@ if (r2Origin) {
   mediaSources.push(r2Origin);
 }
 
+/** Next/Image `remotePatterns` — R2 URLs must be listed or optimization returns 400. */
+function buildImageRemotePatterns() {
+  const patterns = [
+    {
+      protocol: 'https',
+      hostname: 'images.unsplash.com',
+      pathname: '/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'source.unsplash.com',
+      pathname: '/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'unsplash.com',
+      pathname: '/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'via.placeholder.com',
+      pathname: '/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'images.pexels.com',
+      pathname: '/**',
+    },
+    {
+      protocol: 'http',
+      hostname: 'localhost',
+      pathname: '/**',
+    },
+    {
+      protocol: 'http',
+      hostname: '127.0.0.1',
+      pathname: '/**',
+    },
+    {
+      protocol: 'https',
+      hostname: 'cdn-icons-png.flaticon.com',
+      pathname: '/**',
+    },
+  ];
+
+  const r2Host = getHostnameFromUrl(process.env.R2_PUBLIC_URL);
+  if (r2Host) {
+    patterns.push({
+      protocol: 'https',
+      hostname: r2Host,
+      pathname: '/**',
+    });
+  }
+
+  // Public bucket URLs (`pub-*.r2.dev`) when DB stores full URL; build may omit R2_PUBLIC_URL.
+  patterns.push({
+    protocol: 'https',
+    hostname: '*.r2.dev',
+    pathname: '/**',
+  });
+
+  return patterns;
+}
+
 // Custom-output Prisma client: trace engines; keep schema.prisma beside generated client (db:generate) so dirname stays correct.
 // Root `generated/prisma-client` is a mirror (sync-prisma-cwd-fallback.cjs) for Prisma's cwd fallback when traced __dirname lacks schema.
 const prismaGeneratedTraceGlob = './shared/db/generated/prisma-client/**/*';
@@ -134,53 +198,7 @@ const nextConfig = {
   // typescript.ignoreBuildErrors removed - build will fail on TypeScript errors
   // This ensures type safety in production builds
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'source.unsplash.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'unsplash.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'via.placeholder.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-        pathname: '/**',
-      },
-      {
-        protocol: 'http',
-        hostname: '127.0.0.1',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn-icons-png.flaticon.com',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.figma.com',
-        pathname: '/api/mcp/asset/**',
-      },
-    ],
+    remotePatterns: buildImageRemotePatterns(),
     // Allow unoptimized images for development (images will use unoptimized prop)
     // Ensure image optimization is enabled for production
     formats: ['image/avif', 'image/webp'],

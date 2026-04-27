@@ -800,6 +800,7 @@
   "heroBanner": {
     "title": "Hero / Banner",
     "subtitle": "Կառավարեք home page-ի hero banner-ի desktop և mobile նկարները",
+    "uploadAutoSaveHint": "Յուրաքանչյուր վերբեռնում պահվում է Cloudflare R2-ում և անմիջապես գրանցվում է կարգավորումներում, որպեսզի կայքը ցույց տա նոր նկարը (քեշը կարող է մի քանի վայրկյան տևել)։",
     "backToAdmin": "Վերադառնալ ադմինիստրատորի վահան",
     "desktopImageUrl": "Desktop նկարի URL",
     "mobileImageUrl": "Mobile նկարի URL",
@@ -812,6 +813,8 @@
     "saving": "Պահվում է...",
     "cancel": "Չեղարկել",
     "savedSuccess": "Hero banner-ի նկարները հաջողությամբ պահպանվեցին:",
+    "savedAfterUpload": "Նկարը բեռնվել է պահոց և պահպանվել է։ Կայքում կցուցադրվի մի քանի վայրկյանից։",
+    "uploadOrSaveFailed": "Բեռնումը կամ պահպանումը ձախողվեց",
     "errorLoading": "Չհաջողվեց բեռնել hero banner-ը: {message}",
     "errorSaving": "Չհաջողվեց պահպանել hero banner-ը: {message}"
   },
