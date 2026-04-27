@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  bindPointerDragHorizontalScroll,
-  bindVerticalWheelToHorizontalScroll,
-} from './horizontalRailWheelScroll';
+import { bindPointerDragHorizontalScroll } from './horizontalRailWheelScroll';
 import { SPECIAL_OFFERS_SCROLL_FRACTION } from './home-special-offers.constants';
 import { useSpecialOffersRailSlotWidth } from './useSpecialOffersRailSlotWidth';
 
@@ -56,13 +53,11 @@ export function useSpecialOffersCarousel(options: UseSpecialOffersCarouselOption
     el.addEventListener('scroll', syncActivePage, { passive: true });
     const ro = new ResizeObserver(syncActivePage);
     ro.observe(el);
-    const unbindWheel = bindVerticalWheelToHorizontalScroll(el);
     const unbindDrag = bindPointerDragHorizontalScroll(el);
 
     return () => {
       el.removeEventListener('scroll', syncActivePage);
       ro.disconnect();
-      unbindWheel();
       unbindDrag();
     };
   }, [isRailVisible, syncActivePage]);
