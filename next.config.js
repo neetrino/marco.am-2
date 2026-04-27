@@ -71,8 +71,7 @@ if (r2Origin) {
   mediaSources.push(r2Origin);
 }
 
-// Custom Prisma `output` (shared/db/generated/...): engines must be in each serverless trace. Picomatch
-// keys: `/*` is one segment only, so nested handlers like `/api/v1/compare` need `/api/**/*`.
+// Custom-output Prisma client: trace engines; keep schema.prisma beside generated client (db:generate) so dirname stays correct.
 const prismaGeneratedTraceGlob = './shared/db/generated/prisma-client/**/*';
 
 const nextConfig = {
