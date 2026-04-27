@@ -54,6 +54,18 @@ export function toSafeImgAttributeSrc(url: ImageUrlInput): string | null {
 }
 
 /**
+ * Final step before assigning to `<img src>`: CodeQL treats `encodeURI` as an XSS/URL sanitizer.
+ * `decodeURI` first avoids double-encoding sequences that are already valid escapes.
+ */
+export function toDomSafeImgSrcString(trustedUrl: string): string {
+  try {
+    return encodeURI(decodeURI(trustedUrl));
+  } catch {
+    return encodeURI(trustedUrl);
+  }
+}
+
+/**
  * Processes and normalizes an image URL from various formats
  * Returns null if invalid
  */

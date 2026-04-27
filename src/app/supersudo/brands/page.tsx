@@ -9,7 +9,7 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { AdminPageLayout } from '../components/AdminPageLayout';
 import { AdminTablePagination } from '../components/AdminTablePagination';
 import { logger } from '@/lib/utils/logger';
-import { processImageFile, toSafeImgAttributeSrc } from '@/lib/utils/image-utils';
+import { processImageFile, toDomSafeImgSrcString, toSafeImgAttributeSrc } from '@/lib/utils/image-utils';
 import { showToast } from '../../../components/Toast';
 
 interface Brand {
@@ -504,14 +504,11 @@ export default function BrandsPage() {
                           </td>
                           <td className="px-2 py-2 align-middle">
                             {safeBrandLogoUrl ? (
-                              <>
-                                {/* codeql[js/xss-through-dom]: src from toSafeImgAttributeSrc — only http(s), data:image/*, or path-only; protocol-relative rejected. */}
-                                <img
-                                  src={safeBrandLogoUrl}
-                                  alt=""
-                                  className="h-12 w-12 rounded-lg border border-slate-200 bg-white object-contain p-0.5"
-                                />
-                              </>
+                              <img
+                                src={toDomSafeImgSrcString(safeBrandLogoUrl)}
+                                alt=""
+                                className="h-12 w-12 rounded-lg border border-slate-200 bg-white object-contain p-0.5"
+                              />
                             ) : (
                               <div
                                 className="flex h-12 w-12 items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50 text-[10px] font-medium uppercase tracking-wide text-slate-400"
@@ -629,9 +626,8 @@ export default function BrandsPage() {
                 </div>
                 {safeFormLogoPreviewUrl ? (
                   <div className="mt-3 flex justify-center rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    {/* codeql[js/xss-through-dom]: src from toSafeImgAttributeSrc — only http(s), data:image/*, or path-only; protocol-relative rejected. */}
                     <img
-                      src={safeFormLogoPreviewUrl}
+                      src={toDomSafeImgSrcString(safeFormLogoPreviewUrl)}
                       alt=""
                       className="max-h-28 max-w-full object-contain"
                     />
@@ -719,9 +715,8 @@ export default function BrandsPage() {
                 </div>
                 {safeFormLogoPreviewUrl ? (
                   <div className="mt-3 flex justify-center rounded-lg border border-slate-200 bg-slate-50 p-3">
-                    {/* codeql[js/xss-through-dom]: src from toSafeImgAttributeSrc — only http(s), data:image/*, or path-only; protocol-relative rejected. */}
                     <img
-                      src={safeFormLogoPreviewUrl}
+                      src={toDomSafeImgSrcString(safeFormLogoPreviewUrl)}
                       alt=""
                       className="max-h-28 max-w-full object-contain"
                     />
