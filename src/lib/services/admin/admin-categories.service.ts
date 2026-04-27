@@ -1,4 +1,5 @@
 import { db } from "@white-shop/db";
+import { invalidateCategoryPublicCaches } from "@/lib/services/read-through-json-cache";
 import { toSlug } from "@/lib/utils/slug";
 import { logger } from "@/lib/utils/logger";
 
@@ -349,6 +350,8 @@ class AdminCategoriesService {
       throw this.buildProblemError(404, "Category not found", `Category with id '${category.id}' does not exist`);
     }
 
+    await invalidateCategoryPublicCaches();
+
     return {
       data: this.mapCategory(
         {
@@ -564,6 +567,8 @@ class AdminCategoriesService {
       );
     }
 
+    await invalidateCategoryPublicCaches();
+
     return {
       data: this.mapCategory(
         {
@@ -674,6 +679,7 @@ class AdminCategoriesService {
     });
 
     logger.devLog('✅ [ADMIN SERVICE] Category deleted:', categoryId);
+    await invalidateCategoryPublicCaches();
     return { success: true };
   }
 }

@@ -73,6 +73,9 @@ if (r2Origin) {
 
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
   allowedDevOrigins: getAllowedDevOrigins(),
   // Скрыть индикатор "Compiling..." в углу в dev — не мешает на экране
   devIndicators: false,

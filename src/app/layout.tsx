@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
+import { TidioDeferredLoader } from '../components/TidioDeferredLoader';
 import { ClientProviders } from '../components/ClientProviders';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
@@ -53,10 +54,7 @@ export default async function RootLayout({
             })();
           `}
         </Script>
-        <Script
-          src="https://code.tidio.co/9ovkfmgncuyhg4kaemwvkdbvp5r7njec.js"
-          strategy="lazyOnload"
-        />
+        <TidioDeferredLoader />
         <Suspense fallback={null}>
           <LanguagePreferenceProvider initialLanguage={initialLanguage}>
             <ClientProviders>

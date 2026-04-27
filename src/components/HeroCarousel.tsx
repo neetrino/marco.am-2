@@ -1,104 +1,42 @@
 'use client';
-import { useEffect, useState } from 'react';
+
+import Image from 'next/image';
 import { useTranslation } from '../lib/i18n-client';
-import { apiClient } from '../lib/api-client';
+import type { HeroCarouselImageUrls } from '../lib/home-hero-carousel-urls';
 import { HomePromoMobileHeroChair } from './home/HomePromoMobileHeroChair';
 import { HomePromoMobileHeroHeadline } from './home/HomePromoMobileHeroHeadline';
 import { HomePromoMobileHeroSlateCta } from './home/HomePromoMobileHeroSlateCta';
 import { HomePromoMobileHeroSlateLabel } from './home/HomePromoMobileHeroSlateLabel';
 import { HomePromoMobileHeroSlatePanel } from './home/HomePromoMobileHeroSlatePanel';
 import { HeroCarouselSlides } from './HeroCarouselSlides';
-import { HERO_MOBILE_PRIMARY_IMAGE_SRC } from './hero.constants';
 import { HOME_PAGE_SECTION_SHELL_CLASS } from './home/home-page-section-shell.constants';
-import {
-  HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
-  HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
-  HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
-} from '../lib/constants/home-hero-admin-banners';
 
-/** Hero shell follows the same responsive width rhythm as the whole home page. */
 const HERO_PAGE_CONTAINER_CLASS = `${HOME_PAGE_SECTION_SHELL_CLASS} pt-8 sm:pt-11 lg:pt-10`;
 
-type PublicBannerItem = {
-  id: string;
-  imageDesktopUrl: string | null;
-  imageMobileUrl: string | null;
-  sortOrder: number;
+const HERO_DESKTOP_IMAGE_SIZES =
+  '(max-width: 1024px) 50vw, (max-width: 1280px) 38vw, min(40vw, 520px)';
+
+type HeroCarouselProps = {
+  heroImageUrls: HeroCarouselImageUrls;
 };
 
-type PublicBannersPayload = {
-  items: PublicBannerItem[];
-};
-
-export function HeroCarousel() {
+export function HeroCarousel({ heroImageUrls }: HeroCarouselProps) {
   const { t } = useTranslation();
-  const [desktopImages, setDesktopImages] = useState({
-    leftTop: HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
-    leftBottom: HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
-    right: HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
-  });
-  const [mobileImage, setMobileImage] = useState<string>(HERO_MOBILE_PRIMARY_IMAGE_SRC);
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadHeroBanners() {
-      try {
-        const [primary, secondary] = await Promise.all([
-          apiClient.get<PublicBannersPayload>('/api/v1/banners?slot=home.hero.primary'),
-          apiClient.get<PublicBannersPayload>('/api/v1/banners?slot=home.hero.secondary'),
-        ]);
-
-        if (!active) {
-          return;
-        }
-
-        const primaryItems = [...primary.items].sort(
-          (a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id),
-        );
-        const secondaryItems = [...secondary.items].sort(
-          (a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id),
-        );
-
-        setDesktopImages({
-          leftTop:
-            primaryItems[0]?.imageDesktopUrl ?? HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
-          leftBottom:
-            primaryItems[1]?.imageDesktopUrl ?? HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
-          right:
-            secondaryItems[0]?.imageDesktopUrl ?? HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
-        });
-        setMobileImage(primaryItems[0]?.imageMobileUrl ?? HERO_MOBILE_PRIMARY_IMAGE_SRC);
-      } catch {
-        if (!active) {
-          return;
-        }
-
-        setDesktopImages({
-          leftTop: HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
-          leftBottom: HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
-          right: HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
-        });
-        setMobileImage(HERO_MOBILE_PRIMARY_IMAGE_SRC);
-      }
-    }
-
-    void loadHeroBanners();
-
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { leftTop, leftBottom, right, mobile } = heroImageUrls;
 
   return (
     <div className={HERO_PAGE_CONTAINER_CLASS} id="hero">
       <div className="relative aspect-[141/79] min-h-[260px] w-full min-w-0 overflow-hidden rounded-[32px] bg-marco-yellow box-border sm:min-h-[320px] md:aspect-[141/68] md:min-h-0 md:bg-transparent">
-        {/* Guaranteed mobile hero background texture pinned to top edge. */}
-        <div
-          className="pointer-events-none absolute inset-0 z-0 bg-cover bg-top bg-no-repeat md:hidden"
-          style={{ backgroundImage: `url(${mobileImage})`, backgroundPosition: 'center top' }}
-          aria-hidden
-        />
+        <div className="pointer-events-none absolute inset-0 z-0 md:hidden">
+          <Image
+            src={mobile}
+            alt=""
+            fill
+            priority
+            className="object-cover object-top"
+            sizes="100vw"
+          />
+        </div>
         <div className="md:hidden">
           <HeroCarouselSlides />
           <HomePromoMobileHeroSlatePanel />
@@ -117,22 +55,35 @@ export function HeroCarousel() {
 
         <div className="hidden h-full w-full grid-cols-[minmax(0,1.24fr)_minmax(0,0.96fr)] gap-3 md:grid md:p-0 lg:gap-4 lg:p-0">
           <div className="grid h-full min-w-0 grid-rows-2 gap-3 lg:gap-4">
-            <div
-              className="h-full min-w-0 rounded-[30px] bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${desktopImages.leftTop})`, backgroundPosition: 'center 16%' }}
-              aria-label="CASEKOO Accessories"
-            />
-            <div
-              className="h-full min-w-0 rounded-[30px] bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${desktopImages.leftBottom})`, backgroundPosition: 'center 58%' }}
-              aria-label="Xming projector"
+            <div className="relative h-full min-w-0 overflow-hidden rounded-[30px]">
+              <Image
+                src={leftTop}
+                alt=""
+                fill
+                priority
+                className="object-cover object-[center_16%]"
+                sizes={HERO_DESKTOP_IMAGE_SIZES}
+              />
+            </div>
+            <div className="relative h-full min-w-0 overflow-hidden rounded-[30px]">
+              <Image
+                src={leftBottom}
+                alt=""
+                fill
+                className="object-cover object-[center_58%]"
+                sizes={HERO_DESKTOP_IMAGE_SIZES}
+              />
+            </div>
+          </div>
+          <div className="relative h-full min-w-0 overflow-hidden rounded-[30px]">
+            <Image
+              src={right}
+              alt=""
+              fill
+              className="object-cover object-[center_58%]"
+              sizes="(max-width: 1280px) 42vw, min(45vw, 560px)"
             />
           </div>
-          <div
-            className="relative h-full min-w-0 rounded-[30px] bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${desktopImages.right})`, backgroundPosition: 'center 58%' }}
-            aria-label="Galaxy A05s hero"
-          />
         </div>
       </div>
     </div>
