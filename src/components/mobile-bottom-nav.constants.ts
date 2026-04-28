@@ -15,3 +15,10 @@ export const MOBILE_NAV_TOP_CORNER_RADIUS_PX = 24;
  */
 export const MOBILE_NAV_LAYOUT_PADDING_BOTTOM =
   'calc(4.875rem + max(0.5rem, env(safe-area-inset-bottom, 0px)))';
+
+/**
+ * Tidio (and similar) `bottom` offset on viewports where `MobileBottomNav` is shown (`lg:hidden`).
+ * Matches layout padding plus a small gap so the chat bubble does not cover the profile tab.
+ */
+export const MOBILE_NAV_OVERLAY_WIDGET_BOTTOM =
+  'calc(4.875rem + max(0.5rem, env(safe-area-inset-bottom, 0px)) + 12px)';
