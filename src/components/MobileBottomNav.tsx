@@ -8,16 +8,22 @@ import { fetchWishlistItemCount } from '../lib/wishlist/wishlist-client';
 import { logger } from '@/lib/utils/logger';
 import { useTranslation } from '../lib/i18n-client';
 import {
+  MobileNavCartBoldIcon,
   MobileNavCartLinearIcon,
   MobileNavHomeBoldIcon,
+  MobileNavHomeLinearIcon,
+  MobileNavProfileBoldIcon,
   MobileNavProfileLinearIcon,
+  MobileNavWishlistBagBoldIcon,
   MobileNavWishlistBagIcon,
 } from './mobile-bottom-nav-icons';
 import {
   MOBILE_NAV_ACTIVE_FOREGROUND,
   MOBILE_NAV_ACTIVE_PILL_BG,
   MOBILE_NAV_BOX_SHADOW,
+  MOBILE_NAV_HOME_INDICATOR_BG,
   MOBILE_NAV_INACTIVE_ICON,
+  MOBILE_NAV_TOP_CORNER_RADIUS_PX,
 } from './mobile-bottom-nav.constants';
 
 export type MobileNavIconSlot = 'home' | 'wishlist' | 'cart' | 'profile';
@@ -38,16 +44,32 @@ function isNavItemActive(pathname: string | null, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function renderNavIcon(slot: MobileNavIconSlot, sizeClass: string): ReactNode {
+function renderNavIcon(slot: MobileNavIconSlot, isActive: boolean, sizeClass: string): ReactNode {
   switch (slot) {
     case 'home':
-      return <MobileNavHomeBoldIcon className={sizeClass} />;
+      return isActive ? (
+        <MobileNavHomeBoldIcon className={sizeClass} />
+      ) : (
+        <MobileNavHomeLinearIcon className={sizeClass} />
+      );
     case 'wishlist':
-      return <MobileNavWishlistBagIcon className={sizeClass} />;
+      return isActive ? (
+        <MobileNavWishlistBagBoldIcon className={sizeClass} />
+      ) : (
+        <MobileNavWishlistBagIcon className={sizeClass} />
+      );
     case 'cart':
-      return <MobileNavCartLinearIcon className={sizeClass} />;
+      return isActive ? (
+        <MobileNavCartBoldIcon className={sizeClass} />
+      ) : (
+        <MobileNavCartLinearIcon className={sizeClass} />
+      );
     case 'profile':
-      return <MobileNavProfileLinearIcon className={sizeClass} />;
+      return isActive ? (
+        <MobileNavProfileBoldIcon className={sizeClass} />
+      ) : (
+        <MobileNavProfileLinearIcon className={sizeClass} />
+      );
   }
 }
 
@@ -71,7 +93,7 @@ function NavItemLink({ item, pathname, wishlistCount }: NavItemLinkProps) {
       className="relative flex h-6 w-6 shrink-0 items-center justify-center"
       style={{ color: iconColor }}
     >
-      {renderNavIcon(slot, sizeClass)}
+      {renderNavIcon(slot, isActive, sizeClass)}
       {badgeValue > 0 && (
         <span className="absolute -right-1.5 -top-1 flex min-h-[16px] min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
           {badgeValue > 99 ? '99+' : badgeValue}
@@ -95,7 +117,7 @@ function NavItemLink({ item, pathname, wishlistCount }: NavItemLinkProps) {
           }}
         >
           {iconWithBadge}
-          <span className="truncate text-xs font-semibold leading-tight tracking-wide">{label}</span>
+          <span className="truncate text-xs font-semibold leading-tight tracking-[0.24px]">{label}</span>
         </span>
       ) : (
         <span className="inline-flex items-center justify-center py-2">{iconWithBadge}</span>
@@ -137,7 +159,7 @@ export function MobileBottomNav() {
   const navItems: MobileNavItem[] = useMemo(
     () => [
       { label: t('common.navigation.home'), href: '/', icon: 'home' },
-      { label: t('common.navigation.wishlist'), href: '/wishlist', icon: 'wishlist', badge: 'wishlist' },
+      { label: t('common.navigation.shop'), href: '/wishlist', icon: 'wishlist', badge: 'wishlist' },
       { label: t('common.navigation.cart'), href: '/cart', icon: 'cart' },
       { label: t('common.navigation.profile'), href: '/profile', icon: 'profile' },
     ],
@@ -145,20 +167,33 @@ export function MobileBottomNav() {
   );
 
   return (
-    <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 w-full bg-white pb-[max(0.5rem,env(safe-area-inset-bottom,0px))]"
-      style={{ boxShadow: MOBILE_NAV_BOX_SHADOW }}
-      aria-label="Primary"
-    >
-      <div className="mx-auto flex max-w-md items-center justify-between px-4 pt-3 pb-1.5">
-        {navItems.map((item) => (
-          <NavItemLink
-            key={item.href}
-            item={item}
-            pathname={pathname}
-            wishlistCount={wishlistCount}
-          />
-        ))}
+    <nav className="lg:hidden pointer-events-none fixed bottom-0 left-0 right-0 z-50 w-full" aria-label="Primary">
+      <div className="pointer-events-auto mx-auto max-w-md">
+        <div
+          className="overflow-hidden bg-white pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] dark:bg-zinc-950"
+          style={{
+            borderTopLeftRadius: MOBILE_NAV_TOP_CORNER_RADIUS_PX,
+            borderTopRightRadius: MOBILE_NAV_TOP_CORNER_RADIUS_PX,
+            boxShadow: MOBILE_NAV_BOX_SHADOW,
+          }}
+        >
+          <div className="mx-auto flex max-w-md items-center justify-between px-4 pt-3 pb-1.5">
+            {navItems.map((item) => (
+              <NavItemLink
+                key={item.href}
+                item={item}
+                pathname={pathname}
+                wishlistCount={wishlistCount}
+              />
+            ))}
+          </div>
+          <div className="flex justify-center px-4 pb-2 pt-1" aria-hidden>
+            <span
+              className="block h-1 w-32 max-w-[45%] shrink-0 rounded-full"
+              style={{ backgroundColor: MOBILE_NAV_HOME_INDICATOR_BG }}
+            />
+          </div>
+        </div>
       </div>
     </nav>
   );
