@@ -98,9 +98,13 @@ export function HomeFloorBannerSlackCtaLink({
   /**
    * Rest: chip above label so the slack is never painted under glyphs; hover/focus: label above
    * chip so copy stays legible while the chip crosses.
+   * When `slackChipRestInsetInlineEndPx` is set, omit `end-0` so inline `insetInlineEnd` wins (Tailwind’s
+   * `end-0` would otherwise pin the chip flush to the pill edge).
    */
   const motionChipOuter =
-    'absolute end-0 top-1/2 z-[4] flex -translate-y-1/2 group-hover:z-[3] group-focus-visible:z-[3]';
+    slackChipRestInsetInlineEndPx != null && Number.isFinite(slackChipRestInsetInlineEndPx)
+      ? 'absolute top-1/2 z-[4] flex -translate-y-1/2 group-hover:z-[3] group-focus-visible:z-[3]'
+      : 'absolute end-0 top-1/2 z-[4] flex -translate-y-1/2 group-hover:z-[3] group-focus-visible:z-[3]';
   const motionChipInner = `${motionTransform} group-hover:translate-x-[calc(-100cqw+100%+var(--slack-stop-pad)-var(--slack-track-pe)-var(--slack-bleed-start)-var(--slack-travel-micro))] group-focus-visible:translate-x-[calc(-100cqw+100%+var(--slack-stop-pad)-var(--slack-track-pe)-var(--slack-bleed-start)-var(--slack-travel-micro))]`;
 
   const labelMotionShift =
@@ -108,7 +112,7 @@ export function HomeFloorBannerSlackCtaLink({
 
   const chipRestInsetStyle: CSSProperties | undefined =
     slackChipRestInsetInlineEndPx != null && Number.isFinite(slackChipRestInsetInlineEndPx)
-      ? { insetInlineEnd: slackChipRestInsetInlineEndPx }
+      ? { insetInlineEnd: slackChipRestInsetInlineEndPx, insetInlineStart: 'auto' }
       : undefined;
 
   return (
