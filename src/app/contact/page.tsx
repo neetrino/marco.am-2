@@ -30,7 +30,7 @@ const CONTACT_DIVIDER_CLASS = `${CONTACT_DIVIDER_BASE_CLASS} w-full max-w-sm`;
 const CONTACT_EMAILS = ['marcogrouparmenia@mail.ru', 'marcofurniture@mail.ru'] as const;
 
 const CONTACT_FORM_FIELD_CLASS =
-  'w-full !h-11 !rounded-full !border !border-[var(--app-border)] !bg-[var(--app-surface-muted)] !px-4 !py-0 !text-sm !text-[var(--app-text)] placeholder:!text-[var(--app-text-soft)] focus:!border-marco-yellow/55 focus:!ring-2 focus:!ring-marco-yellow/30 dark:!border-[var(--app-border-strong)] sm:!text-base';
+  'w-full !h-11 !rounded-xl !border !border-[var(--app-border)] !bg-[var(--app-surface-muted)] !px-4 !py-0 !text-sm !text-[var(--app-text)] placeholder:!text-[var(--app-text-soft)] focus:!border-marco-yellow/55 focus:!ring-2 focus:!ring-marco-yellow/30 dark:!border-[var(--app-border-strong)] sm:!text-base';
 
 type ContactMapAddressStripProps = {
   locations: readonly ContactLocation[];
@@ -320,7 +320,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleChange}
                     aria-label={t('contact.form.message')}
-                    className={`${CONTACT_FORM_FIELD_CLASS} !h-auto min-h-[108px] !rounded-2xl !py-2.5`}
+                    className={`${CONTACT_FORM_FIELD_CLASS} !h-auto min-h-[108px] !py-2.5`}
                     placeholder={t('contact.form.message')}
                   />
                 </div>

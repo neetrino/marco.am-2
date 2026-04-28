@@ -12,7 +12,10 @@
       "title": "Категории",
       "loading": "Загрузка...",
       "clear": "Сбросить",
-      "clearAria": "Сбросить фильтр по категории"
+      "clearAria": "Сбросить фильтр по категории",
+      "expandSubcategoriesAria": "Показать подкатегории: {title}",
+      "collapseSubcategoriesAria": "Скрыть подкатегории: {title}",
+      "noSubcategoriesToggleAria": "{title}: нет подкатегорий"
     },
     "color": {
       "title": "Цвета",

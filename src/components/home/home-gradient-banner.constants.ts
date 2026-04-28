@@ -1,8 +1,8 @@
 /**
- * Gradient + photo banner — user spec (560×370, 56/37, #2F4B5D overlay).
+ * Slate banner — flat raster fill (`home-gradient-banner-bg.png`), #2F4B5D fallback while loading.
  */
 
-export const HOME_GRADIENT_BANNER_IMAGE_PATH = '/assets/home/home-gradient-banner.jpg';
+export const HOME_GRADIENT_BANNER_IMAGE_PATH = '/assets/home/home-gradient-banner-bg.png';
 
 /** First banner — between compact 420 and legacy 560. */
 export const HOME_GRADIENT_BANNER_MAX_WIDTH_PX = 460;
@@ -16,10 +16,7 @@ export const HOME_GRADIENT_BANNER_OFFSET_LEFT_PX = 0;
 /** Pull gradient + secondary banner block slightly up toward app banner above. */
 export const HOME_GRADIENT_BANNER_SECTION_MARGIN_TOP_PX = -5;
 
-/**
- * Solid fill behind photo + overlay — matches slate tint base so no light-gray edge strip shows.
- * Same RGB as overlay `rgb(47 75 93)`.
- */
+/** Fallback while the slate PNG loads — `rgb(47 75 93)`. */
 export const HOME_GRADIENT_BANNER_SURFACE_BASE_HEX = '#2f4b5d';
 
 /** Figma 101:4129 — headline fill. */
@@ -45,6 +42,15 @@ export const HOME_GRADIENT_BANNER_CTA_LABEL_NUDGE_LEFT_RU_EXTRA_PX = -11;
  * Russian (`ru`) — extra pull on the black arrow chip toward the left (px), added to `HOME_BANNERS_CTA_ICON_PULL_LEFT_PX`.
  */
 export const HOME_GRADIENT_BANNER_CTA_ICON_PULL_LEFT_RU_EXTRA_PX = 8;
+
+/**
+ * Gradient (left) banner CTA only — slack chip inset from the pill’s inline-end at rest (px).
+ * Secondary / mobile floor CTAs omit this so their slack stays flush.
+ */
+export const HOME_GRADIENT_BANNER_CTA_SLACK_REST_INSET_INLINE_END_PX = 16;
+
+/** Gradient (left) banner CTA only — slack stop inset from inline-start on hover end (px). */
+export const HOME_GRADIENT_BANNER_CTA_SLACK_HOVER_END_INSET_INLINE_START_PX = 12;
 
 /** Russian (`ru`) — black circle + glyph slightly smaller than default banner CTA. */
 export const HOME_GRADIENT_BANNER_CTA_ICON_CIRCLE_RU_PX = 34;
@@ -97,18 +103,3 @@ export const HOME_GRADIENT_BANNER_CTA_MAX_WIDTH_EN_DESKTOP_PX = 162;
 export const HOME_GRADIENT_BANNER_ASPECT_RATIO = '56 / 34';
 
 export const HOME_GRADIENT_BANNER_RADIUS_PX = 16;
-
-/** Overlay opacity so the photo stays visible under the slate tint (solid #2F4B5D would hide it). */
-export const HOME_GRADIENT_BANNER_OVERLAY_OPACITY = 0.58;
-
-/**
- * Photo fill — Figma 101:4135 (`kam-idris`); explicit % size in file vs `cover` in CSS — reference only.
- * Runtime uses `background-size: cover` on the image layer to avoid edge bands.
- */
-export const HOME_GRADIENT_BANNER_BG_SIZE_WIDTH_PERCENT = 120.46;
-
-export const HOME_GRADIENT_BANNER_BG_SIZE_HEIGHT_PERCENT = 160.88;
-
-export const HOME_GRADIENT_BANNER_BG_POSITION_X_PERCENT = -11.5;
-
-export const HOME_GRADIENT_BANNER_BG_POSITION_Y_PERCENT = -48.15;

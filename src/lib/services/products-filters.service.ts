@@ -3,6 +3,11 @@ import { Prisma } from "@white-shop/db/prisma";
 import { adminService } from "./admin.service";
 import { ProductWithRelations } from "./products-find-query.service";
 import { getAttributeBucket, isColorAttributeKey, isSizeAttributeKey } from "@/lib/attribute-keys";
+import {
+  buildShopCategoryFilterTree,
+  resolveVisibleCategoryParentId,
+  type CategoryFilterTreeNode,
+} from "@/lib/shop-category-filter-tree";
 
 /** Legacy demo categories — omit from shop sidebar (not part of MARCO nav taxonomy). */
 const SHOP_FILTER_EXCLUDED_CATEGORY_CANONICAL = new Set([
@@ -431,7 +436,7 @@ class ProductsFiltersService {
     });
 
     const categoryIdsWithProducts = Array.from(categoryCountMap.keys());
-    let categories: Array<{ slug: string; title: string; count: number }> = [];
+    let categories: CategoryFilterTreeNode[] = [];
     if (categoryIdsWithProducts.length > 0) {
       const categoryRows = await db.category.findMany({
         where: {
@@ -442,7 +447,16 @@ class ProductsFiltersService {
         include: { translations: true },
         orderBy: { position: "asc" },
       });
-      categories = categoryRows
+      type FilterCategoryRow = {
+        id: string;
+        parentId: string | null;
+        position: number;
+        slug: string;
+        title: string;
+        count: number;
+      };
+
+      const facetRows = categoryRows
         .filter(
           (cat) =>
             !this.isShopFilterCategoryExcludedFromTranslations(
@@ -459,9 +473,141 @@ class ProductsFiltersService {
           if (count === 0) {
             return null;
           }
-          return { slug: tr.slug, title: tr.title, count };
+          return {
+            id: cat.id,
+            parentId: cat.parentId,
+            position: cat.position,
+            slug: tr.slug,
+            title: tr.title,
+            count,
+          };
         })
-        .filter((c): c is { slug: string; title: string; count: number } => c !== null);
+        .filter((c): c is FilterCategoryRow => c !== null);
+
+      const rowsById = new Map<string, FilterCategoryRow>();
+      /** Omitted categories (excluded / no translation): map id → next parentId for chain resolution */
+      const skippedParentById = new Map<string, string | null>();
+      for (const r of facetRows) {
+        rowsById.set(r.id, r);
+      }
+
+      let frontier = new Set(
+        facetRows.map((r) => r.parentId).filter((pid): pid is string => Boolean(pid)),
+      );
+      let ancestorWalkGuard = 0;
+
+      while (frontier.size > 0 && ancestorWalkGuard < 40) {
+        ancestorWalkGuard += 1;
+        const toFetch = [...frontier].filter((id) => !rowsById.has(id));
+        frontier = new Set();
+        if (toFetch.length === 0) {
+          break;
+        }
+        const parentRows = await db.category.findMany({
+          where: {
+            id: { in: toFetch },
+            published: true,
+            deletedAt: null,
+          },
+          include: { translations: true },
+          orderBy: { position: "asc" },
+        });
+        for (const cat of parentRows) {
+          if (
+            this.isShopFilterCategoryExcludedFromTranslations(
+              cat.translations.map((t) => ({ slug: t.slug, title: t.title })),
+            )
+          ) {
+            skippedParentById.set(cat.id, cat.parentId ?? null);
+            if (cat.parentId) {
+              frontier.add(cat.parentId);
+            }
+            continue;
+          }
+          const tr =
+            cat.translations.find((t) => t.locale === lang) || cat.translations[0];
+          if (!tr) {
+            skippedParentById.set(cat.id, cat.parentId ?? null);
+            if (cat.parentId) {
+              frontier.add(cat.parentId);
+            }
+            continue;
+          }
+          const count = categoryCountMap.get(cat.id) || 0;
+          rowsById.set(cat.id, {
+            id: cat.id,
+            parentId: cat.parentId,
+            position: cat.position,
+            slug: tr.slug,
+            title: tr.title,
+            count,
+          });
+          if (cat.parentId && !rowsById.has(cat.parentId)) {
+            frontier.add(cat.parentId);
+          }
+        }
+      }
+
+      /** Load published subcategories from DB so every parent with real children gets an expand control (not only facets with products). */
+      const enrichedOnlyIds = new Set<string>();
+      let prevRowCount = -1;
+      let descendantWalkGuard = 0;
+      while (rowsById.size !== prevRowCount && descendantWalkGuard < 25) {
+        descendantWalkGuard += 1;
+        prevRowCount = rowsById.size;
+        const parentIds = [...rowsById.keys()];
+        if (parentIds.length === 0) {
+          break;
+        }
+        const publishedChildren = await db.category.findMany({
+          where: {
+            parentId: { in: parentIds },
+            published: true,
+            deletedAt: null,
+          },
+          include: { translations: true },
+          orderBy: { position: "asc" },
+        });
+        for (const cat of publishedChildren) {
+          if (
+            this.isShopFilterCategoryExcludedFromTranslations(
+              cat.translations.map((t) => ({ slug: t.slug, title: t.title })),
+            )
+          ) {
+            continue;
+          }
+          const tr =
+            cat.translations.find((t) => t.locale === lang) || cat.translations[0];
+          if (!tr) {
+            continue;
+          }
+          if (rowsById.has(cat.id)) {
+            continue;
+          }
+          const count = categoryCountMap.get(cat.id) || 0;
+          rowsById.set(cat.id, {
+            id: cat.id,
+            parentId: cat.parentId,
+            position: cat.position,
+            slug: tr.slug,
+            title: tr.title,
+            count,
+          });
+          enrichedOnlyIds.add(cat.id);
+        }
+      }
+
+      const visibleIds = new Set(rowsById.keys());
+      const allRows = Array.from(rowsById.values());
+      const treeRows = allRows.map((r) => ({
+        id: r.id,
+        parentId: resolveVisibleCategoryParentId(r.parentId, visibleIds, skippedParentById),
+        position: r.position,
+        slug: r.slug,
+        title: r.title,
+      }));
+      const counts = new Map(allRows.map((r) => [r.id, r.count] as const));
+      categories = buildShopCategoryFilterTree(treeRows, counts, enrichedOnlyIds);
     }
 
     // Convert maps to arrays

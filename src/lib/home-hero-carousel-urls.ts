@@ -4,7 +4,7 @@ import {
   HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
 } from '@/lib/constants/home-hero-admin-banners';
 import type { PublicBannersPayload } from '@/lib/services/banner-management.service';
-import { HERO_MOBILE_PRIMARY_IMAGE_SRC } from '@/components/hero.constants';
+import { resolveHeroMobileImageUrl } from '@/lib/utils/resolve-hero-mobile-image-url';
 
 export type HeroCarouselImageUrls = {
   leftTop: string;
@@ -31,6 +31,6 @@ export function buildHeroCarouselImageUrls(
     leftTop: primaryItems[0]?.imageDesktopUrl ?? HOME_HERO_PRIMARY_TOP_DEFAULT_IMAGE_URL,
     leftBottom: primaryItems[1]?.imageDesktopUrl ?? HOME_HERO_PRIMARY_BOTTOM_DEFAULT_IMAGE_URL,
     right: secondaryItems[0]?.imageDesktopUrl ?? HOME_HERO_SECONDARY_DEFAULT_IMAGE_URL,
-    mobile: primaryItems[0]?.imageMobileUrl ?? HERO_MOBILE_PRIMARY_IMAGE_SRC,
+    mobile: resolveHeroMobileImageUrl(primaryItems[0]?.imageMobileUrl),
   };
 }

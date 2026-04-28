@@ -50,7 +50,6 @@ export function RelatedProducts({ currentProductSlug }: RelatedProductsProps) {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-    handleWheel,
   } = useCarousel({ itemCount: products.length, visibleItems: visibleCards });
 
   function toSpecialOfferProduct(product: (typeof products)[number]): SpecialOfferProduct {
@@ -181,7 +180,7 @@ export function RelatedProducts({ currentProductSlug }: RelatedProductsProps) {
             {/* Carousel Container */}
             <div 
               ref={carouselRef}
-              className="relative overflow-hidden pb-10 cursor-grab active:cursor-grabbing select-none"
+              className="relative overflow-hidden pb-10 select-none"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -189,7 +188,6 @@ export function RelatedProducts({ currentProductSlug }: RelatedProductsProps) {
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
-              onWheel={handleWheel}
             >
               <div
                 className="flex items-stretch -mx-2 md:mx-0"

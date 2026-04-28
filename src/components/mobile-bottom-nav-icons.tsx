@@ -24,6 +24,34 @@ export function MobileNavHomeBoldIcon({ className }: NavGlyphProps) {
   );
 }
 
+/** Inactive home — Figma vuesax/linear/home. */
+export function MobileNavHomeLinearIcon({ className }: NavGlyphProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M9.02 2.84l-5.39 4.2C2.73 7.74 2 9.23 2 10.83V17c0 3 2 5 5 5h10c3 0 5-2 5-5v-6.17c0-1.61-.75-3.09-1.63-3.79l-5.39-4.2c-1.71-1.33-4.27-1.33-5.96 0Z"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 18v-3"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function MobileNavWishlistBagIcon({ className }: NavGlyphProps) {
   return (
     <svg
@@ -44,6 +72,26 @@ export function MobileNavWishlistBagIcon({ className }: NavGlyphProps) {
         stroke="currentColor"
         strokeWidth={1.5}
         strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/** Active wishlist / “Shop” tab — filled bag (Figma 352:2850). */
+export function MobileNavWishlistBagBoldIcon({ className }: NavGlyphProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M7.5 6.75V8.25H5.25c-.83 0-1.5.67-1.5 1.5v9.75c0 .83.67 1.5 1.5 1.5h13.5c.83 0 1.5-.67 1.5-1.5V9.75c0-.83-.67-1.5-1.5-1.5H16.5V6.75c0-2.485-2.015-4.5-4.5-4.5s-4.5 2.015-4.5 4.5zm3 1.5V6.75a1.5 1.5 0 113 0V8.25h-3z"
+        fill="currentColor"
       />
     </svg>
   );
@@ -94,6 +142,53 @@ export function MobileNavCartLinearIcon({ className }: NavGlyphProps) {
   );
 }
 
+/** Active cart — bolder stroke (Figma vuesax/bold/shopping-cart). */
+export function MobileNavCartBoldIcon({ className }: NavGlyphProps) {
+  const sw = 2.25;
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M2 2H3.74001C4.82001 2 5.67 2.93 5.58 4L4.75 13.96C4.61 15.59 5.89999 16.99 7.53999 16.99H18.19C19.63 16.99 20.89 15.81 21 14.38L21.54 6.88C21.66 5.22 20.4 3.87 18.73 3.87H5.82001"
+        stroke="currentColor"
+        strokeWidth={sw}
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16.25 22C16.9404 22 17.5 21.4404 17.5 20.75C17.5 20.0596 16.9404 19.5 16.25 19.5C15.5596 19.5 15 20.0596 15 20.75C15 21.4404 15.5596 22 16.25 22Z"
+        stroke="currentColor"
+        strokeWidth={sw}
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.25 22C8.94036 22 9.5 21.4404 9.5 20.75C9.5 20.0596 8.94036 19.5 8.25 19.5C7.55964 19.5 7 20.0596 7 20.75C7 21.4404 7.55964 22 8.25 22Z"
+        stroke="currentColor"
+        strokeWidth={sw}
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 8H21"
+        stroke="currentColor"
+        strokeWidth={sw}
+        strokeMiterlimit={10}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function MobileNavProfileLinearIcon({ className }: NavGlyphProps) {
   return (
     <svg
@@ -116,6 +211,24 @@ export function MobileNavProfileLinearIcon({ className }: NavGlyphProps) {
         strokeWidth={1.5}
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Active profile — Figma vuesax/bold/frame (filled user). */
+export function MobileNavProfileBoldIcon({ className }: NavGlyphProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        fill="currentColor"
       />
     </svg>
   );

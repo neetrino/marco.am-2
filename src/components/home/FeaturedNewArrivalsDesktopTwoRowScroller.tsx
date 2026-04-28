@@ -58,7 +58,7 @@ export type FeaturedNewArrivalsDesktopTwoRowScrollerProps = {
 };
 
 /**
- * `md+` «Նորույթներ» — 2 rows × 4 columns per page, horizontal scroll (same wheel/drag hook as special offers).
+ * `md+` «Նորույթներ» — 2 rows × 4 columns per page, horizontal scroll (same drag hook as special offers).
  */
 export function FeaturedNewArrivalsDesktopTwoRowScroller({
   scrollerRef,

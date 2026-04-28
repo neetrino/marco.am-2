@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { HomeFloorBannerSlackCtaLink } from './HomeFloorBannerSlackCtaLink';
 import { ArrowUpRight } from 'lucide-react';
 import { Montserrat } from 'next/font/google';
 
@@ -49,8 +49,6 @@ import {
 } from './home-banners-cta.constants';
 import { HOME_APP_BANNER_INNER_CLASS } from './home-app-banner.constants';
 import {
-  HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_X_PERCENT,
-  HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_Y_PERCENT,
   HOME_MOBILE_BANNER_SHOWCASE_CARD_HEIGHT_PX,
   HOME_MOBILE_BANNER_SHOWCASE_CARD_WIDTH_PX,
   HOME_MOBILE_BANNER_SHOWCASE_CHAIR_BLEED_TOP_MAX_PX,
@@ -73,7 +71,6 @@ import {
   HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_X_PX,
   HOME_MOBILE_BANNER_SHOWCASE_IMAGE_PATH,
   HOME_MOBILE_BANNER_SHOWCASE_IMAGE_SIZES,
-  HOME_MOBILE_BANNER_SHOWCASE_OVERLAY_OPACITY,
   HOME_MOBILE_BANNER_SHOWCASE_RADIUS_PX,
   HOME_MOBILE_BANNER_SHOWCASE_SURFACE_HEX,
 } from './home-mobile-banner-product-showcase.constants';
@@ -115,17 +112,15 @@ type HomeMobileBannerProductShowcaseProps = {
 };
 
 function buildShowcaseCardBackgroundStyle(): CSSProperties {
-  const overlay = `rgb(47 75 93 / ${HOME_MOBILE_BANNER_SHOWCASE_OVERLAY_OPACITY})`;
   return {
     width: '100%',
     aspectRatio: `${HOME_MOBILE_BANNER_SHOWCASE_CARD_WIDTH_PX} / ${HOME_MOBILE_BANNER_SHOWCASE_CARD_HEIGHT_PX}`,
     borderRadius: `${HOME_MOBILE_BANNER_SHOWCASE_RADIUS_PX}px`,
     backgroundColor: HOME_MOBILE_BANNER_SHOWCASE_SURFACE_HEX,
-    backgroundImage: `linear-gradient(0deg, ${overlay} 0%, ${overlay} 100%), url(${HOME_MOBILE_BANNER_SHOWCASE_IMAGE_PATH})`,
-    /** Photo: `cover` avoids slate base showing as a stripe; % position nudges crop toward Figma 314:2480. */
-    backgroundPosition: `0 0, ${HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_X_PERCENT}% ${HOME_MOBILE_BANNER_SHOWCASE_BG_POSITION_Y_PERCENT}%`,
-    backgroundSize: `100% 100%, cover`,
-    backgroundRepeat: 'no-repeat, no-repeat',
+    backgroundImage: `url(${HOME_MOBILE_BANNER_SHOWCASE_IMAGE_PATH})`,
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
   };
 }
 
@@ -273,9 +268,10 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
               paddingTop: `${HOME_MOBILE_BANNER_SHOWCASE_FOOTER_PAD_TOP_PX}px`,
             }}
           >
-            <Link
+            <HomeFloorBannerSlackCtaLink
               href="/products"
-              className={`${montserratShowcaseCta.className} group pointer-events-auto flex min-w-0 shrink-0 items-center bg-marco-yellow font-bold text-marco-black transition hover:-translate-y-0.5 hover:bg-red-700 hover:text-white active:translate-y-px dark:!text-[#050505] dark:hover:!text-[#050505]`}
+              ariaLabel={ctaAria}
+              className={`${montserratShowcaseCta.className} pointer-events-auto min-w-0 shrink-0 bg-marco-yellow font-bold text-marco-black transition hover:-translate-y-0.5 active:translate-y-px dark:text-[#050505]`}
               style={{
                 ...showcaseCtaLinkStyle,
                 fontSize: isRussian
@@ -304,39 +300,39 @@ export function HomeMobileBannerProductShowcase({ language }: HomeMobileBannerPr
                         }
                       : {}),
               }}
-              aria-label={ctaAria}
-            >
-              <span
-                className="min-w-0 shrink whitespace-nowrap text-left dark:!text-[#050505]"
-                style={{
-                  transform: `translateX(${
-                    isRussian
-                      ? HOME_GRADIENT_BANNER_CTA_LABEL_NUDGE_LEFT_PX -
-                        HOME_MOBILE_BANNER_SHOWCASE_CTA_RU_LABEL_NUDGE_SUBTRACT_PX
-                      : HOME_GRADIENT_BANNER_CTA_LABEL_NUDGE_LEFT_PX
-                  }px)`,
-                }}
-              >
-                {ctaLabel}
-              </span>
-              <span
-                className="flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition group-hover:bg-white group-hover:text-red-700"
-                style={
-                  isRussian
-                    ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(-6px)' }
-                    : isEnglish
-                      ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(4px)' }
-                      : showcaseCtaIconFrameStyle
-                }
-                aria-hidden
-              >
+              trailClassName="bg-marco-black"
+              labelWrapperClassName="min-w-0 shrink whitespace-nowrap text-left transition-colors [transition-duration:var(--slack-dur)] [transition-timing-function:var(--slack-ease)] motion-reduce:transition-none group-hover:text-white group-focus-visible:text-white dark:group-hover:text-white dark:group-focus-visible:text-white"
+              label={
+                <span
+                  className="dark:text-[#050505]"
+                  style={{
+                    transform: `translateX(${
+                      isRussian
+                        ? HOME_GRADIENT_BANNER_CTA_LABEL_NUDGE_LEFT_PX -
+                          HOME_MOBILE_BANNER_SHOWCASE_CTA_RU_LABEL_NUDGE_SUBTRACT_PX
+                        : HOME_GRADIENT_BANNER_CTA_LABEL_NUDGE_LEFT_PX
+                    }px)`,
+                  }}
+                >
+                  {ctaLabel}
+                </span>
+              }
+              chipInnerClassName="flex shrink-0 items-center justify-center rounded-full bg-marco-black text-white transition-colors [transition-duration:var(--slack-dur)] [transition-timing-function:var(--slack-ease)] motion-reduce:transition-none group-hover:bg-marco-yellow group-hover:text-marco-black group-focus-visible:bg-marco-yellow group-focus-visible:text-marco-black dark:group-hover:bg-marco-yellow dark:group-hover:text-marco-black dark:group-focus-visible:bg-marco-yellow dark:group-focus-visible:text-marco-black"
+              chipInnerStyle={
+                isRussian
+                  ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(-6px)' }
+                  : isEnglish
+                    ? { ...showcaseCtaIconFrameStyle, transform: 'translateX(4px)' }
+                    : showcaseCtaIconFrameStyle
+              }
+              chipChildren={
                 <ArrowUpRight
                   width={HOME_BANNERS_CTA_ARROW_ICON_PX}
                   height={HOME_BANNERS_CTA_ARROW_ICON_PX}
                   strokeWidth={2.5}
                 />
-              </span>
-            </Link>
+              }
+            />
             <div
               className={`${montserratShowcaseLabel.className} flex shrink-0 flex-col justify-center leading-[0] not-italic text-left text-white`}
               style={{
