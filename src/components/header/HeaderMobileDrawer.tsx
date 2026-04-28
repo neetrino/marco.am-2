@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -80,6 +80,8 @@ function drawerUserLabel(user: {
   return (user.email ?? user.phone ?? '').trim();
 }
 
+const DRAWER_FIT_EPSILON = 0.004;
+
 function renderPrimaryNavLink(
   link: PrimaryNavLink,
   pathname: string,
@@ -135,6 +137,9 @@ export function HeaderMobileDrawer({ data, compactPrimaryNav }: Props) {
   const [expandedCategorySlug, setExpandedCategorySlug] = useState<string | null>(null);
   const [callFlow, setCallFlow] = useState<'idle' | 'branches' | 'phones'>('idle');
   const [callBranchId, setCallBranchId] = useState<ContactLocationId | null>(null);
+  const [fitScale, setFitScale] = useState(1);
+  const fitSlotRef = useRef<HTMLDivElement>(null);
+  const fitMeasureRef = useRef<HTMLDivElement>(null);
   const hideHeaderSocialLinks = useShouldHideHeaderSocialLinks();
   const {
     t,
@@ -169,7 +174,43 @@ export function HeaderMobileDrawer({ data, compactPrimaryNav }: Props) {
       setExpandedCategorySlug(null);
       setCallFlow('idle');
       setCallBranchId(null);
+      setFitScale(1);
     }
+  }, [mobileMenuOpen]);
+
+  useLayoutEffect(() => {
+    if (!mobileMenuOpen) {
+      return;
+    }
+    const slot = fitSlotRef.current;
+    const measure = fitMeasureRef.current;
+    if (!slot || !measure) {
+      return;
+    }
+
+    const sync = () => {
+      const available = slot.clientHeight;
+      const natural = measure.scrollHeight;
+      if (available <= 0 || natural <= 0) {
+        return;
+      }
+      const next = Math.min(1, (available + 0.5) / natural);
+      setFitScale((prev) => (Math.abs(prev - next) < DRAWER_FIT_EPSILON ? prev : next));
+    };
+
+    sync();
+    const raf = requestAnimationFrame(sync);
+
+    const ro = new ResizeObserver(sync);
+    ro.observe(slot);
+    ro.observe(measure);
+
+    window.addEventListener('resize', sync);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener('resize', sync);
+    };
   }, [mobileMenuOpen]);
 
   if (!mobileMenuOpen) {
@@ -188,25 +229,36 @@ export function HeaderMobileDrawer({ data, compactPrimaryNav }: Props) {
       role="dialog"
       aria-modal="true"
     >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-4">
-          <div className="flex shrink-0 justify-end pb-2 pt-2">
-            <button
-              type="button"
-              onClick={closeDrawer}
-              className={MOBILE_DRAWER_CLOSE_BTN_CLASS}
-              aria-label={t('common.ariaLabels.closeMenu')}
-            >
-              <svg className="mx-auto h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+        <div
+          ref={fitSlotRef}
+          className="relative flex min-h-0 flex-1 flex-col overflow-hidden px-4"
+        >
           <div
-            className={`${MOBILE_DRAWER_CONTENT_MAX_CLASS} mt-4 flex min-h-0 flex-1 flex-col text-marco-black dark:text-white sm:mt-5`}
+            className="absolute inset-x-0 top-0 w-full min-w-0 will-change-transform"
+            style={{
+              transform: `scale(${fitScale})`,
+              transformOrigin: 'top center',
+            }}
           >
-            <div className="flex min-h-0 flex-1 flex-col">
+            <div
+              ref={fitMeasureRef}
+              className="flex flex-col gap-y-[clamp(0.35rem,1.2dvh,0.75rem)] pb-1 text-marco-black dark:text-white"
+            >
+              <div className="flex shrink-0 justify-end pb-1 pt-2">
+                <button
+                  type="button"
+                  onClick={closeDrawer}
+                  className={MOBILE_DRAWER_CLOSE_BTN_CLASS}
+                  aria-label={t('common.ariaLabels.closeMenu')}
+                >
+                  <svg className="mx-auto h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className={`${MOBILE_DRAWER_CONTENT_MAX_CLASS} flex flex-col`}>
             <nav
-              className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-y-contain pb-3 [scrollbar-gutter:stable]"
+              className="flex flex-col gap-y-[clamp(0.3rem,1.1dvh,0.5rem)]"
               aria-label={t('common.menu.title')}
             >
               {isLoggedIn && user ? (
@@ -337,7 +389,7 @@ export function HeaderMobileDrawer({ data, compactPrimaryNav }: Props) {
 
               <footer className="flex shrink-0 flex-col">
                 {!hideHeaderSocialLinks ? (
-                  <div className="flex shrink-0 justify-center pb-2 pt-1">
+                  <div className="mt-3 flex shrink-0 justify-center pb-2 pt-1 sm:mt-4">
                     <HeaderSocialCircleLinks />
                   </div>
                 ) : null}
@@ -441,6 +493,7 @@ export function HeaderMobileDrawer({ data, compactPrimaryNav }: Props) {
                   © {currentYear} MARCO GROUP
                 </div>
               </footer>
+              </div>
             </div>
           </div>
         </div>
