@@ -4,13 +4,12 @@
 
 /** Full-viewport sheet (no side peek / partial width). */
 export const MOBILE_DRAWER_PANEL_CLASS =
-  'flex h-full min-h-[100dvh] w-full min-w-0 touch-auto flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] dark:bg-zinc-950';
+  'flex h-[100dvh] min-h-[100dvh] max-h-[100dvh] w-full min-w-0 touch-auto flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] dark:bg-zinc-950';
 
 /**
- * Centered column — narrower stack (“shorter” width) with side breathing room.
+ * Full-width column inside horizontal padding — uses the whole mobile width consistently.
  */
-export const MOBILE_DRAWER_CONTENT_MAX_CLASS =
-  'mx-auto w-full max-w-[min(19.5rem,78vw)] min-w-0';
+export const MOBILE_DRAWER_CONTENT_MAX_CLASS = 'mx-auto w-full min-w-0 max-w-none';
 
 export const MOBILE_DRAWER_CLOSE_BTN_CLASS =
   'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-marco-gray text-marco-black transition-opacity hover:opacity-90 dark:bg-zinc-800 dark:text-white';
